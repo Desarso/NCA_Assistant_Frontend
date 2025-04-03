@@ -64,7 +64,6 @@ app = fastapi.FastAPI(
     redoc_url=None,
 )
 
-print(os.getenv("FRONTEND_URL"))
 
 app.add_middleware(
     CORSMiddleware,

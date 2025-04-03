@@ -4,8 +4,13 @@ from typing import Tuple
 from dotenv import load_dotenv
 from ai.mem0_local import m
 import logging
+from error_logger.error_logger import ErrorLogger
+import traceback
 
 logger = logging.getLogger(__name__)
+
+# Initialize error logger
+error_logger = ErrorLogger()
 
 load_dotenv()
 
@@ -27,13 +32,33 @@ def add_memory(ctx: RunContext[str], message: str) -> Tuple[str, str]:
     """
     if not m:
         logger.error("Memory client not initialized")
-        return "Memory service unavailable.", "Memory service is not initialized."
+        error_params = {
+            "message": message,
+            "user_id": ctx.deps.user_object.uid if ctx and ctx.deps and ctx.deps.user_object else None
+        }
+        error_result = error_logger.log_error(
+            function_name="add_memory",
+            error_text="Memory service is not initialized",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
+        return "Memory service unavailable.", str(error_result)
     try:
         result = m.add(message, user_id=ctx.deps.user_object.uid)
         return "Memory added successfully.", str(result)
     except Exception as e:
         logger.error(f"Error adding memory: {str(e)}", exc_info=True)
-        return "Failed to add memory.", str(e)
+        error_params = {
+            "message": message,
+            "user_id": ctx.deps.user_object.uid if ctx and ctx.deps and ctx.deps.user_object else None
+        }
+        error_result = error_logger.log_error(
+            function_name="add_memory",
+            error_text=f"Error adding memory: {str(e)}",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
+        return "Failed to add memory.", str(error_result)
 
 
 def get_memory(ctx: RunContext[str], query: str) -> Tuple[str, str]:
@@ -51,7 +76,17 @@ def get_memory(ctx: RunContext[str], query: str) -> Tuple[str, str]:
     """
     if not m:
         logger.error("Memory client not initialized")
-        return "Memory service unavailable.", "Memory service is not initialized."
+        error_params = {
+            "query": query,
+            "user_id": ctx.deps.user_object.uid if ctx and ctx.deps and ctx.deps.user_object else None
+        }
+        error_result = error_logger.log_error(
+            function_name="get_memory",
+            error_text="Memory service is not initialized",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
+        return "Memory service unavailable.", str(error_result)
     try:
         results = m.search(query, user_id=ctx.deps.user_object.uid)
 
@@ -60,7 +95,17 @@ def get_memory(ctx: RunContext[str], query: str) -> Tuple[str, str]:
         return "Memory search completed successfully.", memory
     except Exception as e:
         logger.error(f"Error searching memory: {str(e)}", exc_info=True)
-        return "Failed to search memory.", str(e)
+        error_params = {
+            "query": query,
+            "user_id": ctx.deps.user_object.uid if ctx and ctx.deps and ctx.deps.user_object else None
+        }
+        error_result = error_logger.log_error(
+            function_name="get_memory",
+            error_text=f"Error searching memory: {str(e)}",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
+        return "Failed to search memory.", str(error_result)
 
 
 def get_memory_no_context(user_id: str, query: str) -> Tuple[str, str]:
@@ -78,15 +123,34 @@ def get_memory_no_context(user_id: str, query: str) -> Tuple[str, str]:
     """
     if not m:
         logger.error("Memory client not initialized")
-        return "Memory service unavailable.", "Memory service is not initialized."
+        error_params = {
+            "query": query,
+            "user_id": user_id
+        }
+        error_result = error_logger.log_error(
+            function_name="get_memory_no_context",
+            error_text="Memory service is not initialized",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
+        return "Memory service unavailable.", str(error_result)
     try:
         results = m.search(query, user_id=user_id)
 
         # print("results", results)
 
-
         memory = extract_and_format_memory_data(str(results))
         return "Memory from current question.", memory
     except Exception as e:
         logger.error(f"Error searching memory: {str(e)}", exc_info=True)
-        return "Failed to search memory.", str(e)
+        error_params = {
+            "query": query,
+            "user_id": user_id
+        }
+        error_result = error_logger.log_error(
+            function_name="get_memory_no_context",
+            error_text=f"Error searching memory: {str(e)}",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
+        return "Failed to search memory.", str(error_result)

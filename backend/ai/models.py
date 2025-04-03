@@ -13,6 +13,9 @@ class User(SQLModel, table=True):
     name: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(String))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(String))
+    github_token: Optional[str] = None  # Store GitHub token securely
+    github_username: Optional[str] = None  # Store GitHub username
+    preferred_model: str = Field(default="gemini")  # Store user's preferred model
     
     # Relationships
     conversations: List["Conversation"] = Relationship(back_populates="user")
@@ -53,6 +56,7 @@ engine = create_engine(DATABASE_URL, echo=False)
 
 # Function to create all tables in the database
 def create_db_and_tables():
+    # Only create tables if they don't exist
     SQLModel.metadata.create_all(engine)
 
 

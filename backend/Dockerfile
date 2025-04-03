@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 8000
 
 # Run the application
-CMD ["uv", "run", "index.py"]
+CMD ["sh", "-c", "uv run migrate.py && uv run index.py"]

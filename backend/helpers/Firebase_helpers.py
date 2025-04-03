@@ -3,18 +3,27 @@ from fastapi.security import HTTPAuthorizationCredentials
 from firebase_admin import auth
 from pydantic import BaseModel
 from fastapi.security import HTTPBearer
-from typing import List, Callable
+from typing import List, Callable, Optional
 from fastapi import Depends, Request
+from ai.models import Session, User, engine
+from sqlalchemy import select
 
 
 security = HTTPBearer()
 
+
+
+
 class FirebaseUser:
-    def __init__(self, uid: str, email: str, roles: List[str], name: str):
+    def __init__(self, uid: str, email: str, roles: List[str], name: str, mcp_servers: List[dict], github_username: Optional[str] = None, github_token: Optional[str] = None, preferred_model: str = "gemini"):
         self.uid = uid
         self.email = email
         self.roles = roles
         self.name = name
+        self.mcp_servers = mcp_servers  # List of dicts with server info and enabled status
+        self.github_username = github_username
+        self.github_token = github_token  # Include token for backend operations
+        self.preferred_model = preferred_model  # User's preferred model
 
 class Token(BaseModel):
     access_token: str
@@ -46,11 +55,41 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(
         # Get custom claims
         custom_claims = user.custom_claims or {}
         roles = custom_claims.get('roles', [])
-        # Create user object
-        firebase_user = FirebaseUser(uid=uid, email=email, roles=roles, name=name)
-
-        print(firebase_user)
+        mcp_servers = custom_claims.get('mcp_servers', [])  # Get MCP servers from custom claims
         
+        # Get or create user in database
+        with Session(engine) as session:
+            db_user = session.exec(select(User).where(User.id == uid)).first()
+            
+            if not db_user:
+                # Create new user if doesn't exist
+                db_user = User(
+                    id=uid,
+                    email=email,
+                    name=name,
+                    preferred_model="gemini"  # Default model
+                )
+                session.add(db_user)
+                session.commit()
+                session.refresh(db_user)
+            
+            # Safely get values with defaults
+            github_username = getattr(db_user, 'github_username', None)
+            github_token = getattr(db_user, 'github_token', None)
+            preferred_model = getattr(db_user, 'preferred_model', "gemini")
+        
+        # Create user object
+        firebase_user = FirebaseUser(
+            uid=uid, 
+            email=email, 
+            roles=roles, 
+            name=name,
+            mcp_servers=mcp_servers,
+            github_username=github_username,
+            github_token=github_token,
+            preferred_model=preferred_model
+        )
+
             
         return firebase_user
         

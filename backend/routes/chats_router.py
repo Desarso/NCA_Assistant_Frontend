@@ -178,7 +178,7 @@ async def chat(
                 message_history=message_history,
             ) as run:
                 async for node in run:
-                    # print("Node type:", type(node))
+                    print("Node type:", type(node))
                     # print(node)
                     if agent.is_user_prompt_node(node):
                         # print user node
@@ -214,6 +214,7 @@ async def chat(
                     elif agent.is_call_tools_node(node):
                         async with node.stream(run.ctx) as handle_stream:
                             async for event in handle_stream:
+                                print("Event type:", type(event))
                                 yield "data: " + event_to_json_string(event) + "\n\n"
                         db_message = DBMessage(
                             content=json.dumps(model_message_to_dict(node.model_response)),

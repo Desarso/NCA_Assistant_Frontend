@@ -6,8 +6,13 @@ from typing import Tuple, Optional, Dict, Any
 import logging
 import os
 from dotenv import load_dotenv
+from error_logger.error_logger import ErrorLogger
+import traceback
 
 load_dotenv()
+
+# Initialize error logger
+error_logger = ErrorLogger()
 
 tenant_id = os.getenv("TENANT_ID")
 client_id = os.getenv("APP_ID")
@@ -145,17 +150,39 @@ def make_request(
     # --- Token Check and Header Prep (Keep as before) ---
     logging.debug(f"[{req_id}] Checking token...")
     token_error = _check_and_refresh_token()
-    if token_error: # ... (handle token error)
+    if token_error:
         logging.error(f"[{req_id}] Token refresh failed: {token_error}")
         err_payload = token_error if isinstance(token_error, dict) else {"details": str(token_error)}
         err_payload.setdefault("error", "Token refresh failed")
-        return None, err_payload
+        error_params = {
+            "method": method,
+            "url": url,
+            "headers": headers,
+            "json_data": json_data
+        }
+        return None, error_logger.log_error(
+            function_name="make_request",
+            error_text=f"Token refresh failed: {err_payload.get('error')}",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
     logging.debug(f"[{req_id}] Token check OK.")
 
     request_headers = _headers
-    if not request_headers: # ... (handle missing headers error)
+    if not request_headers:
         logging.error(f"[{req_id}] Missing request headers.")
-        return None, {"error": "Missing request headers", "status_code": 500} # Internal config error
+        error_params = {
+            "method": method,
+            "url": url,
+            "headers": headers,
+            "json_data": json_data
+        }
+        return None, error_logger.log_error(
+            function_name="make_request",
+            error_text="Missing request headers",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
     logging.debug(f"[{req_id}] Headers prepared.")
     # --- End Token/Header Prep ---
 
@@ -206,15 +233,51 @@ def make_request(
         log_msg = f"[{req_id}] HTTP Error {err_status}. Response: '{err_text[:500]}...'"
         if 400 <= err_status < 500: logging.warning(log_msg)
         else: logging.error(log_msg)
-        return None, {"error": f"HTTP Error: {err_status}", "details": str(e), "status_code": err_status, "headers": err_headers, "response_text": err_text}
+        error_params = {
+            "method": method,
+            "url": url,
+            "headers": headers,
+            "json_data": json_data,
+            "status_code": err_status,
+            "response_headers": err_headers,
+            "response_text": err_text
+        }
+        return None, error_logger.log_error(
+            function_name="make_request",
+            error_text=f"HTTP Error: {err_status}",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
 
     except requests.exceptions.Timeout as e:
         logging.error(f"[{req_id}] Request timed out: {e}")
-        return None, {"error": "Request Timeout", "details": str(e), "status_code": None} # No status code available
+        error_params = {
+            "method": method,
+            "url": url,
+            "headers": headers,
+            "json_data": json_data
+        }
+        return None, error_logger.log_error(
+            function_name="make_request",
+            error_text="Request Timeout",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
 
     except requests.exceptions.ConnectionError as e:
         logging.error(f"[{req_id}] Connection error: {e}")
-        return None, {"error": "Connection Error", "details": str(e), "status_code": None} # No status code available
+        error_params = {
+            "method": method,
+            "url": url,
+            "headers": headers,
+            "json_data": json_data
+        }
+        return None, error_logger.log_error(
+            function_name="make_request",
+            error_text="Connection Error",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
 
     # Catch OTHER request-related errors (could happen before response is fully formed)
     except requests.exceptions.RequestException as e:
@@ -239,13 +302,51 @@ def make_request(
             if 200 <= err_status < 300:
                  logging.error(f"[{req_id}] RequestException caught BUT response status ({err_status}) was OK. Returning error due to underlying exception: {e}")
                  # Return a specific error indicating this weird state
-                 return None, {"error": "Request Exception Despite OK Status", "details": str(e), "status_code": err_status, "headers": err_headers, "response_text": err_text}
+                 error_params = {
+                     "method": method,
+                     "url": url,
+                     "headers": headers,
+                     "json_data": json_data,
+                     "status_code": err_status,
+                     "response_headers": err_headers,
+                     "response_text": err_text
+                 }
+                 return None, error_logger.log_error(
+                     function_name="make_request",
+                     error_text="Request Exception Despite OK Status",
+                     parameters=error_params,
+                     stack_trace=traceback.format_exc()
+                 )
             # Otherwise, treat as a standard failure caught by this handler
-            return None, {"error": "Request Failed", "details": str(e), "status_code": err_status, "headers": err_headers, "response_text": err_text}
+            error_params = {
+                "method": method,
+                "url": url,
+                "headers": headers,
+                "json_data": json_data,
+                "status_code": err_status,
+                "response_headers": err_headers,
+                "response_text": err_text
+            }
+            return None, error_logger.log_error(
+                function_name="make_request",
+                error_text="Request Failed",
+                parameters=error_params,
+                stack_trace=traceback.format_exc()
+            )
         else:
             # No response object attached to the exception, return standard Request Failed
-             return None, {"error": "Request Failed", "details": str(e), "status_code": None, "headers": {}, "response_text": None}
-
+            error_params = {
+                "method": method,
+                "url": url,
+                "headers": headers,
+                "json_data": json_data
+            }
+            return None, error_logger.log_error(
+                function_name="make_request",
+                error_text="Request Failed",
+                parameters=error_params,
+                stack_trace=traceback.format_exc()
+            )
 
     # Outer JSONDecodeError - should be less likely now, but catches issues during body read perhaps
     except json.JSONDecodeError as e:
@@ -253,10 +354,36 @@ def make_request(
         err_headers = dict(response.headers) if response else {}
         err_text = response.text if response else "[Response object not available]"
         logging.error(f"[{req_id}] Unexpected JSONDecodeError (Status: {err_status}): {e}. Body: '{err_text[:200]}...'", exc_info=True)
-        return None, {"error": "Failed unexpectedly during JSON decode", "details": str(e), "status_code": err_status, "headers": err_headers, "response_text": err_text}
+        error_params = {
+            "method": method,
+            "url": url,
+            "headers": headers,
+            "json_data": json_data,
+            "status_code": err_status,
+            "response_headers": err_headers,
+            "response_text": err_text
+        }
+        return None, error_logger.log_error(
+            function_name="make_request",
+            error_text="Failed unexpectedly during JSON decode",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
 
     except Exception as e:
         # Catch-all for truly unexpected errors
         err_status = response.status_code if response else None
         logging.exception(f"[{req_id}] An unexpected error occurred (Status: {err_status})")
-        return None, {"error": "Unexpected error during request", "details": str(e), "status_code": err_status}
+        error_params = {
+            "method": method,
+            "url": url,
+            "headers": headers,
+            "json_data": json_data,
+            "status_code": err_status
+        }
+        return None, error_logger.log_error(
+            function_name="make_request",
+            error_text="Unexpected error during request",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )

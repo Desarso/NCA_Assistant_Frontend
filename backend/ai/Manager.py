@@ -2,43 +2,22 @@ from attr import dataclass
 from ai.assistant_functions.graph import graph_api_request
 from ai.assistant_functions.python_interpreter import python_interpreter
 from ai.assistant_functions.memory_functions import add_memory, get_memory
-from helpers.RequestHelper import make_request
-from pydantic_ai import Agent, RunContext
-
-# from custom.models.gemini import GeminiModel
-# from custom.providers.google_gla import GoogleGLAProvider
+from pydantic_ai.models.groq import GroqModel
+from pydantic_ai.providers.groq import GroqProvider
+from pydantic_ai.providers.openai import OpenAIProvider
+from pydantic_ai import Agent
 import os
 import logging
-
-# from pydantic_ai import agent_tool # Assuming you'll use agent_tool later, but not crucial for this core logic.
 from dotenv import load_dotenv
-import requests
-from typing import Dict, Union, Optional, Any, List
-import json
-import urllib.parse
-
-
-
 from pydantic_ai.common_tools.tavily import tavily_search_tool
-
-# from ai.wrapper import MCPServerStdioSchema
 from helpers.Firebase_helpers import FirebaseUser
 from datetime import datetime
+from pydantic_ai.mcp import MCPServerStdio
+from pydantic_ai.models import cached_async_http_client
 
 from pydantic_ai.models.gemini import GeminiModel
-from pydantic_ai.models.groq import GroqModel
-from pydantic_ai.providers.google_gla import GoogleGLAProvider
-from pydantic_ai.providers.groq import GroqProvider
-
-# from custom.models.gemini import GeminiModel
-# from custom.providers.google_gla import GoogleGLAProvider
-
-
-from pydantic_ai.mcp import MCPServerStdio
-
 from pydantic_ai.models.openai import OpenAIModel
-from pydantic_ai.providers.openai import OpenAIProvider
-
+from pydantic_ai.providers.google_gla import GoogleGLAProvider
 
 
 load_dotenv()
@@ -55,55 +34,53 @@ client_secret = os.getenv("SECRET")
 tavily_api_key = os.getenv("TAVILY_API_KEY")
 
 
-# server = MCPServerStdio(
-#     "npx",
-#     ["-y", "@merill/lokka", "stdio"],
-#     env={
-#         "TENANT_ID": tenant_id,
-#         "CLIENT_ID": client_id,
-#         "CLIENT_SECRET": client_secret,
-#     },
-# )
-
-
-
 assert tavily_api_key is not None
-model = GeminiModel(
-    "gemini-2.0-flash", 
-    provider=GoogleGLAProvider(api_key=os.getenv("GEMINI_API_KEY"))
-)
+
+# Create a custom HTTP client with 5-minute timeout
+http_client = cached_async_http_client(timeout=300, connect=5)
+
+# Define available models
+models = {
+    "gemini": GeminiModel(
+        "gemini-2.0-flash",
+        provider=GoogleGLAProvider(
+            api_key=os.getenv("GEMINI_API_KEY"),
+            http_client=http_client
+        )
+    ),
+    "groq": GroqModel(
+        "deepseek-r1-distill-llama-70b", 
+        provider=GroqProvider(
+            api_key=os.getenv("GROQ_API_KEY")
+        )
+    ),
+    "claude": OpenAIModel(
+        "anthropic/claude-3.7-sonnet",
+        provider=OpenAIProvider(
+            base_url="https://openrouter.ai/api/v1", 
+            api_key=os.getenv("OPENROUTER_API_KEY")
+        ),
+    ),
+    "gpt-4o-mini": OpenAIModel(
+        "gpt-4o-mini", 
+        provider=OpenAIProvider(
+            api_key=os.getenv("OPENAI_API_KEY")
+        )
+    )
+}
+
+# Set default model
+model = models["gemini"]
 
 
-# model = GroqModel(
-#     "deepseek-r1-distill-llama-70b", provider=GroqProvider(
-#         api_key=os.getenv("GROQ_API_KEY")
-#         )
-# )
-
-# model = OpenAIModel(
-#     "anthropic/claude-3.7-sonnet", provider=OpenAIProvider(
-#         base_url="https://openrouter.ai/api/v1",
-#         api_key=os.getenv("OPENROUTER_API_KEY")
-#         )
-# )
-
-# model = OpenAIModel(
-#     "gpt-4o-mini", provider=OpenAIProvider(
-#         api_key=os.getenv("OPENAI_API_KEY")
-#         )
-# )
-
-
-# Initialize logging (optional, but recommended)
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 
-# server = MCPServerHTTP(url='http://localhost:3001/sse')
-
-
 def get_system_prompt(user_object: FirebaseUser, memory: str) -> str:
+
+    # basically the user can have the mc server enabled or disabled. We will save the personal access token in the database for the user specifically.
     return f"""
 # **SYSTEM PROMPT: AI IT Assistant**
 
@@ -318,63 +295,36 @@ class MyDeps:
 
 
 async def create_agent(user_object: FirebaseUser, memory: str) -> Agent:
+    # Initialize MCP servers list
+    mcp_servers = []
+    
+    # Check if GitHub server is enabled for the user and they have a token
+    github_server_enabled = any(
+        server.get('server_id') == 'github' and server.get('enabled', False)
+        for server in user_object.mcp_servers
+    )
+    
+    if github_server_enabled and user_object.github_token:
+        github_server = MCPServerStdio(
+            command="npx",
+            args=["-y", "@modelcontextprotocol/server-github"],
+            env={"GITHUB_PERSONAL_ACCESS_TOKEN": user_object.github_token},
+        )
+        mcp_servers.append(github_server)
+    
+    # Get user's preferred model
+    selected_model = models.get(user_object.preferred_model, model)  # Fallback to default if model not found
+    
     return Agent(
-        model=model,
+        model=selected_model,
         system_prompt=get_system_prompt(user_object, memory),
         deps_type=MyDeps,
-        # mcp_servers=[server],
+        mcp_servers=mcp_servers,
         tools=[
             tavily_search_tool(tavily_api_key),
             graph_api_request,
-            # User Functions
-            # create_user,
-            # list_users,
-            # add_user_to_team,
-            # search_users,
-            # search_users_by_field,
-            # get_user,
-            # update_user_display_name,
-            # update_user_job_title,
-            # update_user_email,
-            # delete_user,
-            # get_user_teams,
-            # get_user_channels,
-            # get_user_licenses,
-            # list_available_licenses,
-            # add_license_to_user,
-            # set_user_usage_location,
-            # remove_license_from_user,
-            # enforce_mfa_for_user,
-            # reset_user_password,
-            # get_user_password_methods,
-            # block_sign_in,
-            # unblock_sign_in,
-            # # Channel Functions
-            # create_standard_channel,
-            # create_private_channel,
-            # list_channels,
-            # delete_channel,
-            # list_channels_from_multiple_teams,
-            # list_deal_channels,
-            # # Team Functions
-            # create_team,
-            # list_teams,
-            # list_team_members,
-            # delete_team,
-            # search_teams_by_field,
-            # # Sharepoint Functions
-            # search_sharepoint_sites,
-            # traverse_sharepoint_directory_by_item_id,
-            # search_sharepoint_graph,
-            # Python Interpreter
             python_interpreter,
-
-            # Memory Functions
             add_memory,
             get_memory,
         ],
     )
-
-
-
-

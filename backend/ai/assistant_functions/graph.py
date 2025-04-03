@@ -1,10 +1,14 @@
 from typing import Dict, Union, Optional, Any, List
 from pydantic_ai import RunContext
 from helpers.RequestHelper import make_request
+from error_logger.error_logger import ErrorLogger
 import logging
 import json
 import urllib.parse
+import traceback
 
+# Initialize error logger
+error_logger = ErrorLogger()
 
 def graph_api_request(
     ctx: RunContext,
@@ -18,7 +22,7 @@ def graph_api_request(
     """
     Acts as a tool interface for the LLM to interact with Microsoft Graph API,
     delegating the actual request execution, header management, and auth handling
-    to the make_request helper. The LLM MUST provide body and query parameters
+    to the make_request helper. The LLM MUST provide body and query params as JSON strings
     as VALID JSON formatted strings where applicable.
 
     Args:
@@ -34,12 +38,7 @@ def graph_api_request(
         Union[Dict[str, Any], List[Any]]:
             - On successful API call (2xx status, excluding 204): The parsed JSON response body (usually a Dict or List).
             - On successful API call with 204 No Content: An empty dictionary `{}`.
-            - On any failure (token error, HTTP error, connection error, timeout, JSON decode error):
-              A dictionary containing error details (e.g., 'error', 'details', 'status_code').
-
-    Raises:
-        ValueError: If body_json or query_params_json contain invalid JSON that cannot be parsed
-                    *before* calling make_request.
+            - On any failure: A dictionary containing error details and a user-friendly message.
     """
     if not path.startswith('/'):
         path = '/' + path # Ensure path starts with a slash
@@ -48,23 +47,85 @@ def graph_api_request(
     parsed_query_params: Optional[Dict[str, str]] = None
 
     # 1. Parse LLM inputs (JSON strings to Python objects)
-    # Headers are no longer parsed here
-
     try:
         if body_json:
-            parsed_body = json.loads(body_json)
-    except json.JSONDecodeError as e:
-        logging.error(f"Failed to parse body_json provided by LLM: {body_json}")
-        raise ValueError(f"Invalid JSON format in body_json: {e}") from e
+            try:
+                parsed_body = json.loads(body_json)
+            except json.JSONDecodeError as e:
+                error_params = {
+                    "endpoint_version": endpoint_version,
+                    "path": path,
+                    "method": method,
+                    "body_json": body_json,
+                    "query_params_json": query_params_json
+                }
+                return error_logger.log_error(
+                    function_name="graph_api_request",
+                    error_text=f"Invalid JSON format in body_json: {str(e)}",
+                    parameters=error_params,
+                    stack_trace=traceback.format_exc()
+                )
+    except Exception as e:
+        error_params = {
+            "endpoint_version": endpoint_version,
+            "path": path,
+            "method": method,
+            "body_json": body_json,
+            "query_params_json": query_params_json
+        }
+        return error_logger.log_error(
+            function_name="graph_api_request",
+            error_text=f"Error parsing body_json: {str(e)}",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
 
     try:
         if query_params_json:
-            parsed_query_params = json.loads(query_params_json)
-            if not isinstance(parsed_query_params, dict):
-                 raise ValueError("query_params_json must decode to a JSON object (dictionary).")
-    except json.JSONDecodeError as e:
-        logging.error(f"Failed to parse query_params_json provided by LLM: {query_params_json}")
-        raise ValueError(f"Invalid JSON format in query_params_json: {e}") from e
+            try:
+                parsed_query_params = json.loads(query_params_json)
+                if not isinstance(parsed_query_params, dict):
+                    error_params = {
+                        "endpoint_version": endpoint_version,
+                        "path": path,
+                        "method": method,
+                        "body_json": body_json,
+                        "query_params_json": query_params_json
+                    }
+                    return error_logger.log_error(
+                        function_name="graph_api_request",
+                        error_text="query_params_json must decode to a JSON object (dictionary)",
+                        parameters=error_params,
+                        stack_trace=traceback.format_exc()
+                    )
+            except json.JSONDecodeError as e:
+                error_params = {
+                    "endpoint_version": endpoint_version,
+                    "path": path,
+                    "method": method,
+                    "body_json": body_json,
+                    "query_params_json": query_params_json
+                }
+                return error_logger.log_error(
+                    function_name="graph_api_request",
+                    error_text=f"Invalid JSON format in query_params_json: {str(e)}",
+                    parameters=error_params,
+                    stack_trace=traceback.format_exc()
+                )
+    except Exception as e:
+        error_params = {
+            "endpoint_version": endpoint_version,
+            "path": path,
+            "method": method,
+            "body_json": body_json,
+            "query_params_json": query_params_json
+        }
+        return error_logger.log_error(
+            function_name="graph_api_request",
+            error_text=f"Error parsing query_params_json: {str(e)}",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
 
     # 2. Construct the full URL
     base_url = f'https://graph.microsoft.com/{endpoint_version}'
@@ -79,26 +140,49 @@ def graph_api_request(
              full_url += f"?{query_string}"
 
     # 4. Call the make_request helper
-    #    - Pass method, full_url
-    #    - Pass headers=None (relying on make_request to add Auth, Content-Type, etc.)
-    #    - Pass parsed_body as json_data
     logging.debug(f"graph_api_request: Calling make_request for {method} {full_url}")
-    response_data, error_data = make_request(
-        method=method.upper(),
-        url=full_url,
-        headers=None,  # Rely on make_request's header logic
-        json_data=parsed_body
-    )
+    try:
+        response_data, error_data = make_request(
+            method=method.upper(),
+            url=full_url,
+            headers=None,  # Rely on make_request's header logic
+            json_data=parsed_body
+        )
 
-    # 5. Return the result from make_request
-    if error_data:
-        logging.warning(f"graph_api_request: make_request failed for {method} {path}: {error_data.get('error')}")
-        return error_data
-    else:
-        logging.debug(f"graph_api_request: make_request successful for {method} {path}.")
-        # make_request returns parsed JSON or {} for 204, which matches our return type hint
-        return response_data if response_data is not None else {}
-    
+        # 5. Return the result from make_request
+        if error_data:
+            error_params = {
+                "endpoint_version": endpoint_version,
+                "path": path,
+                "method": method,
+                "body_json": body_json,
+                "query_params_json": query_params_json,
+                "full_url": full_url
+            }
+            return error_logger.log_error(
+                function_name="graph_api_request",
+                error_text=f"make_request failed: {error_data.get('error')}",
+                parameters=error_params,
+                stack_trace=traceback.format_exc()
+            )
+        else:
+            logging.debug(f"graph_api_request: make_request successful for {method} {path}.")
+            return response_data if response_data is not None else {}
+    except Exception as e:
+        error_params = {
+            "endpoint_version": endpoint_version,
+            "path": path,
+            "method": method,
+            "body_json": body_json,
+            "query_params_json": query_params_json,
+            "full_url": full_url
+        }
+        return error_logger.log_error(
+            function_name="graph_api_request",
+            error_text=f"Unexpected error in make_request: {str(e)}",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
 
 def graph_api_request_no_ctx(
     endpoint_version: str,
@@ -127,12 +211,7 @@ def graph_api_request_no_ctx(
         Union[Dict[str, Any], List[Any]]:
             - On successful API call (2xx status, excluding 204): The parsed JSON response body (usually a Dict or List).
             - On successful API call with 204 No Content: An empty dictionary `{}`.
-            - On any failure (token error, HTTP error, connection error, timeout, JSON decode error):
-              A dictionary containing error details (e.g., 'error', 'details', 'status_code').
-
-    Raises:
-        ValueError: If body_json or query_params_json contain invalid JSON that cannot be parsed
-                    *before* calling make_request.
+            - On any failure: A dictionary containing error details and a user-friendly message.
     """
     if not path.startswith('/'):
         path = '/' + path # Ensure path starts with a slash
@@ -141,23 +220,55 @@ def graph_api_request_no_ctx(
     parsed_query_params: Optional[Dict[str, str]] = None
 
     # 1. Parse LLM inputs (JSON strings to Python objects)
-    # Headers are no longer parsed here
-
     try:
         if body_json:
             parsed_body = json.loads(body_json)
     except json.JSONDecodeError as e:
-        logging.error(f"Failed to parse body_json provided by LLM: {body_json}")
-        raise ValueError(f"Invalid JSON format in body_json: {e}") from e
+        error_params = {
+            "endpoint_version": endpoint_version,
+            "path": path,
+            "method": method,
+            "body_json": body_json,
+            "query_params_json": query_params_json
+        }
+        return error_logger.log_error(
+            function_name="graph_api_request_no_ctx",
+            error_text=f"Invalid JSON format in body_json: {str(e)}",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
 
     try:
         if query_params_json:
             parsed_query_params = json.loads(query_params_json)
             if not isinstance(parsed_query_params, dict):
-                 raise ValueError("query_params_json must decode to a JSON object (dictionary).")
+                error_params = {
+                    "endpoint_version": endpoint_version,
+                    "path": path,
+                    "method": method,
+                    "body_json": body_json,
+                    "query_params_json": query_params_json
+                }
+                return error_logger.log_error(
+                    function_name="graph_api_request_no_ctx",
+                    error_text="query_params_json must decode to a JSON object (dictionary)",
+                    parameters=error_params,
+                    stack_trace=traceback.format_exc()
+                )
     except json.JSONDecodeError as e:
-        logging.error(f"Failed to parse query_params_json provided by LLM: {query_params_json}")
-        raise ValueError(f"Invalid JSON format in query_params_json: {e}") from e
+        error_params = {
+            "endpoint_version": endpoint_version,
+            "path": path,
+            "method": method,
+            "body_json": body_json,
+            "query_params_json": query_params_json
+        }
+        return error_logger.log_error(
+            function_name="graph_api_request_no_ctx",
+            error_text=f"Invalid JSON format in query_params_json: {str(e)}",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
 
     # 2. Construct the full URL
     base_url = f'https://graph.microsoft.com/{endpoint_version}'
@@ -172,22 +283,46 @@ def graph_api_request_no_ctx(
              full_url += f"?{query_string}"
 
     # 4. Call the make_request helper
-    #    - Pass method, full_url
-    #    - Pass headers=None (relying on make_request to add Auth, Content-Type, etc.)
-    #    - Pass parsed_body as json_data
     logging.debug(f"graph_api_request: Calling make_request for {method} {full_url}")
-    response_data, error_data = make_request(
-        method=method.upper(),
-        url=full_url,
-        headers=None,  # Rely on make_request's header logic
-        json_data=parsed_body
-    )
+    try:
+        response_data, error_data = make_request(
+            method=method.upper(),
+            url=full_url,
+            headers=None,  # Rely on make_request's header logic
+            json_data=parsed_body
+        )
 
-    # 5. Return the result from make_request
-    if error_data:
-        logging.warning(f"graph_api_request: make_request failed for {method} {path}: {error_data.get('error')}")
-        return error_data
-    else:
-        logging.debug(f"graph_api_request: make_request successful for {method} {path}.")
-        # make_request returns parsed JSON or {} for 204, which matches our return type hint
-        return response_data if response_data is not None else {}
+        # 5. Return the result from make_request
+        if error_data:
+            error_params = {
+                "endpoint_version": endpoint_version,
+                "path": path,
+                "method": method,
+                "body_json": body_json,
+                "query_params_json": query_params_json,
+                "full_url": full_url
+            }
+            return error_logger.log_error(
+                function_name="graph_api_request_no_ctx",
+                error_text=f"make_request failed: {error_data.get('error')}",
+                parameters=error_params,
+                stack_trace=traceback.format_exc()
+            )
+        else:
+            logging.debug(f"graph_api_request: make_request successful for {method} {path}.")
+            return response_data if response_data is not None else {}
+    except Exception as e:
+        error_params = {
+            "endpoint_version": endpoint_version,
+            "path": path,
+            "method": method,
+            "body_json": body_json,
+            "query_params_json": query_params_json,
+            "full_url": full_url
+        }
+        return error_logger.log_error(
+            function_name="graph_api_request_no_ctx",
+            error_text=f"Unexpected error in make_request: {str(e)}",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )

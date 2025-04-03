@@ -1,0 +1,84 @@
+/* Keyframe animations */
+.container1 {
+  background-color: white;
+  display: inline-block;
+  width: 28.2px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  color: rgb(0, 0, 0) !important;
+  font-size: 2rem;
+  z-index: 1000;
+  /* Animation classes */
+  /* Contrast effect for the first button */
+  /* Hidden state for icons not currently animating */
+}
+@keyframes opacity-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes opacity-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes blur-in {
+  from {
+    filter: blur(10px);
+  }
+  to {
+    filter: blur(0);
+  }
+}
+@keyframes blur-out {
+  from {
+    filter: blur(0);
+  }
+  to {
+    filter: blur(10px);
+  }
+}
+.container1 .showing {
+  animation: opacity-in 150ms linear forwards, blur-in 400ms linear forwards;
+}
+.container1 .hiding {
+  animation: blur-out 400ms linear forwards, opacity-out 150ms linear 300ms forwards;
+}
+.container1 .contrast-button {
+  filter: contrast(1000%) blur(0.2px) !important; /* Extreme contrast */
+  /* mix-blend-mode:normal;  Show only light parts */
+  mix-blend-mode: multiply;
+  transition: filter 300ms ease-in-out;
+  padding: 0rem;
+}
+.container1 .hidden {
+  opacity: 0;
+  filter: blur(10px);
+}
+.container1 .container1 {
+  position: relative;
+}
+.container1 .flex-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.container1 .icon {
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 0;
+}
+
+.invert-colors {
+  filter: invert(1); /* Inverts all colors */
+}/*# sourceMappingURL=animation.css.map */

@@ -262,7 +262,19 @@ class GeminiModel(Model):
                     break
 
         if start_response is None:
-            raise UnexpectedModelBehavior('Streamed response ended without content or tool calls')
+            # Instead of raising an error, create an empty response
+            empty_response = {
+                'candidates': [{
+                    'content': {
+                        'parts': [{'text': ''}]
+                    }
+                }]
+            }
+            return GeminiStreamedResponse(
+                _model_name=self._model_name, 
+                _content=bytearray(str(empty_response).encode()),
+                _stream=aiter_bytes
+            )
 
         return GeminiStreamedResponse(_model_name=self._model_name, _content=content, _stream=aiter_bytes)
 
@@ -362,7 +374,12 @@ class GeminiStreamedResponse(StreamedResponse):
                 raise UnexpectedModelBehavior('Streamed response has no content field')
             gemini_part: _GeminiPartUnion
             for gemini_part in candidate['content']['parts']:
+                print("Gemini part:", gemini_part)
                 if 'text' in gemini_part:
+                    # Skip empty strings to keep connection alive without yielding events
+                    if gemini_part['text'] == "":
+                        print("Skipping empty string")
+                        continue
                     # Using vendor_part_id=None means we can produce multiple text parts if their deltas are sprinkled
                     # amongst the tool call deltas
                     yield self._parts_manager.handle_text_delta(vendor_part_id=None, content=gemini_part['text'])
@@ -508,8 +525,8 @@ def _content_model_response(m: ModelResponse) -> _GeminiContent:
         if isinstance(item, ToolCallPart):
             parts.append(_function_call_part_from_call(item))
         elif isinstance(item, TextPart):
-            if item.content:
-                parts.append(_GeminiTextPart(text=item.content))
+            # Always include text parts, even if empty, to keep connection alive
+            parts.append(_GeminiTextPart(text=item.content))
         else:
             assert_never(item)
     return _GeminiContent(role='model', parts=parts)
