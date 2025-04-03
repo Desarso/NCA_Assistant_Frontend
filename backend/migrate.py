@@ -1,7 +1,10 @@
 from sqlalchemy import text, inspect
-from ai.models import engine, User
+from ai.models import engine, User, create_db_and_tables
 
 def add_new_columns():
+    # First ensure all tables exist
+    create_db_and_tables()
+    
     inspector = inspect(engine)
     columns = [col['name'] for col in inspector.get_columns('user')]
     

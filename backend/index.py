@@ -67,7 +67,11 @@ app = fastapi.FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.getenv("FRONTEND_URL")],  # Get frontend URL from env
+    allow_origins=[
+        os.getenv("FRONTEND_URL"),
+        "https://nca-assistant.gabrielmalek.com",
+        "https://nca-assistant.development.gabrielmalek.com",
+        ],  # Get frontend URL from env
     allow_credentials=True,
     allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
