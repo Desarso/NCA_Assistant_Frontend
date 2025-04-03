@@ -216,7 +216,7 @@ const Sidebar: Component<SidebarProps> = (props) => {
     <div
       class={cn(
         "group peer text-sidebar-foreground hidden md:block",
-        props.collapsible === "offcanvas" && "transition-transform duration-300"
+        props.collapsible === "offcanvas" && "transition-transform duration-500"
       )}
       data-state={state()}
       data-collapsible={state() === "collapsed" ? props.collapsible : ""}
@@ -227,7 +227,7 @@ const Sidebar: Component<SidebarProps> = (props) => {
       {/* This is what handles the sidebar gap on desktop */}
       <div
         class={cn(
-          "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear",
+          "relative w-(--sidebar-width) bg-transparent transition-[width] duration-100 ease-in-out",
           "group-data-[collapsible=offcanvas]:w-0",
           "group-data-[side=right]:rotate-180",
           props.variant === "floating" || props.variant === "inset"
@@ -237,7 +237,7 @@ const Sidebar: Component<SidebarProps> = (props) => {
       />
       <div
         class={cn(
-          "relative inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[width] duration-200 ease-linear md:flex",
+          "relative inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[width] duration-100 ease-in-out md:flex",
           // Adjust the padding for floating and inset variants.
           props.variant === "floating" || props.variant === "inset"
             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
@@ -257,7 +257,7 @@ const Sidebar: Component<SidebarProps> = (props) => {
           class={cn(
             "bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm",
             // Add transform animation to move content left when collapsed with fixed width
-            "transition-transform duration-200 ease-linear",
+            "transition-transform duration-200 ease-in-out",
             "w-(--sidebar-width) min-w-(--sidebar-width)",
             "group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:-translate-x-full",
             // Handle right-sided sidebar differently

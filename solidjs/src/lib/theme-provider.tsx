@@ -1,4 +1,4 @@
-import { createContext, useContext, createSignal, createEffect, ParentComponent } from "solid-js";
+import { createContext, useContext, createSignal, createEffect, ParentComponent, Accessor, Setter } from "solid-js";
 
 type Theme = "dark" | "light" | "system";
 
@@ -8,12 +8,12 @@ type ThemeProviderProps = {
 };
 
 type ThemeProviderState = {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
+  theme: Accessor<Theme>;
+  setTheme: Setter<Theme>;
 };
 
 const initialState: ThemeProviderState = {
-  theme: "system",
+  theme: () => "system",
   setTheme: () => null,
 };
 
@@ -42,12 +42,15 @@ export const ThemeProvider: ParentComponent<ThemeProviderProps> = (props) => {
     body.classList.add(theme());
   });
 
+  const wrappedSetTheme: Setter<Theme> = (value) => {
+    const newTheme = typeof value === 'function' ? (value as (prev: Theme) => Theme)(theme()) : value;
+    localStorage.setItem(props.storageKey || "vite-ui-theme", newTheme);
+    setTheme(newTheme);
+  };
+
   const value: ThemeProviderState = {
-    theme: theme(),
-    setTheme: (newTheme: Theme) => {
-      localStorage.setItem(props.storageKey || "vite-ui-theme", newTheme);
-      setTheme(newTheme);
-    },
+    theme,
+    setTheme: wrappedSetTheme,
   };
 
   return (

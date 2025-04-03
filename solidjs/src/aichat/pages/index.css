@@ -44,9 +44,6 @@ body.dark {
 
 .Chat-Container {
   /* Scrollbar styles */
-  /* Firefox scrollbar styles */
-  scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-bg);
 }
 .Chat-Container code[class*=language-],
 .Chat-Container pre[class*=language-] {
@@ -163,22 +160,6 @@ body.dark {
 }
 .Chat-Container .token.entity {
   cursor: help;
-}
-.Chat-Container ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  background-color: var(--scrollbar-bg);
-}
-.Chat-Container ::-webkit-scrollbar-thumb {
-  background-color: var(--scrollbar-thumb);
-  border-radius: 4px;
-}
-.Chat-Container ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--scrollbar-thumb-hover);
-}
-.Chat-Container ::-webkit-scrollbar-track {
-  background-color: var(--scrollbar-bg);
-  border-radius: 4px;
 }
 
 .message.assistant {

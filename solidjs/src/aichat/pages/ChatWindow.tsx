@@ -291,7 +291,7 @@ function ChatWindow() {
   );
   const [isMuted, setIsMuted] = createSignal<boolean>(false);
   const abortControllerRef = { current: false };
-  const { fetchConversations } = useChatContext();
+  const { fetchConversations, chats, setChats } = useChatContext();
 
   // Memoize the messages to prevent unnecessary re-renders
   const memoizedMessages = createMemo(() => messages());
@@ -301,7 +301,7 @@ function ChatWindow() {
     if (lastMessage) {
       lastMessage.scrollIntoView({
         behavior: "smooth",
-        block: "end"
+        block: "end",
       });
     }
   }
@@ -312,7 +312,6 @@ function ChatWindow() {
     }
     await fetchMessageHistory(id());
     scrollToBottom();
-    window.Prism = Prism;
     Prism.highlightAll();
   });
 
@@ -324,9 +323,13 @@ function ChatWindow() {
 
   createEffect(async () => {
     const currentId = id();
-    if (currentId && currentId !== conversationId()) {
-      setConversationId(currentId);
-      await fetchMessageHistory(currentId);
+    if (currentId !== conversationId()) {
+      if (currentId) {
+        setConversationId(currentId);
+        await fetchMessageHistory(currentId);
+      } else {
+        setMessages([]);
+      }
       scrollToBottom();
     }
   });
@@ -345,6 +348,20 @@ function ChatWindow() {
     const updatedMessages = [...currentMessages, newMessage];
     setMessages(updatedMessages);
     scrollToBottom();
+
+
+    if (!id()) {
+      setConversationId(crypto.randomUUID().toString());
+      window.history.pushState({}, "", `/chat/${conversationId()}`);
+      const newChats = [...chats()];
+      newChats.push({
+        id: conversationId(),
+        title: "New Chat",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+      setChats(newChats);
+    }
 
     const url = new URL(`${HOST}/api/v1/chats/chat`);
     const requestBody = {
@@ -520,10 +537,8 @@ function ChatWindow() {
         }
       }
 
-      if (window.location.pathname === "/") {
-        window.history.pushState({}, "", `/chat/${conversationId()}`);
-        fetchConversations();
-      }
+      // Update URL and fetch conversations for new conversations
+      
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
@@ -592,15 +607,15 @@ function ChatWindow() {
   };
 
   return (
-    <div class="flex w-full h-full flex-col justify-center items-center bg-gray-50 dark:bg-gray-900">
+    <div class="flex w-full h-full flex-col justify-start z-5 items-center bg-background dark:bg-background pt-0 rounded-lg mt-3.5">
       <Show
         when={isListening()}
         fallback={
           <>
             <div
-              class={`flex-1 flex flex-col items-center overflow-y-auto space-y-6 Chat-Container
-              max-h-[calc(100vh-134px)] 
-              md:max-h-[calc(100vh-136px)] 
+              class={`flex-1 flex flex-col items-center overflow-y-auto Chat-Container scrollbar
+              max-h-[calc(100vh-90px)] 
+              md:max-h-[calc(100vh-76px)] 
               ${
                 isMobile()
                   ? openMobile()

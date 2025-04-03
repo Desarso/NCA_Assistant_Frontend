@@ -27,7 +27,7 @@ function AppRoutes() {
         )}
       />
       <Route
-        path="/chat/:id"
+        path="/chat/:id?"
         component={() => (
           <PrivateRoute>
             <Layout>

@@ -164,29 +164,29 @@ body.dark {
   }
 
   /* Scrollbar styles */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-    background-color: var(--scrollbar-bg);
-  }
+  // ::-webkit-scrollbar {
+  //   width: 8px;
+  //   height: 8px;
+  //   background-color: var(--scrollbar-bg);
+  // }
 
-  ::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb);
-    border-radius: 4px;
+  // ::-webkit-scrollbar-thumb {
+  //   background-color: var(--scrollbar-thumb);
+  //   border-radius: 4px;
 
-    &:hover {
-      background-color: var(--scrollbar-thumb-hover);
-    }
-  }
+  //   &:hover {
+  //     background-color: var(--scrollbar-thumb-hover);
+  //   }
+  // }
 
-  ::-webkit-scrollbar-track {
-    background-color: var(--scrollbar-bg);
-    border-radius: 4px;
-  }
+  // ::-webkit-scrollbar-track {
+  //   background-color: var(--scrollbar-bg);
+  //   border-radius: 4px;
+  // }
 
-  /* Firefox scrollbar styles */
-  scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-bg);
+  // /* Firefox scrollbar styles */
+  // scrollbar-width: 8px;
+  // scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-bg);
 }
 
 .message.assistant {

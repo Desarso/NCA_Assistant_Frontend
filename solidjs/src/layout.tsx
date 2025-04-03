@@ -9,7 +9,7 @@ import {
   Show,
   Component,
 } from "solid-js";
-import type { Accessor, JSX } from "solid-js";
+import type { Accessor, JSX, Setter } from "solid-js";
 import { useIsMobile } from "./hooks/use-mobile";
 import { ModeToggle } from "./components/mode-toogle";
 import AvatarDropdown from "./components/avatar-dropdown";
@@ -24,6 +24,7 @@ interface Conversation {
 
 interface ChatContextType {
   chats: Accessor<Conversation[]>;
+  setChats: Setter<Conversation[]>;
   fetchConversations: () => Promise<void>;
 }
 
@@ -101,29 +102,65 @@ const Layout: Component<LayoutProps> = (props) => {
   // Provide a consistent value object to the context
   const contextValue = {
     chats: chats,
-    fetchConversations
+    setChats: setChats,
+    fetchConversations,
   };
 
   return (
     <ChatContext.Provider value={contextValue}>
       <SidebarProvider>
-        <div class="flex h-screen w-full">
+        <div class="flex h-screen w-full overflow-x-hidden">
           <AppSidebar />
-          <main class="flex flex-col flex-1 h-screen overflow-hidden">
-            <header class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-[#36415361]">
+          <svg
+            class="fixed -right-18 top-3.5 h-9 origin-top-left skew-x-[30deg] overflow-visible z-10"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="0 0 128 32"
+            preserveAspectRatio="none"
+          >
+            <line
+              stroke="#e9ecef"
+              class="dark:stroke-[#15202b]"
+              stroke-width="2px"
+              shape-rendering="geometricPrecision"
+              vector-effect="non-scaling-stroke"
+              stroke-linecap="round"
+              stroke-miterlimit="10"
+              x1="1"
+              y1="0"
+              x2="128"
+              y2="0"
+            />
+            <path
+              class="translate-y-[0.5px] fill-[#e9ecef] dark:fill-[#15202b] dark:stroke-[#15202b]"
+              shape-rendering="geometricPrecision"
+              stroke-width="1px"
+              stroke-linecap="round"
+              stroke-miterlimit="10"
+              vector-effect="non-scaling-stroke"
+              d="M0,0c5.9,0,10.7,4.8,10.7,10.7v10.7c0,5.9,4.8,10.7,10.7,10.7H128V0"
+              stroke="#e9ecef"
+            />
+          </svg>
+          <SidebarTrigger class="absolute left-3 top-8 z-10 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg p-2 transition-colors [&_svg:not([class*='size-'])]:size-7! md:[&_svg:not([class*='size-'])]:size-5!"></SidebarTrigger>
+          <ModeToggle class="absolute right-1 top-3 z-10" />
+                      {/* <header class="flex items-center justify-between p-4 bg-background border-b border-gray-200 dark:border-[#36415361]">
               <div class="flex items-center gap-3">
-                <SidebarTrigger class="hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg p-2 transition-colors [&_svg:not([class*='size-'])]:size-7! md:[&_svg:not([class*='size-'])]:size-5!"></SidebarTrigger>
+              
                 <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200 md:text-lg">
                   NCA Assistant
                 </h1>
               </div>
               <div class="flex items-center gap-3">
-                <ModeToggle />
-                <AvatarDropdown />
+              
               </div>
               {isMobile() && <PWAInstallButton class="ml-auto" />}
-            </header>
-            <div class="flex-1 overflow-auto">{props.children}</div>
+            </header> */}
+
+          <main class="flex flex-col flex-1 h-screen overflow-hidden bg-[#e9ecef] dark:bg-[#15202b] pt-0 z-5">
+
+            <div class=" overflow-hidden h-full">{props.children}</div>
           </main>
         </div>
       </SidebarProvider>

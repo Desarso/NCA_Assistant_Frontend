@@ -1,8 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
+
+
+
+
+* {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+}
+
+.scrollbar {
+  scrollbar-width: 8px;
+  z-index: 1000;
+}
 
 @layer utilities {
   .scrollbar::-webkit-scrollbar {
@@ -11,7 +24,7 @@
 
   .scrollbar::-webkit-scrollbar-track {
     border-radius: 100vh;
-    background: #e9ecef;
+    background: transparent;
   }
 
   .scrollbar::-webkit-scrollbar-thumb {
@@ -34,6 +47,24 @@
   .dark .scrollbar::-webkit-scrollbar-thumb:hover {
     background: #52627c;
   }
+
+  .gradient-button {
+
+    background: linear-gradient(135deg, #e57200 0%, #e7821d 100%);
+  }
+
+  .gradient-button:hover {
+    background: linear-gradient(135deg, #e08326 0%, #e2903d 100%);
+  }
+
+  .gradient-button:dark {
+    background: linear-gradient(135deg, #e57200 0%, #e7821d 100%);
+  }
+
+  .gradient-button:dark:hover {
+    background: linear-gradient(135deg, #e08326 0%, #e2903d 100%);
+  }
+
 }
 
 html, body, #root {
@@ -78,8 +109,8 @@ html, body, #root {
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --accent: oklch(0.5 0.1 160);
+  --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
@@ -102,7 +133,7 @@ html, body, #root {
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: oklch(0.25 0.04 263.64);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.145 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -114,7 +145,7 @@ html, body, #root {
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  --accent: oklch(0.5 0.1 160);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
