@@ -15,6 +15,8 @@ import { useChatContext } from "@/layout";
 import { createMemo, For, onMount } from "solid-js";
 import NCALogo from "@/assets/NCALogo";
 import AvatarDropdown from "./avatar-dropdown";
+import { prefetchMessageHistory } from "@/aichat/utils/utils";
+
 
 // Define the Conversation type to match what's in layout.tsx
 interface Conversation {
@@ -55,7 +57,7 @@ interface Conversation {
 
 export function AppSidebar() {
   try {
-    const { chats, fetchConversations } = useChatContext();
+    const { chats, fetchConversations, resetCurrentChat } = useChatContext();
     const { setOpenMobile } = useSidebar();
     const params = useParams();
     const navigate = useNavigate();
@@ -151,6 +153,7 @@ export function AppSidebar() {
                   <A
                     href={`/chat/${chat.id}`}
                     onClick={() => setOpenMobile(false)}
+                    onMouseEnter={() => prefetchMessageHistory(chat.id)}
                     class="flex items-center gap-2 px-3 py-2 text-base md:text-[13px] font-medium text-[#696a6a] dark:text-gray-200 rounded-md hover:bg-white dark:hover:bg-gray-700 "
                     classList={{
                       "bg-white dark:bg-gray-700": id() === chat.id,
@@ -171,7 +174,12 @@ export function AppSidebar() {
         <SidebarContent class="bg-[#e9ecef] dark:bg-[#15202b]">
           <SidebarGroup>
             <div class="flex flex-col items-center justify-between p-3">
-              <NCALogo fill="#535353" darkFill="#d1d5db" width={180} height={50} /> 
+              <NCALogo
+                fill="#535353"
+                darkFill="#d1d5db"
+                width={180}
+                height={50}
+              />
               <A
                 href="/chat/"
                 onClick={() => setOpenMobile(false)}
@@ -203,32 +211,46 @@ export function AppSidebar() {
               </div>
             </SidebarGroupContent>
           </SidebarGroup>
-          <AvatarDropdown 
-              class="absolute bottom-10 left-4 z-10"
-            />
+          <AvatarDropdown class="absolute bottom-10 left-4 z-10" />
         </SidebarContent>
       </Sidebar>
     );
   } catch (error) {
     console.error("Error in AppSidebar:", error);
     // Return a minimal sidebar when there's an error
+    const navigate = useNavigate();
+    const { setOpenMobile } = useSidebar();
+    // Get context in error case too
+    let resetCurrentChat;
+    try {
+      const context = useChatContext();
+      resetCurrentChat = context.resetCurrentChat;
+    } catch (e) {
+      // Function stub if context is unavailable
+      resetCurrentChat = () => {};
+    }
+
     return (
       <Sidebar collapsible="offcanvas" side="left" variant="sidebar">
         <SidebarContent class="bg-[#ebebeb] dark:bg-[#15202b]">
           <SidebarGroup>
             <div class="flex flex-col items-center justify-between p-3">
-              <NCALogo fill="#535353" darkFill="#d1d5db" width={180} height={50} />
+              <NCALogo
+                fill="#535353"
+                darkFill="#d1d5db"
+                width={180}
+                height={50}
+              />
               <A
                 href="/chat/"
+                onClick={() => setOpenMobile(false)}
                 class="rounded-md px-3 py-2 mt-5 text-sm font-medium w-full text-white gradient-button transition-colors block text-center"
               >
                 + New Chat
               </A>
             </div>
           </SidebarGroup>
-          <AvatarDropdown 
-              class="absolute bottom-5 left-4 z-10"
-            />
+          <AvatarDropdown class="absolute bottom-5 left-4 z-10" />
         </SidebarContent>
       </Sidebar>
     );

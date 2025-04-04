@@ -161,6 +161,7 @@ const ChatInput: Component<ChatInputProps> = (props) => {
 
         props.onSubmit(validContent);
       }
+      // Clear local state only after successful submission
       setContent([]);
       setTextInput("");
     }

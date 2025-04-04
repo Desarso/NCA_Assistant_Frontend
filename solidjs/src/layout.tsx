@@ -26,6 +26,8 @@ interface ChatContextType {
   chats: Accessor<Conversation[]>;
   setChats: Setter<Conversation[]>;
   fetchConversations: () => Promise<void>;
+  resetCurrentChat: () => void;
+  resetChatTrigger: Accessor<number>;
 }
 
 // Create the context
@@ -49,6 +51,14 @@ const Layout: Component<LayoutProps> = (props) => {
   const HOST = import.meta.env.VITE_CHAT_HOST;
 
   const [chats, setChats] = createSignal<Conversation[]>([]);
+  
+  // Create a signal to trigger chat reset
+  const [resetChatTrigger, setResetChatTrigger] = createSignal(0);
+  
+  // Function to reset the current chat
+  const resetCurrentChat = () => {
+    setResetChatTrigger(prev => prev + 1);
+  };
 
   const fetchConversations = async () => {
     try {
@@ -104,6 +114,8 @@ const Layout: Component<LayoutProps> = (props) => {
     chats: chats,
     setChats: setChats,
     fetchConversations,
+    resetCurrentChat,
+    resetChatTrigger,
   };
 
   return (

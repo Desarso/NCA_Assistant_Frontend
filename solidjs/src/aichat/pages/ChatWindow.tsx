@@ -8,6 +8,7 @@ import {
   createMemo,
   Component,
   Accessor,
+  createResource,
 } from "solid-js";
 import Prism from "prismjs";
 import "./index.css";
@@ -15,275 +16,24 @@ import { ContentItem, Message } from "../models/models";
 import MicrophoneVisualizer from "../../components/MicrophoneVisualizer";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useChatContext } from "@/layout";
-import { useParams } from "@solidjs/router";
+import { useNavigate, useParams } from "@solidjs/router";
 import AssistantMessageRenderer from "../components/AssitantMessageRenderer";
 import ChatInput from "../components/ChatInput";
-
-const HOST = import.meta.env.VITE_CHAT_HOST;
-
-interface DBMessage {
-  id: number;
-  created_at: string;
-  conversation_id: number;
-  content: string;
-  is_user_message: boolean;
-  updated_at: string;
-}
-
-type ChatMessage = Message;
-
-// Helper function to check if content is an array of ContentItems
-function isContentItemArray(content: any): content is ContentItem[] {
-  return Array.isArray(content);
-}
-
-// Helper function to check if content has a name property
-function isNameObject(content: any): content is { name: string } {
-  return typeof content === "object" && content !== null && "name" in content;
-}
+import MessageItem from "../components/ChatMessageItem";
+import {
+  convertToChatMessages,
+  HOST,
+  messageCache,
+  updateMessageCache,
+} from "../utils/utils";
 
 // Component to render user message content
-const UserMessage: Component<{
-  content: string | ContentItem[] | { name: string };
-}> = (props) => {
-  // Memoize the content to prevent re-renders
-  const memoizedContent = createMemo(() => props.content);
-
-  const renderContent = () => {
-    const content = memoizedContent();
-
-    if (isContentItemArray(content)) {
-      return (
-        <For each={content}>
-          {(item) => (
-            <Show
-              when={typeof item.content === "string"}
-              fallback={
-                <Show
-                  when={
-                    typeof item.content === "object" &&
-                    item.content !== null &&
-                    "kind" in item.content &&
-                    item.content.kind === "image-url"
-                  }
-                >
-                  <div class="flex justify-end">
-                    <img
-                      src={
-                        typeof item.content === "object" &&
-                        item.content !== null &&
-                        "url" in item.content
-                          ? (item.content.url as string)
-                          : ""
-                      }
-                      alt="Uploaded content"
-                      class="h-80 w-80 object-cover rounded-xl shadow-lg hover:shadow-xl transition-shadow mt-4 ml-4 mr-4"
-                    />
-                  </div>
-                </Show>
-              }
-            >
-              <div class="text-base leading-relaxed m-2">
-                {item.content as string}
-              </div>
-            </Show>
-          )}
-        </For>
-      );
-    } else if (typeof content === "string") {
-      return <div class="text-base leading-relaxed m-2">{content}</div>;
-    } else {
-      return (
-        <div class="text-base leading-relaxed m-2">
-          {JSON.stringify(content)}
-        </div>
-      );
-    }
-  };
-
-  return <>{renderContent()}</>;
-};
-
-// Component for rendering a chat message item
-const MessageItem: Component<{
-  message: Message;
-  messages: Accessor<Message[]>;
-  isLast: boolean;
-  gettingResponse: boolean;
-}> = (props) => {
-  // Memoize values to prevent unnecessary re-renders
-  const isUser = createMemo(() => props.message.role === "user");
-  const isLast = createMemo(() => props.isLast);
-  const [messageContent, setMessageContent] = createSignal(
-    props.message.content
-  );
-  const [messageReasoning, setMessageReasoning] = createSignal(
-    props.message.reasoning
-  );
-
-  createEffect(() => {
-    if (isLast()) {
-      setMessageContent(props.messages()[props.messages().length - 1].content);
-      setMessageReasoning(
-        props.messages()[props.messages().length - 1].reasoning
-      );
-    }
-  });
-
-  return (
-    <div
-      class={`md:max-w-[900px] w-full flex message pt-3 pl-3 pr-3 ${
-        isUser()
-          ? " user justify-end items-start pt-4"
-          : " assistant justify-start items-start"
-      } ${isLast() ? "" : ""}`}
-      id={isLast() ? "last-message" : ""}
-    >
-      <div
-        class={`message-content ${
-          isUser() ? "max-w-[85%] flex items-end self-start" : "w-full"
-        } rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-[6px] pl-2 pr-2 ${
-          isUser()
-            ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-            : "bg-transparent"
-        } break-words overflow-hidden`}
-      >
-        <Show
-          when={isUser()}
-          fallback={
-            <AssistantMessageRenderer
-              fullContent={messageContent}
-              gettingResponse={props.gettingResponse && isLast()}
-              reasoning={messageReasoning}
-            />
-          }
-        >
-          <div class="text-sm md:text-base flex flex-col gap-8 w-full items-end">
-            <UserMessage content={messageContent()} />
-          </div>
-        </Show>
-      </div>
-    </div>
-  );
-};
-
-function convertToChatMessages(messages: DBMessage[]): ChatMessage[] {
-  return messages
-    .map((message) => {
-      try {
-        const parsed = JSON.parse(message.content);
-        const messageType = parsed.kind || parsed.type;
-
-        // Handle model requests
-        if (messageType === "request") {
-          // Find the UserPromptPart in the parts array
-          const userPart = parsed.parts.find(
-            (part: any) => part.type === "UserPromptPart"
-          );
-          if (userPart) {
-            // Handle array content (mixed content including ImageUrl)
-            if (Array.isArray(userPart.content)) {
-              return {
-                role: "user",
-                content: userPart.content.map((item: any) => {
-                  // Handle string type items
-                  if (item.type === "str") {
-                    return {
-                      type: "str",
-                      content: item.content,
-                      part_kind: "text",
-                    };
-                  }
-                  // Handle ImageUrl, AudioUrl, DocumentUrl objects
-                  if (
-                    item.type &&
-                    item.content &&
-                    item.part_kind &&
-                    item.part_kind.endsWith("-url")
-                  ) {
-                    return {
-                      content: {
-                        url: item.content.url,
-                        media_type: item.part_kind.replace("-url", "/*"),
-                        kind: item.part_kind,
-                        serverUrl: item.content.url,
-                      },
-                    };
-                  }
-                  return { content: JSON.stringify(item) };
-                }),
-              };
-            }
-            // Handle single string content
-            if (typeof userPart.content === "string") {
-              return {
-                role: "user",
-                content: userPart.content,
-              };
-            }
-            // Handle single object content
-            return {
-              role: "user",
-              content: [
-                {
-                  content: userPart.content,
-                },
-              ],
-            };
-          }
-          const toolReturnPart = parsed.parts.find(
-            (part: any) => part.type === "ToolReturnPart"
-          );
-          if (toolReturnPart) {
-            return {
-              role: "tool_result",
-              content: JSON.stringify(toolReturnPart.content),
-            };
-          }
-          return null;
-        }
-
-        // Handle model responses
-        if (messageType === "response") {
-          let result = {
-            role: "assistant",
-            content: "",
-            reasoning: "",
-          };
-
-          for (const part of parsed.parts) {
-            if (part.type === "TextPart") {
-              result.content += part.content;
-            }
-            if (part.type === "ReasoningPart") {
-              result.reasoning += part.content;
-            }
-            if (parsed.parts[0].type === "ToolCallPart") {
-              return {
-                role: "tool_call",
-                content: JSON.stringify(parsed.parts[0].content),
-              };
-            }
-          }
-
-          return result;
-        }
-
-        return null;
-      } catch (e) {
-        console.error("Error parsing message:", e);
-        return null;
-      }
-    })
-    .filter((message): message is ChatMessage => message !== null);
-}
 
 function ChatWindow() {
   const { open, openMobile, isMobile } = useSidebar();
   const [gettingResponse, setGettingResponse] = createSignal<boolean>(false);
   const [messages, setMessages] = createSignal<Message[]>([]);
   const [isListening, setIsListening] = createSignal<boolean>(false);
-
   const params = useParams();
   const id = createMemo(() => params.id);
   const [conversationId, setConversationId] = createSignal<string>(
@@ -291,11 +41,20 @@ function ChatWindow() {
   );
   const [isMuted, setIsMuted] = createSignal<boolean>(false);
   const abortControllerRef = { current: false };
-  const { fetchConversations, chats, setChats } = useChatContext();
+  const { chats, setChats } = useChatContext();
+  const navigate = useNavigate();
+  // Track scroll positions for each conversation
+  const [scrollPositions, setScrollPositions] = createSignal<
+    Record<string, number>
+  >({});
+
+  // Reference to the chat container
+  let chatContainerRef: HTMLDivElement | undefined;
 
   // Memoize the messages to prevent unnecessary re-renders
   const memoizedMessages = createMemo(() => messages());
 
+  // Scroll to bottom with smooth animation (for new messages)
   function scrollToBottom() {
     const lastMessage = document.getElementById("last-message");
     if (lastMessage) {
@@ -306,12 +65,42 @@ function ChatWindow() {
     }
   }
 
+  // Instant scroll to bottom without animation (for chat switching)
+  function instantScrollToBottom() {
+    const lastMessage = document.getElementById("last-message");
+    if (lastMessage) {
+      lastMessage.scrollIntoView({
+        behavior: "auto",
+        block: "end",
+      });
+    }
+  }
+
+  // Save the current scroll position
+  function saveScrollPosition() {
+    if (chatContainerRef && conversationId()) {
+      const newScrollPositions = { ...scrollPositions() };
+      newScrollPositions[conversationId()] = chatContainerRef.scrollTop;
+      setScrollPositions(newScrollPositions);
+    }
+  }
+
   onMount(async () => {
+    console.log("id", id(), conversationId());
     if (id()) {
       setConversationId(id());
+      await fetchMessageHistory(id());
+    } else {
+      // If no ID, ensure messages are cleared for a new chat
+      setMessages([]);
+      setConversationId(crypto.randomUUID().toString());
+      console.log("conversationId", conversationId());
+      await fetchMessageHistory(conversationId());
     }
-    await fetchMessageHistory(id());
-    scrollToBottom();
+
+    // Don't scroll on initial mount, just show the content
+    instantScrollToBottom();
+
     Prism.highlightAll();
   });
 
@@ -321,38 +110,43 @@ function ChatWindow() {
     }
   });
 
+  //if ID changes normally from navigatig to old conversation
   createEffect(async () => {
     const currentId = id();
     if (currentId !== conversationId()) {
       if (currentId) {
+        setMessages([]);
         setConversationId(currentId);
         await fetchMessageHistory(currentId);
-      } else {
-        setMessages([]);
+        instantScrollToBottom();
       }
-      scrollToBottom();
+    }
+  });
+
+
+  //if ID changes to undefined because new chat
+  createEffect(() => {
+    if (!id()) {
+      setMessages([]);
+      setConversationId(crypto.randomUUID().toString());
     }
   });
 
   const handleSubmit = async (content: string | ContentItem[]) => {
     if (gettingResponse()) return;
-
     setGettingResponse(true);
-
     const newMessage: Message = {
       role: "user",
       content: content,
     };
-
+    // Get current messages and add the new user message
     const currentMessages = untrack(() => messages());
     const updatedMessages = [...currentMessages, newMessage];
-    setMessages(updatedMessages);
-    scrollToBottom();
 
-
+    console.log("submitting", id(), conversationId(), currentMessages, updatedMessages);
     if (!id()) {
-      setConversationId(crypto.randomUUID().toString());
-      window.history.pushState({}, "", `/chat/${conversationId()}`);
+      // navigate(`/chat/${conversationId()}`);
+      window.history.replaceState({}, "", `/chat/${conversationId()}`);
       const newChats = [...chats()];
       newChats.push({
         id: conversationId(),
@@ -362,6 +156,10 @@ function ChatWindow() {
       });
       setChats(newChats);
     }
+
+    setMessages(updatedMessages);
+    updateMessageCache(conversationId(), updatedMessages);
+    scrollToBottom();
 
     const url = new URL(`${HOST}/api/v1/chats/chat`);
     const requestBody = {
@@ -461,6 +259,7 @@ function ChatWindow() {
               };
 
               // Make a copy to avoid directly modifying the current state
+              // Ensure we're using the most up-to-date messages array that includes the user message
               const updatedMessages = [
                 ...currentMessageState,
                 newAssistantMessage,
@@ -530,6 +329,9 @@ function ChatWindow() {
             // console.log("currentMessageState", currentMessageState);
             setMessages([...currentMessageState]);
 
+            // Update cache with the latest messages
+            updateMessageCache(conversationId(), [...currentMessageState]);
+
             // Scroll to bottom with a small delay to allow rendering
           } catch (e) {
             console.error("Error parsing JSON:", e);
@@ -538,7 +340,6 @@ function ChatWindow() {
       }
 
       // Update URL and fetch conversations for new conversations
-      
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
@@ -547,6 +348,19 @@ function ChatWindow() {
   };
 
   const fetchMessageHistory = async (id: string = conversationId()) => {
+    // Return early if id is empty
+    if (!id) {
+      console.log("id is empty, clearing messages");
+      setMessages([]);
+      return;
+    }
+
+    // Check cache first
+    if (messageCache.has(id)) {
+      setMessages(messageCache.get(id) || []);
+      return;
+    }
+
     const url = new URL(`${HOST}/api/v1/chats/conversations/${id}/messages`);
     try {
       const { authFetch } = await import("@/lib/utils");
@@ -564,7 +378,10 @@ function ChatWindow() {
 
       const data = await response.json();
       const chatMessages = convertToChatMessages(data.messages);
-      // console.log("chatMessages", chatMessages);
+
+      // Update cache
+      messageCache.set(id, chatMessages);
+
       setMessages(chatMessages);
     } catch (error) {
       console.error("Failed to fetch chat history:", error);
@@ -607,15 +424,16 @@ function ChatWindow() {
   };
 
   return (
-    <div class="flex w-full h-full flex-col justify-start z-5 items-center bg-background dark:bg-background pt-0 rounded-lg mt-3.5">
+    <div class="flex w-full h-full flex-col justify-start z-5 items-center bg-[#e9ecef] dark:bg-[#15202b]  pt-0 rounded-lg ">
       <Show
         when={isListening()}
         fallback={
           <>
             <div
-              class={`flex-1 flex flex-col items-center overflow-y-auto Chat-Container scrollbar
-              max-h-[calc(100vh-90px)] 
-              md:max-h-[calc(100vh-76px)] 
+              ref={chatContainerRef}
+              class={`flex flex-1 flex-col items-center overflow-y-auto Chat-Container scrollbar !mt-3.5 rounded-t-lg pl-2 pr-2 bg-background dark:bg-background
+              max-h-[calc(100vh)] 
+              md:max-h-[calc(100vh)] 
               ${
                 isMobile()
                   ? openMobile()
@@ -627,6 +445,7 @@ function ChatWindow() {
               }
               ${memoizedMessages().length === 0 ? "h-full" : ""}
               `}
+              onScroll={() => saveScrollPosition()}
             >
               <For each={memoizedMessages()}>
                 {(message, index) => (
@@ -676,64 +495,10 @@ function ChatWindow() {
                   <span class="wave-text ml-5 pl-4">processing...</span>
                 </div>
               </Show>
-
-              <style>
-                {`
-                  @keyframes continuous-wave-forward-smooth {
-                    0% {
-                      background-position: 0% 50%;
-                    }
-                    100% {
-                      background-position: -600% 50%;
-                    }
-                  }
-                  .wave-text {
-                    font-size: 1rem;
-                    font-weight: 500;
-                    color: gray;
-                    background: linear-gradient(
-                      90deg,
-                      gray 0%,
-                      gray 40%,
-                      black 50%,
-                      gray 60%,
-                      gray 100%
-                    );
-                    background-size: 300% 100%;
-                    background-clip: text;
-                    -webkit-background-clip: text;
-                    color: transparent;
-                    animation: continuous-wave-forward-smooth 5s infinite linear;
-                  }
-
-                  @keyframes fadeIn {
-                    from {
-                      opacity: 0;
-                      transform: translateY(10px);
-                    }
-                    to {
-                      opacity: 1;
-                      transform: translateY(0);
-                    }
-                  }
-
-                  .message {
-                    animation: fadeIn 0.3s ease-out forwards;
-                  }
-
-                  .message-content {
-                    animation: fadeIn 0.3s ease-out forwards;
-                  }
-
-                  #last-message {
-                    padding-bottom: calc(100vh - 250px);
-                  }
-                `}
-              </style>
               <div id="messages-end-ref" />
             </div>
 
-            <div class="border-t md:border md:rounded-lg md:mb-4 md:shadow-md border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 w-full md:max-w-[900px]">
+            <div class="border-t md:border md:rounded-b-lg md:shadow-md border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 w-full md:max-w-[900px]">
               <ChatInput
                 onSubmit={handleSubmit}
                 gettingResponse={gettingResponse()}

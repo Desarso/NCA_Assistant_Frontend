@@ -7,6 +7,8 @@ import {
   createEffect,
   Accessor,
   For,
+  on,
+  onCleanup,
 } from "solid-js";
 import { SolidMarkdown } from "solid-markdown";
 import remarkGfm from "remark-gfm";
@@ -23,6 +25,7 @@ interface AssistantMessageProps {
   fullContent: Accessor<string | ContentItem[] | { name: string }>;
   gettingResponse: boolean;
   reasoning?: Accessor<string | undefined>;
+  isLast: Accessor<boolean>;
 }
 
 // Track the last seen content length to only animate new content
@@ -170,9 +173,14 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
   );
   const [prevContentLength, setPrevContentLength] = createSignal(0);
   const [renderedContentLength, setRenderedContentLength] = createSignal(0);
+  const [bufferedContentLength, setBufferedContentLength] = createSignal(0);
   const [isInitialRender, setIsInitialRender] = createSignal(true);
   const [lastUpdateTime, setLastUpdateTime] = createSignal(Date.now());
   const [showLoadingAnimation, setShowLoadingAnimation] = createSignal(false);
+  const [staticContentTimer, setStaticContentTimer] = createSignal<{
+    startTime: number;
+    timerId: number | undefined;
+  } | null>(null);
 
   // Create proper memoization for content and reasoning
   const content = createMemo(() => props.fullContent());
@@ -180,6 +188,14 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
     props.reasoning ? props.reasoning() : undefined
   );
   const isStreaming = createMemo(() => props.gettingResponse);
+  const [showingStaticContent, setShowingStaticContent] = createSignal(
+    !isStreaming()
+  );
+
+  // Queue for incoming content diffs
+  const [pendingDiffs, setPendingDiffs] = createSignal<string[]>([]);
+  // Signal to track if processing is currently active
+  const [isProcessing, setIsProcessing] = createSignal(false);
 
   // Get a safe content length regardless of content type
   const getContentLength = (
@@ -194,41 +210,117 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
     }
   };
 
-  // Incremental update for streaming content
-  createEffect(async () => {
-    const currentContent = content();
-    const currentLength = getContentLength(currentContent);
-    const renderedLength = renderedContentLength();
-
-    // Only process string content and when streaming
-    if (typeof currentContent !== "string" || !streamingContentRef) return;
-
-    // Skip if no new content to render
-    if (currentLength <= renderedLength && renderedLength > 0) return;
-
-    // Update last update time
-    setLastUpdateTime(Date.now());
-    setShowLoadingAnimation(false);
-
-    // Create two temporary containers to find differences in rendered HTML
-    const currentContainer = document.createElement("div");
-    const newContentContainer = document.createElement("div");
-
-    // Render markdown to both containers
-    await renderMarkdownToHTML(
-      currentContent.substring(0, renderedLength),
-      currentContainer
-    );
-    await renderMarkdownToHTML(currentContent, newContentContainer);
-
-    // Use morphdom to update the streaming content
-    morphdom(streamingContentRef, newContentContainer);
-
-    Prism.highlightAll();
-
-    // Always update rendered length to track progress
-    setRenderedContentLength(currentLength);
+  createEffect(() => {
+    if (renderedContentLength() === bufferedContentLength() &&
+      pendingDiffs().length === 0 &&
+      !isStreaming()
+    ) {
+      console.log("showing static content");
+      setTimeout(() => {
+        setShowingStaticContent(true);
+      }, 200);
+    }
+    if (!props.isLast()) {
+      console.log("not last");
+      setShowingStaticContent(false);
+    }
   });
+  // Effect 1: Listen for content changes and queue new diffs
+  createEffect(
+    on(content, (currentContent) => {
+      // Only process string content and when streaming
+      // Also check if the streaming ref is available (it might not be on initial render/setup)
+      if (
+        typeof currentContent !== "string" ||
+        !streamingContentRef ||
+        !isStreaming()
+      ) {
+        // If not streaming anymore, ensure queue is cleared and processing stops
+        setPendingDiffs([]);
+        // Consider if setIsProcessing(false) is needed here, depends on exact stop logic
+        return;
+      }
+
+      const currentLength = currentContent.length;
+      const previouslyKnownLength = bufferedContentLength(); // Read before potential
+
+      // Calculate the difference
+      if (currentLength > previouslyKnownLength) {
+        const diff = currentContent.substring(previouslyKnownLength);
+        console.log("diff", diff);
+        if (diff.length > 0) {
+          // Add the new diff to the queue
+          setPendingDiffs(pendingDiffs().concat(diff));
+          // Update timestamp and hide loading only when a new diff is actually detected
+          setBufferedContentLength(currentLength);
+          setLastUpdateTime(Date.now());
+          setShowLoadingAnimation(false);
+        }
+      } else if (currentLength < previouslyKnownLength) {
+        // Handle potential content reset? Should not happen in normal streaming.
+        console.warn("Content length decreased unexpectedly!");
+        setBufferedContentLength(currentLength);
+        setPendingDiffs([]); // Clear queue on reset
+      }
+      // Note: We don't update renderedContentLength here anymore.
+      // It will be updated by the processing effect after rendering.
+    })
+  );
+
+  // Effect 2: Process the queue when items are available and not already processing
+  createEffect(
+    on(
+      [pendingDiffs, isProcessing],
+      async ([diffs, processing]) => {
+        // Exit if queue is empty OR if already processing
+        if (diffs.length === 0 || processing) {
+          return;
+        }
+
+        // Ensure the streaming container exists before proceeding
+        if (!streamingContentRef) {
+          console.warn("Streaming content ref not available for processing.");
+          return; // Cannot process without the target element
+        }
+
+        setIsProcessing(true); // Lock processing
+
+        // Take all diffs currently in the queue
+        const diffsToProcess = diffs;
+        const flatDiffs = diffsToProcess.join("");
+        setPendingDiffs([]); // Clear the queue *before* async work
+
+        // Combine all pending diffs into one chunk
+
+        const currentRenderedLength = renderedContentLength(); // Length before this batch
+        const latestFullContent =
+          typeof content() === "string" ? (content() as string) : "";
+
+        // --- Original Character-by-Character (Less Efficient) ---
+        let newSubstring = latestFullContent.substring(
+          0,
+          currentRenderedLength
+        );
+
+        try {
+          newSubstring += flatDiffs;
+          const tempContainer = document.createElement("div");
+          await renderMarkdownToHTML(newSubstring, tempContainer);
+          morphdom(streamingContentRef, tempContainer);
+          setRenderedContentLength(newSubstring.length); // Use innerHTML
+
+          Prism.highlightAllUnder(streamingContentRef); // Target highlighting
+        } catch (error) {
+          console.error("Error during streaming render char-by-char:", error);
+        } finally {
+          setIsProcessing(false); // Unlock processing
+        }
+      },
+      { defer: true }
+    )
+  ); // Use defer: true to prevent running on initial mount before content arrives
+
+  // Effect 3: Reliably switch to static content view only when truly finishe
 
   // Check for streaming pauses
   let pauseCheckInterval: number | undefined;
@@ -250,6 +342,8 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
     if (!isStreaming()) {
       setShowLoadingAnimation(false);
       return;
+    } else {
+      setShowingStaticContent(false);
     }
 
     // Start a new interval to check for pauses
@@ -257,6 +351,19 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
       const now = Date.now();
       setShowLoadingAnimation(now - lastUpdateTime() > 500);
     }, 100);
+  });
+
+  // Ensure cleanup on unmount
+  onCleanup(() => {
+    if (pauseCheckInterval) {
+      clearInterval(pauseCheckInterval);
+    }
+
+    // Also clear any static content timer
+    const currentTimer = staticContentTimer();
+    if (currentTimer && currentTimer.timerId !== undefined) {
+      clearTimeout(currentTimer.timerId);
+    }
   });
 
   // Update prevContentLength for animation purposes
@@ -270,13 +377,12 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
       // Delay the update to allow animation to be applied
       setTimeout(() => {
         setPrevContentLength(currentLength);
-      }, 100);
+      }, 2000);
     } else if (!isStreaming()) {
       // Reset when streaming stops
       setPrevContentLength(currentLength);
     }
   });
-
 
   return (
     <div ref={containerRef} class="assistant-message-container p-1">
@@ -331,45 +437,8 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
 
       {/* Render markdown content with conditional animation */}
       <div class="message-content-wrapper">
-        <style>{`
-          @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
-          .word-fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
-          }
-          .streaming-content.markdown-content,
-          .markdown-content {
-            transition: opacity 0.1s ease-out;
-          }
-          .loading-dots {
-            display: inline-block;
-            margin-left: 4px;
-          }
-          .loading-dots span {
-            display: inline-block;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background-color: currentColor;
-            margin-right: 2px;
-            animation: loading-dots 1.4s infinite ease-in-out both;
-          }
-          .loading-dots span:nth-child(1) {
-            animation-delay: -0.32s;
-          }
-          .loading-dots span:nth-child(2) {
-            animation-delay: -0.16s;
-          }
-          @keyframes loading-dots {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-          }
-        `}</style>
-
         {/* Content for streaming updates with incremental rendering */}
-        <Show when={isStreaming() && typeof content() === "string"}>
+        <Show when={(!showingStaticContent() && typeof content() === "string") && props.isLast()}>
           <div
             ref={streamingContentRef}
             class="streaming-content markdown-content"
@@ -384,7 +453,12 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
         </Show>
 
         {/* Content for static display (non-streaming) */}
-        <Show when={!isStreaming() && typeof content() === "string"}>
+        <Show
+          when={
+            (showingStaticContent() && typeof content() === "string") ||
+            !props.isLast()
+          }
+        >
           <div ref={staticContentRef} class="markdown-content">
             <SolidMarkdown
               components={{
