@@ -242,7 +242,7 @@ const ChatInput: Component<ChatInputProps> = (props) => {
             type="text"
             value={textInput()}
             onInput={(e) => setTextInput(e.currentTarget.value)}
-            placeholder="Type your message or drag and drop images..."
+            placeholder="Type your message here..."
             autocomplete="off"
             spellcheck={false}
           />

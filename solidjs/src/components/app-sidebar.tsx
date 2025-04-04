@@ -143,7 +143,7 @@ export function AppSidebar() {
 
       return (
         <div class="mb-4">
-          <SidebarGroupLabel class="text-xs font-medium text-gray-900 dark:text-gray-400 px-3 mb-2">
+          <SidebarGroupLabel class="text-xs font-bold text-gray-700 dark:text-gray-400 px-3 mb-2">
             {title}
           </SidebarGroupLabel>
           <SidebarMenu class="space-y-1">
@@ -159,7 +159,7 @@ export function AppSidebar() {
                       "bg-white dark:bg-gray-700": id() === chat.id,
                     }}
                   >
-                    <span class="truncate pl-2">{chat.title}</span>
+                    <span class="truncate pl-2 font-bold">{chat.title}</span>
                   </A>
                 </SidebarMenuItem>
               )}

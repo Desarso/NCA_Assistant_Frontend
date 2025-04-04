@@ -424,14 +424,14 @@ function ChatWindow() {
   };
 
   return (
-    <div class="flex w-full h-full flex-col justify-start z-5 items-center bg-[#e9ecef] dark:bg-[#15202b]  pt-0 rounded-lg ">
+    <div class="flex w-full h-full flex-col justify-start z-5 items-center bg-background dark:bg-background mt-3.5 rounded-lg ">
       <Show
         when={isListening()}
         fallback={
           <>
             <div
               ref={chatContainerRef}
-              class={`flex flex-1 flex-col items-center overflow-y-auto Chat-Container scrollbar !mt-3.5 rounded-t-lg pl-2 pr-2 bg-background dark:bg-background
+              class={`flex flex-1 flex-col items-center overflow-y-auto Chat-Container scrollbar rounded-t-lg pl-2 pr-2 
               max-h-[calc(100vh)] 
               md:max-h-[calc(100vh)] 
               ${
@@ -498,7 +498,7 @@ function ChatWindow() {
               <div id="messages-end-ref" />
             </div>
 
-            <div class="border-t md:border md:rounded-b-lg md:shadow-md border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 w-full md:max-w-[900px]">
+            <div class="border-t md:border md:rounded-lg md:shadow-md border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 w-full md:max-w-[900px] mb-3.5">
               <ChatInput
                 onSubmit={handleSubmit}
                 gettingResponse={gettingResponse()}

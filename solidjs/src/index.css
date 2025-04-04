@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import "tailwindcss";
+@import "./styles/font.css";
 
 @plugin "tailwindcss-animate";
 
@@ -9,7 +10,7 @@
 
 
 * {
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  font-family: 'Proxima Nova', Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 }
 
 .scrollbar {
@@ -238,3 +239,9 @@ html, body, #root {
 [data-side="right"][data-state="collapsed"][data-collapsible="offcanvas"] {
   transform: translateX(100%);
 } */
+
+
+* {
+  font-family: 'Proxima Nova', Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+}
+

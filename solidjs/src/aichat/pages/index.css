@@ -43,6 +43,7 @@ body.dark {
 }
 
 .Chat-Container {
+  font-weight: var(--font-weight-medium);
   /* Scrollbar styles */
 }
 .Chat-Container code[class*=language-],
