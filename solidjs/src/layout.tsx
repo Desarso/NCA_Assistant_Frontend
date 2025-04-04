@@ -111,7 +111,40 @@ const Layout: Component<LayoutProps> = (props) => {
       <SidebarProvider>
         <div class="flex h-screen w-full overflow-x-hidden">
           <AppSidebar />
-          <SidebarTrigger class="fixed left-3 top-8 z-[9999] hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg p-2 transition-colors [&_svg:not([class*='size-'])]:size-7! md:[&_svg:not([class*='size-'])]:size-5!"></SidebarTrigger>
+          <svg
+            class="fixed -right-18 top-3.5 h-9 origin-top-left skew-x-[30deg] overflow-visible z-[1100]"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="0 0 128 32"
+            preserveAspectRatio="none"
+          >
+            <line
+              stroke="#e9ecef"
+              class="dark:stroke-[#15202b]"
+              stroke-width="2px"
+              shape-rendering="geometricPrecision"
+              vector-effect="non-scaling-stroke"
+              stroke-linecap="round"
+              stroke-miterlimit="10"
+              x1="1"
+              y1="0"
+              x2="128"
+              y2="0"
+            />
+            <path
+              class="translate-y-[0.5px] fill-[#e9ecef] dark:fill-[#15202b] dark:stroke-[#15202b]"
+              shape-rendering="geometricPrecision"
+              stroke-width="1px"
+              stroke-linecap="round"
+              stroke-miterlimit="10"
+              vector-effect="non-scaling-stroke"
+              d="M0,0c5.9,0,10.7,4.8,10.7,10.7v10.7c0,5.9,4.8,10.7,10.7,10.7H128V0"
+              stroke="#e9ecef"
+            />
+          </svg>
+          <SidebarTrigger class="fixed left-3 top-8 z-[9999] hover:bg-accent dark:hover:bg-gray-700 rounded-lg p-2 transition-colors [&_svg:not([class*='size-'])]:size-7! md:[&_svg:not([class*='size-'])]:size-5!"></SidebarTrigger>
+          <ModeToggle class="absolute right-1 top-3 z-1200" />
           <main class="flex flex-col flex-1 h-screen overflow-hidden bg-[#e9ecef] dark:bg-[#15202b] pt-0 w-full">
             <div class="overflow-hidden h-full">{props.children}</div>
           </main>
