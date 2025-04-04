@@ -11,7 +11,9 @@ import {
   createResource,
 } from "solid-js";
 import Prism from "prismjs";
-import "./index.css";
+import "../styles/index.css";
+import "../styles/prisma/prisma.css";
+import "../styles/prisma-dark/prisma-dark.css";
 import { ContentItem, Message } from "../models/models";
 import MicrophoneVisualizer from "../../components/MicrophoneVisualizer";
 import { useSidebar } from "@/components/ui/sidebar";

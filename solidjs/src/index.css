@@ -10,8 +10,12 @@
 
 
 * {
-  font-family: 'Proxima Nova', Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  /* font-family: 'Proxima Nova', Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; */
+  --fa-style-family-classic: "Font Awesome 6 Free";
+  --fa-font-solid: normal 900 1em / 1 "Font Awesome 6 Free";
 }
+
+
 
 .scrollbar {
   scrollbar-width: 8px;
@@ -240,8 +244,8 @@ html, body, #root {
   transform: translateX(100%);
 } */
 
-
+/* 
 * {
   font-family: 'Proxima Nova', Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-}
+} */
 

@@ -46,6 +46,9 @@ interface LayoutProps {
   children: JSX.Element;
 }
 
+// Cache key for conversations in localStorage
+const CONVERSATIONS_CACHE_KEY = 'cachedConversations';
+
 const Layout: Component<LayoutProps> = (props) => {
   const isMobile = useIsMobile();
   const HOST = import.meta.env.VITE_CHAT_HOST;
@@ -60,7 +63,34 @@ const Layout: Component<LayoutProps> = (props) => {
     setResetChatTrigger(prev => prev + 1);
   };
 
+  // Load cached conversations immediately on component mount
+  const loadCachedConversations = () => {
+    try {
+      const cachedData = localStorage.getItem(CONVERSATIONS_CACHE_KEY);
+      if (cachedData) {
+        const parsedData = JSON.parse(cachedData);
+        setChats(parsedData);
+        return true;
+      }
+    } catch (error) {
+      console.error("Failed to load cached conversations:", error);
+    }
+    return false;
+  };
+
+  // Cache conversations in localStorage
+  const cacheConversations = (conversationsData: Conversation[]) => {
+    try {
+      localStorage.setItem(CONVERSATIONS_CACHE_KEY, JSON.stringify(conversationsData));
+    } catch (error) {
+      console.warn("Failed to cache conversations:", error);
+    }
+  };
+
   const fetchConversations = async () => {
+    // First try to load from cache for immediate display
+    const hasLoadedFromCache = loadCachedConversations();
+    
     try {
       // Import here to avoid circular dependency
       const { authFetch } = await import("@/lib/utils");
@@ -81,23 +111,31 @@ const Layout: Component<LayoutProps> = (props) => {
       }
       const data = await response.json();
       if (data.status === "success" && Array.isArray(data.conversations)) {
-        setChats(
-          data.conversations
-            .map((conv: Conversation) => ({
-              id: conv.id.toString(),
-              title: conv.title,
-              created_at: conv.created_at,
-              updated_at: conv.updated_at,
-            }))
-            .sort(
-              (a: { created_at: string }, b: { created_at: string }) =>
-                new Date(b.created_at).getTime() -
-                new Date(a.created_at).getTime()
-            )
-        );
+        const sortedConversations = data.conversations
+          .map((conv: Conversation) => ({
+            id: conv.id.toString(),
+            title: conv.title,
+            created_at: conv.created_at,
+            updated_at: conv.updated_at,
+          }))
+          .sort(
+            (a: { created_at: string }, b: { created_at: string }) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          );
+        
+        // Update the state with fresh data
+        setChats(sortedConversations);
+        
+        // Cache the fetched conversations
+        cacheConversations(sortedConversations);
       }
     } catch (error) {
       console.error("Failed to fetch conversations:", error);
+      // If we failed to fetch but haven't loaded from cache yet, try that as fallback
+      if (!hasLoadedFromCache) {
+        loadCachedConversations();
+      }
     }
   };
 

@@ -94,6 +94,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['debug', 'extend'],
+    disabled: false,
     esbuildOptions: {
       target: 'esnext',
       format: 'esm',

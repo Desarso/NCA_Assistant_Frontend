@@ -1,5 +1,3 @@
-import { MessageSquare } from "lucide-solid";
-
 import {
   Sidebar,
   SidebarContent,
@@ -15,7 +13,7 @@ import { useChatContext } from "@/layout";
 import { createMemo, For, onMount } from "solid-js";
 import NCALogo from "@/assets/NCALogo";
 import AvatarDropdown from "./avatar-dropdown";
-import { prefetchMessageHistory } from "@/aichat/utils/utils";
+import { prefetchMessageHistory, messageCache } from "@/aichat/utils/utils";
 
 
 // Define the Conversation type to match what's in layout.tsx
@@ -26,34 +24,6 @@ interface Conversation {
   updated_at: string;
 }
 
-// // Menu items.
-// const items = [
-//   // {
-//   //   title: "Home",
-//   //   url: "#",
-//   //   icon: Home,
-//   // },
-//   // {
-//   //   title: "Inbox",
-//   //   url: "#",
-//   //   icon: Inbox,
-//   // },
-//   // {
-//   //   title: "Calendar",
-//   //   url: "#",
-//   //   icon: Calendar,
-//   // },
-//   // {
-//   //   title: "Search",
-//   //   url: "#",
-//   //   icon: Search,
-//   // },
-//   {
-//     title: "Settings",
-//     url: "/settings",
-//     icon: Settings,
-//   },
-// ];
 
 export function AppSidebar() {
   try {
@@ -66,6 +36,14 @@ export function AppSidebar() {
     onMount(() => {
       fetchConversations();
     });
+
+    // Check if we need to prefetch messages
+    const handleChatMouseEnter = (chatId: string) => {
+      // Only prefetch if not already in cache
+      if (!messageCache.has(chatId)) {
+        prefetchMessageHistory(chatId);
+      }
+    };
 
     // Group chats by age
     const today = new Date();
@@ -153,7 +131,7 @@ export function AppSidebar() {
                   <A
                     href={`/chat/${chat.id}`}
                     onClick={() => setOpenMobile(false)}
-                    onMouseEnter={() => prefetchMessageHistory(chat.id)}
+                    onMouseEnter={() => handleChatMouseEnter(chat.id)}
                     class="flex items-center gap-2 px-3 py-2 text-base md:text-[13px] font-medium text-[#696a6a] dark:text-gray-200 rounded-md hover:bg-white dark:hover:bg-gray-700 "
                     classList={{
                       "bg-white dark:bg-gray-700": id() === chat.id,

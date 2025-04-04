@@ -25,6 +25,17 @@ const loadedLanguages: { [key: string]: boolean } = {
     }
   
     try {
+      // Check local storage first
+      const cachedScript = localStorage.getItem(`prism-language-${language}`);
+      if (cachedScript) {
+        console.log(`Loading language "${language}" from localStorage cache`);
+        // Execute the cached script
+        eval(cachedScript);
+        loadedLanguages[language] = true;
+        Prism.highlightAll();
+        return;
+      }
+      
       const languageData = components.languages[language];
   
       if (!languageData) {
@@ -55,9 +66,17 @@ const loadedLanguages: { [key: string]: boolean } = {
         );
       }
       const scriptText = await response.text();
+      
+      // Cache the script in localStorage
+      try {
+        localStorage.setItem(`prism-language-${language}`, scriptText);
+      } catch (storageError) {
+        console.warn(`Failed to cache language "${language}" in localStorage:`, storageError);
+        // Continue without caching - this might happen if storage quota is exceeded
+      }
   
-      // Execute the script.  Important: This is where the Prism component is registered.
-      eval(scriptText); // VERY CAREFUL.  See security notes below.
+      // Execute the script. Important: This is where the Prism component is registered.
+      eval(scriptText); // VERY CAREFUL. See security notes below.
   
       loadedLanguages[language] = true;
       Prism.highlightAll();
@@ -126,7 +145,7 @@ const CustomPre: Component<CustomPreProps> = (props) => {
   };
 
   return (
-    <div class="relative bg-gray-100 border border-gray-300 rounded-lg my-4 dark:bg-gray-800 dark:border-gray-600 p-0 m-0">
+    <div class="relative bg-gray-100 border border-gray-300 rounded-lg my-4 dark:bg-gray-800 dark:border-gray-600 p-0 m-0 ">
       <button
         onClick={handleCopy}
         class="absolute top-2 right-2 text-gray-600 text-xs p-2 rounded hover:text-gray-800 transition flex items-center gap-1 dark:text-gray-400 dark:hover:text-gray-200"
@@ -157,7 +176,7 @@ const CustomPre: Component<CustomPreProps> = (props) => {
           {copied() ? "Copied!" : "Copy"}
         </span>
       </button>
-      <pre ref={preRef} class="overflow-x-auto dark:text-gray-100 p-4 whitespace-pre-wrap break-words">
+      <pre ref={preRef} class="overflow-x-auto dark:text-gray-100 p-4 whitespace-pre-wrap break-words !rounded-lg !m-0 scrollbar">
         {props.children}
       </pre>
     </div>
