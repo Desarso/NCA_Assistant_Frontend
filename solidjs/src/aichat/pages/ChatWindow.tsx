@@ -619,7 +619,7 @@ function ChatWindow() {
               ${
                 isMobile()
                   ? openMobile()
-                    ? "w-[calc(100vw-var(--sidebar-width))]"
+                    ? "w-full"
                     : "w-full"
                   : open()
                   ? "w-[calc(100vw-var(--sidebar-width))]"

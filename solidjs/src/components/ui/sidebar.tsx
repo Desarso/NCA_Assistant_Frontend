@@ -102,7 +102,7 @@ const SidebarProvider: Component<SidebarProviderProps> = (props) => {
 
   // Helper to toggle the sidebar.
   const toggleSidebar = () => {
-    if (isMobile()) {
+    if (isCurrentlyMobile()) {
       setOpenMobile((open) => !open);
     } else {
       setOpen((prevOpen) => !prevOpen);
@@ -113,6 +113,16 @@ const SidebarProvider: Component<SidebarProviderProps> = (props) => {
       }, 0);
     }
   }
+
+  // Create a memo for the mobile detection
+  const isCurrentlyMobile = createMemo(() => isMobile())
+
+  // Create an effect to update the layout when mobile status changes
+  createEffect(() => {
+    const mobileStatus = isCurrentlyMobile();
+    // No immediate action needed, but this ensures the component re-renders
+    // when mobile status changes
+  });
 
   // Adds a keyboard shortcut to toggle the sidebar.
   onMount(() => {
@@ -150,6 +160,7 @@ const SidebarProvider: Component<SidebarProviderProps> = (props) => {
         style={{
           "--sidebar-width": SIDEBAR_WIDTH,
           "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+          "--sidebar-width-mobile": SIDEBAR_WIDTH_MOBILE,
           ...props.style
         }}
         class={cn(
@@ -172,102 +183,115 @@ type SidebarProps = ComponentProps<"div"> & {
 
 const Sidebar: Component<SidebarProps> = (props) => {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  
+  // Create a memo for the mobile check to ensure reactivity
+  const isCurrentlyMobile = createMemo(() => isMobile())
 
-  if (props.collapsible === "none") {
-    return (
-      <div
-        data-slot="sidebar"
-        data-sidebar="sidebar"
-        class={cn(
-          "bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col",
-          props.class
-        )}
-        {...props}
-      >
-        {props.children}
-      </div>
-    )
-  }
-
-  if (isMobile()) {
-    return (
-      <Sheet open={openMobile()} onOpenChange={setOpenMobile}>
-        <SheetContent
-          data-sidebar="sidebar"
-          data-slot="sidebar"
-          data-mobile="true"
-          class="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
-          style={{
-            "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-          }}
-          position={props.side}
-        >
-          <SheetHeader class="sr-only">
-            <SheetTitle>Sidebar</SheetTitle>
-            <SheetDescription>Displays the mobile sidebar.</SheetDescription>
-          </SheetHeader>
-          <div class="flex h-full w-full flex-col">{props.children}</div>
-        </SheetContent>
-      </Sheet>
-    )
-  }
+  // if (props.collapsible === "none") {
+  //   return (
+  //     <div
+  //       data-slot="sidebar"
+  //       data-sidebar="sidebar"
+  //       class={cn(
+  //         "bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col",
+  //         props.class
+  //       )}
+  //       {...props}
+  //     >
+  //       {props.children}
+  //     </div>
+  //   )
+  // }
 
   return (
-    <div
-      class={cn(
-        "group peer text-sidebar-foreground hidden md:block",
-        props.collapsible === "offcanvas" && "transition-transform duration-500"
-      )}
-      data-state={state()}
-      data-collapsible={state() === "collapsed" ? props.collapsible : ""}
-      data-variant={props.variant}
-      data-side={props.side}
-      data-slot="sidebar"
-    >
-      {/* This is what handles the sidebar gap on desktop */}
-      <div
-        class={cn(
-          "relative w-(--sidebar-width) bg-transparent transition-[width] duration-100 ease-in-out",
-          "group-data-[collapsible=offcanvas]:w-0",
-          "group-data-[side=right]:rotate-180",
-          props.variant === "floating" || props.variant === "inset"
-            ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
-            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
-        )}
-      />
-      <div
-        class={cn(
-          "relative inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[width] duration-100 ease-in-out md:flex",
-          // Adjust the padding for floating and inset variants.
-          props.variant === "floating" || props.variant === "inset"
-            ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
-            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
-          // Make the sidebar container shrink to zero width when collapsed in offcanvas mode
-          "group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:!w-0",
-          // Remove the border when collapsed in offcanvas mode  
-          "group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:border-none",
-          // Force overflow hidden to prevent content from showing when collapsed
-          "group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:overflow-hidden",
-          props.class
-        )}
-        {...props}
-      >
+    <Switch>
+      <Match when={isCurrentlyMobile()}>
+        <Sheet open={openMobile()} onOpenChange={setOpenMobile}>
+          <SheetContent 
+            position={props.side === "right" ? "right" : "left"} 
+            class={cn(
+              "p-0 w-[var(--sidebar-width-mobile)]",
+              "bg-transparent data-[expanded=]:bg-transparent", // Force background to stay as background color
+              "z-[9999]" // Ensure very high z-index to be above all content
+            )}
+            // Override the default overlay with a very light opacity
+            style={{
+              "--kb-dialog-overlay-background": "rgba(0, 0, 0, 0.05)",
+              "--kb-dialog-content-z-index": "9999" // Ensure dialog content has high z-index
+            }}
+          >
+            <div
+              data-sidebar="sidebar"
+              class={cn(
+                "bg-sidebar flex h-full flex-col",
+                "transition-transform duration-200 ease-in-out",
+                "w-[300px] relative z-[10000]", // Ensure content is above the sheet
+                props.class
+              )}
+            >
+              {props.children}
+            </div>
+          </SheetContent>
+        </Sheet>
+      </Match>
+      <Match when={!isCurrentlyMobile()}>
         <div
-          data-sidebar="sidebar"
           class={cn(
-            "bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm",
-            // Add transform animation to move content left when collapsed with fixed width
-            "transition-transform duration-200 ease-in-out",
-            "w-(--sidebar-width) min-w-(--sidebar-width)",
-            "group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:-translate-x-full",
-            // Handle right-sided sidebar differently
-            "group-data-[side=right]:group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:translate-x-full"
+            "group peer text-sidebar-foreground hidden md:block",
+            props.collapsible === "offcanvas" && "transition-transform duration-500"
           )}
+          data-state={state()}
+          data-collapsible={state() === "collapsed" ? props.collapsible : ""}
+          data-variant={props.variant}
+          data-side={props.side}
+          data-slot="sidebar"
         >
-          {props.children}
+          {/* This is what handles the sidebar gap on desktop */}
+          <div
+            class={cn(
+              "relative w-(--sidebar-width) bg-transparent transition-[width] duration-100 ease-in-out",
+              "group-data-[collapsible=offcanvas]:w-0",
+              "group-data-[side=right]:rotate-180",
+              props.variant === "floating" || props.variant === "inset"
+                ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
+                : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
+            )}
+          />
+          <div
+            class={cn(
+              "relative inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[width] duration-100 ease-in-out md:flex",
+              // Adjust the padding for floating and inset variants.
+              props.variant === "floating" || props.variant === "inset"
+                ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
+                : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
+              // Make the sidebar container shrink to zero width when collapsed in offcanvas mode
+              "group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:!w-0",
+              // Remove the border when collapsed in offcanvas mode  
+              "group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:border-none",
+              // Force overflow hidden to prevent content from showing when collapsed
+              "group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:overflow-hidden",
+              props.class
+            )}
+            {...props}
+          >
+            <div
+              data-sidebar="sidebar"
+              class={cn(
+                "bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm",
+                // Add transform animation to move content left when collapsed with fixed width
+                "transition-transform duration-200 ease-in-out",
+                "w-(--sidebar-width) min-w-(--sidebar-width)",
+                "group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:-translate-x-full",
+                // Handle right-sided sidebar differently
+                "group-data-[side=right]:group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:translate-x-full"
+              )}
+            >
+              {props.children}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </Match>
+    </Switch>
   )
 }
 
@@ -277,7 +301,7 @@ type SidebarTriggerProps<T extends ValidComponent = "button"> = ButtonProps<T> &
 
 const SidebarTrigger = <T extends ValidComponent = "button">(props: SidebarTriggerProps<T>) => {
   const [local, others] = splitProps(props as SidebarTriggerProps, ["class", "onClick"])
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar, isMobile } = useSidebar()
 
   return (
     <Button
@@ -525,6 +549,10 @@ const SidebarMenuButton = <T extends ValidComponent = "button">(
     "class"
   ])
   const { isMobile, state } = useSidebar()
+  
+  // Create memos for reactive state checking
+  const isCurrentlyMobile = createMemo(() => isMobile())
+  const currentState = createMemo(() => state())
 
   const button = (
     <Polymorphic<SidebarMenuButtonProps>
@@ -544,7 +572,7 @@ const SidebarMenuButton = <T extends ValidComponent = "button">(
     <Show when={local.tooltip} fallback={button}>
       <Tooltip placement="right">
         <TooltipTrigger class="w-full">{button}</TooltipTrigger>
-        <TooltipContent hidden={state() !== "collapsed" || isMobile()}>
+        <TooltipContent hidden={currentState() !== "collapsed" || isCurrentlyMobile()}>
           {local.tooltip}
         </TooltipContent>
       </Tooltip>
