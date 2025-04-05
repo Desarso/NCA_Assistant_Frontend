@@ -298,8 +298,22 @@ export class MessageCache {
     if (messages.length === 0) {
       return;
     }
+    
     //we want to set indexed db after we set on cache
-    sessionStorage.setItem(`messages-${id}`, JSON.stringify(messages));
+    try {
+      sessionStorage.setItem(`messages-${id}`, JSON.stringify(messages));
+    } catch (error) {
+      // If we hit quota limits, clear all sessionStorage and try again
+      console.warn("Storage error encountered, clearing sessionStorage:", error);
+      sessionStorage.clear();
+      
+      // Try one more time after clearing
+      try {
+        sessionStorage.setItem(`messages-${id}`, JSON.stringify(messages));
+      } catch (secondError) {
+        console.error("Still failed to store in sessionStorage after clearing:", secondError);
+      }
+    }
 
     // Also store in IndexedDB for persistence
     try {
@@ -385,7 +399,22 @@ export class ConversationCache {
     if (conversations.length === 0) {
       return;
     }
-    sessionStorage.setItem(`conversations`, JSON.stringify(conversations));
+    
+    try {
+      sessionStorage.setItem(`conversations`, JSON.stringify(conversations));
+    } catch (error) {
+      // If we hit quota limits, clear all sessionStorage and try again
+      console.warn("Storage error encountered, clearing sessionStorage:", error);
+      sessionStorage.clear();
+      
+      // Try one more time after clearing
+      try {
+        sessionStorage.setItem(`conversations`, JSON.stringify(conversations));
+      } catch (secondError) {
+        console.error("Still failed to store in sessionStorage after clearing:", secondError);
+      }
+    }
+    
     DB.setConversations(conversations);
   }
 }
