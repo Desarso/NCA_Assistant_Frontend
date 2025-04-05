@@ -44,8 +44,6 @@ const MessageItem: Component<{
   // Helper function to render user content
   const renderUserContent = () => {
     const content = messageContent();
-    console.log("MessageItem content type:", typeof content, content);
-    
     if (typeof content === "string") {
       return content;
     } else if (Array.isArray(content)) {

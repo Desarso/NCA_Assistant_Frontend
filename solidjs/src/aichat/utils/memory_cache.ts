@@ -10,7 +10,7 @@ import Prism from "prismjs";
 const components = componentsJson as any;
 
 // Current database version - increment when schema changes
-const CURRENT_DB_VERSION = "1.0";
+const CURRENT_DB_VERSION = "1.0.0";
 const DB_VERSION_KEY = "indexeddb_version";
 
 //static class to access the message cache
@@ -29,9 +29,10 @@ class DB {
     // Check stored version against current version
     const storedVersion = localStorage.getItem(DB_VERSION_KEY);
     const shouldResetDatabase = storedVersion !== CURRENT_DB_VERSION;
+
     
     if (shouldResetDatabase && storedVersion) {
-      console.log(`DB version changed from ${storedVersion} to ${CURRENT_DB_VERSION}, resetting database`);
+      console.log(`DB version changed from ${storedVersion} to ${CURRENT_DB_VERSION}, resetting database`, userID);
       await DB.deleteDatabase(userID);
     }
     

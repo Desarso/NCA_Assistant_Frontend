@@ -52,7 +52,6 @@ const CustomPre: Component<CustomPreProps> = (props) => {
   createEffect(() => {
     const currentLanguage = detectedLanguage();
     if (currentLanguage && !PrismaCache.has(currentLanguage)) {
-      console.log(`Effect detected language change: ${currentLanguage}`);
       PrismaCache.loadLanguage(currentLanguage);
     }
   });
