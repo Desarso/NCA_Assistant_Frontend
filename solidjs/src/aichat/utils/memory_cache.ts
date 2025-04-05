@@ -26,19 +26,7 @@ class DB {
 
     const userID = user.uid;
     
-    // Check stored version against current version
-    const storedVersion = localStorage.getItem(DB_VERSION_KEY);
-    const shouldResetDatabase = storedVersion !== CURRENT_DB_VERSION;
-
     
-    if (shouldResetDatabase && storedVersion) {
-      console.log(`DB version changed from ${storedVersion} to ${CURRENT_DB_VERSION}, resetting database`, userID);
-      await DB.deleteDatabase(userID);
-    }
-    
-    // Store current version
-    localStorage.setItem(DB_VERSION_KEY, CURRENT_DB_VERSION);
-
     const request = indexedDB.open(userID, 1);
 
     // Wrap in a Promise to await db setup
@@ -64,6 +52,21 @@ class DB {
 
     DB.db = db;
     DB.inited = true;
+
+
+    // Check stored version against current version
+    const storedVersion = localStorage.getItem(DB_VERSION_KEY);
+    const shouldResetDatabase = storedVersion !== CURRENT_DB_VERSION;
+
+    
+    if (shouldResetDatabase && storedVersion) {
+      console.log(`DB version changed from ${storedVersion} to ${CURRENT_DB_VERSION}, resetting database`, userID);
+      await DB.deleteDatabase(userID);
+    }
+    
+    // Store current version
+    localStorage.setItem(DB_VERSION_KEY, CURRENT_DB_VERSION);
+
   }
 
   private static async deleteDatabase(userID: string): Promise<void> {
