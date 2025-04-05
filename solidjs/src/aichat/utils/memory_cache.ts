@@ -9,6 +9,10 @@ import Prism from "prismjs";
 
 const components = componentsJson as any;
 
+// Current database version - increment when schema changes
+const CURRENT_DB_VERSION = "1.0";
+const DB_VERSION_KEY = "indexeddb_version";
+
 //static class to access the message cache
 class DB {
   static db: IDBDatabase;
@@ -21,6 +25,18 @@ class DB {
     if (!user) return;
 
     const userID = user.uid;
+    
+    // Check stored version against current version
+    const storedVersion = localStorage.getItem(DB_VERSION_KEY);
+    const shouldResetDatabase = storedVersion !== CURRENT_DB_VERSION;
+    
+    if (shouldResetDatabase && storedVersion) {
+      console.log(`DB version changed from ${storedVersion} to ${CURRENT_DB_VERSION}, resetting database`);
+      await DB.deleteDatabase(userID);
+    }
+    
+    // Store current version
+    localStorage.setItem(DB_VERSION_KEY, CURRENT_DB_VERSION);
 
     const request = indexedDB.open(userID, 1);
 
@@ -47,6 +63,26 @@ class DB {
 
     DB.db = db;
     DB.inited = true;
+  }
+
+  private static async deleteDatabase(userID: string): Promise<void> {
+    //also clear session storage for good measure
+    sessionStorage.clear();
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.deleteDatabase(userID);
+      
+      request.onsuccess = () => {
+        console.log("Database successfully deleted");
+        resolve();
+      };
+      
+      request.onerror = () => {
+        console.error("Error deleting database:", request.error);
+        reject(request.error);
+      };
+    });
+
+    
   }
 
   public static getStoreRead(
