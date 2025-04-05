@@ -1,7 +1,6 @@
 import { E } from "node_modules/@kobalte/core/dist/index-f6a05e1c";
 import { Message } from "../models/models";
 import { convertToChatMessages, HOST } from "./utils";
-import indexedDBStorage from "../../lib/indexedDB";
 import { auth } from "@/lib/firebase";
 import { Conversation } from "@/components/app-sidebar";
 import componentsJson from "./components.json";
@@ -25,8 +24,22 @@ class DB {
     if (!user) return;
 
     const userID = user.uid;
-    
-    
+
+    // Check stored version against current version
+    const storedVersion = localStorage.getItem(DB_VERSION_KEY);
+    const shouldResetDatabase = storedVersion !== CURRENT_DB_VERSION;
+
+    if (shouldResetDatabase && storedVersion) {
+      console.log(
+        `DB version changed from ${storedVersion} to ${CURRENT_DB_VERSION}, resetting database`,
+        userID
+      );
+      await DB.deleteDatabase(userID);
+    }
+
+    // Store current version
+    localStorage.setItem(DB_VERSION_KEY, CURRENT_DB_VERSION);
+
     const request = indexedDB.open(userID, 1);
 
     // Wrap in a Promise to await db setup
@@ -53,40 +66,58 @@ class DB {
     DB.db = db;
     DB.inited = true;
 
-
-    // Check stored version against current version
-    const storedVersion = localStorage.getItem(DB_VERSION_KEY);
-    const shouldResetDatabase = storedVersion !== CURRENT_DB_VERSION;
-
-    
-    if (shouldResetDatabase && storedVersion) {
-      console.log(`DB version changed from ${storedVersion} to ${CURRENT_DB_VERSION}, resetting database`, userID);
-      await DB.deleteDatabase(userID);
-    }
-    
-    // Store current version
-    localStorage.setItem(DB_VERSION_KEY, CURRENT_DB_VERSION);
-
   }
 
   private static async deleteDatabase(userID: string): Promise<void> {
-    //also clear session storage for good measure
+    // Clear session storage for good measure
     sessionStorage.clear();
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.deleteDatabase(userID);
-      
-      request.onsuccess = () => {
-        console.log("Database successfully deleted");
-        resolve();
-      };
-      
-      request.onerror = () => {
-        console.error("Error deleting database:", request.error);
-        reject(request.error);
-      };
-    });
 
-    
+    // First close our own connection to the database if it exists
+    if (DB.inited && DB.db) {
+      try {
+        DB.db.close();
+        console.log("Closed existing database connection");
+      } catch (err) {
+        console.error("Error closing database connection:", err);
+      }
+      DB.inited = false;
+      DB.db = undefined as unknown as IDBDatabase;
+    }
+
+    return new Promise<void>((resolve, reject) => {
+      // Create a timeout to prevent indefinite hanging
+      const timeout = setTimeout(() => {
+        console.warn("Database deletion timed out after 5 seconds");
+        resolve(); // Resolve anyway to prevent hanging
+      }, 5000);
+
+      try {
+        const request = indexedDB.deleteDatabase(userID);
+
+        request.onsuccess = () => {
+          clearTimeout(timeout);
+          console.log("Database successfully deleted");
+          resolve();
+        };
+
+        request.onerror = () => {
+          clearTimeout(timeout);
+          console.error("Error deleting database:", request.error);
+          // Still resolve to prevent hanging
+          resolve();
+        };
+
+        // Critical: Handle blocked events
+        request.onblocked = () => {
+          console.warn("Database deletion blocked - connections still open");
+          // We'll continue waiting for the timeout
+        };
+      } catch (err) {
+        clearTimeout(timeout);
+        console.error("Exception during database deletion:", err);
+        resolve(); // Resolve anyway to prevent hanging
+      }
+    });
   }
 
   public static getStoreRead(
