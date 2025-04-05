@@ -215,13 +215,11 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
       pendingDiffs().length === 0 &&
       !isStreaming()
     ) {
-      console.log("showing static content");
       setTimeout(() => {
         setShowingStaticContent(true);
       }, 200);
     }
     if (!props.isLast()) {
-      console.log("not last");
       setShowingStaticContent(false);
     }
   });
@@ -247,7 +245,6 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
       // Calculate the difference
       if (currentLength > previouslyKnownLength) {
         const diff = currentContent.substring(previouslyKnownLength);
-        console.log("diff", diff);
         if (diff.length > 0) {
           // Add the new diff to the queue
           setPendingDiffs(pendingDiffs().concat(diff));

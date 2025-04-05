@@ -1,90 +1,11 @@
 import { Component, createEffect, createSignal, onMount } from "solid-js";
 import Prism from "prismjs";
-import componentsJson from "./components.json";
+import { PrismaCache } from "../utils/memory_cache";
 
-const components = componentsJson as any;
+
 const HOST = import.meta.env.VITE_CHAT_HOST;
 
-const loadedLanguages: { [key: string]: boolean } = {
-    markup: true, // HTML, XML, SVG, MathML...
-    HTML: true,
-    XML: true,
-    SVG: true,
-    MathML: true,
-    SSML: true,
-    Atom: true,
-    RSS: true,
-    css: true,
-    "c-like": true,
-    javascript: true, // IMPORTANT: Use 'javascript' not 'js'
-  };
-  
-  const loadLanguage = async (language: string) => {
-    if (loadedLanguages[language]) {
-      return; // Already loaded
-    }
-  
-    try {
-      // Check local storage first
-      const cachedScript = localStorage.getItem(`prism-language-${language}`);
-      if (cachedScript) {
-        console.log(`Loading language "${language}" from localStorage cache`);
-        // Execute the cached script
-        eval(cachedScript);
-        loadedLanguages[language] = true;
-        Prism.highlightAll();
-        return;
-      }
-      
-      const languageData = components.languages[language];
-  
-      if (!languageData) {
-        console.warn(`Language "${language}" not found in components.json.`);
-        return;
-      }
-  
-      // Load required languages recursively BEFORE loading the target language
-      if (languageData.require) {
-        const requirements = Array.isArray(languageData.require)
-          ? languageData.require
-          : [languageData.require];
-  
-        for (const requirement of requirements) {
-          await loadLanguage(requirement);
-        }
-      }
-  
-      // Import authFetch to add auth token to the request
-      const { authFetch } = await import("@/lib/utils");
-  
-      const response = await authFetch(
-        `${HOST}/api/prism-language?name=${language}`
-      );
-      if (!response.ok) {
-        throw new Error(
-          `Failed to fetch language "${language}": ${response.status}`
-        );
-      }
-      const scriptText = await response.text();
-      
-      // Cache the script in localStorage
-      try {
-        localStorage.setItem(`prism-language-${language}`, scriptText);
-      } catch (storageError) {
-        console.warn(`Failed to cache language "${language}" in localStorage:`, storageError);
-        // Continue without caching - this might happen if storage quota is exceeded
-      }
-  
-      // Execute the script. Important: This is where the Prism component is registered.
-      eval(scriptText); // VERY CAREFUL. See security notes below.
-  
-      loadedLanguages[language] = true;
-      Prism.highlightAll();
-    } catch (error) {
-      console.error(`Error loading language "${language}":`, error);
-      // Consider a fallback (e.g., plain text highlighting)
-    }
-  };
+ 
 
 interface CustomPreProps {
   children: any;
@@ -104,10 +25,8 @@ const CustomPre: Component<CustomPreProps> = (props) => {
             const lang = langClass.replace("language-", "");
             if (lang && lang !== detectedLanguage()) {
               setDetectedLanguage(lang);
-              if (!loadedLanguages[lang]) {
-                console.log(`Language class detected: ${lang}, loading language...`);
-                loadLanguage(lang);
-              }
+              console.log(`Language class detected: ${lang}, loading language...`);
+              PrismaCache.loadLanguage(lang);
             }
           }
         }
@@ -123,8 +42,8 @@ const CustomPre: Component<CustomPreProps> = (props) => {
   onMount(() => {
     const initialLang = language();
     setDetectedLanguage(initialLang);
-    if (initialLang && !loadedLanguages[initialLang]) {
-      loadLanguage(initialLang); 
+    if (initialLang && !PrismaCache.has(initialLang)) {
+      PrismaCache.loadLanguage(initialLang); 
     }
     console.log("Initial language:", initialLang);
     Prism.highlightAll();
@@ -132,9 +51,9 @@ const CustomPre: Component<CustomPreProps> = (props) => {
 
   createEffect(() => {
     const currentLanguage = detectedLanguage();
-    if (currentLanguage && !loadedLanguages[currentLanguage]) {
+    if (currentLanguage && !PrismaCache.has(currentLanguage)) {
       console.log(`Effect detected language change: ${currentLanguage}`);
-      loadLanguage(currentLanguage);
+      PrismaCache.loadLanguage(currentLanguage);
     }
   });
 

@@ -8,11 +8,13 @@ import {
   createEffect,
   Show,
   Component,
+  onMount,
 } from "solid-js";
 import type { Accessor, JSX, Setter } from "solid-js";
 import { useIsMobile } from "./hooks/use-mobile";
 import { ModeToggle } from "./components/mode-toogle";
 import AvatarDropdown from "./components/avatar-dropdown";
+import { ConversationCache } from "./aichat/utils/memory_cache";
 
 // Move interfaces outside the component
 interface Conversation {
@@ -25,7 +27,6 @@ interface Conversation {
 interface ChatContextType {
   chats: Accessor<Conversation[]>;
   setChats: Setter<Conversation[]>;
-  fetchConversations: () => Promise<void>;
   resetCurrentChat: () => void;
   resetChatTrigger: Accessor<number>;
 }
@@ -54,8 +55,6 @@ const Layout: Component<LayoutProps> = (props) => {
   const HOST = import.meta.env.VITE_CHAT_HOST;
 
   const [chats, setChats] = createSignal<Conversation[]>([]);
-  
-  // Create a signal to trigger chat reset
   const [resetChatTrigger, setResetChatTrigger] = createSignal(0);
   
   // Function to reset the current chat
@@ -63,85 +62,14 @@ const Layout: Component<LayoutProps> = (props) => {
     setResetChatTrigger(prev => prev + 1);
   };
 
-  // Load cached conversations immediately on component mount
-  const loadCachedConversations = () => {
-    try {
-      const cachedData = localStorage.getItem(CONVERSATIONS_CACHE_KEY);
-      if (cachedData) {
-        const parsedData = JSON.parse(cachedData);
-        setChats(parsedData);
-        return true;
-      }
-    } catch (error) {
-      console.error("Failed to load cached conversations:", error);
-    }
-    return false;
-  };
 
-  // Cache conversations in localStorage
-  const cacheConversations = (conversationsData: Conversation[]) => {
-    try {
-      localStorage.setItem(CONVERSATIONS_CACHE_KEY, JSON.stringify(conversationsData));
-    } catch (error) {
-      console.warn("Failed to cache conversations:", error);
-    }
-  };
+  //on mount immeditely load conversations from cache then fetch from server
+  onMount(async () => {
+       setChats(await ConversationCache.get());
+       setChats(await ConversationCache.fetchConversationsNoCache());
+  })
 
-  const fetchConversations = async () => {
-    // First try to load from cache for immediate display
-    const hasLoadedFromCache = loadCachedConversations();
-    
-    try {
-      // Import here to avoid circular dependency
-      const { authFetch } = await import("@/lib/utils");
-      const { auth } = await import("@/lib/firebase");
 
-      // Get current user UID
-      const user = auth.currentUser;
-      if (!user) {
-        console.error("User not authenticated");
-        return;
-      }
-
-      const response = await authFetch(
-        `${HOST}/api/v1/chats/users/${user.uid}/conversations`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      if (data.status === "success" && Array.isArray(data.conversations)) {
-        const sortedConversations = data.conversations
-          .map((conv: Conversation) => ({
-            id: conv.id.toString(),
-            title: conv.title,
-            created_at: conv.created_at,
-            updated_at: conv.updated_at,
-          }))
-          .sort(
-            (a: { created_at: string }, b: { created_at: string }) =>
-              new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime()
-          );
-        
-        // Update the state with fresh data
-        setChats(sortedConversations);
-        
-        // Cache the fetched conversations
-        cacheConversations(sortedConversations);
-      }
-    } catch (error) {
-      console.error("Failed to fetch conversations:", error);
-      // If we failed to fetch but haven't loaded from cache yet, try that as fallback
-      if (!hasLoadedFromCache) {
-        loadCachedConversations();
-      }
-    }
-  };
-
-  createEffect(() => {
-    fetchConversations();
-  });
 
   createEffect(() => {
     console.log(chats());
@@ -151,7 +79,6 @@ const Layout: Component<LayoutProps> = (props) => {
   const contextValue = {
     chats: chats,
     setChats: setChats,
-    fetchConversations,
     resetCurrentChat,
     resetChatTrigger,
   };

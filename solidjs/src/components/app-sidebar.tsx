@@ -13,11 +13,11 @@ import { useChatContext } from "@/layout";
 import { createMemo, For, onMount } from "solid-js";
 import NCALogo from "@/assets/NCALogo";
 import AvatarDropdown from "./avatar-dropdown";
-import { prefetchMessageHistory, messageCache } from "@/aichat/utils/utils";
+import { prefetchMessageHistory, MessageCache } from "@/aichat/utils/memory_cache";
 
 
 // Define the Conversation type to match what's in layout.tsx
-interface Conversation {
+export interface Conversation {
   id: string;
   title: string;
   created_at: string;
@@ -27,20 +27,17 @@ interface Conversation {
 
 export function AppSidebar() {
   try {
-    const { chats, fetchConversations, resetCurrentChat } = useChatContext();
+    const { chats } = useChatContext();
     const { setOpenMobile } = useSidebar();
     const params = useParams();
     const navigate = useNavigate();
     const id = createMemo(() => params.id);
     // Ensure chats data is loaded
-    onMount(() => {
-      fetchConversations();
-    });
 
     // Check if we need to prefetch messages
     const handleChatMouseEnter = (chatId: string) => {
       // Only prefetch if not already in cache
-      if (!messageCache.has(chatId)) {
+      if (!MessageCache.has(chatId)) {
         prefetchMessageHistory(chatId);
       }
     };

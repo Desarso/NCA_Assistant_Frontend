@@ -22,12 +22,9 @@ import { useNavigate, useParams } from "@solidjs/router";
 import AssistantMessageRenderer from "../components/AssitantMessageRenderer";
 import ChatInput from "../components/ChatInput";
 import MessageItem from "../components/ChatMessageItem";
-import {
-  convertToChatMessages,
-  HOST,
-  messageCache,
-  updateMessageCache,
-} from "../utils/utils";
+import {  MessageCache } from "../utils/memory_cache";
+
+import { convertToChatMessages, HOST } from "../utils/utils";
 
 // Component to render user message content
 
@@ -88,7 +85,6 @@ function ChatWindow() {
   }
 
   onMount(async () => {
-    console.log("id", id(), conversationId());
     if (id()) {
       setConversationId(id());
       await fetchMessageHistory(id());
@@ -96,7 +92,6 @@ function ChatWindow() {
       // If no ID, ensure messages are cleared for a new chat
       setMessages([]);
       setConversationId(crypto.randomUUID().toString());
-      console.log("conversationId", conversationId());
       await fetchMessageHistory(conversationId());
     }
 
@@ -125,7 +120,6 @@ function ChatWindow() {
     }
   });
 
-
   //if ID changes to undefined because new chat
   createEffect(() => {
     if (!id()) {
@@ -145,7 +139,6 @@ function ChatWindow() {
     const currentMessages = untrack(() => messages());
     const updatedMessages = [...currentMessages, newMessage];
 
-    console.log("submitting", id(), conversationId(), currentMessages, updatedMessages);
     if (!id()) {
       // navigate(`/chat/${conversationId()}`);
       window.history.replaceState({}, "", `/chat/${conversationId()}`);
@@ -160,7 +153,7 @@ function ChatWindow() {
     }
 
     setMessages(updatedMessages);
-    updateMessageCache(conversationId(), updatedMessages);
+    MessageCache.set(conversationId(), updatedMessages);
     scrollToBottom();
 
     const url = new URL(`${HOST}/api/v1/chats/chat`);
@@ -223,7 +216,6 @@ function ChatWindow() {
       while (true) {
         // Check if request was aborted
         if (abortControllerRef.current) {
-          console.log("Request aborted");
           reader.cancel();
           break;
         }
@@ -328,11 +320,10 @@ function ChatWindow() {
 
             // Update the messages state with new messages using a new array to ensure reactivity
             // Only update when necessary
-            // console.log("currentMessageState", currentMessageState);
             setMessages([...currentMessageState]);
 
             // Update cache with the latest messages
-            updateMessageCache(conversationId(), [...currentMessageState]);
+            MessageCache.set(conversationId(), [...currentMessageState]);
 
             // Scroll to bottom with a small delay to allow rendering
           } catch (e) {
@@ -352,42 +343,10 @@ function ChatWindow() {
   const fetchMessageHistory = async (id: string = conversationId()) => {
     // Return early if id is empty
     if (!id) {
-      console.log("id is empty, clearing messages");
       setMessages([]);
       return;
     }
-
-    // Check cache first
-    if (messageCache.has(id)) {
-      setMessages(messageCache.get(id) || []);
-      return;
-    }
-
-    const url = new URL(`${HOST}/api/v1/chats/conversations/${id}/messages`);
-    try {
-      const { authFetch } = await import("@/lib/utils");
-
-      const response = await authFetch(url.toString(), {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      const chatMessages = convertToChatMessages(data.messages);
-
-      // Update cache
-      messageCache.set(id, chatMessages);
-
-      setMessages(chatMessages);
-    } catch (error) {
-      console.error("Failed to fetch chat history:", error);
-    }
+      setMessages(await MessageCache.get(id) || []);
   };
 
   const handleFileAttachment = () => {

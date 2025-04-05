@@ -15,10 +15,6 @@ interface DBMessage {
 type ChatMessage = Message;
 
 
-// Helper function to check if content has a name property
-function isNameObject(content: any): content is { name: string } {
-  return typeof content === "object" && content !== null && "name" in content;
-}
 
 
 
@@ -31,83 +27,6 @@ export function isContentItemArray(content: any): content is ContentItem[] {
   
 
   // Message cache to store fetched messages by conversation ID
-// Initialize from localStorage if available
-export const messageCache: Map<string, Message[]> = (() => {
-  const cache = new Map<string, Message[]>();
-  
-  try {
-    const cachedData = localStorage.getItem('messageCache');
-    if (cachedData) {
-      const parsed = JSON.parse(cachedData);
-      Object.entries(parsed).forEach(([key, value]) => {
-        cache.set(key, value as Message[]);
-      });
-    }
-  } catch (error) {
-    console.error("Failed to load message cache from localStorage:", error);
-  }
-  
-  return cache;
-})();
-
-// Save cache to localStorage when updated
-function saveMessageCacheToStorage() {
-  try {
-    const cacheObject = Object.fromEntries(messageCache.entries());
-    localStorage.setItem('messageCache', JSON.stringify(cacheObject));
-  } catch (error) {
-    console.error("Failed to save message cache to localStorage:", error);
-  }
-}
-
-// Function to prefetch message history
-export async function prefetchMessageHistory(id: string) {
-  // Skip if we already have this conversation in cache
-  if (messageCache.has(id)) return;
-
-  const url = new URL(`${HOST}/api/v1/chats/conversations/${id}/messages`);
-  try {
-    const { authFetch } = await import("@/lib/utils");
-
-    const response = await authFetch(url.toString(), {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    const chatMessages = convertToChatMessages(data.messages);
-
-    // Store in cache
-    messageCache.set(id, chatMessages);
-    saveMessageCacheToStorage();
-  } catch (error) {
-    console.error("Failed to prefetch chat history:", error);
-  }
-}
-
-
-  // Function to update cache after a new message
-  export const updateMessageCache = (id: string, updatedMessages: Message[]) => {
-    messageCache.set(id, [...updatedMessages]);
-    saveMessageCacheToStorage();
-  };
-
-  // Function to get messages from cache
-  export const getMessagesFromCache = (id: string): Message[] => {
-    return messageCache.get(id) || [];
-  };
-
-  // Clear message cache (useful for logout or clearing data)
-  export const clearMessageCache = () => {
-    messageCache.clear();
-    localStorage.removeItem('messageCache');
-  };
 
 
   
