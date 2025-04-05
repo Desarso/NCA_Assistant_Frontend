@@ -114,7 +114,9 @@ function isContentItemArray(
   content: string | ContentItem[] | { name: string }
 ): content is ContentItem[] {
   return (
-    Array.isArray(content) && content.length > 0 && "content" in content[0]
+    Array.isArray(content) && 
+    content.length > 0 && 
+    content.every(item => typeof item === 'object' && 'content' in item)
   );
 }
 
@@ -471,13 +473,18 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
         <Show
           when={!isContentItemArray(content()) && typeof content() !== "string"}
         >
-          <div>{JSON.stringify(content())}</div>
+          <div class="debug-content">
+            <pre class="text-xs bg-gray-100 dark:bg-gray-800 p-2 rounded-md overflow-auto">
+              {`Content type: ${typeof content()}\nValue: ${JSON.stringify(content(), null, 2)}`}
+            </pre>
+            <div class="mt-2">{JSON.stringify(content())}</div>
+          </div>
         </Show>
 
         <Show when={isContentItemArray(content())}>
           <div>
-            <For each={content() as unknown as ContentItem[]}>
-              {(item: ContentItem) => (
+            <For each={content() as ContentItem[]}>
+              {(item) => (
                 <div>
                   {typeof item.content === "string"
                     ? item.content

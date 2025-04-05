@@ -44,29 +44,23 @@ models = {
     "gemini": GeminiModel(
         "gemini-2.0-flash",
         provider=GoogleGLAProvider(
-            api_key=os.getenv("GEMINI_API_KEY"),
-            http_client=http_client
-        )
+            api_key=os.getenv("GEMINI_API_KEY"), http_client=http_client
+        ),
     ),
     "groq": GroqModel(
-        "deepseek-r1-distill-llama-70b", 
-        provider=GroqProvider(
-            api_key=os.getenv("GROQ_API_KEY")
-        )
+        "deepseek-r1-distill-llama-70b",
+        provider=GroqProvider(api_key=os.getenv("GROQ_API_KEY")),
     ),
     "claude": OpenAIModel(
         "anthropic/claude-3.7-sonnet",
         provider=OpenAIProvider(
-            base_url="https://openrouter.ai/api/v1", 
-            api_key=os.getenv("OPENROUTER_API_KEY")
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
         ),
     ),
     "gpt-4o-mini": OpenAIModel(
-        "gpt-4o-mini", 
-        provider=OpenAIProvider(
-            api_key=os.getenv("OPENAI_API_KEY")
-        )
-    )
+        "gpt-4o-mini", provider=OpenAIProvider(api_key=os.getenv("OPENAI_API_KEY"))
+    ),
 }
 
 # Set default model
@@ -79,7 +73,6 @@ logging.basicConfig(
 
 
 def get_system_prompt(user_object: FirebaseUser, memory: str) -> str:
-
     # basically the user can have the mc server enabled or disabled. We will save the personal access token in the database for the user specifically.
     return f"""
 # **SYSTEM PROMPT: AI IT Assistant**
@@ -88,7 +81,7 @@ def get_system_prompt(user_object: FirebaseUser, memory: str) -> str:
 
 ## **1. Core Identity & Context**
 
-*   **You are:** A highly capable AI assistant specializing in IT support, equipped with access to tools for **interacting with the Microsoft Graph API via a specific function (`graph_api_request`)**, a Python interpreter, search capabilities, and a persistent memory function.
+*   **You are:** A highly capable AI assistant, equipped with access to tools for **interacting with the Microsoft Graph API via a specific function (`graph_api_request`)**, a Python interpreter, search capabilities, and a persistent memory function, but you are capable of more.
 *   **Your Primary Goal:** To simplify the user's tasks, efficiently manage Microsoft resources via the Graph API, and provide accurate, helpful assistance.
 *   **Current Date & Time:** {datetime.now().strftime("%B %d, %Y")} at {datetime.now().strftime("%H:%M:%S")}
 *   **User Information:** You are assisting {user_object.name} ({user_object.email}). This email address should correspond to a valid Microsoft user account whose resources can be managed via the Graph API.
@@ -236,12 +229,6 @@ def get_system_prompt(user_object: FirebaseUser, memory: str) -> str:
 
 ## **5. Persona & Tone: Be a Ray of Sunshine! ☀️**
 
-# **Always maintain a positive and friendly demeanor! 🌟 Use emojis to keep the conversation engaging and fun! 😊 Every interaction is an opportunity to brighten someone's day, so keep the vibes upbeat and supportive! ✨ Remember to:
-# * Respond with enthusiasm and warmth 🌈
-# * Use friendly emojis when appropriate 😄
-# * Keep the tone light and encouraging 🌟
-# * Make users feel welcomed and supported 🤝
-# * Celebrate successes, no matter how small! 🎉**
 
 *   **Attitude:** Maintain a consistently **positive, friendly, and enthusiastic** demeanor. 😊
 *   **Engagement:** Use emojis appropriately to make the interaction engaging and warm. ✨🌈
@@ -297,13 +284,13 @@ class MyDeps:
 async def create_agent(user_object: FirebaseUser, memory: str) -> Agent:
     # Initialize MCP servers list
     mcp_servers = []
-    
+
     # Check if GitHub server is enabled for the user and they have a token
     github_server_enabled = any(
-        server.get('server_id') == 'github' and server.get('enabled', False)
+        server.get("server_id") == "github" and server.get("enabled", False)
         for server in user_object.mcp_servers
     )
-    
+
     if github_server_enabled and user_object.github_token:
         github_server = MCPServerStdio(
             command="npx",
@@ -311,10 +298,12 @@ async def create_agent(user_object: FirebaseUser, memory: str) -> Agent:
             env={"GITHUB_PERSONAL_ACCESS_TOKEN": user_object.github_token},
         )
         mcp_servers.append(github_server)
-    
+
     # Get user's preferred model
-    selected_model = models.get(user_object.preferred_model, model)  # Fallback to default if model not found
-    
+    selected_model = models.get(
+        user_object.preferred_model, model
+    )  # Fallback to default if model not found
+
     return Agent(
         model=selected_model,
         system_prompt=get_system_prompt(user_object, memory),

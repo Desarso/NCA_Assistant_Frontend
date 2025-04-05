@@ -44,21 +44,41 @@ const MessageItem: Component<{
   // Helper function to render user content
   const renderUserContent = () => {
     const content = messageContent();
+    console.log("MessageItem content type:", typeof content, content);
+    
     if (typeof content === "string") {
       return content;
     } else if (Array.isArray(content)) {
+      if (content.length === 0) {
+        return "";
+      }
+      
       return content
         .map((item) => {
-          if (typeof item.content === "string") {
-            return item.content;
+          if (typeof item === "object" && item !== null) {
+            if (typeof item.content === "string") {
+              return item.content;
+            } else if (item.content && typeof item.content === "object") {
+              // Handle image content or other complex types
+              return "[Complex content]";
+            }
           }
           return "";
         })
         .join(" ");
-    } else if (content && "name" in content) {
-      return content.name;
+    } else if (content && typeof content === "object") {
+      if ("name" in content) {
+        return content.name || "[No name provided]";
+      } else {
+        // Unknown object format, try to stringify
+        try {
+          return JSON.stringify(content);
+        } catch (e) {
+          return "[Complex object]";
+        }
+      }
     }
-    return "";
+    return "[Unknown content format]";
   };
 
   return (

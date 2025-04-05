@@ -89,15 +89,11 @@ function ChatWindow() {
       setConversationId(id());
       await fetchMessageHistory(id());
     } else {
-      // If no ID, ensure messages are cleared for a new chat
       setMessages([]);
       setConversationId(crypto.randomUUID().toString());
       await fetchMessageHistory(conversationId());
     }
-
-    // Don't scroll on initial mount, just show the content
     instantScrollToBottom();
-
     Prism.highlightAll();
   });
 
@@ -346,7 +342,28 @@ function ChatWindow() {
       setMessages([]);
       return;
     }
-      setMessages(await MessageCache.get(id) || []);
+    
+    try {
+      const messagesFromCache = await MessageCache.get(id);
+      console.log("Messages from cache:", JSON.stringify(messagesFromCache, null, 2));
+      
+      // Check if messages have valid content
+      if (Array.isArray(messagesFromCache)) {
+        // Simple validation that won't unnecessarily modify the data
+        const validMessages = messagesFromCache.filter(msg => 
+          msg && typeof msg === 'object' && 'role' in msg && msg.content !== undefined
+        );
+        
+        console.log(`Found ${validMessages.length} valid messages out of ${messagesFromCache.length}`);
+        setMessages(validMessages);
+      } else {
+        console.error("Invalid messages format from cache, not an array:", messagesFromCache);
+        setMessages([]);
+      }
+    } catch (error) {
+      console.error("Error fetching message history:", error);
+      setMessages([]);
+    }
   };
 
   const handleFileAttachment = () => {

@@ -76,7 +76,11 @@ class DB {
     const messages = await new Promise<Message[]>((resolve, reject) => {
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
-        resolve(request.result as Message[]);
+        if (request.result) {
+          resolve(request.result.messages as Message[]);
+        } else {
+          resolve(request.result);
+        }
       };
     });
 
@@ -165,7 +169,7 @@ export class MessageCache {
       MessageCache.set(id, chatMessages);
       return chatMessages;
     } catch (error) {
-      console.error("Failed to prefetch chat history:", error);
+      console.error("Failed to fetch chat history:", error);
       return [];
     }
   }
@@ -330,12 +334,14 @@ export class PrismaCache {
   public static async get(language: string): Promise<string> {
     const prism = sessionStorage.getItem(`prism-language-${language}`);
     if (prism) {
+    console.log("prism", prism);
     PrismaCache.set(language, prism);
       return prism;
     }
     if (DB.inited) {
       const prism = await DB.getPrism(language);
       if (prism) {
+        console.log("prism", prism);
         PrismaCache.set(language, prism);
         return prism;
       }

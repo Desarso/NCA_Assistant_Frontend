@@ -15,7 +15,7 @@ async def gemini(prompt: str) -> str:
         The text response from Gemini
     """
     model = GeminiModel(
-        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite",
         provider=GoogleGLAProvider(api_key=os.getenv("GEMINI_API_KEY")),
     )
 
@@ -45,7 +45,7 @@ async def geminiParts(content: list[UserContent]) -> str:
 
     agent = Agent(
         model=model,
-        system_prompt="Based on the user's content, generate a title for the conversation. The title should be a single sentence that captures the essence of the conversation. The title should be no more than 10 words.",
+        system_prompt="Summarize in less than 3 words what the conversation is about.",
     )
     response = await agent.run(content)
     return response.data

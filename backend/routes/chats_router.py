@@ -138,6 +138,14 @@ async def chat(
 
     # Get message history from the conversation
     message_history = get_message_history(conversation)
+    
+    # Check if message count is a multiple of 10 (excluding the new message we're about to add)
+    message_count = len(conversation.messages)
+    if message_count > 0 and message_count % 10 == 0:
+        # Generate a new title based on recent conversation
+        new_title = await geminiParts(chat_request.to_user_content())
+        conversation.title = new_title
+        session.commit()
 
     # print(chat_request)
     # print("history",message_history)
@@ -155,8 +163,6 @@ async def chat(
 
     ##only get memory if text content is not empty
     memory = get_memory_no_context(request.state.user.uid, text_content) if text_content != "" else None
-
-
 
     if len(message_history) > 0:
         system_prompt = message_history[0].parts[0].content
