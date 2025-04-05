@@ -103,7 +103,11 @@ class DB {
     const prism = await new Promise<string>((resolve, reject) => {
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
-        resolve(request.result as string);
+        if (request.result) {
+          resolve(request.result.prism as string);
+        } else {
+          resolve(request.result);
+        }
       };
     });
 
@@ -121,13 +125,18 @@ class DB {
     if (!DB.inited) await DB.init();
 
     const store = DB.getStoreRead("conversations");
-    const request = store.getAll();
+    const request = store.get("conversations");
 
     const conversations = await new Promise<Conversation[]>(
       (resolve, reject) => {
         request.onerror = () => reject(request.error);
         request.onsuccess = () => {
-          resolve(request.result as Conversation[]);
+          if (request.result) {
+            console.log("conversations", request.result);
+            resolve(request.result.conversations as Conversation[]);
+          } else {
+            resolve([]);
+          }
         };
       }
     );
@@ -145,8 +154,9 @@ class DB {
 
 export class MessageCache {
   //fetches message history and returns it also sets cache
-  private static async fetchMessageHistoryNoCache(id: string): Promise<Message[]> {
-    
+  private static async fetchMessageHistoryNoCache(
+    id: string
+  ): Promise<Message[]> {
     const url = new URL(`${HOST}/api/v1/chats/conversations/${id}/messages`);
     try {
       const { authFetch } = await import("@/lib/utils");
@@ -166,7 +176,7 @@ export class MessageCache {
       const chatMessages = convertToChatMessages(data.messages);
 
       // Store in cache
-      if(response.status === 200) {
+      if (response.status === 200) {
         MessageCache.set(id, chatMessages);
       }
       return chatMessages;
@@ -179,11 +189,11 @@ export class MessageCache {
   public static async prefetchMessageHistory(id: string) {
     if (MessageCache.has(id)) return;
     if (DB.inited) {
-        const messages = await DB.getMessageHistory(id);
-        if (messages) {
-            MessageCache.set(id, messages);
-            return;
-        }
+      const messages = await DB.getMessageHistory(id);
+      if (messages) {
+        MessageCache.set(id, messages);
+        return;
+      }
     }
     const messages = await MessageCache.fetchMessageHistoryNoCache(id);
     await MessageCache.set(id, messages);
@@ -201,15 +211,13 @@ export class MessageCache {
   public static async get(id: string): Promise<Message[]> {
     const messages = sessionStorage.getItem(`messages-${id}`);
     if (messages) {
-        MessageCache.set(id, JSON.parse(messages));
-        return JSON.parse(messages);
+      MessageCache.set(id, JSON.parse(messages));
+      return JSON.parse(messages);
     }
-    if (DB.inited) {
-        const messages = await DB.getMessageHistory(id);
-        if (messages) {
-            MessageCache.set(id, messages);
-            return messages;
-        }
+    const dbMessages = await DB.getMessageHistory(id);
+    if (dbMessages) {
+      MessageCache.set(id, dbMessages);
+      return dbMessages;
     }
     return await MessageCache.fetchMessageHistoryNoCache(id);
   }
@@ -267,7 +275,7 @@ export class ConversationCache {
           );
 
         // Update the state with fresh data
-        if(response.status === 200) {
+        if (response.status === 200) {
           ConversationCache.set(sortedConversations);
         }
         return sortedConversations;
@@ -293,12 +301,10 @@ export class ConversationCache {
       ConversationCache.set(JSON.parse(conversations));
       return JSON.parse(conversations);
     }
-    if (DB.inited) {
-        const conversations = await DB.getConversations();
-        if (conversations) {
-            ConversationCache.set(conversations);
-            return conversations;
-        }
+    const dbConversations = await DB.getConversations();
+    if (dbConversations) {
+      ConversationCache.set(dbConversations);
+      return dbConversations;
     }
     return await ConversationCache.fetchConversationsNoCache();
   }
@@ -339,7 +345,7 @@ export class PrismaCache {
       );
     }
     const scriptText = await response.text();
-    if(response.status === 200) {
+    if (response.status === 200) {
       PrismaCache.set(language, scriptText);
     }
     return scriptText;
@@ -348,19 +354,16 @@ export class PrismaCache {
   public static async get(language: string): Promise<string> {
     const prism = sessionStorage.getItem(`prism-language-${language}`);
     if (prism) {
-    PrismaCache.set(language, prism);
+      PrismaCache.set(language, prism);
       return prism;
     }
-    if (DB.inited) {
-      const prism = await DB.getPrism(language);
-      if (prism) {
-        PrismaCache.set(language, prism);
-        return prism;
-      }
+    const dbPrism = await DB.getPrism(language);
+    if (dbPrism) {
+      PrismaCache.set(language, dbPrism);
+      return dbPrism;
     }
     return await PrismaCache.fetchPrismNoCache(language);
   }
-  
 
   public static set(language: string, prism: string) {
     sessionStorage.setItem(`prism-language-${language}`, prism);
@@ -377,36 +380,36 @@ export class PrismaCache {
 
   public static async loadLanguage(language: string) {
     if (PrismaCache.loadedLanguages[language]) {
-        return; // Already loaded
+      return; // Already loaded
+    }
+    try {
+      const languageData = components.languages[language];
+      if (!languageData) {
+        console.warn(`Language "${language}" not found in components.json.`);
+        return;
       }
-      try {
-        const languageData = components.languages[language];
-        if (!languageData) {
-          console.warn(`Language "${language}" not found in components.json.`);
-          return;
-        }
-        // Load required languages recursively Before loading the target language
-        if (languageData.require) {
-          const requirements = Array.isArray(languageData.require)
-            ? languageData.require
-            : [languageData.require];
-    
-          for (const requirement of requirements) {
-            await PrismaCache.loadLanguage(requirement);
-          }
-        }
+      // Load required languages recursively Before loading the target language
+      if (languageData.require) {
+        const requirements = Array.isArray(languageData.require)
+          ? languageData.require
+          : [languageData.require];
 
-        const script = await PrismaCache.get(language);
-        if (script) {
-          console.log(`Loading language "${language}"`);
-          eval(script);
-          PrismaCache.loadedLanguages[language] = true;
-          Prism.highlightAll();
+        for (const requirement of requirements) {
+          await PrismaCache.loadLanguage(requirement);
         }
-      } catch (error) {
-        console.error(`Error loading language "${language}":`, error);
-        // Consider a fallback (e.g., plain text highlighting)
       }
+
+      const script = await PrismaCache.get(language);
+      if (script) {
+        console.log(`Loading language "${language}"`);
+        eval(script);
+        PrismaCache.loadedLanguages[language] = true;
+        Prism.highlightAll();
+      }
+    } catch (error) {
+      console.error(`Error loading language "${language}":`, error);
+      // Consider a fallback (e.g., plain text highlighting)
+    }
   }
 }
 
