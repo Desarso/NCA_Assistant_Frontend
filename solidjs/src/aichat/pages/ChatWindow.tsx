@@ -149,7 +149,6 @@ function ChatWindow() {
     }
 
     setMessages(updatedMessages);
-    MessageCache.set(conversationId(), updatedMessages);
     scrollToBottom();
 
     const url = new URL(`${HOST}/api/v1/chats/chat`);
@@ -194,6 +193,8 @@ function ChatWindow() {
       });
 
       if (!response.ok) {
+        setMessages(messages().slice(0, -1));
+        alert(`Error sending message: ${response.statusText}`);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -317,8 +318,6 @@ function ChatWindow() {
             // Update the messages state with new messages using a new array to ensure reactivity
             // Only update when necessary
             setMessages([...currentMessageState]);
-
-            // Update cache with the latest messages
             MessageCache.set(conversationId(), [...currentMessageState]);
 
             // Scroll to bottom with a small delay to allow rendering
@@ -331,6 +330,8 @@ function ChatWindow() {
       // Update URL and fetch conversations for new conversations
     } catch (error) {
       console.error("Error sending message:", error);
+      setMessages(messages().slice(0, -1));
+      alert(`Error sending message: ${error}`);
     } finally {
       setGettingResponse(false);
     }
@@ -345,8 +346,6 @@ function ChatWindow() {
     
     try {
       const messagesFromCache = await MessageCache.get(id);
-      console.log("Messages from cache:", JSON.stringify(messagesFromCache, null, 2));
-      
       // Check if messages have valid content
       if (Array.isArray(messagesFromCache)) {
         // Simple validation that won't unnecessarily modify the data
@@ -354,7 +353,6 @@ function ChatWindow() {
           msg && typeof msg === 'object' && 'role' in msg && msg.content !== undefined
         );
         
-        console.log(`Found ${validMessages.length} valid messages out of ${messagesFromCache.length}`);
         setMessages(validMessages);
       } else {
         console.error("Invalid messages format from cache, not an array:", messagesFromCache);

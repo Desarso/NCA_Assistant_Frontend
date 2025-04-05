@@ -166,7 +166,9 @@ export class MessageCache {
       const chatMessages = convertToChatMessages(data.messages);
 
       // Store in cache
-      MessageCache.set(id, chatMessages);
+      if(response.status === 200) {
+        MessageCache.set(id, chatMessages);
+      }
       return chatMessages;
     } catch (error) {
       console.error("Failed to fetch chat history:", error);
@@ -213,6 +215,10 @@ export class MessageCache {
   }
 
   public static async set(id: string, messages: Message[]) {
+    //if empty array, don't set cache
+    if (messages.length === 0) {
+      return;
+    }
     //we want to set indexed db after we set on cache
     sessionStorage.setItem(`messages-${id}`, JSON.stringify(messages));
 
@@ -261,7 +267,9 @@ export class ConversationCache {
           );
 
         // Update the state with fresh data
-        ConversationCache.set(sortedConversations);
+        if(response.status === 200) {
+          ConversationCache.set(sortedConversations);
+        }
         return sortedConversations;
       }
       return [];
@@ -296,6 +304,10 @@ export class ConversationCache {
   }
 
   public static set(conversations: Conversation[]) {
+    //if empty array, don't set cache
+    if (conversations.length === 0) {
+      return;
+    }
     sessionStorage.setItem(`conversations`, JSON.stringify(conversations));
     DB.setConversations(conversations);
   }
@@ -327,21 +339,21 @@ export class PrismaCache {
       );
     }
     const scriptText = await response.text();
-    PrismaCache.set(language, scriptText);
+    if(response.status === 200) {
+      PrismaCache.set(language, scriptText);
+    }
     return scriptText;
   }
 
   public static async get(language: string): Promise<string> {
     const prism = sessionStorage.getItem(`prism-language-${language}`);
     if (prism) {
-    console.log("prism", prism);
     PrismaCache.set(language, prism);
       return prism;
     }
     if (DB.inited) {
       const prism = await DB.getPrism(language);
       if (prism) {
-        console.log("prism", prism);
         PrismaCache.set(language, prism);
         return prism;
       }
