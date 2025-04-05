@@ -423,30 +423,27 @@ export class PrismaCache {
   }
 
   public static async get(language: string): Promise<string> {
-    const prism = sessionStorage.getItem(`prism-language-${language}`);
-    if (prism) {
-      PrismaCache.set(language, prism);
-      return prism;
-    }
+    await DB.init();
     const dbPrism = await DB.getPrism(language);
     if (dbPrism) {
-      PrismaCache.set(language, dbPrism);
       return dbPrism;
     }
     return await PrismaCache.fetchPrismNoCache(language);
   }
 
-  public static set(language: string, prism: string) {
-    sessionStorage.setItem(`prism-language-${language}`, prism);
+  public static async set(language: string, prism: string) {
+    await DB.init();
     DB.setPrism(language, prism);
   }
 
-  public static has(language: string): boolean {
-    const prism = sessionStorage.getItem(`prism-language-${language}`);
-    if (prism) {
-      return true;
+  public static async has(language: string): Promise<boolean> {
+    await DB.init();
+    try {
+      const prism = await DB.getPrism(language);
+      return !!prism;
+    } catch (error) {
+      return false;
     }
-    return false;
   }
 
   public static async loadLanguage(language: string) {
