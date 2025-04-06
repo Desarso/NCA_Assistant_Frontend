@@ -92,6 +92,11 @@ function ChatWindow() {
       setMessages([]);
       setConversationId(crypto.randomUUID().toString());
       await fetchMessageHistory(conversationId());
+      //I want to remove the padding from last message when were navigating to old conversation
+      const lastMessage = document.getElementById("last-message");
+      if (lastMessage) {
+        lastMessage.style.paddingBottom = "1rem";
+      }
     }
     instantScrollToBottom();
     Prism.highlightAll();
@@ -111,6 +116,11 @@ function ChatWindow() {
         setMessages([]);
         setConversationId(currentId);
         await fetchMessageHistory(currentId);
+        //I want to remove the padding from last message when were navigating to old conversation
+        const lastMessage = document.getElementById("last-message");
+        if (lastMessage) {
+          lastMessage.style.paddingBottom = "1rem";
+        }
         instantScrollToBottom();
       }
     }

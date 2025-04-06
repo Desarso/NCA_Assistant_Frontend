@@ -477,6 +477,7 @@ export class PrismaCache {
 
   public static async loadLanguage(language: string) {
     if (PrismaCache.loadedLanguages[language]) {
+      console.log(`Language "${language}" already loaded`);
       return; // Already loaded
     }
     try {
@@ -491,9 +492,10 @@ export class PrismaCache {
           ? languageData.require
           : [languageData.require];
 
-        for (const requirement of requirements) {
+        await requirements.forEach(async (requirement: string) => {
           await PrismaCache.loadLanguage(requirement);
-        }
+        });
+        
       }
 
       const script = await PrismaCache.get(language);

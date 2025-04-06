@@ -25,7 +25,7 @@ const CustomPre: Component<CustomPreProps> = (props) => {
             const lang = langClass.replace("language-", "");
             if (lang && lang !== detectedLanguage()) {
               setDetectedLanguage(lang);
-              console.log(`Language class detected: ${lang}, loading language...`);
+              // console.log(`Language class detected: ${lang}, loading language...`);
               PrismaCache.loadLanguage(lang);
             }
           }
@@ -45,8 +45,6 @@ const CustomPre: Component<CustomPreProps> = (props) => {
     if (initialLang && !PrismaCache.has(initialLang)) {
       PrismaCache.loadLanguage(initialLang); 
     }
-    console.log("Initial language:", initialLang);
-    Prism.highlightAll();
   });
 
   createEffect(() => {
