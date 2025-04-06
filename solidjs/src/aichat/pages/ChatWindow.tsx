@@ -136,8 +136,8 @@ function ChatWindow() {
     const updatedMessages = [...currentMessages, newMessage];
 
     if (!id()) {
-      // navigate(`/chat/${conversationId()}`);
       window.history.replaceState({}, "", `/chat/${conversationId()}`);
+      navigate(`/chat/${conversationId()}`);
       const newChats = [...chats()];
       newChats.push({
         id: conversationId(),
