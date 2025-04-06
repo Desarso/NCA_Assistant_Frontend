@@ -6,7 +6,7 @@ import {
   createSignal,
   Show,
 } from "solid-js";
-import { Message, ContentItem } from "../models/models";
+import { Message, ContentItem, ImageData as CustomImageData } from "../models/models";
 import AssistantMessageRenderer from "./AssitantMessageRenderer";
 
 // Component for rendering a chat message item
@@ -51,19 +51,31 @@ const MessageItem: Component<{
         return "";
       }
       
-      return content
-        .map((item) => {
-          if (typeof item === "object" && item !== null) {
-            if (typeof item.content === "string") {
-              return item.content;
-            } else if (item.content && typeof item.content === "object") {
-              // Handle image content or other complex types
-              return "[Complex content]";
+      const elements = content.map((item) => {
+        if (typeof item === "object" && item !== null) {
+          if (typeof item.content === "string") {
+            return <span class="mr-1">{item.content}</span>;
+          } else if (item.content && typeof item.content === "object") {
+            // Handle image content
+            if (item.type === "ImageUrl" || (item.content as any).kind === "image-url") {
+              const imageContent = item.content as CustomImageData;
+              return (
+                <div class="my-2 w-full flex justify-end">
+                  <img 
+                    src={imageContent.serverUrl || imageContent.url} 
+                    alt="User uploaded image"
+                    class="max-w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+                  />
+                </div>
+              );
             }
+            return "[Unsupported content type]";
           }
-          return "";
-        })
-        .join(" ");
+        }
+        return "";
+      });
+      
+      return <div class="flex flex-col w-full">{elements}</div>;
     } else if (content && typeof content === "object") {
       if ("name" in content) {
         return content.name || "[No name provided]";

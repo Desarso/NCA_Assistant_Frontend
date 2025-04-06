@@ -1,4 +1,4 @@
-import { Component, createSignal, For, Show } from "solid-js";
+import { Component, createSignal, For, Show, onCleanup, onMount } from "solid-js";
 import { ContentItem, ImageData } from "../models/models";
 import WaveIcon from "./WaveIcon";
 
@@ -12,11 +12,20 @@ interface ChatInputProps {
   handleStopRequest: () => void;
 }
 
+const isImageData = (content: any): content is ImageData => {
+  return typeof content === "object" && "kind" in content && content.kind === "image-url";
+};
+
 const ChatInput: Component<ChatInputProps> = (props) => {
   const [content, setContent] = createSignal<ContentItem[]>([]);
   const [textInput, setTextInput] = createSignal("");
   const [isDragging, setIsDragging] = createSignal(false);
+  const [pendingUploads, setPendingUploads] = createSignal(0);
   let fileInputRef: HTMLInputElement | undefined;
+  let textInputRef: HTMLTextAreaElement | undefined;
+
+  // Calculate if any uploads are in progress
+  const isUploading = () => pendingUploads() > 0;
 
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
@@ -40,147 +49,202 @@ const ChatInput: Component<ChatInputProps> = (props) => {
     const input = e.target as HTMLInputElement;
     const files = Array.from(input.files || []);
     await handleFiles(files);
+    if (input) {
+      input.value = "";
+    }
   };
 
-  // Type guards
-  const isImageData = (content: any): content is ImageData => {
-    return typeof content === "object" && "kind" in content && content.kind === "image-url";
+  const handlePaste = async (e: ClipboardEvent) => {
+    const clipboardData = e.clipboardData;
+    if (!clipboardData?.items) return;
+
+    const files: File[] = [];
+    for (let i = 0; i < clipboardData.items.length; i++) {
+      const item = clipboardData.items[i];
+      if (item.kind === 'file' && item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        if (file) {
+          files.push(file);
+        }
+      }
+    }
+
+    if (files.length > 0) {
+      e.preventDefault();
+      await handleFiles(files);
+    }
+    //restore focus to input
+    textInputRef?.focus();
   };
 
   const handleFiles = async (files: File[]) => {
-    for (const file of files) {
-      if (file.type.startsWith("image/")) {
-        // Create blob URL for preview
-        const blobUrl = URL.createObjectURL(file);
+    if (files.length === 0) return;
+    
+    // Filter for image files
+    const imageFiles = files.filter(file => file.type.startsWith("image/"));
+    if (imageFiles.length === 0) return;
+    
+    // Increment the upload counter for each file
+    setPendingUploads(prev => prev + imageFiles.length);
+    
+    // Process each file individually
+    for (const file of imageFiles) {
+      const blobUrl = URL.createObjectURL(file);
+      const uploadingImage: ContentItem = {
+        content: {
+          url: blobUrl,
+          media_type: file.type,
+          kind: "image-url",
+          isUploading: true,
+          serverUrl: "",
+        },
+        type: "ImageUrl",
+        part_kind: "image-url"
+      };
+      
+      // Add the image to the content array
+      setContent(prev => [...prev, uploadingImage]);
 
-        // Add content with blob URL and uploading state
-        const uploadingImage: ContentItem = {
-          content: {
-            url: blobUrl,
-            media_type: file.type,
-            kind: "image-url",
-            isUploading: true,
-            serverUrl: "", // Will store the server URL after upload
-          },
-          type: "ImageUrl",
-          part_kind: "image-url"
-        };
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const { authFetch } = await import("@/lib/utils");
+        const response = await authFetch(`${HOST}/api/v1/files/upload`, {
+          method: "POST",
+          body: formData,
+        });
 
-        setContent(prev => [...prev, uploadingImage]);
-
-        try {
-          const formData = new FormData();
-          formData.append("file", file);
-
-          const { authFetch } = await import("@/lib/utils");
-          const response = await authFetch(`${HOST}/api/v1/files/upload`, {
-            method: "POST",
-            body: formData,
-          });
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Upload failed: ${response.status} ${errorText}`);
-          }
-
-          const data = await response.json();
-
-          // Update content with server URL but keep the blob URL for preview
-          setContent(prev =>
-            prev.map(item => {
-              if (isImageData(item.content) && item.content.url === blobUrl) {
-                const updatedContent: ImageData = {
-                  ...item.content,
-                  serverUrl: `https://open-upload.api.gabrielmalek.com/files/${data.id}`,
-                  isUploading: false,
-                };
-                return {
-                  content: updatedContent,
-                  type: "ImageUrl",
-                  part_kind: "image-url"
-                };
-              }
-              return item;
-            })
-          );
-        } catch (error) {
-          console.error("Error uploading file:", error);
-          // Remove the content on error
-          setContent(prev =>
-            prev.filter(
-              item => !(isImageData(item.content) && item.content.url === blobUrl)
-            )
-          );
-          URL.revokeObjectURL(blobUrl);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Upload failed: ${response.status} ${errorText}`);
         }
+        
+        const data = await response.json();
+        const serverFileUrl = `https://open-upload.api.gabrielmalek.com/files/${data.id}`;
+
+        // Update the content item with the server URL
+        setContent(prev =>
+          prev.map(item => {
+            if (isImageData(item.content) && item.content.url === blobUrl && item.content.isUploading) {
+              return {
+                ...item,
+                content: {
+                  ...item.content,
+                  serverUrl: serverFileUrl,
+                  isUploading: false,
+                }
+              };
+            }
+            return item;
+          })
+        );
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        
+        // Remove the item from content
+        setContent(prev =>
+          prev.filter(item => !(isImageData(item.content) && item.content.url === blobUrl))
+        );
+        
+        // Clean up the blob URL
+        URL.revokeObjectURL(blobUrl);
+      } finally {
+        // Always decrement the counter when an upload finishes
+        setPendingUploads(prev => Math.max(0, prev - 1));
       }
     }
   };
 
-  const handleSubmit = (e: Event) => {
-    e.preventDefault();
+  const handleSubmit = (e?: Event) => {
+    e?.preventDefault();
 
-    // Check if any images are still uploading
     const hasUploadingImages = content().some(
       item => isImageData(item.content) && item.content.isUploading === true
     );
 
-    if (hasUploadingImages) {
-      console.error("Please wait for all images to finish uploading");
+    if (hasUploadingImages || isUploading()) {
+      console.warn("Please wait for all images to finish uploading.");
       return;
     }
 
-    if (textInput().trim() || content().length > 0) {
-      // For text-only messages
-      if (textInput().trim() && content().length === 0) {
-        props.onSubmit(textInput().trim());
+    const currentText = textInput().trim();
+    const currentContent = content();
+
+    if (currentText || currentContent.length > 0) {
+      let submissionData: string | ContentItem[];
+
+      if (currentText && currentContent.length === 0) {
+        submissionData = currentText;
       } else {
-        // For mixed content or images only
-        const newContent = [...content()];
-        if (textInput().trim()) {
-          newContent.push({
-            content: textInput().trim(),
+        // First, filter out any incomplete image uploads
+        const validContent = currentContent.filter(item => {
+          if (isImageData(item.content)) {
+            return item.content.serverUrl && !item.content.isUploading;
+          }
+          return true;
+        });
+
+        // Map content to match exactly what ChatWindow expects
+        const mappedContent: ContentItem[] = validContent.map(item => {
+          if (isImageData(item.content)) {
+            // For images, we need both url and serverUrl to be the same value
+            const imageUrl = item.content.serverUrl!;
+            return {
+              content: {
+                url: imageUrl,
+                media_type: item.content.media_type,
+                kind: "image-url",
+                serverUrl: imageUrl
+              } as ImageData,
+              type: "ImageUrl",
+              part_kind: "image-url"
+            };
+          }
+          return {
+            content: item.content as string,
+            type: "str",
+            part_kind: "text"
+          };
+        });
+
+        if (currentText) {
+          mappedContent.push({
+            content: currentText,
             type: "str",
             part_kind: "text"
           });
         }
 
-        // Filter out invalid content
-        const validContent = newContent.filter((item): item is ContentItem => {
-          if (isImageData(item.content) && !item.content.serverUrl) {
-            console.error("Missing serverUrl for image:", item);
-            return false;
-          }
-          return true;
-        });
-
-        if (validContent.length === 0) {
-          console.error("No valid content to send");
-          return;
-        }
-
-        props.onSubmit(validContent);
+        submissionData = mappedContent;
       }
-      // Clear local state only after successful submission
+
+      props.onSubmit(submissionData);
       setContent([]);
       setTextInput("");
     }
   };
 
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSubmit();
+    }
+  }
+
   const removeContent = (index: number) => {
-    const item = content()[index];
-    if (isImageData(item.content) && item.content.isUploading) {
-      URL.revokeObjectURL(item.content.url);
+    const itemToRemove = content()[index];
+    if (isImageData(itemToRemove.content) && itemToRemove.content.url.startsWith('blob:')) {
+        URL.revokeObjectURL(itemToRemove.content.url);
     }
     setContent(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
-    <form onSubmit={handleSubmit} class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2">
       <div
-        class={`flex-1 ${
+        class={`flex-1 border border-transparent ${
           isDragging()
-            ? "border-2 border-dashed border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+            ? "border-2 border-dashed border-blue-500 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-2"
             : ""
         }`}
         onDragOver={handleDragOver}
@@ -188,37 +252,43 @@ const ChatInput: Component<ChatInputProps> = (props) => {
         onDrop={handleDrop}
       >
         <Show when={content().length > 0}>
-          <div class="flex flex-wrap gap-2 mb-2">
+          <div class="flex flex-wrap gap-2 mb-2 px-2 pt-2">
             <For each={content()}>
               {(item, index) => (
                 <div class="relative group">
-                  {typeof item.content === "string" ? (
-                    <div class="bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-1 text-sm">
-                      {item.content}
-                      <button
-                        type="button"
-                        onClick={() => removeContent(index())}
-                        class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ) : (
-                    <div class="relative">
+                  {isImageData(item.content) ? (
+                     <div class="relative">
                       <img
-                        src={item.content.serverUrl || item.content.url}
-                        alt="Uploaded content"
-                        class="h-20 w-20 object-cover rounded-lg"
+                        src={item.content.url}
+                        alt="Pasted content"
+                        class="h-20 w-20 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
                       />
                       <Show when={item.content.isUploading}>
-                        <div class="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                        <div class="absolute inset-0 bg-black/60 rounded-lg flex items-center justify-center">
                           <div class="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
                         </div>
                       </Show>
+                      <Show when={!item.content.isUploading && !item.content.serverUrl && item.content.url.startsWith('blob:')}>
+                         <div class="absolute inset-0 bg-red-500/70 rounded-lg flex items-center justify-center text-white" title="Upload failed">
+                           <i class="fas fa-exclamation-triangle"></i>
+                         </div>
+                       </Show>
                       <button
                         type="button"
+                        title="Remove"
                         onClick={() => removeContent(index())}
-                        class="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        class="absolute -top-1 -right-1 bg-red-600 hover:bg-red-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : (
+                    <div class="bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-1 text-sm">
+                       {typeof item.content === 'string' ? item.content : 'Unsupported content'}
+                       <button
+                        type="button"
+                        onClick={() => removeContent(index())}
+                        class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                       >
                         ×
                       </button>
@@ -229,32 +299,48 @@ const ChatInput: Component<ChatInputProps> = (props) => {
             </For>
           </div>
         </Show>
-        <div class="flex items-center gap-2">
-          <input
+
+        <div class="flex items-end gap-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus-within:ring-2 focus-within:ring-blue-500/30">
+           <input
             ref={fileInputRef}
             type="file"
+            multiple
             accept="image/*"
             onChange={handleFileSelect}
             class="hidden"
           />
-          <input
-            class="flex-1 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:text-gray-200"
-            type="text"
+
+          <textarea
+            ref={textInputRef}
+            rows="1"
+            class="flex-1 bg-transparent px-2 py-1.5 text-sm md:text-base focus:outline-none resize-none overflow-y-auto dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
+            style={{ "max-height": "100px" }}
             value={textInput()}
-            onInput={(e) => setTextInput(e.currentTarget.value)}
-            placeholder="Type your message here..."
+            onInput={(e) => {
+                setTextInput(e.currentTarget.value);
+                e.currentTarget.style.height = 'auto';
+                e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
+            }}
+            onKeyDown={handleKeyDown}
+            onPaste={handlePaste}
+            placeholder="Type message or paste image..."
             autocomplete="off"
             spellcheck={false}
+            disabled={isUploading() || props.gettingResponse}
           />
-          <div class="flex gap-2">
-            <button
+
+          <div class="flex items-center gap-1 self-end">
+             <button
               type="button"
+              title="Attach file"
               onClick={() => fileInputRef?.click()}
-              class="rounded-full p-2 text-gray-500 bg-gray-50 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
+              class="rounded-full p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+              disabled={isUploading() || props.gettingResponse}
             >
               <i class="fas fa-paperclip"></i>
             </button>
-            <Show
+
+             <Show
               when={props.gettingResponse}
               fallback={
                 <Show
@@ -262,17 +348,21 @@ const ChatInput: Component<ChatInputProps> = (props) => {
                   fallback={
                     <button
                       type="button"
-                      class="rounded-full p-2 text-gray-600 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors min-w-[40px] flex items-center justify-center"
+                      title="Send message"
+                      class="rounded-full p-2 text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors min-w-[36px] h-[36px] flex items-center justify-center"
                       onClick={handleSubmit}
+                      disabled={isUploading()}
                     >
-                      <i class="fas fa-paper-plane"></i>
+                      <i class="fas fa-arrow-up"></i>
                     </button>
                   }
                 >
                   <button
                     type="button"
-                    class="rounded-full p-2 text-gray-600 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors min-w-[40px] flex items-center justify-center"
+                    title="Start listening"
+                    class="rounded-full p-2 text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors min-w-[36px] h-[36px] flex items-center justify-center"
                     onClick={() => props.setIsListening(true)}
+                    disabled={isUploading()}
                   >
                     <WaveIcon />
                   </button>
@@ -281,7 +371,8 @@ const ChatInput: Component<ChatInputProps> = (props) => {
             >
               <button
                 type="button"
-                class="rounded-full p-2 text-red-600 bg-gray-100 hover:bg-gray-200 dark:text-red-400 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors min-w-[40px] flex items-center justify-center"
+                title="Stop response"
+                class="rounded-full p-2 text-red-600 bg-gray-100 hover:bg-red-200 dark:text-red-400 dark:bg-gray-700 dark:hover:bg-red-900/50 transition-colors min-w-[36px] h-[36px] flex items-center justify-center"
                 onClick={props.handleStopRequest}
               >
                 <svg
@@ -298,7 +389,7 @@ const ChatInput: Component<ChatInputProps> = (props) => {
           </div>
         </div>
       </div>
-    </form>
+    </div>
   );
 };
 

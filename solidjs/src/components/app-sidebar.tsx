@@ -146,47 +146,49 @@ export function AppSidebar() {
 
     return (
       <Sidebar collapsible="offcanvas" side="left" variant="sidebar">
-        <SidebarContent class="bg-[#e9ecef] dark:bg-[#15202b]">
-          <SidebarGroup>
-            <div class="flex flex-col items-center justify-between p-3">
-              <NCALogo
-                fill="#535353"
-                darkFill="#d1d5db"
-                width={180}
-                height={50}
-              />
-              <A
-                href="/chat/"
-                onClick={() => setOpenMobile(false)}
-                class="rounded-md px-3 py-2 mt-5 text-sm font-medium w-full text-white gradient-button transition-colors block text-center"
+        <SidebarContent class="bg-[#e9ecef] dark:bg-[#15202b] flex flex-col h-screen">
+          <div class="p-3 flex flex-col items-center">
+            <NCALogo
+              fill="#535353"
+              darkFill="#d1d5db"
+              width={180}
+              height={50}
+            />
+            <A
+              href="/chat/"
+              onClick={() => setOpenMobile(false)}
+              class="rounded-md px-3 py-2 mt-5 text-sm font-medium w-full text-white gradient-button transition-colors block text-center"
+            >
+              + New Chat
+            </A>
+          </div>
+          
+          <div class="flex-1 overflow-hidden">
+            <div class="h-full overflow-y-auto scrollbar">
+              {renderChatSection("Today", groupedChats().today)}
+              {renderChatSection("Yesterday", groupedChats().yesterday)}
+              {renderChatSection("Last 7 Days", groupedChats().lastWeek)}
+              {renderChatSection("Last 30 Days", groupedChats().lastMonth)}
+              <For
+                each={Object.entries(monthlyGroups()).sort(
+                  ([a], [b]) => new Date(b).getTime() - new Date(a).getTime()
+                )}
               >
-                + New Chat
-              </A>
+                {([month, chats]) => renderChatSection(month, chats)}
+              </For>
+              <For
+                each={Object.entries(yearlyGroups()).sort(
+                  ([a], [b]) => Number(b) - Number(a)
+                )}
+              >
+                {([year, chats]) => renderChatSection(year, chats)}
+              </For>
             </div>
-            <SidebarGroupContent>
-              <div class="max-h-[70vh] overflow-y-auto scrollbar">
-                {renderChatSection("Today", groupedChats().today)}
-                {renderChatSection("Yesterday", groupedChats().yesterday)}
-                {renderChatSection("Last 7 Days", groupedChats().lastWeek)}
-                {renderChatSection("Last 30 Days", groupedChats().lastMonth)}
-                <For
-                  each={Object.entries(monthlyGroups()).sort(
-                    ([a], [b]) => new Date(b).getTime() - new Date(a).getTime()
-                  )}
-                >
-                  {([month, chats]) => renderChatSection(month, chats)}
-                </For>
-                <For
-                  each={Object.entries(yearlyGroups()).sort(
-                    ([a], [b]) => Number(b) - Number(a)
-                  )}
-                >
-                  {([year, chats]) => renderChatSection(year, chats)}
-                </For>
-              </div>
-            </SidebarGroupContent>
-          </SidebarGroup>
-          <AvatarDropdown class="absolute bottom-10 left-4 z-10" />
+          </div>
+          
+          <div class="p-4 mt-auto">
+            <AvatarDropdown class="w-full" />
+          </div>
         </SidebarContent>
       </Sidebar>
     );
@@ -207,25 +209,30 @@ export function AppSidebar() {
 
     return (
       <Sidebar collapsible="offcanvas" side="left" variant="sidebar">
-        <SidebarContent class="bg-[#ebebeb] dark:bg-[#15202b]">
-          <SidebarGroup>
-            <div class="flex flex-col items-center justify-between p-3">
-              <NCALogo
-                fill="#535353"
-                darkFill="#d1d5db"
-                width={180}
-                height={50}
-              />
-              <A
-                href="/chat/"
-                onClick={() => setOpenMobile(false)}
-                class="rounded-md px-3 py-2 mt-5 text-sm font-medium w-full text-white gradient-button transition-colors block text-center"
-              >
-                + New Chat
-              </A>
-            </div>
-          </SidebarGroup>
-          <AvatarDropdown class="absolute bottom-5 left-4 z-10" />
+        <SidebarContent class="bg-[#ebebeb] dark:bg-[#15202b] flex flex-col h-screen">
+          <div class="p-3 flex flex-col items-center">
+            <NCALogo
+              fill="#535353"
+              darkFill="#d1d5db"
+              width={180}
+              height={50}
+            />
+            <A
+              href="/chat/"
+              onClick={() => setOpenMobile(false)}
+              class="rounded-md px-3 py-2 mt-5 text-sm font-medium w-full text-white gradient-button transition-colors block text-center"
+            >
+              + New Chat
+            </A>
+          </div>
+          
+          <div class="flex-1">
+            {/* Empty scrollable area for error case */}
+          </div>
+          
+          <div class="p-4 mt-auto">
+            <AvatarDropdown class="w-full" />
+          </div>
         </SidebarContent>
       </Sidebar>
     );
