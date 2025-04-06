@@ -142,12 +142,23 @@ def make_request(
     Makes an HTTP request, handling token refresh and returning structured errors.
     Attempts to gracefully handle successful 2xx responses even with non-JSON/empty bodies.
     Includes refined exception handling.
+    
+    Args:
+        method: HTTP method (GET, POST, PUT, DELETE, etc.)
+        url: The URL to make the request to
+        headers: Optional additional headers to include with the request
+        json_data: Optional JSON data to include in the request body
+        
+    Returns:
+        Tuple of (response_data, error) where:
+        - response_data is the parsed JSON response (if successful)
+        - error is the error information (if request failed)
     """
     global _headers
     response: Optional[requests.Response] = None
     req_id = f"{method} {url}"
 
-    # --- Token Check and Header Prep (Keep as before) ---
+    # --- Token Check and Header Prep ---
     logging.debug(f"[{req_id}] Checking token...")
     token_error = _check_and_refresh_token()
     if token_error:
@@ -168,7 +179,14 @@ def make_request(
         )
     logging.debug(f"[{req_id}] Token check OK.")
 
-    request_headers = _headers
+    # Start with the default headers (which include auth token)
+    request_headers = _headers.copy() if _headers else {}
+    
+    # Merge with any custom headers provided by the caller
+    if headers:
+        request_headers.update(headers)
+        logging.debug(f"[{req_id}] Custom headers merged with default headers.")
+    
     if not request_headers:
         logging.error(f"[{req_id}] Missing request headers.")
         error_params = {
@@ -183,7 +201,7 @@ def make_request(
             parameters=error_params,
             stack_trace=traceback.format_exc()
         )
-    logging.debug(f"[{req_id}] Headers prepared.")
+    logging.debug(f"[{req_id}] Headers prepared: {', '.join(request_headers.keys())}")
     # --- End Token/Header Prep ---
 
     try:
@@ -233,6 +251,14 @@ def make_request(
         log_msg = f"[{req_id}] HTTP Error {err_status}. Response: '{err_text[:500]}...'"
         if 400 <= err_status < 500: logging.warning(log_msg)
         else: logging.error(log_msg)
+        
+        # Try to parse the error response as JSON
+        error_body = None
+        try:
+            error_body = json.loads(err_text)
+        except json.JSONDecodeError:
+            error_body = {"raw_response": err_text}
+        
         error_params = {
             "method": method,
             "url": url,
@@ -242,12 +268,20 @@ def make_request(
             "response_headers": err_headers,
             "response_text": err_text
         }
-        return None, error_logger.log_error(
+        
+        # Create a complete error response with the original error body
+        error_response = error_logger.log_error(
             function_name="make_request",
             error_text=f"HTTP Error: {err_status}",
             parameters=error_params,
             stack_trace=traceback.format_exc()
         )
+        
+        # Add the complete error body to the error response
+        error_response["error_body"] = error_body
+        error_response["full_response_text"] = err_text
+        
+        return None, error_response
 
     except requests.exceptions.Timeout as e:
         logging.error(f"[{req_id}] Request timed out: {e}")
@@ -298,6 +332,14 @@ def make_request(
             except Exception: # Handle cases where reading text might also fail
                  err_text = "[Could not read response text]"
 
+            # Try to parse the error response as JSON
+            error_body = None
+            try:
+                if err_text and err_text != "[Could not read response text]":
+                    error_body = json.loads(err_text)
+            except json.JSONDecodeError:
+                error_body = {"raw_response": err_text}
+
             # If status code is actually OK despite the exception, log it but still return error for safety
             if 200 <= err_status < 300:
                  logging.error(f"[{req_id}] RequestException caught BUT response status ({err_status}) was OK. Returning error due to underlying exception: {e}")
@@ -311,12 +353,21 @@ def make_request(
                      "response_headers": err_headers,
                      "response_text": err_text
                  }
-                 return None, error_logger.log_error(
+                 
+                 error_response = error_logger.log_error(
                      function_name="make_request",
                      error_text="Request Exception Despite OK Status",
                      parameters=error_params,
                      stack_trace=traceback.format_exc()
                  )
+                 
+                 # Add the complete error body to the error response
+                 if error_body:
+                     error_response["error_body"] = error_body
+                 error_response["full_response_text"] = err_text
+                 
+                 return None, error_response
+            
             # Otherwise, treat as a standard failure caught by this handler
             error_params = {
                 "method": method,
@@ -327,12 +378,20 @@ def make_request(
                 "response_headers": err_headers,
                 "response_text": err_text
             }
-            return None, error_logger.log_error(
+            
+            error_response = error_logger.log_error(
                 function_name="make_request",
                 error_text="Request Failed",
                 parameters=error_params,
                 stack_trace=traceback.format_exc()
             )
+            
+            # Add the complete error body to the error response
+            if error_body:
+                error_response["error_body"] = error_body
+            error_response["full_response_text"] = err_text
+            
+            return None, error_response
         else:
             # No response object attached to the exception, return standard Request Failed
             error_params = {
@@ -354,6 +413,7 @@ def make_request(
         err_headers = dict(response.headers) if response else {}
         err_text = response.text if response else "[Response object not available]"
         logging.error(f"[{req_id}] Unexpected JSONDecodeError (Status: {err_status}): {e}. Body: '{err_text[:200]}...'", exc_info=True)
+        
         error_params = {
             "method": method,
             "url": url,
@@ -363,16 +423,24 @@ def make_request(
             "response_headers": err_headers,
             "response_text": err_text
         }
-        return None, error_logger.log_error(
+        
+        error_response = error_logger.log_error(
             function_name="make_request",
             error_text="Failed unexpectedly during JSON decode",
             parameters=error_params,
             stack_trace=traceback.format_exc()
         )
+        
+        # Add the complete response text to the error
+        error_response["full_response_text"] = err_text
+        
+        return None, error_response
 
     except Exception as e:
         # Catch-all for truly unexpected errors
         err_status = response.status_code if response else None
+        err_text = response.text if (response and hasattr(response, 'text')) else None
+        
         logging.exception(f"[{req_id}] An unexpected error occurred (Status: {err_status})")
         error_params = {
             "method": method,
@@ -381,9 +449,16 @@ def make_request(
             "json_data": json_data,
             "status_code": err_status
         }
-        return None, error_logger.log_error(
+        
+        error_response = error_logger.log_error(
             function_name="make_request",
             error_text="Unexpected error during request",
             parameters=error_params,
             stack_trace=traceback.format_exc()
         )
+        
+        # Add the response text if available
+        if err_text:
+            error_response["full_response_text"] = err_text
+        
+        return None, error_response

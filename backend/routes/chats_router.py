@@ -147,8 +147,6 @@ async def chat(
         conversation.title = new_title
         session.commit()
 
-    # print(chat_request)
-    # print("history",message_history)
 
     ##refresh system prompt
     # Get first text content for memory context
@@ -184,7 +182,6 @@ async def chat(
                 message_history=message_history,
             ) as run:
                 async for node in run:
-                    print("Node type:", type(node))
                     # print(node)
                     if agent.is_user_prompt_node(node):
                         # print user node
@@ -220,7 +217,6 @@ async def chat(
                     elif agent.is_call_tools_node(node):
                         async with node.stream(run.ctx) as handle_stream:
                             async for event in handle_stream:
-                                print("Event type:", type(event))
                                 yield "data: " + event_to_json_string(event) + "\n\n"
                         db_message = DBMessage(
                             content=json.dumps(model_message_to_dict(node.model_response)),
@@ -488,7 +484,6 @@ def model_message_to_dict(message: Union[ModelRequest, ModelResponse]) -> dict:
     """Convert a ModelRequest or ModelResponse to a dictionary for storage"""
 
     def part_to_dict(part):
-        # print("part", part)
         # Handle primitive types first
 
         # Get class name for type checking

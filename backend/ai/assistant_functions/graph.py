@@ -17,12 +17,13 @@ def graph_api_request(
     method: str,
     # LLM provides body and query params as JSON strings
     body_json: Optional[str] = None,
-    query_params_json: Optional[str] = None
+    query_params_json: Optional[str] = None,
+    headers_json: Optional[str] = None
 ) -> Union[Dict[str, Any], List[Any]]:
     """
     Acts as a tool interface for the LLM to interact with Microsoft Graph API,
     delegating the actual request execution, header management, and auth handling
-    to the make_request helper. The LLM MUST provide body and query params as JSON strings
+    to the make_request helper. The LLM MUST provide body, query params, and headers
     as VALID JSON formatted strings where applicable.
 
     Args:
@@ -33,18 +34,29 @@ def graph_api_request(
                                    Keys/strings MUST use double quotes. Example: '{"displayName": "New Group"}'.
         query_params_json (Optional[str]): A **valid JSON string** for query parameters.
                                           Keys/strings MUST use double quotes. Example: '{"$select": "id,displayName"}'.
+        headers_json (Optional[str]): A **valid JSON string** for additional HTTP headers.
+                                     Keys/strings MUST use double quotes. Example: '{"Prefer": "outlook.timezone=\"Eastern Standard Time\""}'. 
+                                     Note: Authentication headers are automatically handled.
 
     Returns:
         Union[Dict[str, Any], List[Any]]:
             - On successful API call (2xx status, excluding 204): The parsed JSON response body (usually a Dict or List).
             - On successful API call with 204 No Content: An empty dictionary `{}`.
             - On any failure: A dictionary containing error details and a user-friendly message.
+            
+    Error Handling Notes:
+        - If you receive a permission error (typically status 403 Forbidden or 401 Unauthorized), 
+          you should search the web to find which specific Microsoft Graph API permission 
+          is required for the endpoint you're trying to access, then inform the user which 
+          permission needs to be added to the application. These errors usually indicate 
+          the app registration in Azure AD needs additional API permission scopes.
     """
     if not path.startswith('/'):
         path = '/' + path # Ensure path starts with a slash
 
     parsed_body: Optional[Any] = None
     parsed_query_params: Optional[Dict[str, str]] = None
+    parsed_headers: Optional[Dict[str, str]] = None
 
     # 1. Parse LLM inputs (JSON strings to Python objects)
     try:
@@ -57,7 +69,8 @@ def graph_api_request(
                     "path": path,
                     "method": method,
                     "body_json": body_json,
-                    "query_params_json": query_params_json
+                    "query_params_json": query_params_json,
+                    "headers_json": headers_json
                 }
                 return error_logger.log_error(
                     function_name="graph_api_request",
@@ -71,7 +84,8 @@ def graph_api_request(
             "path": path,
             "method": method,
             "body_json": body_json,
-            "query_params_json": query_params_json
+            "query_params_json": query_params_json,
+            "headers_json": headers_json
         }
         return error_logger.log_error(
             function_name="graph_api_request",
@@ -90,7 +104,8 @@ def graph_api_request(
                         "path": path,
                         "method": method,
                         "body_json": body_json,
-                        "query_params_json": query_params_json
+                        "query_params_json": query_params_json,
+                        "headers_json": headers_json
                     }
                     return error_logger.log_error(
                         function_name="graph_api_request",
@@ -104,7 +119,8 @@ def graph_api_request(
                     "path": path,
                     "method": method,
                     "body_json": body_json,
-                    "query_params_json": query_params_json
+                    "query_params_json": query_params_json,
+                    "headers_json": headers_json
                 }
                 return error_logger.log_error(
                     function_name="graph_api_request",
@@ -118,11 +134,63 @@ def graph_api_request(
             "path": path,
             "method": method,
             "body_json": body_json,
-            "query_params_json": query_params_json
+            "query_params_json": query_params_json,
+            "headers_json": headers_json
         }
         return error_logger.log_error(
             function_name="graph_api_request",
             error_text=f"Error parsing query_params_json: {str(e)}",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
+        
+    # Parse headers if provided
+    try:
+        if headers_json:
+            try:
+                parsed_headers = json.loads(headers_json)
+                if not isinstance(parsed_headers, dict):
+                    error_params = {
+                        "endpoint_version": endpoint_version,
+                        "path": path,
+                        "method": method,
+                        "body_json": body_json,
+                        "query_params_json": query_params_json,
+                        "headers_json": headers_json
+                    }
+                    return error_logger.log_error(
+                        function_name="graph_api_request",
+                        error_text="headers_json must decode to a JSON object (dictionary)",
+                        parameters=error_params,
+                        stack_trace=traceback.format_exc()
+                    )
+            except json.JSONDecodeError as e:
+                error_params = {
+                    "endpoint_version": endpoint_version,
+                    "path": path,
+                    "method": method,
+                    "body_json": body_json,
+                    "query_params_json": query_params_json,
+                    "headers_json": headers_json
+                }
+                return error_logger.log_error(
+                    function_name="graph_api_request",
+                    error_text=f"Invalid JSON format in headers_json: {str(e)}",
+                    parameters=error_params,
+                    stack_trace=traceback.format_exc()
+                )
+    except Exception as e:
+        error_params = {
+            "endpoint_version": endpoint_version,
+            "path": path,
+            "method": method,
+            "body_json": body_json,
+            "query_params_json": query_params_json,
+            "headers_json": headers_json
+        }
+        return error_logger.log_error(
+            function_name="graph_api_request",
+            error_text=f"Error parsing headers_json: {str(e)}",
             parameters=error_params,
             stack_trace=traceback.format_exc()
         )
@@ -145,26 +213,31 @@ def graph_api_request(
         response_data, error_data = make_request(
             method=method.upper(),
             url=full_url,
-            headers=None,  # Rely on make_request's header logic
+            headers=parsed_headers,  # Now passing optional headers
             json_data=parsed_body
         )
 
         # 5. Return the result from make_request
         if error_data:
-            error_params = {
+            # Log the error but also preserve all the original error information
+            logging.error(f"graph_api_request: make_request failed: {error_data.get('error')}")
+            
+            # Enhance the error_data with graph API context
+            error_data["graph_context"] = {
                 "endpoint_version": endpoint_version,
                 "path": path,
                 "method": method,
                 "body_json": body_json,
                 "query_params_json": query_params_json,
+                "headers_json": headers_json,
                 "full_url": full_url
             }
-            return error_logger.log_error(
-                function_name="graph_api_request",
-                error_text=f"make_request failed: {error_data.get('error')}",
-                parameters=error_params,
-                stack_trace=traceback.format_exc()
-            )
+            
+            # Add function name for context
+            error_data["source_function"] = "graph_api_request"
+            
+            # Return the complete error response with the original error body and response text
+            return error_data
         else:
             logging.debug(f"graph_api_request: make_request successful for {method} {path}.")
             return response_data if response_data is not None else {}
@@ -175,6 +248,7 @@ def graph_api_request(
             "method": method,
             "body_json": body_json,
             "query_params_json": query_params_json,
+            "headers_json": headers_json,
             "full_url": full_url
         }
         return error_logger.log_error(
@@ -190,12 +264,13 @@ def graph_api_request_no_ctx(
     method: str,
     # LLM provides body and query params as JSON strings
     body_json: Optional[str] = None,
-    query_params_json: Optional[str] = None
+    query_params_json: Optional[str] = None,
+    headers_json: Optional[str] = None
 ) -> Union[Dict[str, Any], List[Any]]:
     """
     Acts as a tool interface for the LLM to interact with Microsoft Graph API,
     delegating the actual request execution, header management, and auth handling
-    to the make_request helper. The LLM MUST provide body and query parameters
+    to the make_request helper. The LLM MUST provide body, query parameters, and headers
     as VALID JSON formatted strings where applicable.
 
     Args:
@@ -206,18 +281,29 @@ def graph_api_request_no_ctx(
                                    Keys/strings MUST use double quotes. Example: '{"displayName": "New Group"}'.
         query_params_json (Optional[str]): A **valid JSON string** for query parameters.
                                           Keys/strings MUST use double quotes. Example: '{"$select": "id,displayName"}'.
+        headers_json (Optional[str]): A **valid JSON string** for additional HTTP headers.
+                                     Keys/strings MUST use double quotes. Example: '{"Prefer": "outlook.timezone=\"Eastern Standard Time\""}'. 
+                                     Note: Authentication headers are automatically handled.
 
     Returns:
         Union[Dict[str, Any], List[Any]]:
             - On successful API call (2xx status, excluding 204): The parsed JSON response body (usually a Dict or List).
             - On successful API call with 204 No Content: An empty dictionary `{}`.
             - On any failure: A dictionary containing error details and a user-friendly message.
+            
+    Error Handling Notes:
+        - If you receive a permission error (typically status 403 Forbidden or 401 Unauthorized), 
+          you should search the web to find which specific Microsoft Graph API permission 
+          is required for the endpoint you're trying to access, then inform the user which 
+          permission needs to be added to the application. These errors usually indicate 
+          the app registration in Azure AD needs additional API permission scopes.
     """
     if not path.startswith('/'):
         path = '/' + path # Ensure path starts with a slash
 
     parsed_body: Optional[Any] = None
     parsed_query_params: Optional[Dict[str, str]] = None
+    parsed_headers: Optional[Dict[str, str]] = None
 
     # 1. Parse LLM inputs (JSON strings to Python objects)
     try:
@@ -229,7 +315,8 @@ def graph_api_request_no_ctx(
             "path": path,
             "method": method,
             "body_json": body_json,
-            "query_params_json": query_params_json
+            "query_params_json": query_params_json,
+            "headers_json": headers_json
         }
         return error_logger.log_error(
             function_name="graph_api_request_no_ctx",
@@ -247,7 +334,8 @@ def graph_api_request_no_ctx(
                     "path": path,
                     "method": method,
                     "body_json": body_json,
-                    "query_params_json": query_params_json
+                    "query_params_json": query_params_json,
+                    "headers_json": headers_json
                 }
                 return error_logger.log_error(
                     function_name="graph_api_request_no_ctx",
@@ -261,11 +349,47 @@ def graph_api_request_no_ctx(
             "path": path,
             "method": method,
             "body_json": body_json,
-            "query_params_json": query_params_json
+            "query_params_json": query_params_json,
+            "headers_json": headers_json
         }
         return error_logger.log_error(
             function_name="graph_api_request_no_ctx",
             error_text=f"Invalid JSON format in query_params_json: {str(e)}",
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
+        
+    # Parse headers if provided
+    try:
+        if headers_json:
+            parsed_headers = json.loads(headers_json)
+            if not isinstance(parsed_headers, dict):
+                error_params = {
+                    "endpoint_version": endpoint_version,
+                    "path": path,
+                    "method": method,
+                    "body_json": body_json,
+                    "query_params_json": query_params_json,
+                    "headers_json": headers_json
+                }
+                return error_logger.log_error(
+                    function_name="graph_api_request_no_ctx",
+                    error_text="headers_json must decode to a JSON object (dictionary)",
+                    parameters=error_params,
+                    stack_trace=traceback.format_exc()
+                )
+    except json.JSONDecodeError as e:
+        error_params = {
+            "endpoint_version": endpoint_version,
+            "path": path,
+            "method": method,
+            "body_json": body_json,
+            "query_params_json": query_params_json,
+            "headers_json": headers_json
+        }
+        return error_logger.log_error(
+            function_name="graph_api_request_no_ctx",
+            error_text=f"Invalid JSON format in headers_json: {str(e)}",
             parameters=error_params,
             stack_trace=traceback.format_exc()
         )
@@ -288,26 +412,31 @@ def graph_api_request_no_ctx(
         response_data, error_data = make_request(
             method=method.upper(),
             url=full_url,
-            headers=None,  # Rely on make_request's header logic
+            headers=parsed_headers,  # Now passing optional headers
             json_data=parsed_body
         )
 
         # 5. Return the result from make_request
         if error_data:
-            error_params = {
+            # Log the error but also preserve all the original error information
+            logging.error(f"graph_api_request_no_ctx: make_request failed: {error_data.get('error')}")
+            
+            # Enhance the error_data with graph API context
+            error_data["graph_context"] = {
                 "endpoint_version": endpoint_version,
                 "path": path,
                 "method": method,
                 "body_json": body_json,
                 "query_params_json": query_params_json,
+                "headers_json": headers_json,
                 "full_url": full_url
             }
-            return error_logger.log_error(
-                function_name="graph_api_request_no_ctx",
-                error_text=f"make_request failed: {error_data.get('error')}",
-                parameters=error_params,
-                stack_trace=traceback.format_exc()
-            )
+            
+            # Add function name for context
+            error_data["source_function"] = "graph_api_request_no_ctx"
+            
+            # Return the complete error response with the original error body and response text
+            return error_data
         else:
             logging.debug(f"graph_api_request: make_request successful for {method} {path}.")
             return response_data if response_data is not None else {}
@@ -318,6 +447,7 @@ def graph_api_request_no_ctx(
             "method": method,
             "body_json": body_json,
             "query_params_json": query_params_json,
+            "headers_json": headers_json,
             "full_url": full_url
         }
         return error_logger.log_error(
