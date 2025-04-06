@@ -348,12 +348,10 @@ const ChatInput: Component<ChatInputProps> = (props) => {
                   fallback={
                     <button
                       type="button"
-                      title="Send message"
-                      class="rounded-full p-2 text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors min-w-[36px] h-[36px] flex items-center justify-center"
+                      class="rounded-full p-2 text-gray-600 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors min-w-[40px] h-[40px] flex items-center justify-center"
                       onClick={handleSubmit}
-                      disabled={isUploading()}
                     >
-                      <i class="fas fa-arrow-up"></i>
+                      <i class="fas fa-paper-plane"></i>
                     </button>
                   }
                 >
