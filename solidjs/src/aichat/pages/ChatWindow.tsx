@@ -14,7 +14,8 @@ import Prism from "prismjs";
 import "../styles/index.css";
 import "../styles/prisma/prisma.css";
 import "../styles/prisma-dark/prisma-dark.css";
-import { ContentItem, Message } from "../models/models";
+// Import ImageData and PdfData for type guards
+import { ContentItem, Message, ImageData, PdfData } from "../models/models";
 import MicrophoneVisualizer from "../../components/MicrophoneVisualizer";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useChatContext } from "@/layout";
@@ -163,27 +164,61 @@ function ChatWindow() {
     scrollToBottom();
 
     const url = new URL(`${HOST}/api/v1/chats/chat`);
+
+    // Map the internal ContentItem[] or string to the BackendChatContent[] structure
+    let mappedContentForBackend: { content: string | { url: string; media_type: string; kind: string } }[];
+
+    if (typeof content === "string") {
+      mappedContentForBackend = [{ content: content }];
+    } else {
+      // Import the type guards if not already available in this scope
+      const isImageData = (c: any): c is ImageData => typeof c === 'object' && c !== null && c.kind === 'image-url';
+      const isPdfData = (c: any): c is PdfData => typeof c === 'object' && c !== null && c.kind === 'pdf-file';
+
+      mappedContentForBackend = content.map((item) => {
+        if (typeof item.content === "string") {
+          return { content: item.content };
+        } else if (isImageData(item.content) && item.content.serverUrl) {
+          // Map ImageData to backend ImageUrlContent structure
+          return {
+            content: {
+              url: item.content.serverUrl,
+              media_type: item.content.media_type,
+              kind: "image-url", // Matches backend expectation
+            },
+          };
+        } else if (isPdfData(item.content) && item.content.serverUrl) {
+           // Map PdfData to backend DocumentUrlContent structure
+           return {
+             content: {
+               url: item.content.serverUrl,
+               media_type: item.content.media_type, // Should be "application/pdf"
+               kind: "document-url", // Matches backend expectation
+             },
+           };
+        } else {
+          // This should not happen if ChatInput filters correctly, but handle defensively
+          console.error("Encountered incomplete or unexpected content item:", item);
+          // Option 1: Throw an error
+          // throw new Error("Incomplete or unexpected content data.");
+          // Option 2: Filter it out later (more robust)
+          return null;
+        }
+      }).filter(item => item !== null) as { content: string | { url: string; media_type: string; kind: string } }[]; // Filter out nulls and assert type
+    }
+
+    // Ensure we have content to send after mapping
+    if (mappedContentForBackend.length === 0) {
+       console.error("No valid content to send after mapping.");
+       setGettingResponse(false); // Reset loading state
+       // Optionally remove the user message placeholder if needed
+       // setMessages(currentMessages); // Revert messages if user message was added optimistically
+       return;
+    }
+
+
     const requestBody = {
-      content:
-        typeof content === "string"
-          ? [{ content: content }]
-          : content.map((item) => {
-              if (typeof item.content === "string") {
-                return {
-                  content: item.content,
-                };
-              } else if (item.content.serverUrl) {
-                return {
-                  content: {
-                    url: item.content.serverUrl,
-                    media_type: item.content.media_type,
-                    kind: "image-url",
-                  },
-                };
-              } else {
-                throw new Error("Image upload data is incomplete.");
-              }
-            }),
+      content: mappedContentForBackend,
     };
     url.searchParams.append("conversation_id", conversationId());
 
@@ -496,7 +531,7 @@ function ChatWindow() {
               <ChatInput
                 onSubmit={handleSubmit}
                 gettingResponse={gettingResponse()}
-                handleFileAttachment={handleFileAttachment}
+                // handleFileAttachment={handleFileAttachment} // Removed unused prop
                 setIsListening={setIsListening}
                 handleStopRequest={handleStopRequest}
               />

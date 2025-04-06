@@ -6,10 +6,20 @@ export interface ImageData {
   isUploading?: boolean;
 }
 
+// Define PdfData interface
+export interface PdfData {
+  filename: string;
+  media_type: string; // Should be "application/pdf"
+  kind: "pdf-file";
+  url?: string; // URL after upload
+  serverUrl?: string; // Consistent naming with ImageData
+  isUploading?: boolean;
+}
+
 export interface ContentItem {
-  content: string | ImageData;
-  type?: "str" | "ImageUrl";
-  part_kind?: "text" | "image-url";
+  content: string | ImageData | PdfData; // Add PdfData
+  type?: "str" | "ImageUrl" | "PdfFile"; // Add PdfFile type
+  part_kind?: "text" | "image-url" | "pdf-file"; // Add pdf-file kind
 }
 
 export interface MessageContent {

@@ -1,20 +1,29 @@
-import { Component, createSignal, For, Show, onCleanup, onMount } from "solid-js";
-import { ContentItem, ImageData } from "../models/models";
+import { Component, createSignal, For, Show } from "solid-js";
+import { ContentItem, ImageData, PdfData } from "../models/models"; // Added PdfData
 import WaveIcon from "./WaveIcon";
 
 const HOST = import.meta.env.VITE_CHAT_HOST;
 
+// Removed BackendChatContent interface definition from here
+
 interface ChatInputProps {
+  // Revert onSubmit to expect the internal ContentItem format
   onSubmit: (content: string | ContentItem[]) => void;
   gettingResponse: boolean;
-  handleFileAttachment: () => void;
+  // handleFileAttachment: () => void; // Prop seems unused, removed
   setIsListening: (isListening: boolean) => void;
   handleStopRequest: () => void;
 }
 
 const isImageData = (content: any): content is ImageData => {
-  return typeof content === "object" && "kind" in content && content.kind === "image-url";
+  return typeof content === "object" && content !== null && "kind" in content && content.kind === "image-url";
 };
+
+// Type guard for PDF data
+const isPdfData = (content: any): content is PdfData => {
+  return typeof content === "object" && content !== null && "kind" in content && content.kind === "pdf-file";
+};
+
 
 const ChatInput: Component<ChatInputProps> = (props) => {
   const [content, setContent] = createSignal<ContentItem[]>([]);
@@ -79,31 +88,50 @@ const ChatInput: Component<ChatInputProps> = (props) => {
 
   const handleFiles = async (files: File[]) => {
     if (files.length === 0) return;
-    
-    // Filter for image files
-    const imageFiles = files.filter(file => file.type.startsWith("image/"));
-    if (imageFiles.length === 0) return;
-    
-    // Increment the upload counter for each file
-    setPendingUploads(prev => prev + imageFiles.length);
-    
+
+    // Filter for allowed file types
+    const allowedFiles = files.filter(file => file.type.startsWith("image/") || file.type === "application/pdf");
+    if (allowedFiles.length === 0) return;
+
+    // Increment the upload counter for each allowed file
+    setPendingUploads(prev => prev + allowedFiles.length);
+
     // Process each file individually
-    for (const file of imageFiles) {
-      const blobUrl = URL.createObjectURL(file);
-      const uploadingImage: ContentItem = {
-        content: {
-          url: blobUrl,
-          media_type: file.type,
-          kind: "image-url",
-          isUploading: true,
-          serverUrl: "",
-        },
-        type: "ImageUrl",
-        part_kind: "image-url"
-      };
-      
-      // Add the image to the content array
-      setContent(prev => [...prev, uploadingImage]);
+    for (const file of allowedFiles) {
+      const isImage = file.type.startsWith("image/");
+      const isPdf = file.type === "application/pdf";
+      const blobUrl = isImage ? URL.createObjectURL(file) : null; // Blob URL only for image preview
+
+      let uploadingContentItem: ContentItem;
+
+      if (isImage) {
+        uploadingContentItem = {
+          content: {
+            url: blobUrl!, // Use blob for image preview
+            media_type: file.type,
+            kind: "image-url",
+            isUploading: true,
+            serverUrl: "",
+          },
+          type: "ImageUrl",
+          part_kind: "image-url"
+        };
+      } else { // isPdf
+        uploadingContentItem = {
+          content: {
+            filename: file.name, // Store filename for PDF
+            media_type: file.type,
+            kind: "pdf-file",
+            isUploading: true,
+            serverUrl: "",
+          },
+          type: "PdfFile", // New type
+          part_kind: "pdf-file" // New part_kind
+        };
+      }
+
+      // Add the item to the content array
+      setContent(prev => [...prev, uploadingContentItem]);
 
       try {
         const formData = new FormData();
@@ -125,29 +153,37 @@ const ChatInput: Component<ChatInputProps> = (props) => {
         // Update the content item with the server URL
         setContent(prev =>
           prev.map(item => {
-            if (isImageData(item.content) && item.content.url === blobUrl && item.content.isUploading) {
+            if (isImage && isImageData(item.content) && item.content.url === blobUrl && item.content.isUploading) {
               return {
                 ...item,
-                content: {
-                  ...item.content,
-                  serverUrl: serverFileUrl,
-                  isUploading: false,
-                }
+                content: { ...item.content, serverUrl: serverFileUrl, isUploading: false }
+              };
+            } else if (isPdf && isPdfData(item.content) && item.content.filename === file.name && item.content.isUploading) {
+              // Match PDF by filename and uploading state (less robust, consider temp ID if needed)
+              return {
+                ...item,
+                content: { ...item.content, serverUrl: serverFileUrl, isUploading: false }
               };
             }
             return item;
           })
         );
       } catch (error) {
-        console.error("Error uploading file:", error);
-        
-        // Remove the item from content
+        console.error("Error uploading file:", file.name, error);
+
+        // Remove the item from content based on type
         setContent(prev =>
-          prev.filter(item => !(isImageData(item.content) && item.content.url === blobUrl))
+          prev.filter(item => {
+            if (isImage && isImageData(item.content) && item.content.url === blobUrl) {
+              URL.revokeObjectURL(blobUrl!); // Clean up blob URL for images
+              return false; // Remove image
+            }
+            if (isPdf && isPdfData(item.content) && item.content.filename === file.name && item.content.isUploading) {
+              return false; // Remove PDF
+            }
+            return true;
+          })
         );
-        
-        // Clean up the blob URL
-        URL.revokeObjectURL(blobUrl);
       } finally {
         // Always decrement the counter when an upload finishes
         setPendingUploads(prev => Math.max(0, prev - 1));
@@ -156,71 +192,83 @@ const ChatInput: Component<ChatInputProps> = (props) => {
   };
 
   const handleSubmit = (e?: Event) => {
+    // console.log("[ChatInput] handleSubmit called"); // Removed log
     e?.preventDefault();
 
-    const hasUploadingImages = content().some(
-      item => isImageData(item.content) && item.content.isUploading === true
+    // Check if any uploads (image or PDF) are still in progress
+    const hasUploadingItems = content().some(
+      item => (isImageData(item.content) || isPdfData(item.content)) && item.content.isUploading === true
     );
+    const uploadingSignal = isUploading(); // Get signal value
 
-    if (hasUploadingImages || isUploading()) {
-      console.warn("Please wait for all images to finish uploading.");
-      return;
+    // console.log(`[ChatInput] States - hasUploadingItems: ${hasUploadingItems}, isUploading(): ${uploadingSignal}, props.gettingResponse: ${props.gettingResponse}`); // Removed log
+
+    if (hasUploadingItems || uploadingSignal) {
+      // console.warn("[ChatInput] Exiting handleSubmit: Files still uploading."); // Removed log
+      return; // Exit if uploads are pending
+    }
+    if (props.gettingResponse) {
+      // console.warn("[ChatInput] Exiting handleSubmit: Already getting response."); // Removed log
+       return; // Exit if already waiting for response (redundant check based on button logic, but safe)
     }
 
     const currentText = textInput().trim();
     const currentContent = content();
 
     if (currentText || currentContent.length > 0) {
-      let submissionData: string | ContentItem[];
-
+      // If only text, send as string
       if (currentText && currentContent.length === 0) {
-        submissionData = currentText;
-      } else {
-        // First, filter out any incomplete image uploads
+        const submissionData: string = currentText;
+        // console.log("[ChatInput] Calling props.onSubmit with (text only):", submissionData); // Removed log
+        props.onSubmit(submissionData);
+        setContent([]); // Clear content state (though it should be empty)
+        setTextInput(""); // Clear text input
+      }
+      // If files are present (with or without text)
+      else if (currentContent.length > 0) {
+        // Filter out incomplete uploads
         const validContent = currentContent.filter(item => {
-          if (isImageData(item.content)) {
-            return item.content.serverUrl && !item.content.isUploading;
-          }
-          return true;
-        });
+            // Keep text items (though they shouldn't be in content() array based on current logic)
+            // if (typeof item.content === 'string') return true;
+            // Keep fully uploaded items (images or PDFs) with server URLs
+            if ((isImageData(item.content) || isPdfData(item.content)) && item.content.serverUrl && !item.content.isUploading) {
+              return true;
+            }
+            console.warn("Filtering out incomplete/invalid item:", item);
+            return false;
+          }); // End of filter
 
-        // Map content to match exactly what ChatWindow expects
-        const mappedContent: ContentItem[] = validContent.map(item => {
-          if (isImageData(item.content)) {
-            // For images, we need both url and serverUrl to be the same value
-            const imageUrl = item.content.serverUrl!;
-            return {
-              content: {
-                url: imageUrl,
-                media_type: item.content.media_type,
-                kind: "image-url",
-                serverUrl: imageUrl
-              } as ImageData,
-              type: "ImageUrl",
-              part_kind: "image-url"
-            };
-          }
-          return {
-            content: item.content as string,
-            type: "str",
-            part_kind: "text"
-          };
-        });
-
+        // Add the text input as a ContentItem if present
         if (currentText) {
-          mappedContent.push({
+          validContent.push({
             content: currentText,
             type: "str",
             part_kind: "text"
           });
         }
 
-        submissionData = mappedContent;
-      }
+        // Ensure we have something valid to send
+        if (validContent.length === 0) {
+           console.error("No valid content (text or files) to send.");
+           return;
+        }
 
-      props.onSubmit(submissionData);
-      setContent([]);
-      setTextInput("");
+        // Pass the filtered internal ContentItem array to the parent
+        const submissionData: ContentItem[] = validContent;
+
+        // Call onSubmit with the internal ContentItem structure
+        // console.log("[ChatInput] Calling props.onSubmit with (mixed/file content):", submissionData); // Removed log
+        props.onSubmit(submissionData);
+        setContent([]); // Clear file content state
+        setTextInput(""); // Clear text input
+      }
+      // This else branch should technically not be reachable if the outer condition is true
+      // but added for completeness. It implies currentText is empty and currentContent is empty.
+      else {
+        // console.log("[ChatInput] Exiting handleSubmit: Logic error or empty state detected unexpectedly."); // Removed log
+      }
+    } else {
+      // console.log("[ChatInput] Exiting handleSubmit: No text or content to send."); // Removed log
     }
   };
 
@@ -233,9 +281,10 @@ const ChatInput: Component<ChatInputProps> = (props) => {
 
   const removeContent = (index: number) => {
     const itemToRemove = content()[index];
-    if (isImageData(itemToRemove.content) && itemToRemove.content.url.startsWith('blob:')) {
-        URL.revokeObjectURL(itemToRemove.content.url);
+    if (isImageData(itemToRemove.content) && itemToRemove.content.url?.startsWith('blob:')) {
+        URL.revokeObjectURL(itemToRemove.content.url); // Revoke blob URL for images
     }
+    // No blob URL to revoke for PDFs in this implementation
     setContent(prev => prev.filter((_, i) => i !== index));
   };
 
@@ -253,59 +302,85 @@ const ChatInput: Component<ChatInputProps> = (props) => {
       >
         <Show when={content().length > 0}>
           <div class="flex flex-wrap gap-2 mb-2 px-2 pt-2">
+            {/* Corrected JSX structure for rendering content items */}
+            {/* Corrected JSX structure with explicit type checks */}
             <For each={content()}>
               {(item, index) => (
                 <div class="relative group">
-                  {isImageData(item.content) ? (
-                     <div class="relative">
-                      <img
-                        src={item.content.url}
-                        alt="Pasted content"
-                        class="h-20 w-20 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
-                      />
-                      <Show when={item.content.isUploading}>
-                        <div class="absolute inset-0 bg-black/60 rounded-lg flex items-center justify-center">
-                          <div class="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
+                  {(() => {
+                    const currentContent = item.content; // Assign to variable for type narrowing
+                    if (isImageData(currentContent)) {
+                      return (
+                        <div class="relative">
+                          <img
+                            src={currentContent.url} // Use blob URL for preview
+                            alt="Uploaded image"
+                            class="h-20 w-20 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+                          />
+                          <Show when={currentContent.isUploading}>
+                            <div class="absolute inset-0 bg-black/60 rounded-lg flex items-center justify-center">
+                              <div class="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
+                            </div>
+                          </Show>
+                          {/* Show error state if upload failed (no serverUrl but blob exists) */}
+                          <Show when={!currentContent.isUploading && !currentContent.serverUrl && currentContent.url?.startsWith('blob:')}>
+                             <div class="absolute inset-0 bg-red-500/70 rounded-lg flex items-center justify-center text-white" title="Upload failed">
+                               <i class="fas fa-exclamation-triangle"></i>
+                             </div>
+                           </Show>
+                          <button
+                            type="button" title="Remove" onClick={() => removeContent(index())}
+                            class="absolute -top-1 -right-1 bg-red-600 hover:bg-red-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                          >✕</button>
                         </div>
-                      </Show>
-                      <Show when={!item.content.isUploading && !item.content.serverUrl && item.content.url.startsWith('blob:')}>
-                         <div class="absolute inset-0 bg-red-500/70 rounded-lg flex items-center justify-center text-white" title="Upload failed">
-                           <i class="fas fa-exclamation-triangle"></i>
+                      );
+                    } else if (isPdfData(currentContent)) {
+                      return (
+                         <div class="relative h-20 w-20 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-1 text-center">
+                            <i class="fas fa-file-pdf text-red-500 text-2xl mb-1"></i>
+                            <span class="text-xs break-all line-clamp-2" title={currentContent.filename}>{currentContent.filename}</span>
+                            <Show when={currentContent.isUploading}>
+                              <div class="absolute inset-0 bg-black/60 rounded-lg flex items-center justify-center">
+                                <div class="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
+                              </div>
+                            </Show>
+                             <Show when={!currentContent.isUploading && !currentContent.serverUrl}>
+                               <div class="absolute inset-0 bg-red-500/70 rounded-lg flex items-center justify-center text-white" title="Upload failed">
+                                 <i class="fas fa-exclamation-triangle"></i>
+                               </div>
+                             </Show>
+                            <button
+                              type="button" title="Remove" onClick={() => removeContent(index())}
+                              class="absolute -top-1 -right-1 bg-red-600 hover:bg-red-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                            >✕</button>
+                          </div>
+                      );
+                    } else if (typeof currentContent === 'string') {
+                       // Optional: Text Display (if text can be part of the content array)
+                       return (
+                         <div class="bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-1 text-sm">
+                           {currentContent}
+                           <button type="button" onClick={() => removeContent(index())} class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">×</button>
                          </div>
-                       </Show>
-                      <button
-                        type="button"
-                        title="Remove"
-                        onClick={() => removeContent(index())}
-                        class="absolute -top-1 -right-1 bg-red-600 hover:bg-red-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ) : (
-                    <div class="bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-1 text-sm">
-                       {typeof item.content === 'string' ? item.content : 'Unsupported content'}
-                       <button
-                        type="button"
-                        onClick={() => removeContent(index())}
-                        class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  )}
+                       );
+                    }
+                    // If it's not image, pdf, or string (shouldn't happen with current types)
+                    return null;
+                  })()}
+                  {/* Removed stray div and commented Show tag from here */}
                 </div>
               )}
             </For>
           </div>
         </Show>
 
+        {/* Corrected input section - removed duplicate input tag */}
         <div class="flex items-end gap-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus-within:ring-2 focus-within:ring-blue-500/30">
            <input
             ref={fileInputRef}
             type="file"
             multiple
-            accept="image/*"
+            accept="image/*,application/pdf" // Added PDF to accept
             onChange={handleFileSelect}
             class="hidden"
           />
@@ -323,7 +398,7 @@ const ChatInput: Component<ChatInputProps> = (props) => {
             }}
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
-            placeholder="Type message or paste image..."
+            placeholder="Type message, paste image, or drop files..." // Updated placeholder
             autocomplete="off"
             spellcheck={false}
             disabled={isUploading() || props.gettingResponse}
