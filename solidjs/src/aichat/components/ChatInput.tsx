@@ -22,7 +22,7 @@ const ChatInput: Component<ChatInputProps> = (props) => {
   const [isDragging, setIsDragging] = createSignal(false);
   const [pendingUploads, setPendingUploads] = createSignal(0);
   let fileInputRef: HTMLInputElement | undefined;
-  let textInputRef: HTMLTextAreaElement | undefined;
+  let textInputRef: HTMLInputElement | undefined;
 
   // Calculate if any uploads are in progress
   const isUploading = () => pendingUploads() > 0;
@@ -310,11 +310,11 @@ const ChatInput: Component<ChatInputProps> = (props) => {
             class="hidden"
           />
 
-          <textarea
+          <input
             ref={textInputRef}
-            rows="1"
-            class="flex-1 bg-transparent px-2 py-1.5 text-sm md:text-base focus:outline-none resize-none overflow-y-auto dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
-            style={{ "max-height": "100px" }}
+            // rows="1"
+            class="flex-1 bg-transparent px-2 py-2 text-sm  md:text-base focus:outline-none resize-none overflow-y-auto dark:text-gray-200 placeholder-gray-200 dark:placeholder-gray-400"
+            // style={{ "max-height": "100px" }}
             value={textInput()}
             onInput={(e) => {
                 setTextInput(e.currentTarget.value);
@@ -358,7 +358,7 @@ const ChatInput: Component<ChatInputProps> = (props) => {
                   <button
                     type="button"
                     title="Start listening"
-                    class="rounded-full p-2 text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors min-w-[36px] h-[36px] flex items-center justify-center"
+                    class="rounded-full p-2 text-gray-600 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors min-w-[36px] h-[36px] flex items-center justify-center"
                     onClick={() => props.setIsListening(true)}
                     disabled={isUploading()}
                   >
