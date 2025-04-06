@@ -22,7 +22,7 @@ import { useNavigate, useParams } from "@solidjs/router";
 import AssistantMessageRenderer from "../components/AssitantMessageRenderer";
 import ChatInput from "../components/ChatInput";
 import MessageItem from "../components/ChatMessageItem";
-import {  MessageCache } from "../utils/memory_cache";
+import { MessageCache } from "../utils/memory_cache";
 
 import { convertToChatMessages, HOST } from "../utils/utils";
 
@@ -93,10 +93,11 @@ function ChatWindow() {
       setConversationId(crypto.randomUUID().toString());
       await fetchMessageHistory(conversationId());
       //I want to remove the padding from last message when were navigating to old conversation
-      const lastMessage = document.getElementById("last-message");
-      if (lastMessage) {
-        lastMessage.style.paddingBottom = "1rem";
-      }
+    }
+    const lastMessage = document.getElementById("last-message");
+    console.log("lastMessage", lastMessage);
+    if (lastMessage) {
+      lastMessage.style.paddingBottom = "1rem";
     }
     instantScrollToBottom();
     Prism.highlightAll();
@@ -353,19 +354,26 @@ function ChatWindow() {
       setMessages([]);
       return;
     }
-    
+
     try {
       const messagesFromCache = await MessageCache.get(id);
       // Check if messages have valid content
       if (Array.isArray(messagesFromCache)) {
         // Simple validation that won't unnecessarily modify the data
-        const validMessages = messagesFromCache.filter(msg => 
-          msg && typeof msg === 'object' && 'role' in msg && msg.content !== undefined
+        const validMessages = messagesFromCache.filter(
+          (msg) =>
+            msg &&
+            typeof msg === "object" &&
+            "role" in msg &&
+            msg.content !== undefined
         );
-        
+
         setMessages(validMessages);
       } else {
-        console.error("Invalid messages format from cache, not an array:", messagesFromCache);
+        console.error(
+          "Invalid messages format from cache, not an array:",
+          messagesFromCache
+        );
         setMessages([]);
       }
     } catch (error) {

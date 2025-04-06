@@ -477,7 +477,7 @@ export class PrismaCache {
 
   public static async loadLanguage(language: string) {
     if (PrismaCache.loadedLanguages[language]) {
-      console.log(`Language "${language}" already loaded`);
+      // console.log(`Language "${language}" already loaded`);
       return; // Already loaded
     }
     try {
