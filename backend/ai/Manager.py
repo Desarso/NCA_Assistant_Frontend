@@ -58,13 +58,20 @@ models = {
             api_key=os.getenv("OPENROUTER_API_KEY"),
         ),
     ),
+     "llama4": OpenAIModel(
+        "meta-llama/llama-4-maverick",
+        provider=OpenAIProvider(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+        ),
+    ),
     "gpt-4o-mini": OpenAIModel(
         "gpt-4o-mini", provider=OpenAIProvider(api_key=os.getenv("OPENAI_API_KEY"))
     ),
 }
 
 # Set default model
-model = models["gemini"]
+model = models["llama4"]
 
 
 logging.basicConfig(
@@ -123,6 +130,8 @@ def get_system_prompt(user_object: FirebaseUser, memory: str) -> str:
 ---
 
 ## **3. Microsoft Graph API & Tool Interaction Guidelines**
+
+You only have access to Application endpoints not delegated.
 
 ### **Microsoft Graph API Interaction (`graph_api_request` function)**
 
