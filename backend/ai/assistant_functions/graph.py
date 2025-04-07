@@ -20,6 +20,7 @@ def graph_api_request(
     query_params_json: Optional[str] = None,
     headers_json: Optional[str] = None
 ) -> Union[Dict[str, Any], List[Any]]:
+    print(ctx)
     """
     Acts as a tool interface for the LLM to interact with Microsoft Graph API,
     delegating the actual request execution, header management, and auth handling
@@ -51,6 +52,7 @@ def graph_api_request(
           permission needs to be added to the application. These errors usually indicate 
           the app registration in Azure AD needs additional API permission scopes.
     """
+    print("WE ARE HERE CALLING GRAPH API REQUEST")
     if not path.startswith('/'):
         path = '/' + path # Ensure path starts with a slash
 

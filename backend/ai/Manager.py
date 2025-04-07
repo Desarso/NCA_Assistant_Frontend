@@ -18,7 +18,8 @@ from pydantic_ai.models import cached_async_http_client
 from pydantic_ai.models.gemini import GeminiModel
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.google_gla import GoogleGLAProvider
-
+from typing import Dict
+from dataclasses import field
 
 load_dotenv()
 
@@ -292,6 +293,7 @@ You only have access to Application endpoints not delegated.
 @dataclass
 class MyDeps:
     user_object: FirebaseUser
+    user_rejection_flags: Dict[str, bool] = field(default_factory=dict)
 
 
 async def create_agent(user_object: FirebaseUser, memory: str) -> Agent:

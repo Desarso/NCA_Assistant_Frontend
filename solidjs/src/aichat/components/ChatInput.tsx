@@ -31,7 +31,7 @@ const ChatInput: Component<ChatInputProps> = (props) => {
   const [isDragging, setIsDragging] = createSignal(false);
   const [pendingUploads, setPendingUploads] = createSignal(0);
   let fileInputRef: HTMLInputElement | undefined;
-  let textInputRef: HTMLInputElement | undefined;
+  let textInputRef: HTMLTextAreaElement | undefined;
 
   // Calculate if any uploads are in progress
   const isUploading = () => pendingUploads() > 0;
@@ -385,16 +385,16 @@ const ChatInput: Component<ChatInputProps> = (props) => {
             class="hidden"
           />
 
-          <input
+          <textarea
             ref={textInputRef}
-            // rows="1"
-            class="flex-1 bg-transparent px-2 py-2 text-sm  md:text-base focus:outline-none resize-none overflow-y-auto dark:text-gray-200 placeholder-gray-200 dark:placeholder-gray-400"
-            // style={{ "max-height": "100px" }}
+            rows="1"
+            class="flex-1 bg-transparent px-2 py-2 text-sm md:text-base focus:outline-none resize-none overflow-y-auto dark:text-gray-200 placeholder-gray-200 dark:placeholder-gray-400 leading-relaxed min-h-[40px] w-full"
+            style={{ "max-height": "120px" }}
             value={textInput()}
             onInput={(e) => {
                 setTextInput(e.currentTarget.value);
                 e.currentTarget.style.height = 'auto';
-                e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
+                e.currentTarget.style.height = `${Math.max(40, e.currentTarget.scrollHeight)}px`;
             }}
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
@@ -402,7 +402,7 @@ const ChatInput: Component<ChatInputProps> = (props) => {
             autocomplete="off"
             spellcheck={false}
             disabled={isUploading() || props.gettingResponse}
-          />
+          ></textarea>
 
           <div class="flex items-center gap-1 self-end">
              <button

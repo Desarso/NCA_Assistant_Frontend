@@ -26,6 +26,7 @@ import MessageItem from "../components/ChatMessageItem";
 import { MessageCache } from "../utils/memory_cache";
 import { Skeleton } from "@/components/ui/skeleton";
 import { convertToChatMessages, HOST } from "../utils/utils";
+import ToolMessageRenderer from "../components/ToolMessageRenderer";
 
 // Component to render user message content
 
@@ -122,7 +123,8 @@ function ChatWindow() {
         setLoading(true);
         await fetchMessageHistory(currentId);
         setLoading(false);
-     
+        console.log(messages());
+
         //I want to remove the padding from last message when were navigating to old conversation
         const lastMessage = document.getElementById("last-message");
         if (lastMessage) {
@@ -157,7 +159,7 @@ function ChatWindow() {
       window.history.replaceState({}, "", `/chat/${conversationId()}`);
       navigate(`/chat/${conversationId()}`);
       const newChats = [...chats()];
-      newChats.push({
+      newChats.unshift({
         id: conversationId(),
         title: "New Chat",
         created_at: new Date().toISOString(),
@@ -172,56 +174,66 @@ function ChatWindow() {
     const url = new URL(`${HOST}/api/v1/chats/chat`);
 
     // Map the internal ContentItem[] or string to the BackendChatContent[] structure
-    let mappedContentForBackend: { content: string | { url: string; media_type: string; kind: string } }[];
+    let mappedContentForBackend: {
+      content: string | { url: string; media_type: string; kind: string };
+    }[];
 
     if (typeof content === "string") {
       mappedContentForBackend = [{ content: content }];
     } else {
       // Import the type guards if not already available in this scope
-      const isImageData = (c: any): c is ImageData => typeof c === 'object' && c !== null && c.kind === 'image-url';
-      const isPdfData = (c: any): c is PdfData => typeof c === 'object' && c !== null && c.kind === 'pdf-file';
+      const isImageData = (c: any): c is ImageData =>
+        typeof c === "object" && c !== null && c.kind === "image-url";
+      const isPdfData = (c: any): c is PdfData =>
+        typeof c === "object" && c !== null && c.kind === "pdf-file";
 
-      mappedContentForBackend = content.map((item) => {
-        if (typeof item.content === "string") {
-          return { content: item.content };
-        } else if (isImageData(item.content) && item.content.serverUrl) {
-          // Map ImageData to backend ImageUrlContent structure
-          return {
-            content: {
-              url: item.content.serverUrl,
-              media_type: item.content.media_type,
-              kind: "image-url", // Matches backend expectation
-            },
-          };
-        } else if (isPdfData(item.content) && item.content.serverUrl) {
-           // Map PdfData to backend DocumentUrlContent structure
-           return {
-             content: {
-               url: item.content.serverUrl,
-               media_type: item.content.media_type, // Should be "application/pdf"
-               kind: "document-url", // Matches backend expectation
-             },
-           };
-        } else {
-          // This should not happen if ChatInput filters correctly, but handle defensively
-          console.error("Encountered incomplete or unexpected content item:", item);
-          // Option 1: Throw an error
-          // throw new Error("Incomplete or unexpected content data.");
-          // Option 2: Filter it out later (more robust)
-          return null;
-        }
-      }).filter(item => item !== null) as { content: string | { url: string; media_type: string; kind: string } }[]; // Filter out nulls and assert type
+      mappedContentForBackend = content
+        .map((item) => {
+          if (typeof item.content === "string") {
+            return { content: item.content };
+          } else if (isImageData(item.content) && item.content.serverUrl) {
+            // Map ImageData to backend ImageUrlContent structure
+            return {
+              content: {
+                url: item.content.serverUrl,
+                media_type: item.content.media_type,
+                kind: "image-url", // Matches backend expectation
+              },
+            };
+          } else if (isPdfData(item.content) && item.content.serverUrl) {
+            // Map PdfData to backend DocumentUrlContent structure
+            return {
+              content: {
+                url: item.content.serverUrl,
+                media_type: item.content.media_type, // Should be "application/pdf"
+                kind: "document-url", // Matches backend expectation
+              },
+            };
+          } else {
+            // This should not happen if ChatInput filters correctly, but handle defensively
+            console.error(
+              "Encountered incomplete or unexpected content item:",
+              item
+            );
+            // Option 1: Throw an error
+            // throw new Error("Incomplete or unexpected content data.");
+            // Option 2: Filter it out later (more robust)
+            return null;
+          }
+        })
+        .filter((item) => item !== null) as {
+        content: string | { url: string; media_type: string; kind: string };
+      }[]; // Filter out nulls and assert type
     }
 
     // Ensure we have content to send after mapping
     if (mappedContentForBackend.length === 0) {
-       console.error("No valid content to send after mapping.");
-       setGettingResponse(false); // Reset loading state
-       // Optionally remove the user message placeholder if needed
-       // setMessages(currentMessages); // Revert messages if user message was added optimistically
-       return;
+      console.error("No valid content to send after mapping.");
+      setGettingResponse(false); // Reset loading state
+      // Optionally remove the user message placeholder if needed
+      // setMessages(currentMessages); // Revert messages if user message was added optimistically
+      return;
     }
-
 
     const requestBody = {
       content: mappedContentForBackend,
@@ -466,7 +478,11 @@ function ChatWindow() {
           <div class="w-full h-full flex flex-col gap-6 p-4 md:max-w-[900px]">
             <For each={[...Array(5)]}>
               {(_, index) => (
-                <div class={`flex gap-4 ${index() % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
+                <div
+                  class={`flex gap-4 ${
+                    index() % 2 === 0 ? "justify-start" : "justify-end"
+                  }`}
+                >
                   {index() % 2 !== 0 && (
                     <div class="flex-1 space-y-2">
                       <Skeleton class="h-4 w-[200px] ml-auto" />
@@ -514,7 +530,7 @@ function ChatWindow() {
                       when={
                         message.role === "user" || message.role === "assistant"
                       }
-                      fallback={<></>}
+                      fallback={<ToolMessageRenderer message={message} messages={messages} index={index}/>}
                     >
                       <MessageItem
                         message={message}
@@ -529,33 +545,6 @@ function ChatWindow() {
                   )}
                 </For>
 
-                <Show
-                  when={
-                    messages().length > 0 &&
-                    messages()[messages().length - 1].role === "tool_call"
-                  }
-                >
-                  <div class="md:max-w-[900px] w-full flex justify-start min-h-full">
-                    <span class="wave-text ml-5 pl-4">
-                      {((
-                        messages()[messages().length - 1].content as {
-                          name: string;
-                        }
-                      ).name as string) || "processing..."}
-                    </span>
-                  </div>
-                </Show>
-
-                <Show
-                  when={
-                    messages().length > 0 &&
-                    messages()[messages().length - 1].role === "tool_result"
-                  }
-                >
-                  <div class="md:max-w-[900px] w-full flex justify-start min-h-full">
-                    <span class="wave-text ml-5 pl-4">processing...</span>
-                  </div>
-                </Show>
                 <div id="messages-end-ref" />
               </div>
 
@@ -563,7 +552,6 @@ function ChatWindow() {
                 <ChatInput
                   onSubmit={handleSubmit}
                   gettingResponse={gettingResponse()}
-                  handleFileAttachment={handleFileAttachment}
                   setIsListening={setIsListening}
                   handleStopRequest={handleStopRequest}
                 />
@@ -578,7 +566,6 @@ function ChatWindow() {
               onMute={handleMicrophoneMute}
             />
           </div>
-          <div>Yo</div>
         </Show>
       </Show>
     </div>

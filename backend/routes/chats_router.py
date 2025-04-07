@@ -1,9 +1,11 @@
 from datetime import datetime
 import json
 from typing import AsyncGenerator, List, Union
+from cohere import ToolResult
 from fastapi import APIRouter, Depends, HTTPException, Request
 from requests import Session
 from pydantic import BaseModel, Field
+import cohere
 
 from ai.Manager import MyDeps, create_agent, get_system_prompt
 from ai.assistant_functions.memory_functions import get_memory_no_context
@@ -173,13 +175,15 @@ async def chat(
 
     user_content = chat_request.to_user_content()
 
-    
+    # Instantiate MyDeps to hold shared state like rejection flags
+    deps_instance = MyDeps(user_object=current_user, user_rejection_flags={}) # Add the flags dict
+
     async def generate_chunks() -> AsyncGenerator[str, None]:
         async with agent.run_mcp_servers():
             async with agent.iter(
-                deps=MyDeps(user_object=current_user),
+                deps=deps_instance, # Pass the instance with flags
                 user_prompt=user_content,
-                message_history=message_history,
+                message_history=message_history, # Pass the ORIGINAL history
             ) as run:
                 async for node in run:
                     # print(node)
@@ -187,6 +191,16 @@ async def chat(
                         # print user node
                         pass
                     elif agent.is_model_request_node(node):
+                        # Save the user request model message
+                        db_message_request = DBMessage(
+                            content=json.dumps(model_message_to_dict(node.request)),
+                            is_user_message=True, # This is the user's prompt
+                            conversation_id=conversation_id,
+                        )
+                        session.add(db_message_request)
+                        session.commit()
+
+                        # Stream the response generation
                         async with node.stream(run.ctx) as request_stream:
                             async for event in request_stream:
                                 if isinstance(event, PartStartEvent):
@@ -207,25 +221,23 @@ async def chat(
                                         yield (
                                             "data: " + event_to_json_string(event) + "\n\n"
                                         )
-                        db_message = DBMessage(
-                            content=json.dumps(model_message_to_dict(node.request)),
-                            is_user_message=False,
-                            conversation_id=conversation_id,
-                        )
-                        session.add(db_message)
-                        session.commit()
                     elif agent.is_call_tools_node(node):
+                        # Set rejection flag based on user confirmation
+                        result = await get_user_confirmation(node, deps_instance) # Pass deps to set flag
+
+                        # Always proceed to execute the tool call via the agent framework
+                        # The tool function itself will check the flag in deps_instance
                         async with node.stream(run.ctx) as handle_stream:
                             async for event in handle_stream:
                                 yield "data: " + event_to_json_string(event) + "\n\n"
                         db_message = DBMessage(
-                            content=json.dumps(model_message_to_dict(node.model_response)),
+                            content=json.dumps(model_message_to_dict(node.model_response, result)),
                             is_user_message=False,
                             conversation_id=conversation_id,
+
                         )
                         session.add(db_message)
                         session.commit()
-
     return StreamingResponse(
         generate_chunks(),
         media_type="text/event-stream",
@@ -235,6 +247,36 @@ async def chat(
             "Content-Type": "text/event-stream",
         },
     )
+
+async def get_user_confirmation(node, deps: MyDeps) -> bool:
+    # Implement a method to send a confirmation request to the user
+    # and await their response.
+    # For now, simulate rejection:
+    user_approved = False # Replace with actual user confirmation logic
+
+    # Get the tool_call_id from the node data if available
+    tool_call_id_to_flag = None
+    if hasattr(node, 'part') and hasattr(node.part, 'tool_call_id'):
+        tool_call_id_to_flag = node.part.tool_call_id
+    elif hasattr(node, 'model_response') and node.model_response and node.model_response.parts:
+         # Fallback: check the model response parts (might exist if stream already ran partially)
+         for part in node.model_response.parts:
+             if hasattr(part, 'tool_call_id'):
+                tool_call_id_to_flag = part.tool_call_id
+                break
+    # Add more fallbacks if needed based on the structure of 'node'
+
+    if not user_approved and tool_call_id_to_flag:
+        print(f"User rejected tool call: {tool_call_id_to_flag}") # For debugging
+        deps.user_rejection_flags[tool_call_id_to_flag] = True
+        return True
+    elif not tool_call_id_to_flag:
+        print("Warning: Could not determine tool_call_id to set rejection flag.")
+        return False
+    else:
+        return False
+
+    # This function no longer needs to return True/False for the loop
 
 
 @chats_router.post("/conversations/", response_model=dict)
@@ -343,6 +385,7 @@ def read_conversation_messages(
 
 def event_to_json_string(event):
     """Convert event objects to JSON string."""
+    # Existing logic for pydantic-ai event objects
     event_type = "part_start"
     if isinstance(event, PartDeltaEvent):
         event_type = "part_delta"
@@ -480,7 +523,7 @@ def event_to_dict(event):
     return vars(event)
 
 
-def model_message_to_dict(message: Union[ModelRequest, ModelResponse]) -> dict:
+def model_message_to_dict(message: Union[ModelRequest, ModelResponse], user_rejected: bool = False) -> dict:
     """Convert a ModelRequest or ModelResponse to a dictionary for storage"""
 
     def part_to_dict(part):
@@ -511,6 +554,7 @@ def model_message_to_dict(message: Union[ModelRequest, ModelResponse]) -> dict:
                     "tool_call_id": part.tool_call_id,
                 },
                 "part_kind": getattr(part, "part_kind", "text"),
+                "user_rejected": user_rejected,
             }
         if isinstance(part, ReasoningPart):
             return {
@@ -586,81 +630,13 @@ def model_message_to_dict(message: Union[ModelRequest, ModelResponse]) -> dict:
         }
     
 
-# def model_message_to_dict(message: Union[ModelRequest, ModelResponse]) -> dict:
-#     """Convert a ModelRequest or ModelResponse to a dictionary for storage"""
-
-#     def part_to_dict(part):
-
-#         # content = part.content
-
-#         cls_name = part.__class__.__name__
-
-#         if cls_name in ["ImageUrl", "AudioUrl", "DocumentUrl"]:
-#             url_type = {
-#                 "ImageUrl": "image-url",
-#                 "AudioUrl": "audio-url",
-#                 "DocumentUrl": "document-url",
-#             }[cls_name]
-#             return {
-#                 "type": cls_name,
-#                 "content": {"url": part.url},
-#                 "part_kind": url_type,
-#             }
-#         if isinstance(part, ToolCallPart):
-#             content = {
-#                 "name": part.tool_name,
-#                 "args": part.args,
-#                 "tool_call_id": part.tool_call_id,
-#             }
-#             return {
-#                 type : 
-#             }
-
-#         elif isinstance(part, ReasoningPart):
-#             content = part.reasoning
-#         elif isinstance(part, UserPromptPart):
-#             if isinstance(part.content, list):
-#                 content = [part_to_dict(item) for item in part.content]
-#             else:
-#                 content = part.content
-#         elif isinstance(part, TextPart):
-#             content = part.content
-#         elif isinstance(part, SystemPromptPart):
-#             content = part.content
-#         elif isinstance(part, RetryPromptPart):
-#             content = part.content
-#         elif isinstance(part, ToolReturnPart):
-#             # print("I am here", part)
-#             content = {
-#                 "name": part.tool_name,
-#                 "content": part.content,
-#                 "tool_call_id": part.tool_call_id,
-#             }
-#         print(content)
-#         return {
-#             "type": part.__class__.__name__,
-#             "content": content,
-#             "part_kind": part.part_kind if hasattr(part, "part_kind") else "text",
-#         }
-
-#     if isinstance(message, ModelRequest):
-#         return {
-#             "type": "model_request",
-#             "parts": [part_to_dict(part) for part in message.parts],
-#             "kind": message.kind,
-#         }
-#     else:  # ModelResponse
-#         return {
-#             "type": "model_response",
-#             "parts": [part_to_dict(part) for part in message.parts],
-#             "model_name": message.model_name,
-#             "timestamp": message.timestamp.isoformat() if message.timestamp else None,
-#             "kind": message.kind,
-#         }
 
 
 def dict_to_model_message(data: dict) -> Union[ModelRequest, ModelResponse]:
     """Convert a dictionary back to a ModelRequest or ModelResponse"""
+
+    # Remove the custom flag before processing, if it exists
+    data.pop('user_rejected', None)
 
     def convert_content(content_data):
         """Helper function to convert content data back to appropriate objects"""
