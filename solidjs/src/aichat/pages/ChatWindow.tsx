@@ -24,7 +24,7 @@ import AssistantMessageRenderer from "../components/AssitantMessageRenderer";
 import ChatInput from "../components/ChatInput";
 import MessageItem from "../components/ChatMessageItem";
 import { MessageCache } from "../utils/memory_cache";
-
+import { Skeleton } from "@/components/ui/skeleton";
 import { convertToChatMessages, HOST } from "../utils/utils";
 
 // Component to render user message content
@@ -34,6 +34,7 @@ function ChatWindow() {
   const [gettingResponse, setGettingResponse] = createSignal<boolean>(false);
   const [messages, setMessages] = createSignal<Message[]>([]);
   const [isListening, setIsListening] = createSignal<boolean>(false);
+  const [loading, setLoading] = createSignal<boolean>(false);
   const params = useParams();
   const id = createMemo(() => params.id);
   const [conversationId, setConversationId] = createSignal<string>(
@@ -88,15 +89,16 @@ function ChatWindow() {
   onMount(async () => {
     if (id()) {
       setConversationId(id());
+      //set loading to true
+      setLoading(true);
       await fetchMessageHistory(id());
+      setLoading(false);
     } else {
       setMessages([]);
       setConversationId(crypto.randomUUID().toString());
-      await fetchMessageHistory(conversationId());
       //I want to remove the padding from last message when were navigating to old conversation
     }
     const lastMessage = document.getElementById("last-message");
-    console.log("lastMessage", lastMessage);
     if (lastMessage) {
       lastMessage.style.paddingBottom = "1rem";
     }
@@ -117,13 +119,17 @@ function ChatWindow() {
       if (currentId) {
         setMessages([]);
         setConversationId(currentId);
+        setLoading(true);
         await fetchMessageHistory(currentId);
+        setLoading(false);
+     
         //I want to remove the padding from last message when were navigating to old conversation
         const lastMessage = document.getElementById("last-message");
         if (lastMessage) {
           lastMessage.style.paddingBottom = "1rem";
         }
         instantScrollToBottom();
+        Prism.highlightAll();
       }
     }
   });
@@ -455,98 +461,125 @@ function ChatWindow() {
   return (
     <div class="flex w-full h-full flex-col justify-start z-5 items-center bg-background dark:bg-background mt-3.5 rounded-lg ">
       <Show
-        when={isListening()}
+        when={!loading()}
         fallback={
-          <>
-            <div
-              ref={chatContainerRef}
-              class={`flex flex-1 flex-col items-center overflow-y-auto Chat-Container scrollbar rounded-t-lg pl-2 pr-2 
-              max-h-[calc(100vh)] 
-              md:max-h-[calc(100vh)] 
-              ${
-                isMobile()
-                  ? openMobile()
-                    ? "w-full"
-                    : "w-full"
-                  : open()
-                  ? "w-[calc(100vw-var(--sidebar-width))]"
-                  : "w-full"
-              }
-              ${memoizedMessages().length === 0 ? "h-full" : ""}
-              `}
-              onScroll={() => saveScrollPosition()}
-            >
-              <For each={memoizedMessages()}>
-                {(message, index) => (
-                  <Show
-                    when={
-                      message.role === "user" || message.role === "assistant"
-                    }
-                    fallback={<></>}
-                  >
-                    <MessageItem
-                      message={message}
-                      messages={messages}
-                      isLast={index() === memoizedMessages().length - 1}
-                      gettingResponse={
-                        gettingResponse() &&
-                        index() === memoizedMessages().length - 1
-                      }
-                    />
-                  </Show>
-                )}
-              </For>
-
-              <Show
-                when={
-                  messages().length > 0 &&
-                  messages()[messages().length - 1].role === "tool_call"
-                }
-              >
-                <div class="md:max-w-[900px] w-full flex justify-start min-h-full">
-                  <span class="wave-text ml-5 pl-4">
-                    {((
-                      messages()[messages().length - 1].content as {
-                        name: string;
-                      }
-                    ).name as string) || "processing..."}
-                  </span>
+          <div class="w-full h-full flex flex-col gap-6 p-4 md:max-w-[900px]">
+            <For each={[...Array(5)]}>
+              {(_, index) => (
+                <div class={`flex gap-4 ${index() % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
+                  {index() % 2 !== 0 && (
+                    <div class="flex-1 space-y-2">
+                      <Skeleton class="h-4 w-[200px] ml-auto" />
+                      <Skeleton class="h-4 w-[350px] ml-auto" />
+                    </div>
+                  )}
+                  <Skeleton class="h-10 w-10 rounded-full" />
+                  {index() % 2 === 0 && (
+                    <div class="flex-1 space-y-2">
+                      <Skeleton class="h-4 w-[250px]" />
+                      <Skeleton class="h-4 w-[400px]" />
+                    </div>
+                  )}
                 </div>
-              </Show>
-
-              <Show
-                when={
-                  messages().length > 0 &&
-                  messages()[messages().length - 1].role === "tool_result"
-                }
-              >
-                <div class="md:max-w-[900px] w-full flex justify-start min-h-full">
-                  <span class="wave-text ml-5 pl-4">processing...</span>
-                </div>
-              </Show>
-              <div id="messages-end-ref" />
-            </div>
-
-            <div class="border-t md:border md:rounded-lg md:shadow-md border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 w-full md:max-w-[900px] mb-3.5">
-              <ChatInput
-                onSubmit={handleSubmit}
-                gettingResponse={gettingResponse()}
-                // handleFileAttachment={handleFileAttachment} // Removed unused prop
-                setIsListening={setIsListening}
-                handleStopRequest={handleStopRequest}
-              />
-            </div>
-          </>
+              )}
+            </For>
+          </div>
         }
       >
-        <div class="flex-1 flex items-center justify-center">
-          <MicrophoneVisualizer
-            isListening={!isMuted()}
-            onClose={handleMicrophoneClose}
-            onMute={handleMicrophoneMute}
-          />
-        </div>
-        <div>Yo</div>
+        <Show
+          when={isListening()}
+          fallback={
+            <>
+              <div
+                ref={chatContainerRef}
+                class={`flex flex-1 flex-col items-center overflow-y-auto Chat-Container scrollbar rounded-t-lg pl-2 pr-2 
+                max-h-[calc(100vh)] 
+                md:max-h-[calc(100vh)] 
+                ${
+                  isMobile()
+                    ? openMobile()
+                      ? "w-full"
+                      : "w-full"
+                    : open()
+                    ? "w-[calc(100vw-var(--sidebar-width))]"
+                    : "w-full"
+                }
+                ${memoizedMessages().length === 0 ? "h-full" : ""}
+                `}
+                onScroll={() => saveScrollPosition()}
+              >
+                <For each={memoizedMessages()}>
+                  {(message, index) => (
+                    <Show
+                      when={
+                        message.role === "user" || message.role === "assistant"
+                      }
+                      fallback={<></>}
+                    >
+                      <MessageItem
+                        message={message}
+                        messages={messages}
+                        isLast={index() === memoizedMessages().length - 1}
+                        gettingResponse={
+                          gettingResponse() &&
+                          index() === memoizedMessages().length - 1
+                        }
+                      />
+                    </Show>
+                  )}
+                </For>
+
+                <Show
+                  when={
+                    messages().length > 0 &&
+                    messages()[messages().length - 1].role === "tool_call"
+                  }
+                >
+                  <div class="md:max-w-[900px] w-full flex justify-start min-h-full">
+                    <span class="wave-text ml-5 pl-4">
+                      {((
+                        messages()[messages().length - 1].content as {
+                          name: string;
+                        }
+                      ).name as string) || "processing..."}
+                    </span>
+                  </div>
+                </Show>
+
+                <Show
+                  when={
+                    messages().length > 0 &&
+                    messages()[messages().length - 1].role === "tool_result"
+                  }
+                >
+                  <div class="md:max-w-[900px] w-full flex justify-start min-h-full">
+                    <span class="wave-text ml-5 pl-4">processing...</span>
+                  </div>
+                </Show>
+                <div id="messages-end-ref" />
+              </div>
+
+              <div class="border-t md:border md:rounded-lg md:shadow-md border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 w-full md:max-w-[900px] mb-3.5">
+                <ChatInput
+                  onSubmit={handleSubmit}
+                  gettingResponse={gettingResponse()}
+                  handleFileAttachment={handleFileAttachment}
+                  setIsListening={setIsListening}
+                  handleStopRequest={handleStopRequest}
+                />
+              </div>
+            </>
+          }
+        >
+          <div class="flex-1 flex items-center justify-center">
+            <MicrophoneVisualizer
+              isListening={!isMuted()}
+              onClose={handleMicrophoneClose}
+              onMute={handleMicrophoneMute}
+            />
+          </div>
+          <div>Yo</div>
+        </Show>
       </Show>
     </div>
   );

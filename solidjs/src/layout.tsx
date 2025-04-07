@@ -71,9 +71,9 @@ const Layout: Component<LayoutProps> = (props) => {
 
 
 
-  createEffect(() => {
-    console.log(chats());
-  });
+  // createEffect(() => {
+  //   console.log(chats());
+  // });
 
   // Provide a consistent value object to the context
   const contextValue = {

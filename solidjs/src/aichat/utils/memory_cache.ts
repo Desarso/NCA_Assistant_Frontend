@@ -203,7 +203,6 @@ class DB {
         request.onerror = () => reject(request.error);
         request.onsuccess = () => {
           if (request.result) {
-            console.log("conversations", request.result);
             resolve(request.result.conversations as Conversation[]);
           } else {
             resolve([]);
@@ -434,6 +433,20 @@ export class PrismaCache {
     javascript: true, // IMPORTANT: Use 'javascript' not 'js'
   };
 
+  static defaultLanguages: string[] = [
+    "markup",
+    "html",
+    "xml",
+    "SVG",
+    "MathML",
+    "SSML",
+    "Atom",
+    "RSS",
+    "css",
+    "c-like",
+    "javascript",
+  ];
+
   private static async fetchPrismNoCache(language: string): Promise<string> {
     const { authFetch } = await import("@/lib/utils");
     const response = await authFetch(
@@ -476,11 +489,16 @@ export class PrismaCache {
   }
 
   public static async loadLanguage(language: string) {
+    if (PrismaCache.defaultLanguages.includes(language)) {
+      return;
+    }
+
     if (PrismaCache.loadedLanguages[language]) {
       // console.log(`Language "${language}" already loaded`);
       return; // Already loaded
     }
     try {
+      
       const languageData = components.languages[language];
       if (!languageData) {
         console.warn(`Language "${language}" not found in components.json.`);
@@ -500,7 +518,7 @@ export class PrismaCache {
 
       const script = await PrismaCache.get(language);
       if (script) {
-        console.log(`Loading language "${language}"`);
+        // console.log(`Loading language "${language}"`);
         eval(script);
         PrismaCache.loadedLanguages[language] = true;
         Prism.highlightAll();

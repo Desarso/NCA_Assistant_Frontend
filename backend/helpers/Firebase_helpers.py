@@ -11,11 +11,11 @@ from sqlalchemy import select
 
 security = HTTPBearer()
 
-
+DEFAULT_MODEL = "gemini"
 
 
 class FirebaseUser:
-    def __init__(self, uid: str, email: str, roles: List[str], name: str, mcp_servers: List[dict], github_username: Optional[str] = None, github_token: Optional[str] = None, preferred_model: str = "gemini"):
+    def __init__(self, uid: str, email: str, roles: List[str], name: str, mcp_servers: List[dict], github_username: Optional[str] = None, github_token: Optional[str] = None, prefered_model: str = DEFAULT_MODEL):
         self.uid = uid
         self.email = email
         self.roles = roles
@@ -23,7 +23,7 @@ class FirebaseUser:
         self.mcp_servers = mcp_servers  # List of dicts with server info and enabled status
         self.github_username = github_username
         self.github_token = github_token  # Include token for backend operations
-        self.preferred_model = preferred_model  # User's preferred model
+        self.prefered_model = prefered_model  # User's preferred model
 
 class Token(BaseModel):
     access_token: str
@@ -67,7 +67,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(
                     id=uid,
                     email=email,
                     name=name,
-                    preferred_model="gemini"  # Default model
+                    preferred_model=DEFAULT_MODEL  # Default model
                 )
                 session.add(db_user)
                 session.commit()
@@ -76,7 +76,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(
             # Safely get values with defaults
             github_username = getattr(db_user, 'github_username', None)
             github_token = getattr(db_user, 'github_token', None)
-            preferred_model = getattr(db_user, 'preferred_model', "gemini")
+            prefered_model = getattr(db_user, 'preferred_model', DEFAULT_MODEL)
         
         # Create user object
         firebase_user = FirebaseUser(
@@ -87,7 +87,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(
             mcp_servers=mcp_servers,
             github_username=github_username,
             github_token=github_token,
-            preferred_model=preferred_model
+            prefered_model=prefered_model
         )
 
             

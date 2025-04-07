@@ -74,9 +74,8 @@ See [the Groq docs](https://console.groq.com/docs/models) for a full list.
 class GroqModelSettings(ModelSettings):
     """Settings used for a Groq model request."""
 
-    reasoning_format: str | None = "raw"
     # This class is a placeholder for any future groq-specific settings
-
+    reasoning_format: str | None = "raw"
 
 @dataclass(init=False)
 class GroqModel(Model):
@@ -230,25 +229,30 @@ class GroqModel(Model):
 
         groq_messages = list(chain(*(self._map_message(m) for m in messages)))
 
+        request_params = {
+            'model': str(self._model_name),
+            'messages': groq_messages,
+            'n': 1,
+            'parallel_tool_calls': model_settings.get('parallel_tool_calls', NOT_GIVEN),
+            'tools': tools or NOT_GIVEN,
+            'tool_choice': tool_choice or NOT_GIVEN,
+            'stream': stream,
+            'max_tokens': model_settings.get('max_tokens', NOT_GIVEN),
+            'temperature': model_settings.get('temperature', NOT_GIVEN),
+            'top_p': model_settings.get('top_p', NOT_GIVEN),
+            'timeout': model_settings.get('timeout', NOT_GIVEN),
+            'seed': model_settings.get('seed', NOT_GIVEN),
+            'presence_penalty': model_settings.get('presence_penalty', NOT_GIVEN),
+            'frequency_penalty': model_settings.get('frequency_penalty', NOT_GIVEN),
+            'logit_bias': model_settings.get('logit_bias', NOT_GIVEN),
+        }
+
+        # Conditionally add reasoning_format for the specific model
+        if self._model_name == 'deepseek-r1-distill-llama-70b':
+            request_params['reasoning_format'] = 'parsed'
+
         try:
-            return await self.client.chat.completions.create(
-                model=str(self._model_name),
-                messages=groq_messages,
-                n=1,
-                parallel_tool_calls=model_settings.get('parallel_tool_calls', NOT_GIVEN),
-                tools=tools or NOT_GIVEN,
-                tool_choice=tool_choice or NOT_GIVEN,
-                stream=stream,
-                max_tokens=model_settings.get('max_tokens', NOT_GIVEN),
-                temperature=model_settings.get('temperature', NOT_GIVEN),
-                top_p=model_settings.get('top_p', NOT_GIVEN),
-                timeout=model_settings.get('timeout', NOT_GIVEN),
-                seed=model_settings.get('seed', NOT_GIVEN),
-                presence_penalty=model_settings.get('presence_penalty', NOT_GIVEN),
-                frequency_penalty=model_settings.get('frequency_penalty', NOT_GIVEN),
-                logit_bias=model_settings.get('logit_bias', NOT_GIVEN),
-                reasoning_format="parsed",
-            )
+            return await self.client.chat.completions.create(**request_params)
         except APIStatusError as e:
             if (status_code := e.status_code) >= 400:
                 raise ModelHTTPError(status_code=status_code, model_name=self.model_name, body=e.body) from e

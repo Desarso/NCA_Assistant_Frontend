@@ -47,8 +47,12 @@ models = {
             api_key=os.getenv("GEMINI_API_KEY"), http_client=http_client
         ),
     ),
-    "groq": GroqModel(
+    "deepseek": GroqModel(
         "deepseek-r1-distill-llama-70b",
+        provider=GroqProvider(api_key=os.getenv("GROQ_API_KEY")),
+    ),
+     "llama4-fast": GroqModel(
+        "meta-llama/llama-4-scout-17b-16e-instruct",
         provider=GroqProvider(api_key=os.getenv("GROQ_API_KEY")),
     ),
     "claude": OpenAIModel(
@@ -71,7 +75,7 @@ models = {
 }
 
 # Set default model
-model = models["llama4"]
+model: GroqModel = models["gemini"]
 
 
 logging.basicConfig(
@@ -310,14 +314,14 @@ async def create_agent(user_object: FirebaseUser, memory: str) -> Agent:
 
     # Get user's preferred model
     selected_model = models.get(
-        user_object.preferred_model, model
+        user_object.prefered_model, model
     )  # Fallback to default if model not found
 
     return Agent(
         model=selected_model,
         system_prompt=get_system_prompt(user_object, memory),
         deps_type=MyDeps,
-        mcp_servers=mcp_servers,
+        # mcp_servers=mcp_servers,
         tools=[
             tavily_search_tool(tavily_api_key),
             graph_api_request,
