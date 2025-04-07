@@ -15,6 +15,20 @@ import {
 } from "@/components/ui/accordion";
 import JsonSyntaxHighlighter from "./JsonSyntaxHighlighter";
 import { useTheme } from "@/lib/theme-provider";
+import { pythonReprStringToJsObject } from "../utils/utils";
+
+
+interface ToolResult {
+    content: string;
+    name: string;
+    timestamp: string;
+    tool_call_id: string | null;
+}
+
+interface ToolResultContent {
+
+}
+
 
 function ToolMessageRenderer({
   message,
@@ -66,13 +80,25 @@ function ToolMessageRenderer({
             .join(" ");
 
           const toolCallContent = prevMessage()?.content;
-          const toolResultContent = message.content;
+          const [toolResultContent, setToolResultContent] = createSignal<ToolResultContent>(message.content);
           const { theme } = useTheme();
           const [isMounted, setIsMounted] = createSignal(false);
           const [isOpen, setIsOpen] = createSignal(false);
+          const [error, setError] = createSignal<boolean>(false);
 
           onMount(() => {
-            // Set mounted to true after a frame to trigger transition
+            // if we can parse the content as json, then we set the parsedToolResultContent to the parsed content
+            try {
+              const content = (toolResultContent() as ToolResult).content;
+              const parsedContent = JSON.parse(content);
+              setToolResultContent(parsedContent);
+              if (parsedContent.error) {
+                setError(true);
+              }
+            } catch (error) {
+              //we just used the unparsed content
+              setToolResultContent(toolResultContent());
+            }
             requestAnimationFrame(() => setIsMounted(true));
           });
 
@@ -110,8 +136,8 @@ function ToolMessageRenderer({
                     </span>
                   </div>
                   <div class="flex items-center">
-                    <div class="px-2 py-0.5 text-xs rounded-full bg-accent text-primary font-medium">
-                      Completed
+                    <div class={`px-2 py-0.5 text-xs rounded-full bg-accent text-primary font-medium ${error() ? "bg-red-500" : "bg-green-500"}`}>
+                      {error() ? "Error" : "Completed"}
                     </div>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -150,7 +176,7 @@ function ToolMessageRenderer({
                       <h4 class="text-xs font-medium text-primary/80 mb-1">
                         Result:
                       </h4>
-                      <JsonSyntaxHighlighter content={toolResultContent} />
+                      <JsonSyntaxHighlighter content={toolResultContent()} />
                     </div>
                   </div>
                 </div>

@@ -144,4 +144,47 @@ export function convertToChatMessages(messages: DBMessage[]): ChatMessage[] {
       })
       .filter((message): message is ChatMessage => message !== null);
   }
+
+
+
+  export function pythonReprStringToJsObject(pyString: string) {
+    // 1. Replace Python bools/None with JSON equivalents
+    let jsonString = pyString
+      .replace(/\bTrue\b/g, 'true')
+      .replace(/\bFalse\b/g, 'false')
+      .replace(/\bNone\b/g, 'null');
+  
+    // 2. Replace single quotes with double quotes carefully
+    // This is tricky because single quotes can appear *inside* strings.
+    // A common approach is to handle keys and values separately,
+    // or use more complex regex, but a simpler (potentially fragile)
+    // approach for *this specific structure* might be:
+  
+    // Temporarily replace escaped single quotes inside strings
+    jsonString = jsonString.replace(/\\'/g, '__TEMP_SINGLE_QUOTE__');
+  
+    // Replace single quotes used for keys and string boundaries
+    // Match 'key': or 'string', etc.
+    // This regex tries to match single quotes around keys and string values
+    // It assumes keys are simple words/hyphens and avoids touching numbers/bools/null
+     jsonString = jsonString.replace(/'([\w\s\-\/.:]+?)'\s*:/g, '"$1":'); // Keys
+     jsonString = jsonString.replace(/:\s*'(.+?)'(?=[,\}])/g, ': "$1"');  // String values (heuristic)
+     // Handle potential remaining strings at the end
+     jsonString = jsonString.replace(/:\s*'(.+?)'$/g, ': "$1"');
+  
+    // Restore the escaped single quotes within the now double-quoted strings
+    jsonString = jsonString.replace(/__TEMP_SINGLE_QUOTE__/g, "\\'"); // Or just "'" if needed inside JS string
+  
+    // 3. Attempt to parse the potentially valid JSON string
+    try {
+      return JSON.parse(jsonString);
+    } catch (error) {
+      console.error("Failed to parse string after replacements:", error);
+      console.error("String after replacements:", jsonString); // Log for debugging
+      // Fallback or throw error - parsing failed
+      // You might need more robust regex or a different approach
+      // if the structure is more complex than the example.
+      return null; // Or throw new Error("Could not parse Python string representation");
+    }
+  }
   
