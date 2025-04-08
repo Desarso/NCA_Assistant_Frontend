@@ -26,7 +26,7 @@ import MessageItem from "../components/ChatMessageItem";
 import { MessageCache } from "../utils/memory_cache";
 import { Skeleton } from "@/components/ui/skeleton";
 import { convertToChatMessages, HOST } from "../utils/utils";
-import ToolMessageRenderer from "../components/ToolMessageRenderer";
+import ToolMessageRenderer, { ToolCallMap } from "../components/ToolMessageRenderer";
 
 // Component to render user message content
 
@@ -55,6 +55,28 @@ function ChatWindow() {
 
   // Memoize the messages to prevent unnecessary re-renders
   const memoizedMessages = createMemo(() => messages());
+  
+  // Create a memoized map of tool_call_id to the tool_call message
+  const toolCallMap = createMemo<ToolCallMap>(() => {
+    const map: ToolCallMap = new Map();
+    // Use memoizedMessages here for consistency
+    for (const msg of memoizedMessages()) { 
+      // Check role first, then check if content is an object (basic check)
+      if (msg.role === 'tool_call' && typeof msg.content === 'object' && msg.content !== null) {
+         // Use type assertion to access potential properties like tool_call_id
+        const contentObj = msg.content as any; 
+        if (contentObj.tool_call_id) { 
+          // Ensure tool_call_id is treated as a string
+          const toolCallId = String(contentObj.tool_call_id);
+          // Validate the ID format before adding to the map
+          if (toolCallId.startsWith('pyd_ai_')) { 
+            map.set(toolCallId, msg);
+          }
+        }
+      }
+    }
+    return map;
+  });
 
   // Scroll to bottom with smooth animation (for new messages)
   function scrollToBottom() {
@@ -120,9 +142,18 @@ function ChatWindow() {
       if (currentId) {
         setMessages([]);
         setConversationId(currentId);
+        const startTime = performance.now(); // Get the starting time in milliseconds
+
         setLoading(true);
         await fetchMessageHistory(currentId);
         setLoading(false);
+
+        const endTime = performance.now(); // Get the ending time in milliseconds
+        const executionTime = endTime - startTime; // Calculate the execution time in milliseconds
+
+        console.log(
+          `fetchMessageHistory execution time: ${executionTime} milliseconds`
+        );
         console.log(messages());
 
         //I want to remove the padding from last message when were navigating to old conversation
@@ -530,7 +561,14 @@ function ChatWindow() {
                       when={
                         message.role === "user" || message.role === "assistant"
                       }
-                      fallback={<ToolMessageRenderer message={message} messages={messages} index={index}/>}
+                      fallback={
+                        <ToolMessageRenderer
+                          message={message}
+                          messages={messages}
+                          index={index}
+                          toolCallMap={toolCallMap}
+                        />
+                      }
                     >
                       <MessageItem
                         message={message}

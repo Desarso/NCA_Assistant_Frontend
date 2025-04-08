@@ -38,14 +38,19 @@ interface ToolCallMessageInfo {
   formattedToolName: string;
 }
 
+// Define the type for the tool call map
+export type ToolCallMap = Map<string, Message>;
+
 function ToolMessageRenderer({
   message,
   messages,
   index,
+  toolCallMap,
 }: {
   message: Message;
   messages: Accessor<Message[]>;
   index: Accessor<number>;
+  toolCallMap: Accessor<ToolCallMap>;
 }) {
   const [isLastMessage, setIsLastMessage] = createSignal<boolean>(false);
   const [isToolCall, setIsToolCall] = createSignal<boolean>(false);
@@ -72,97 +77,18 @@ function ToolMessageRenderer({
     if (message.role === "tool_result") {
       setIsToolResult(true);
       
-      // Process the tool result message once on mount
-      processToolResultMessage();
+      // Process the tool result message once on mount using the map
+      processToolResultMessageWithMap();
     }
   });
   
-  // Function to find the matching tool call message
-  const findToolCallMessage = () => {
-    // First check if this message has a tool_call_id
-    let toolCallId: string | null = null;
-    
+  // Updated function to use the pre-computed map
+  const processToolResultMessageWithMap = () => {
+    let foundToolCallInfo: ToolCallMessageInfo | null = null;
+    let extractedToolCallId: string | null = null;
+
+    // 1. Try to extract tool_call_id from the current tool_result message content
     try {
-      // Try to extract tool_call_id from message content
-      if (typeof message.content === 'string') {
-        try {
-          const jsonContent = JSON.parse(message.content);
-          if (jsonContent && jsonContent.tool_call_id) {
-            toolCallId = jsonContent.tool_call_id;
-          }
-        } catch {
-          // Try regex extraction if JSON parsing fails
-          const match = message.content.match(/"tool_call_id"\s*:\s*"(pyd_ai_[^"]+)"/);
-          if (match && match[1]) {
-            toolCallId = match[1];
-          }
-        }
-      } else if (typeof message.content === 'object') {
-        toolCallId = (message.content as any)?.tool_call_id || null;
-      }
-      
-      // Only consider tool_call_id if it's in the expected format
-      if (!toolCallId || !toolCallId.startsWith('pyd_ai_')) {
-        toolCallId = null;
-      }
-      
-      // If we found a tool_call_id, search for the matching message
-      if (toolCallId) {
-        const messagesSnapshot = messages();
-        for (let i = 0; i < messagesSnapshot.length; i++) {
-          const msg = messagesSnapshot[i];
-          if (msg.role === 'tool_call') {
-            const content = msg.content as any;
-            if (content && content.tool_call_id === toolCallId) {
-              const rawToolName = content.name || "Unknown Tool";
-              const formattedToolName = rawToolName
-                .split("_")
-                .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(" ");
-                
-              return {
-                message: msg,
-                usingId: true,
-                id: toolCallId,
-                toolName: rawToolName,
-                formattedToolName
-              };
-            }
-          }
-        }
-      }
-    } catch (e) {
-      console.error("Error finding tool call message:", e);
-    }
-    
-    // Fallback to previous message if no match found or no tool_call_id available
-    const prevMsg = prevMessage();
-    const rawToolName = (prevMsg?.content as any)?.name || "Unknown Tool";
-    const formattedToolName = rawToolName
-      .split("_")
-      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-      
-    return {
-      message: prevMsg,
-      usingId: false,
-      id: null,
-      toolName: rawToolName,
-      formattedToolName
-    };
-  };
-  
-  // Process the tool result message content
-  const processToolResultMessage = () => {
-    // Find the related tool call message and set it just once
-    const toolCallMessageInfo = findToolCallMessage();
-    setToolCallInfo(toolCallMessageInfo);
-    
-    // Extract tool_call_id from the message content
-    let extractedToolCallId: string | null = toolCallMessageInfo.id;
-    
-    if (!extractedToolCallId) {
-      // Try to extract from the result content as a fallback
       if (typeof message.content === 'string') {
         try {
           const jsonContent = JSON.parse(message.content);
@@ -170,43 +96,128 @@ function ToolMessageRenderer({
             extractedToolCallId = jsonContent.tool_call_id;
           }
         } catch {
-          // Try regex extraction if JSON parsing fails
           const match = message.content.match(/"tool_call_id"\s*:\s*"(pyd_ai_[^"]+)"/);
           if (match && match[1]) {
             extractedToolCallId = match[1];
           }
         }
-      } else if (typeof message.content === 'object' && 
-                (message.content as any)?.tool_call_id && 
-                (message.content as any).tool_call_id.startsWith('pyd_ai_')) {
-        extractedToolCallId = (message.content as any).tool_call_id;
+      } else if (typeof message.content === 'object') {
+        const contentObj = message.content as any;
+        if (contentObj?.tool_call_id && contentObj.tool_call_id.startsWith('pyd_ai_')) {
+          extractedToolCallId = contentObj.tool_call_id;
+        }
+      }
+    } catch (e) {
+      console.error("Error extracting tool_call_id from result message:", e);
+    }
+
+    // 2. If an ID was extracted, try looking it up in the map
+    if (extractedToolCallId) {
+      const map = toolCallMap();
+      const correspondingCallMsg = map.get(extractedToolCallId);
+
+      if (correspondingCallMsg) {
+        const content = correspondingCallMsg.content as any;
+        const rawToolName = content?.name || "Unknown Tool";
+        const formattedToolName = rawToolName
+          .split("_")
+          .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+          
+        foundToolCallInfo = {
+          message: correspondingCallMsg,
+          usingId: true,
+          id: extractedToolCallId,
+          toolName: rawToolName,
+          formattedToolName
+        };
       }
     }
-    
-    // Parse the content
-    try {
-      const content = typeof message.content === 'object' && (message.content as ToolResult)?.content 
-        ? (message.content as ToolResult).content 
-        : JSON.stringify(message.content);
+
+    // 3. Fallback to previous message if no ID found or ID not in map
+    if (!foundToolCallInfo) {
+      const prevMsg = prevMessage();
+      // Check if prevMsg is actually a tool_call, otherwise it's not a valid fallback
+      if (prevMsg && prevMsg.role === 'tool_call') { 
+        const rawToolName = (prevMsg.content as any)?.name || "Unknown Tool";
+        const formattedToolName = rawToolName
+          .split("_")
+          .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
         
-      const parsedContent = JSON.parse(content);
+        foundToolCallInfo = {
+          message: prevMsg,
+          usingId: false,
+          id: null, // No reliable ID in this case
+          toolName: rawToolName,
+          formattedToolName
+        };
+      } else {
+         // Handle cases where no corresponding call can be found (e.g., orphaned result)
+         // For now, we might show a generic message or hide details
+         const genericToolName = "Tool Interaction"; // Or extract from result if possible
+         foundToolCallInfo = {
+            message: undefined, // No call message found
+            usingId: false,
+            id: extractedToolCallId, // Still might have extracted an ID
+            toolName: genericToolName,
+            formattedToolName: genericToolName
+         }
+         console.warn("Could not find corresponding tool_call for result:", message);
+      }
+    }
+
+    setToolCallInfo(foundToolCallInfo);
+
+    // Ensure extractedToolCallId is correctly set for content parsing, even if lookup failed
+    if (foundToolCallInfo && !extractedToolCallId && foundToolCallInfo.id) {
+      extractedToolCallId = foundToolCallInfo.id;
+    }
+
+    // 4. Parse the result content (same logic as before)
+    try {
+      const contentStr = typeof message.content === 'object' && (message.content as ToolResult)?.content 
+        ? (message.content as ToolResult).content 
+        : typeof message.content === 'string' 
+        ? message.content // Assume string might be JSON already
+        : JSON.stringify(message.content); // Fallback: stringify if it's an object but not ToolResult structure
+        
+      let parsedContent: any = {}; // Use 'any' here or a more specific type if known
+      try {
+        parsedContent = JSON.parse(contentStr);
+      } catch {
+        // If parsing fails, treat the original string content as the result
+        parsedContent = { content: contentStr }; // Wrap in object for consistency
+      }
       
-      // Add the tool_call_id to the parsed content if found
-      if (extractedToolCallId && typeof parsedContent === 'object') {
-        parsedContent.tool_call_id = extractedToolCallId;
+      // Add the tool_call_id to the parsed content if available
+      if (extractedToolCallId && typeof parsedContent === 'object' && parsedContent !== null) {
+        // Avoid adding if it already exists from parsing the string
+        if (!('tool_call_id' in parsedContent)) {
+           parsedContent.tool_call_id = extractedToolCallId;
+        }
       }
       
       setParsedToolResultContent(parsedContent);
-      setHasError(!!parsedContent.error);
+      // Cast to any or check for property existence
+      setHasError(!!(parsedContent as any)?.error); 
     } catch (error) {
-      // We just use the unparsed content
+      console.error("Error parsing tool result content:", error);
+      // Use the unparsed content, trying to add ID if possible
       const result = message.content;
-      if (typeof result === 'object' && extractedToolCallId) {
-        const updatedResult = {...result, tool_call_id: extractedToolCallId};
-        setParsedToolResultContent(updatedResult);
+      if (typeof result === 'object' && result !== null && extractedToolCallId) {
+        // Avoid adding if it already exists
+        if (!('tool_call_id' in result)) {
+          const updatedResult = {...result, tool_call_id: extractedToolCallId};
+          setParsedToolResultContent(updatedResult);
+        } else {
+           setParsedToolResultContent(result);
+        }
       } else {
-        setParsedToolResultContent(result);
+        setParsedToolResultContent(result); // Store as is
       }
+      // Assume error if parsing failed, or check original content structure
+      setHasError(true); 
     }
   };
 
@@ -227,7 +238,6 @@ function ToolMessageRenderer({
           
           onMount(() => {
             requestAnimationFrame(() => setIsMounted(true));
-            Prism.highlightAll();
           });
 
           const info = toolCallInfo();
@@ -315,7 +325,9 @@ function ToolMessageRenderer({
                     </div>
                     {(() => {
                       const result = parsedToolResultContent();
-                      const toolCallId = result?.tool_call_id || info.id;
+                      // Use the ID from toolCallInfo if available, otherwise fallback to result
+                      const info = toolCallInfo();
+                      const toolCallId = info?.id || result?.tool_call_id;
                       
                       if (toolCallId && toolCallId.startsWith('pyd_ai_')) {
                         return (
@@ -333,13 +345,13 @@ function ToolMessageRenderer({
                             </div>
                             <div class="ml-5 mt-1 flex items-center text-xs text-primary/70">
                               <span class="mr-1">Link method:</span>
-                              <span class={`px-1.5 py-0.5 rounded ${info.usingId ? 'bg-blue-500/20' : 'bg-yellow-500/20'}`}>
-                                {info.usingId ? 'ID-based' : 'Sequential (legacy)'}
+                              <span class={`px-1.5 py-0.5 rounded ${(info?.usingId ?? false) ? 'bg-blue-500/20' : 'bg-yellow-500/20'}`}>
+                                {(info?.usingId ?? false) ? 'ID-based' : 'Sequential (legacy)'}
                               </span>
                             </div>
                           </div>
                         );
-                      } else if (info.usingId === false) {
+                      } else if (info?.usingId === false) {
                         // For legacy messages with no ID, show a simple indicator
                         return (
                           <div class="mt-2 pt-2 border-t border-primary/10">

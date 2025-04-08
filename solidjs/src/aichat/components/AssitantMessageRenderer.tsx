@@ -219,6 +219,10 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
     ) {
       setTimeout(() => {
         setShowingStaticContent(true);
+        //await 100ms to ensure the content is fully rendered
+        setTimeout(() => {
+          Prism.highlightAll();
+        }, 100);
       }, 200);
     }
     if (!props.isLast()) {
