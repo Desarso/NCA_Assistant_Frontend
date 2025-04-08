@@ -35,14 +35,14 @@ export interface MessageContent {
 export interface ToolCallContent {
   name: string;
   args: Record<string, any> | string; // Args might be an object or a stringified object
-  tool_call_id: string;
+  tool_call_id?: string; // Make optional
 }
 
 // Define structure for Tool Result content
 export interface ToolResultContent {
   name: string;
   content: any; // The actual result content
-  tool_call_id: string;
+  tool_call_id?: string; // Make optional
 }
 
 export interface Message {

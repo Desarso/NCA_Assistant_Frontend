@@ -101,63 +101,51 @@ export function convertToChatMessages(messages: DBMessage[]): ChatMessage[] {
           else if (part.type === "ToolCallPart") {
             // Reset assistant message accumulation
             currentAssistantMessage = null;
-            // The content for the 'tool_call' message should be the object
-            // containing name, args, and tool_call_id.
-            // Ensure the content part exists and has the necessary fields.
-            if (part.content && typeof part.content === 'object' && part.content.tool_call_id) {
-                 outputMessages.push({
-                   role: "tool_call",
-                   content: part.content, // Use the object directly
-                 });
+            // Check if the essential structure (object with name) exists
+            if (part.content && typeof part.content === 'object' && part.content.name) {
+                const args = (typeof part.content.args === 'object' || typeof part.content.args === 'string') ? part.content.args : {}; 
+                outputMessages.push({
+                  role: "tool_call",
+                  content: { 
+                      name: part.content.name,
+                      args: args,
+                      tool_call_id: part.content.tool_call_id
+                  }
+                });
             } else {
-                 console.error("Invalid ToolCallPart structure:", part);
-                 // Add a placeholder or skip - Use correct type
-                 outputMessages.push({ 
-                     role: "tool_call", 
-                     content: { 
-                         name: "Error: Invalid Tool Call Data", 
-                         args: {}, 
-                         tool_call_id: `invalid_${dbMessage.id}`
-                     } // Satisfies ToolCallContent
-                 });
+                // Log error and skip this part, DO NOT create an error message
+                console.error("Invalid or incomplete ToolCallPart structure, skipping part:", part);
+                // Ensure no message is pushed here
             }
           }
           // --- Handle Tool Results ---
           else if (part.type === "ToolReturnPart") {
              // Reset assistant message accumulation
             currentAssistantMessage = null;
-             // The content for the 'tool_result' message should be the object
-             // containing name, content (the actual result), and tool_call_id.
-             if (part.content && typeof part.content === 'object' && part.content.tool_call_id) {
-                 // The actual result content might be a stringified JSON, attempt to parse it
-                 let finalResultContent = part.content;
-                 if (typeof finalResultContent.content === 'string') {
-                     try {
-                        // Attempt to parse the inner content string
-                        const innerParsed = JSON.parse(finalResultContent.content);
-                        // If successful, replace the stringified content with the parsed object
-                        finalResultContent = { ...finalResultContent, content: innerParsed };
-                     } catch (innerError) {
-                         // If inner parsing fails, keep the original string content
-                         // console.warn("ToolReturnPart inner content was string but not valid JSON:", finalResultContent.content);
-                     }
-                 }
+             // Check if the essential structure (object with name and content field) exists
+             if (part.content && typeof part.content === 'object' && part.content.name && part.content.hasOwnProperty('content')) {
+                 let finalResultContent = part.content.content;
+                 const toolCallId = part.content.tool_call_id; 
+                 const toolName = part.content.name; 
 
+                 if (typeof finalResultContent === 'string') {
+                     try {
+                        finalResultContent = JSON.parse(finalResultContent);
+                     } catch (innerError) { /* Keep as string */ }
+                 }
+  
                  outputMessages.push({
                     role: "tool_result",
-                    content: finalResultContent, // Use the potentially updated object
+                    content: { 
+                        name: toolName,
+                        content: finalResultContent,
+                        tool_call_id: toolCallId
+                    }
                  });
              } else {
-                 console.error("Invalid ToolReturnPart structure:", part);
-                 // Add a placeholder or skip - Use correct type
-                 outputMessages.push({ 
-                     role: "tool_result", 
-                     content: { 
-                         name: "Error: Invalid Tool Result Data", 
-                         content: { error: "Invalid structure" }, // Content for ToolResultContent can be any
-                         tool_call_id: `invalid_${dbMessage.id}`
-                     } // Satisfies ToolResultContent
-                 });
+                 // Log error and skip this part, DO NOT create an error message
+                 console.error("Invalid or incomplete ToolReturnPart structure, skipping part:", part);
+                 // Ensure no message is pushed here
              }
           }
            // --- Handle System Prompt (Usually ignored in chat display) ---
@@ -179,28 +167,25 @@ export function convertToChatMessages(messages: DBMessage[]): ChatMessage[] {
       } catch (e) {
         console.error(`Error parsing DB message content (ID: ${dbMessage.id}):`, e);
         console.error("Original content:", dbMessage.content);
-         // Attempt to create a fallback message if content is just a string
+         // Attempt to create a fallback message ONLY if content is just a simple string
         if (typeof dbMessage.content === 'string') {
              try {
-                 // Check if the raw content itself is simple text rather than JSON
-                 // This handles the case where the initial modification might have saved raw strings
-                 JSON.parse(dbMessage.content); // If this fails, it's likely not JSON
+                 JSON.parse(dbMessage.content); // Check if it was accidentally saved JSON
              } catch (jsonError) {
                  // Content is likely a simple string, use it directly
                  outputMessages.push({
                      role: dbMessage.is_user_message ? 'user' : 'assistant',
                      content: dbMessage.content
                  });
-                 return outputMessages; // Return the fallback message
+                 // Return here, as we've handled this specific case
+                 return outputMessages; 
              }
          }
-        // If parsing failed badly, add a placeholder error message
-        outputMessages.push({
-            role: "assistant", // Or determine role based on dbMessage.is_user_message
-            content: `Error: Could not display message (ID: ${dbMessage.id}). Invalid format.`
-        });
+        // If parsing failed and it wasn't a simple string, 
+        // DO NOT push an error message. Just log and return empty for this dbMessage.
+        // The console log above already recorded the error.
       }
-      return outputMessages;
+      return outputMessages; // Return whatever valid messages were parsed, or empty if parse failed
     });
   }
 
