@@ -1,11 +1,12 @@
 from datetime import datetime
 import json
-from typing import AsyncGenerator, List, Union
+from typing import AsyncGenerator, List, Union, Dict
 from cohere import ToolResult
 from fastapi import APIRouter, Depends, HTTPException, Request
 from requests import Session
 from pydantic import BaseModel, Field
 import cohere
+import uuid
 
 from ai.Manager import MyDeps, create_agent, get_system_prompt
 from ai.assistant_functions.memory_functions import get_memory_no_context
@@ -225,8 +226,7 @@ async def chat(
                         # Set rejection flag based on user confirmation
                         result = await get_user_confirmation(node, deps_instance) # Pass deps to set flag
 
-                        # Always proceed to execute the tool call via the agent framework
-                        # The tool function itself will check the flag in deps_instance
+                        print("node", node)
                         async with node.stream(run.ctx) as handle_stream:
                             async for event in handle_stream:
                                 yield "data: " + event_to_json_string(event) + "\n\n"
@@ -383,8 +383,40 @@ def read_conversation_messages(
     return {"status": "success", "messages": conversation.messages}
 
 
+# Add this dictionary to track tool call IDs and their results
+tool_call_mapping: Dict[str, str] = {}
+
+def generate_tool_call_id() -> str:
+    """Generate a unique tool call ID."""
+    return f'pyd_ai_{uuid.uuid4().hex}'
+
+
 def event_to_json_string(event):
     """Convert event objects to JSON string."""
+    global tool_call_mapping
+    
+    # Add tool_call_id if missing for tool calls and store mappings
+    if isinstance(event, FunctionToolCallEvent):
+        if not event.part.tool_call_id:
+            # Generate a tool ID if it's missing (likely from Gemini model)
+            event.part.tool_call_id = generate_tool_call_id()
+            event.call_id = event.part.tool_call_id  # Update call_id as well to match
+        
+        # Store mapping from call_id to tool_call_id
+        tool_call_mapping[event.call_id] = event.part.tool_call_id
+    
+    # Ensure tool results reference the correct tool call
+    elif isinstance(event, FunctionToolResultEvent):
+        # Check if this result references a call_id in our mapping
+        if event.tool_call_id in tool_call_mapping:
+            # Update tool_call_id to match the stored mapping
+            tool_call_id = tool_call_mapping[event.tool_call_id]
+            
+            # Update the result object
+            event.tool_call_id = tool_call_id
+            if hasattr(event.result, 'tool_call_id'):
+                event.result.tool_call_id = tool_call_id
+    
     # Existing logic for pydantic-ai event objects
     event_type = "part_start"
     if isinstance(event, PartDeltaEvent):
@@ -393,14 +425,25 @@ def event_to_json_string(event):
         event_type = "tool_call"
     elif isinstance(event, FunctionToolResultEvent):
         event_type = "tool_result"
+    
     event_dict = {"type": event_type, "data": event_to_dict(event)}
-    return json.dumps(event_dict)
+    
+    try:
+        return json.dumps(event_dict)
+    except (TypeError, ValueError) as e:
+        # Handle the error case by providing a fallback serialization
+        print(f"JSON serialization error: {e}")
+        event_dict["data"] = str(event_dict["data"])
+        return json.dumps(event_dict)
 
 
 def event_from_json_string(json_str):
     """Convert JSON string back to event object."""
+    global tool_call_mapping
+    
     data = json.loads(json_str)
     event_data = data["data"]
+    
     if data["type"] == "part_start":
         return PartStartEvent(
             index=event_data["index"],
@@ -420,33 +463,63 @@ def event_from_json_string(json_str):
             event_kind=event_data["event_kind"],
         )
     elif data["type"] == "tool_call":
-        return FunctionToolCallEvent(
+        # Ensure tool_call_id is properly passed to ToolCallPart
+        tool_call_id = event_data["tool_call"].get("tool_call_id")
+        call_id = event_data.get("call_id")
+        
+        # Generate ID if missing
+        if not tool_call_id:
+            tool_call_id = generate_tool_call_id()
+        
+        # Store mapping
+        if call_id:
+            tool_call_mapping[call_id] = tool_call_id
+            
+        event = FunctionToolCallEvent(
             part=ToolCallPart(
                 tool_name=event_data["tool_call"]["name"],
                 args=event_data["tool_call"]["args"],
-                tool_call_id=event_data["tool_call"]["tool_call_id"],
+                tool_call_id=tool_call_id,
             ),
             event_kind=event_data["event_kind"],
         )
+        
+        # Ensure call_id is the same as tool_call_id for consistency
+        if event.call_id != tool_call_id:
+            tool_call_mapping[event.call_id] = tool_call_id
+            
+        return event
     elif data["type"] == "tool_result":
         tool_result = event_data["tool_result"]
+        original_tool_call_id = event_data.get("tool_call_id")
+        
+        # Find the mapped tool_call_id if available
+        tool_call_id = original_tool_call_id
+        if original_tool_call_id in tool_call_mapping:
+            tool_call_id = tool_call_mapping[original_tool_call_id]
+        
         if "content" in tool_result:
+            # Ensure that tool_result tool_call_id matches
+            result_tool_call_id = tool_result.get("tool_call_id", tool_call_id)
+            if result_tool_call_id != tool_call_id and tool_call_id:
+                result_tool_call_id = tool_call_id
+                
             return FunctionToolResultEvent(
                 result=ToolReturnPart(
                     tool_name=tool_result["name"],
                     content=tool_result["content"],
-                    tool_call_id=tool_result["tool_call_id"],
+                    tool_call_id=result_tool_call_id,
                 ),
-                tool_call_id=event_data["tool_call_id"],
+                tool_call_id=tool_call_id,
                 event_kind=event_data["event_kind"],
             )
         elif "retry_prompt" in tool_result:
             return FunctionToolResultEvent(
                 result=RetryPromptPart(
                     content=tool_result["retry_prompt"],
-                    tool_call_id=tool_result["tool_call_id"],
+                    tool_call_id=tool_call_id,
                 ),
-                tool_call_id=event_data["tool_call_id"],
+                tool_call_id=tool_call_id,
                 event_kind=event_data["event_kind"],
             )
         else:
@@ -457,6 +530,8 @@ def event_from_json_string(json_str):
 
 def event_to_dict(event):
     """Convert event objects to serializable dictionaries."""
+    global tool_call_mapping
+    
     if isinstance(event, PartStartEvent):
         if isinstance(event.part, TextPart):
             return {
@@ -500,20 +575,45 @@ def event_to_dict(event):
                 "event_kind": event.event_kind,
             }
     elif isinstance(event, FunctionToolCallEvent):
+        # Ensure we have a tool_call_id, generate one if it's missing
+        tool_call_id = event.part.tool_call_id
+        if not tool_call_id:
+            tool_call_id = generate_tool_call_id()
+            event.part.tool_call_id = tool_call_id
+            event.call_id = tool_call_id
+            
+        # Store mapping from call_id to tool_call_id
+        tool_call_mapping[event.call_id] = tool_call_id
+            
         return {
             "tool_call": {
                 "name": event.part.tool_name,
                 "args": event.part.args,
-                "tool_call_id": event.part.tool_call_id,
+                "tool_call_id": tool_call_id,
             },
             "call_id": event.call_id,
             "event_kind": event.event_kind,
         }
     elif isinstance(event, FunctionToolResultEvent):
+        # Check if this result references a call_id in our mapping
+        if event.tool_call_id in tool_call_mapping:
+            tool_call_id = tool_call_mapping[event.tool_call_id]
+            event.tool_call_id = tool_call_id
+            if hasattr(event.result, 'tool_call_id'):
+                event.result.tool_call_id = tool_call_id
+        
+        # Properly handle the tool result content, converting non-string objects to JSON
+        content = event.result.content
+        if not isinstance(content, str):
+            try:
+                content = json.dumps(content)
+            except (TypeError, ValueError):
+                content = str(content)
+                
         return {
             "tool_result": {
                 "name": event.result.tool_name,
-                "content": str(event.result.content) if not isinstance(event.result.content, str) else event.result.content,
+                "content": content,
                 "tool_call_id": event.result.tool_call_id,
                 "timestamp": event.result.timestamp.isoformat(),
             },
@@ -546,12 +646,18 @@ def model_message_to_dict(message: Union[ModelRequest, ModelResponse], user_reje
             }
 
         if isinstance(part, ToolCallPart):
+            # Ensure tool call ID exists
+            tool_call_id = part.tool_call_id
+            if not tool_call_id:
+                tool_call_id = generate_tool_call_id()
+                part.tool_call_id = tool_call_id  # Modify the part object
+                
             return {
                 "type": "ToolCallPart",
                 "content": {
                     "name": part.tool_name,
                     "args": part.args,
-                    "tool_call_id": part.tool_call_id,
+                    "tool_call_id": tool_call_id,
                 },
                 "part_kind": getattr(part, "part_kind", "text"),
                 "user_rejected": user_rejected,
@@ -592,11 +698,19 @@ def model_message_to_dict(message: Union[ModelRequest, ModelResponse], user_reje
                 "part_kind": getattr(part, "part_kind", "text"),
             }
         if isinstance(part, ToolReturnPart):
+            # Properly handle the tool return content, converting non-string objects to JSON
+            content = part.content
+            if not isinstance(content, str):
+                try:
+                    content = json.dumps(content)
+                except (TypeError, ValueError):
+                    content = str(content)
+                    
             return {
                 "type": "ToolReturnPart",
                 "content": {
                     "name": part.tool_name,
-                    "content": str(part.content) if not isinstance(part.content, str) else part.content,
+                    "content": content,
                     "tool_call_id": part.tool_call_id,
                 },
                 "part_kind": getattr(part, "part_kind", "text"),
@@ -634,9 +748,13 @@ def model_message_to_dict(message: Union[ModelRequest, ModelResponse], user_reje
 
 def dict_to_model_message(data: dict) -> Union[ModelRequest, ModelResponse]:
     """Convert a dictionary back to a ModelRequest or ModelResponse"""
+    global tool_call_mapping
 
     # Remove the custom flag before processing, if it exists
     data.pop('user_rejected', None)
+    
+    # Track tool call IDs within this message to ensure consistency
+    message_tool_call_mapping = {}
 
     def convert_content(content_data):
         """Helper function to convert content data back to appropriate objects"""
@@ -661,11 +779,23 @@ def dict_to_model_message(data: dict) -> Union[ModelRequest, ModelResponse]:
     parts = []
     for part_data in data["parts"]:
         if part_data["type"] == "ToolCallPart":
+            # Ensure there's a tool_call_id
+            tool_call_id = part_data["content"].get("tool_call_id")
+            if not tool_call_id:
+                tool_call_id = generate_tool_call_id()
+                
+            # Store this ID in our temporary mapping
+            if "call_id" in part_data:
+                message_tool_call_mapping[part_data["call_id"]] = tool_call_id
+                
+            # Add to global mapping if not already there
+            tool_call_mapping[tool_call_id] = tool_call_id
+                
             parts.append(
                 ToolCallPart(
                     tool_name=part_data["content"].get("name"),
                     args=part_data["content"].get("args"),
-                    tool_call_id=part_data["content"].get("tool_call_id"),
+                    tool_call_id=tool_call_id,
                     part_kind=part_data.get("part_kind", "text"),
                 )
             )
@@ -706,11 +836,23 @@ def dict_to_model_message(data: dict) -> Union[ModelRequest, ModelResponse]:
                 )
             )
         elif part_data["type"] == "ToolReturnPart":
+            # Get the original tool_call_id
+            original_tool_call_id = part_data["content"].get("tool_call_id")
+            
+            # Check if we have a mapping for this ID
+            tool_call_id = original_tool_call_id
+            if original_tool_call_id in message_tool_call_mapping:
+                tool_call_id = message_tool_call_mapping[original_tool_call_id]
+            elif original_tool_call_id in tool_call_mapping:
+                tool_call_id = tool_call_mapping[original_tool_call_id]
+            elif not tool_call_id:
+                tool_call_id = generate_tool_call_id()
+                
             parts.append(
                 ToolReturnPart(
                     tool_name=part_data["content"].get("name"),
                     content=part_data["content"].get("content"),
-                    tool_call_id=part_data["content"].get("tool_call_id"),
+                    tool_call_id=tool_call_id,
                     part_kind=part_data.get("part_kind", "text"),
                 )
             )

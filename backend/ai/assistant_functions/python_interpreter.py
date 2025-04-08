@@ -4,7 +4,7 @@ import sys
 from io import StringIO
 import threading
 import queue
-from typing import Optional, Dict, Any, Tuple
+from typing import Optional, Dict, Any, Union
 import logging
 from error_logger.error_logger import ErrorLogger
 import traceback
@@ -22,7 +22,7 @@ class DefaultApi:
 
 def python_interpreter(
     ctx: RunContext, code: str
-) -> Tuple[Optional[str], Optional[Dict[str, Any]]]:
+) -> Union[str, Dict[str, Any]]:
     """
     Executes Python code in the current environment.
     The following functions are automatically imported and available:
@@ -30,24 +30,15 @@ def python_interpreter(
     - default_api.graph_api_request: Same as graph_api_request_no_ctx
     - graph_api_request: Same as graph_api_request_no_ctx
     
-    Example usage:
-        # List users (any of these will work):
-        users, error = graph_api_request_no_ctx(method='GET', path='/users', query_params={'$select': 'id'})
-        users, error = default_api.graph_api_request(method='GET', path='/users', query_params={'$select': 'id'})
-        users, error = graph_api_request(method='GET', path='/users', query_params={'$select': 'id'})
-        
-        # List channels (any of these will work):
-        channels, error = graph_api_request_no_ctx(method='GET', path='/teams/{{team-id}}/channels', query_params={'$select': 'id,displayName'})
-        channels, error = default_api.graph_api_request(method='GET', path='/teams/{{team-id}}/channels', query_params={'$select': 'id,displayName'})
-        channels, error = graph_api_request(method='GET', path='/teams/{{team-id}}/channels', query_params={'$select': 'id,displayName'})
-    
     Args:
         code (str): The Python code to execute.
 
     Returns:
-        tuple: A tuple containing:
-            - The output of the Python code.
-            - An error dictionary if an error occurred, or None if successful.
+        Union[str, Dict[str, Any]]:
+            - On success: The captured standard output (stdout) as a string.
+            - On failure: An error dictionary containing details (from error_logger).
+                         This includes execution errors, timeouts, text sent to stderr,
+                         or text sent to stdout starting with "Error:".
     """
     # Create a queue to store the result
     result_queue = queue.Queue()
@@ -92,9 +83,22 @@ def python_interpreter(
                     parameters=error_params,
                     stack_trace=traceback.format_exc()
                 )
-                result_queue.put((None, error_result))
+                result_queue.put(error_result)
+            elif output.strip().startswith("Error:"):
+                error_params = {
+                    "code": code,
+                    "stdout_error": output.strip(),
+                    "user_id": ctx.deps.user_object.uid if ctx and ctx.deps and ctx.deps.user_object else None
+                }
+                error_result = error_logger.log_error(
+                    function_name="python_interpreter",
+                    error_text="Code execution printed an error message to stdout",
+                    parameters=error_params,
+                    stack_trace=None
+                )
+                result_queue.put(error_result)
             else:
-                result_queue.put((output, None))
+                result_queue.put(output)
 
         except Exception as e:
             # Restore stdout and stderr in case of exception
@@ -110,7 +114,7 @@ def python_interpreter(
                 parameters=error_params,
                 stack_trace=traceback.format_exc()
             )
-            result_queue.put((None, error_result))
+            result_queue.put(error_result)
 
     # Create and start the thread
     thread = threading.Thread(target=run_code)
@@ -119,8 +123,8 @@ def python_interpreter(
 
     try:
         # Wait for the result with timeout
-        output, error = result_queue.get(timeout=30)
-        return output, error
+        result = result_queue.get(timeout=30)
+        return result
 
     except queue.Empty:
         # If the thread is still running, we need to stop it
@@ -138,9 +142,21 @@ def python_interpreter(
             parameters=error_params,
             stack_trace=traceback.format_exc()
         )
-        return None, error_result
+        return error_result
 
 if __name__ == "__main__":
-    print(
-        python_interpreter(None, "print(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))")
-    )
+    # Note: This test call might need adjustment based on how you handle RunContext
+    # For simple testing, creating a dummy context or handling None might be needed.
+    # Example of direct call (might raise error if context is strictly needed):
+    # print(python_interpreter(None, "print('Hello')")) 
+    # Example with a dummy context (adapt as needed):
+    class DummyDeps: user_object = type('obj', (object,), {'uid': 'test-user'})()
+    class DummyContext: deps = DummyDeps()
+    # print(python_interpreter(DummyContext(), "print('Test successful output')"))
+    # print(python_interpreter(DummyContext(), "import sys; sys.stderr.write('Test stderr error')"))
+    # print(python_interpreter(DummyContext(), "print('Error: Test stdout error')"))
+    # print(python_interpreter(DummyContext(), "raise ValueError('Test exception')"))
+    pass # Keep the __main__ block but comment out the potentially problematic print
+#    print(
+#        python_interpreter(None, "print(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))")
+#    )
