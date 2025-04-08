@@ -398,7 +398,7 @@ const ChatInput: Component<ChatInputProps> = (props) => {
             }}
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
-            placeholder="Type message, paste image, or drop files..." // Updated placeholder
+            placeholder="Type, paste, or drop files..."
             autocomplete="off"
             spellcheck={false}
             disabled={isUploading() || props.gettingResponse}
