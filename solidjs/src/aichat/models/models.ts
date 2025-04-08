@@ -31,9 +31,24 @@ export interface MessageContent {
   content?: string;
 }
   
+// Define structure for Tool Call content
+export interface ToolCallContent {
+  name: string;
+  args: Record<string, any> | string; // Args might be an object or a stringified object
+  tool_call_id: string;
+}
+
+// Define structure for Tool Result content
+export interface ToolResultContent {
+  name: string;
+  content: any; // The actual result content
+  tool_call_id: string;
+}
+
 export interface Message {
     role: string;
-    content: string | ContentItem[] | {name: string};
+    // Update content to include specific types for tool calls/results
+    content: string | ContentItem[] | ToolCallContent | ToolResultContent;
     reasoning?: string;
   }
 

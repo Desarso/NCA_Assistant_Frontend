@@ -35,114 +35,173 @@ export function isContentItemArray(content: any): content is ContentItem[] {
 
 
 export function convertToChatMessages(messages: DBMessage[]): ChatMessage[] {
-    return messages
-      .map((message) => {
-        try {
-          const parsed = JSON.parse(message.content);
-          const messageType = parsed.kind || parsed.type;
-  
-          // Handle model requests
-          if (messageType === "request") {
-            // Find the UserPromptPart in the parts array
-            const userPart = parsed.parts.find(
-              (part: any) => part.type === "UserPromptPart"
-            );
-            if (userPart) {
-              // Handle array content (mixed content including ImageUrl)
-              if (Array.isArray(userPart.content)) {
-                return {
-                  role: "user",
-                  content: userPart.content.map((item: any) => {
-                    // Handle string type items
-                    if (item.type === "str") {
-                      return {
-                        type: "str",
-                        content: item.content,
-                        part_kind: "text",
-                      };
-                    }
-                    // Handle ImageUrl, AudioUrl, DocumentUrl objects
-                    if (
-                      item.type &&
-                      item.content &&
-                      item.part_kind &&
-                      item.part_kind.endsWith("-url")
-                    ) {
-                      return {
-                        content: {
-                          url: item.content.url,
-                          media_type: item.part_kind.replace("-url", "/*"),
-                          kind: item.part_kind,
-                          serverUrl: item.content.url,
-                        },
-                      };
-                    }
-                    return { content: JSON.stringify(item) };
-                  }),
-                };
-              }
-              // Handle single string content
-              if (typeof userPart.content === "string") {
-                return {
-                  role: "user",
-                  content: userPart.content,
-                };
-              }
-              // Handle single object content
-              return {
-                role: "user",
-                content: [
-                  {
-                    content: userPart.content,
-                  },
-                ],
-              };
-            }
-            const toolReturnPart = parsed.parts.find(
-              (part: any) => part.type === "ToolReturnPart"
-            );
-            if (toolReturnPart) {
-              return {
-                role: "tool_result",
-                content: JSON.stringify(toolReturnPart.content),
-              };
-            }
-            return null;
-          }
-  
-          // Handle model responses
-          if (messageType === "response") {
-            let result = {
-              role: "assistant",
-              content: "",
-              reasoning: "",
-            };
-  
-            for (const part of parsed.parts) {
-              if (part.type === "TextPart") {
-                result.content += part.content;
-              }
-              if (part.type === "ReasoningPart") {
-                result.reasoning += part.content;
-              }
-              if (parsed.parts[0].type === "ToolCallPart") {
-                return {
-                  role: "tool_call",
-                  content: JSON.stringify(parsed.parts[0].content),
-                };
-              }
-            }
-  
-            return result;
-          }
-  
-          return null;
-        } catch (e) {
-          console.error("Error parsing message:", e);
-          return null;
+    // Use flatMap to handle cases where one DB message might become multiple UI messages
+    return messages.flatMap((dbMessage) => {
+      const outputMessages: ChatMessage[] = [];
+      try {
+        const parsed = JSON.parse(dbMessage.content);
+
+        // Ensure parsed.parts is an array
+        if (!Array.isArray(parsed.parts)) {
+           console.error("Parsed message content does not contain a 'parts' array:", parsed);
+           // Maybe return a placeholder error message or skip
+           // For now, let's create a simple text message if possible, or skip
+           if (typeof parsed === 'string') {
+                outputMessages.push({ role: dbMessage.is_user_message ? 'user' : 'assistant', content: parsed });
+           } else if (typeof parsed.content === 'string') {
+                outputMessages.push({ role: dbMessage.is_user_message ? 'user' : 'assistant', content: parsed.content });
+           } else {
+               // Cannot determine content, skip this message
+               console.error("Skipping message due to unparseable structure:", dbMessage.id, parsed);
+           }
+           return outputMessages; // Return potentially modified outputMessages
         }
-      })
-      .filter((message): message is ChatMessage => message !== null);
+
+        let currentAssistantMessage: ChatMessage | null = null;
+
+        for (const part of parsed.parts) {
+          // --- Handle User Messages ---
+          if (part.type === "UserPromptPart") {
+             // Reset assistant message accumulation
+            currentAssistantMessage = null;
+            // Handle potential mixed content (simple string vs. array)
+            if (Array.isArray(part.content)) {
+               // Map backend structure (like ImageUrl/AudioUrl from model_message_to_dict)
+               // back to frontend ContentItem structure if necessary, or keep as is if renderer handles it.
+               // Assuming renderer can handle the structure saved by model_message_to_dict for now.
+                outputMessages.push({ role: "user", content: part.content });
+            } else {
+                outputMessages.push({ role: "user", content: part.content });
+            }
+          }
+          // --- Handle Assistant Text/Reasoning ---
+          else if (part.type === "TextPart" || part.type === "ReasoningPart") {
+            const contentToAdd = part.type === "TextPart" ? part.content : "";
+            const reasoningToAdd = part.type === "ReasoningPart" ? part.content : ""; // Backend stores reasoning in 'content' field of ReasoningPart dict
+
+            if (currentAssistantMessage && currentAssistantMessage.role === 'assistant') {
+              // Append to existing assistant message
+              if (typeof currentAssistantMessage.content === 'string') { // Ensure content is string before appending
+                  currentAssistantMessage.content += contentToAdd;
+              }
+              if (reasoningToAdd) {
+                 currentAssistantMessage.reasoning = (currentAssistantMessage.reasoning || "") + reasoningToAdd;
+              }
+            } else {
+              // Create new assistant message
+              currentAssistantMessage = {
+                role: "assistant",
+                content: contentToAdd,
+                reasoning: reasoningToAdd,
+              };
+              outputMessages.push(currentAssistantMessage);
+            }
+          }
+          // --- Handle Tool Calls ---
+          else if (part.type === "ToolCallPart") {
+            // Reset assistant message accumulation
+            currentAssistantMessage = null;
+            // The content for the 'tool_call' message should be the object
+            // containing name, args, and tool_call_id.
+            // Ensure the content part exists and has the necessary fields.
+            if (part.content && typeof part.content === 'object' && part.content.tool_call_id) {
+                 outputMessages.push({
+                   role: "tool_call",
+                   content: part.content, // Use the object directly
+                 });
+            } else {
+                 console.error("Invalid ToolCallPart structure:", part);
+                 // Add a placeholder or skip - Use correct type
+                 outputMessages.push({ 
+                     role: "tool_call", 
+                     content: { 
+                         name: "Error: Invalid Tool Call Data", 
+                         args: {}, 
+                         tool_call_id: `invalid_${dbMessage.id}`
+                     } // Satisfies ToolCallContent
+                 });
+            }
+          }
+          // --- Handle Tool Results ---
+          else if (part.type === "ToolReturnPart") {
+             // Reset assistant message accumulation
+            currentAssistantMessage = null;
+             // The content for the 'tool_result' message should be the object
+             // containing name, content (the actual result), and tool_call_id.
+             if (part.content && typeof part.content === 'object' && part.content.tool_call_id) {
+                 // The actual result content might be a stringified JSON, attempt to parse it
+                 let finalResultContent = part.content;
+                 if (typeof finalResultContent.content === 'string') {
+                     try {
+                        // Attempt to parse the inner content string
+                        const innerParsed = JSON.parse(finalResultContent.content);
+                        // If successful, replace the stringified content with the parsed object
+                        finalResultContent = { ...finalResultContent, content: innerParsed };
+                     } catch (innerError) {
+                         // If inner parsing fails, keep the original string content
+                         // console.warn("ToolReturnPart inner content was string but not valid JSON:", finalResultContent.content);
+                     }
+                 }
+
+                 outputMessages.push({
+                    role: "tool_result",
+                    content: finalResultContent, // Use the potentially updated object
+                 });
+             } else {
+                 console.error("Invalid ToolReturnPart structure:", part);
+                 // Add a placeholder or skip - Use correct type
+                 outputMessages.push({ 
+                     role: "tool_result", 
+                     content: { 
+                         name: "Error: Invalid Tool Result Data", 
+                         content: { error: "Invalid structure" }, // Content for ToolResultContent can be any
+                         tool_call_id: `invalid_${dbMessage.id}`
+                     } // Satisfies ToolResultContent
+                 });
+             }
+          }
+           // --- Handle System Prompt (Usually ignored in chat display) ---
+          else if (part.type === "SystemPromptPart") {
+              // Reset assistant message accumulation
+              currentAssistantMessage = null;
+              // Typically, system prompts aren't displayed directly in the chat UI.
+              // You might log it or store it elsewhere if needed.
+              // console.log("Ignoring SystemPromptPart for UI:", part.content);
+          }
+          // --- Handle other potential part types ---
+          else {
+             // Reset assistant message accumulation
+             currentAssistantMessage = null;
+             console.warn("Unhandled part type in convertToChatMessages:", part.type, part);
+             // Optionally create a generic message or ignore
+          }
+        }
+      } catch (e) {
+        console.error(`Error parsing DB message content (ID: ${dbMessage.id}):`, e);
+        console.error("Original content:", dbMessage.content);
+         // Attempt to create a fallback message if content is just a string
+        if (typeof dbMessage.content === 'string') {
+             try {
+                 // Check if the raw content itself is simple text rather than JSON
+                 // This handles the case where the initial modification might have saved raw strings
+                 JSON.parse(dbMessage.content); // If this fails, it's likely not JSON
+             } catch (jsonError) {
+                 // Content is likely a simple string, use it directly
+                 outputMessages.push({
+                     role: dbMessage.is_user_message ? 'user' : 'assistant',
+                     content: dbMessage.content
+                 });
+                 return outputMessages; // Return the fallback message
+             }
+         }
+        // If parsing failed badly, add a placeholder error message
+        outputMessages.push({
+            role: "assistant", // Or determine role based on dbMessage.is_user_message
+            content: `Error: Could not display message (ID: ${dbMessage.id}). Invalid format.`
+        });
+      }
+      return outputMessages;
+    });
   }
 
 

@@ -226,7 +226,6 @@ async def chat(
                         # Set rejection flag based on user confirmation
                         result = await get_user_confirmation(node, deps_instance) # Pass deps to set flag
 
-                        print("node", node)
                         async with node.stream(run.ctx) as handle_stream:
                             async for event in handle_stream:
                                 yield "data: " + event_to_json_string(event) + "\n\n"
@@ -236,6 +235,8 @@ async def chat(
                             conversation_id=conversation_id,
 
                         )
+                        print("db_message", db_message)
+                        print("saving tool response")
                         session.add(db_message)
                         session.commit()
     return StreamingResponse(
@@ -380,7 +381,28 @@ def read_conversation_messages(
             status_code=403,
             detail="Access denied: You can only view messages from your own conversations",
         )
-    return {"status": "success", "messages": conversation.messages}
+        
+    # Sort messages first
+    sorted_messages = sorted(conversation.messages, key=lambda m: m.created_at)
+    
+    # Convert messages to a list of dictionaries suitable for JSON serialization
+    # Ensure datetime objects are converted to ISO format strings
+    # The frontend's convertToChatMessages function will handle parsing the 'content' field.
+    processed_messages = [
+        {
+            "id": message.id,
+            "content": message.content,  # Return the raw content string
+            "is_user_message": message.is_user_message,
+            "created_at": message.created_at.isoformat(),
+            "updated_at": message.updated_at.isoformat(),
+            "conversation_id": message.conversation_id,
+            # Add other fields from DBMessage if needed by the frontend
+        }
+        for message in sorted_messages
+    ]
+            
+    # Return the list of dictionaries
+    return {"status": "success", "messages": processed_messages}
 
 
 # Add this dictionary to track tool call IDs and their results
@@ -652,11 +674,20 @@ def model_message_to_dict(message: Union[ModelRequest, ModelResponse], user_reje
                 tool_call_id = generate_tool_call_id()
                 part.tool_call_id = tool_call_id  # Modify the part object
                 
+            # Ensure args are stored as a dictionary
+            args_data = part.args
+            if isinstance(args_data, str):
+                try:
+                    args_data = json.loads(args_data) # Parse if it's a JSON string
+                except json.JSONDecodeError:
+                    print(f"Warning: ToolCallPart args was a string but not valid JSON: {args_data}")
+                    # Keep it as a string if parsing fails
+            
             return {
                 "type": "ToolCallPart",
                 "content": {
                     "name": part.tool_name,
-                    "args": part.args,
+                    "args": args_data, # Now args_data is likely a dict
                     "tool_call_id": tool_call_id,
                 },
                 "part_kind": getattr(part, "part_kind", "text"),

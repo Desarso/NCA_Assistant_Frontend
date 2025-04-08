@@ -9,7 +9,7 @@ import Prism from "prismjs";
 const components = componentsJson as any;
 
 // Current database version - increment when schema changes
-const CURRENT_DB_VERSION = "1.0.0";
+const CURRENT_DB_VERSION = "1.0.1";
 const DB_VERSION_KEY = "indexeddb_version";
 
 //static class to access the message cache
