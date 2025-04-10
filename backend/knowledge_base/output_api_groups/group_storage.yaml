@@ -1,0 +1,4075 @@
+- path: /storage
+  path_description: Provides operations to manage the storage singleton.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get storage
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: storage
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          fileStorage:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.fileStorage'
+            - type: object
+              nullable: true
+            x-ms-navigationProperty: true
+          settings:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.storageSettings'
+            - type: object
+              nullable: true
+            x-ms-navigationProperty: true
+          '@odata.type':
+            type: string
+- path: /storage/fileStorage
+  path_description: Provides operations to manage the fileStorage property of the microsoft.graph.storage entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get fileStorage from storage
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property fileStorage in storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: fileStorage
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            containers:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.fileStorageContainer'
+              x-ms-navigationProperty: true
+            deletedContainers:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.fileStorageContainer'
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.fileStorage'
+  - method: DELETE
+    summary: Delete navigation property fileStorage for storage
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /storage/fileStorage/containers
+  path_description: Provides operations to manage the containers property of the microsoft.graph.fileStorage entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List containers
+    description: Retrieve a list of fileStorageContainer objects that are visible to the caller. The containerTypeId filter parameter is required.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create fileStorageContainer
+    description: 'Create a new fileStorageContainer object.  The container type identified by containerTypeId must be registered in the tenant.  For delegated calls, the calling user is set as the owner of the fileStorageContainer. '
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: fileStorageContainer
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            containerTypeId:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              description: Container type ID of the fileStorageContainer. For details about container types, see Container Types. Each container must have only one container type. Read-only.
+              format: uuid
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time of the fileStorageContainer creation. Read-only.
+              format: date-time
+            customProperties:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.fileStorageContainerCustomPropertyDictionary'
+              - type: object
+                nullable: true
+              description: Custom property collection for the fileStorageContainer. Read-write.
+            description:
+              type: string
+              description: Provides a user-visible description of the fileStorageContainer. Read-write.
+              nullable: true
+            displayName:
+              type: string
+              description: The display name of the fileStorageContainer. Read-write.
+            lockState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.siteLockState'
+              - type: object
+                nullable: true
+              description: Indicates the lock state of the fileStorageContainer. The possible values are unlocked and lockedReadOnly. Read-only.
+            settings:
+              $ref: '#/components/schemas/microsoft.graph.fileStorageContainerSettings'
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.fileStorageContainerStatus'
+              - type: object
+                nullable: true
+              description: 'Status of the fileStorageContainer. Containers are created as inactive and require activation. Inactive containers are subjected to automatic deletion in 24 hours. The possible values are: inactive, active. Read-only.'
+            viewpoint:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.fileStorageContainerViewpoint'
+              - type: object
+                nullable: true
+              description: Data specific to the current user. Read-only.
+            drive:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.drive'
+              - type: object
+                nullable: true
+              description: The drive of the resource fileStorageContainer. Read-only.
+              x-ms-navigationProperty: true
+            permissions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.permission'
+              description: 'The set of permissions for users in the fileStorageContainer. Permission for each user is set by the roles property. The possible values are: reader, writer, manager, and owner. Read-write.'
+              x-ms-navigationProperty: true
+            recycleBin:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.recycleBin'
+              - type: object
+                nullable: true
+              description: Recycle bin of the fileStorageContainer. Read-only.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.fileStorageContainer'
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}
+  path_description: Provides operations to manage the containers property of the microsoft.graph.fileStorage entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get containers from storage
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property containers in storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: fileStorageContainer
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            containerTypeId:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              description: Container type ID of the fileStorageContainer. For details about container types, see Container Types. Each container must have only one container type. Read-only.
+              format: uuid
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time of the fileStorageContainer creation. Read-only.
+              format: date-time
+            customProperties:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.fileStorageContainerCustomPropertyDictionary'
+              - type: object
+                nullable: true
+              description: Custom property collection for the fileStorageContainer. Read-write.
+            description:
+              type: string
+              description: Provides a user-visible description of the fileStorageContainer. Read-write.
+              nullable: true
+            displayName:
+              type: string
+              description: The display name of the fileStorageContainer. Read-write.
+            lockState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.siteLockState'
+              - type: object
+                nullable: true
+              description: Indicates the lock state of the fileStorageContainer. The possible values are unlocked and lockedReadOnly. Read-only.
+            settings:
+              $ref: '#/components/schemas/microsoft.graph.fileStorageContainerSettings'
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.fileStorageContainerStatus'
+              - type: object
+                nullable: true
+              description: 'Status of the fileStorageContainer. Containers are created as inactive and require activation. Inactive containers are subjected to automatic deletion in 24 hours. The possible values are: inactive, active. Read-only.'
+            viewpoint:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.fileStorageContainerViewpoint'
+              - type: object
+                nullable: true
+              description: Data specific to the current user. Read-only.
+            drive:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.drive'
+              - type: object
+                nullable: true
+              description: The drive of the resource fileStorageContainer. Read-only.
+              x-ms-navigationProperty: true
+            permissions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.permission'
+              description: 'The set of permissions for users in the fileStorageContainer. Permission for each user is set by the roles property. The possible values are: reader, writer, manager, and owner. Read-write.'
+              x-ms-navigationProperty: true
+            recycleBin:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.recycleBin'
+              - type: object
+                nullable: true
+              description: Recycle bin of the fileStorageContainer. Read-only.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.fileStorageContainer'
+  - method: DELETE
+    summary: Delete navigation property containers for storage
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/drive
+  path_description: Provides operations to manage the drive property of the microsoft.graph.fileStorageContainer entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get drive from storage
+    description: The drive of the resource fileStorageContainer. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/activate
+  path_description: Provides operations to call the activate method.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: POST
+    summary: Invoke action activate
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/lock
+  path_description: Provides operations to call the lock method.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: POST
+    summary: Invoke action lock
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          lockState:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.siteLockState'
+            - type: object
+              nullable: true
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/permanentDelete
+  path_description: Provides operations to call the permanentDelete method.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: POST
+    summary: Invoke action permanentDelete
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/restore
+  path_description: Provides operations to call the restore method.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: POST
+    summary: Invoke action restore
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/unlock
+  path_description: Provides operations to call the unlock method.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: POST
+    summary: Invoke action unlock
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/permissions
+  path_description: Provides operations to manage the permissions property of the microsoft.graph.fileStorageContainer entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get permissions from storage
+    description: 'The set of permissions for users in the fileStorageContainer. Permission for each user is set by the roles property. The possible values are: reader, writer, manager, and owner. Read-write.'
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to permissions for storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: permission
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            expirationDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: A format of yyyy-MM-ddTHH:mm:ssZ of DateTimeOffset indicates the expiration time of the permission. DateTime.MinValue indicates there's no expiration set for this permission. Optional.
+              format: date-time
+              nullable: true
+            grantedTo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: For user type permissions, the details of the users and applications for this permission. Read-only.
+            grantedToIdentities:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identitySet'
+              description: For type permissions, the details of the users to whom permission was granted. Read-only.
+            grantedToIdentitiesV2:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.sharePointIdentitySet'
+              description: For link type permissions, the details of the users to whom permission was granted. Read-only.
+            grantedToV2:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharePointIdentitySet'
+              - type: object
+                nullable: true
+              description: For user type permissions, the details of the users and applications for this permission. Read-only.
+            hasPassword:
+              type: boolean
+              description: Indicates whether the password is set for this permission. This property only appears in the response. Optional. Read-only. For OneDrive Personal only..
+              nullable: true
+            inheritedFrom:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.itemReference'
+              - type: object
+                nullable: true
+              description: Provides a reference to the ancestor of the current permission, if it's inherited from an ancestor. Read-only.
+            invitation:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharingInvitation'
+              - type: object
+                nullable: true
+              description: Details of any associated sharing invitation for this permission. Read-only.
+            link:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharingLink'
+              - type: object
+                nullable: true
+              description: Provides the link details of the current permission, if it's a link type permission. Read-only.
+            roles:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The type of permission, for example, read. See below for the full list of roles. Read-only.
+            shareId:
+              type: string
+              description: A unique token that can be used to access this shared item via the shares API. Read-only.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.permission'
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/permissions/{permission-id}
+  path_description: Provides operations to manage the permissions property of the microsoft.graph.fileStorageContainer entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: permission-id
+    in: path
+    description: The unique identifier of permission
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: permission
+  methods:
+  - method: GET
+    summary: Get permissions from storage
+    description: 'The set of permissions for users in the fileStorageContainer. Permission for each user is set by the roles property. The possible values are: reader, writer, manager, and owner. Read-write.'
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property permissions in storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: permission
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            expirationDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: A format of yyyy-MM-ddTHH:mm:ssZ of DateTimeOffset indicates the expiration time of the permission. DateTime.MinValue indicates there's no expiration set for this permission. Optional.
+              format: date-time
+              nullable: true
+            grantedTo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: For user type permissions, the details of the users and applications for this permission. Read-only.
+            grantedToIdentities:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identitySet'
+              description: For type permissions, the details of the users to whom permission was granted. Read-only.
+            grantedToIdentitiesV2:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.sharePointIdentitySet'
+              description: For link type permissions, the details of the users to whom permission was granted. Read-only.
+            grantedToV2:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharePointIdentitySet'
+              - type: object
+                nullable: true
+              description: For user type permissions, the details of the users and applications for this permission. Read-only.
+            hasPassword:
+              type: boolean
+              description: Indicates whether the password is set for this permission. This property only appears in the response. Optional. Read-only. For OneDrive Personal only..
+              nullable: true
+            inheritedFrom:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.itemReference'
+              - type: object
+                nullable: true
+              description: Provides a reference to the ancestor of the current permission, if it's inherited from an ancestor. Read-only.
+            invitation:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharingInvitation'
+              - type: object
+                nullable: true
+              description: Details of any associated sharing invitation for this permission. Read-only.
+            link:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharingLink'
+              - type: object
+                nullable: true
+              description: Provides the link details of the current permission, if it's a link type permission. Read-only.
+            roles:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The type of permission, for example, read. See below for the full list of roles. Read-only.
+            shareId:
+              type: string
+              description: A unique token that can be used to access this shared item via the shares API. Read-only.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.permission'
+  - method: DELETE
+    summary: Delete navigation property permissions for storage
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/permissions/{permission-id}/grant
+  path_description: Provides operations to call the grant method.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: permission-id
+    in: path
+    description: The unique identifier of permission
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: permission
+  methods:
+  - method: POST
+    summary: Invoke action grant
+    description: Grant users access to a link represented by a permission.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          roles:
+            type: array
+            items:
+              type: string
+              nullable: true
+          recipients:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.driveRecipient'
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/permissions/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin
+  path_description: Provides operations to manage the recycleBin property of the microsoft.graph.fileStorageContainer entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get recycleBin from storage
+    description: Recycle bin of the fileStorageContainer. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property recycleBin in storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.baseItem'
+        - title: recycleBin
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            settings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.recycleBinSettings'
+              - type: object
+                nullable: true
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.recycleBinItem'
+              description: List of the recycleBinItems deleted by a user.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.recycleBin'
+        x-ms-discriminator-value: '#microsoft.graph.recycleBin'
+  - method: DELETE
+    summary: Delete navigation property recycleBin for storage
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/createdByUser
+  path_description: Provides operations to manage the createdByUser property of the microsoft.graph.baseItem entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get createdByUser from storage
+    description: Identity of the user who created the item. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/createdByUser/mailboxSettings
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get mailboxSettings property value
+    description: Settings for the primary mailbox of the signed-in user. You can get or update settings for sending automatic replies to incoming messages, locale, and time zone. Returned only on $select.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update property mailboxSettings value.
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: mailboxSettings
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          archiveFolder:
+            type: string
+            description: Folder ID of an archive folder for the user.
+            nullable: true
+          automaticRepliesSetting:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.automaticRepliesSetting'
+            - type: object
+              nullable: true
+            description: Configuration settings to automatically notify the sender of an incoming email with a message from the signed-in user.
+          dateFormat:
+            type: string
+            description: The date format for the user's mailbox.
+            nullable: true
+          delegateMeetingMessageDeliveryOptions:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.delegateMeetingMessageDeliveryOptions'
+            - type: object
+              nullable: true
+            description: 'If the user has a calendar delegate, this specifies whether the delegate, mailbox owner, or both receive meeting messages and meeting responses. Possible values are: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly.'
+          language:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.localeInfo'
+            - type: object
+              nullable: true
+            description: The locale information for the user, including the preferred language and country/region.
+          timeFormat:
+            type: string
+            description: The time format for the user's mailbox.
+            nullable: true
+          timeZone:
+            type: string
+            description: The default time zone for the user's mailbox.
+            nullable: true
+          userPurpose:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.userPurpose'
+            - type: object
+              nullable: true
+            description: 'The purpose of the mailbox. Differentiates a mailbox for a single user from a shared mailbox and equipment mailbox in Exchange Online. Possible values are: user, linked, shared, room, equipment, others, unknownFutureValue. Read-only.'
+          workingHours:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.workingHours'
+            - type: object
+              nullable: true
+            description: The days of the week and hours in a specific time zone that the user works.
+          '@odata.type':
+            type: string
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/createdByUser/serviceProvisioningErrors
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get serviceProvisioningErrors property value
+    description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a user object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/createdByUser/serviceProvisioningErrors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/items
+  path_description: Provides operations to manage the items property of the microsoft.graph.recycleBin entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get items from storage
+    description: List of the recycleBinItems deleted by a user.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to items for storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.baseItem'
+        - title: recycleBinItem
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the item was deleted. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            deletedFromLocation:
+              type: string
+              description: Relative URL of the list or folder that originally contained the item.
+              nullable: true
+            size:
+              type: number
+              description: Size of the item in bytes.
+              format: int64
+              nullable: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.recycleBinItem'
+        x-ms-discriminator-value: '#microsoft.graph.recycleBinItem'
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}
+  path_description: Provides operations to manage the items property of the microsoft.graph.recycleBin entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get items from storage
+    description: List of the recycleBinItems deleted by a user.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property items in storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.baseItem'
+        - title: recycleBinItem
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the item was deleted. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            deletedFromLocation:
+              type: string
+              description: Relative URL of the list or folder that originally contained the item.
+              nullable: true
+            size:
+              type: number
+              description: Size of the item in bytes.
+              format: int64
+              nullable: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.recycleBinItem'
+        x-ms-discriminator-value: '#microsoft.graph.recycleBinItem'
+  - method: DELETE
+    summary: Delete navigation property items for storage
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/createdByUser
+  path_description: Provides operations to manage the createdByUser property of the microsoft.graph.baseItem entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get createdByUser from storage
+    description: Identity of the user who created the item. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/createdByUser/mailboxSettings
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get mailboxSettings property value
+    description: Settings for the primary mailbox of the signed-in user. You can get or update settings for sending automatic replies to incoming messages, locale, and time zone. Returned only on $select.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update property mailboxSettings value.
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: mailboxSettings
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          archiveFolder:
+            type: string
+            description: Folder ID of an archive folder for the user.
+            nullable: true
+          automaticRepliesSetting:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.automaticRepliesSetting'
+            - type: object
+              nullable: true
+            description: Configuration settings to automatically notify the sender of an incoming email with a message from the signed-in user.
+          dateFormat:
+            type: string
+            description: The date format for the user's mailbox.
+            nullable: true
+          delegateMeetingMessageDeliveryOptions:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.delegateMeetingMessageDeliveryOptions'
+            - type: object
+              nullable: true
+            description: 'If the user has a calendar delegate, this specifies whether the delegate, mailbox owner, or both receive meeting messages and meeting responses. Possible values are: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly.'
+          language:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.localeInfo'
+            - type: object
+              nullable: true
+            description: The locale information for the user, including the preferred language and country/region.
+          timeFormat:
+            type: string
+            description: The time format for the user's mailbox.
+            nullable: true
+          timeZone:
+            type: string
+            description: The default time zone for the user's mailbox.
+            nullable: true
+          userPurpose:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.userPurpose'
+            - type: object
+              nullable: true
+            description: 'The purpose of the mailbox. Differentiates a mailbox for a single user from a shared mailbox and equipment mailbox in Exchange Online. Possible values are: user, linked, shared, room, equipment, others, unknownFutureValue. Read-only.'
+          workingHours:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.workingHours'
+            - type: object
+              nullable: true
+            description: The days of the week and hours in a specific time zone that the user works.
+          '@odata.type':
+            type: string
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/createdByUser/serviceProvisioningErrors
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get serviceProvisioningErrors property value
+    description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a user object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/createdByUser/serviceProvisioningErrors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/lastModifiedByUser
+  path_description: Provides operations to manage the lastModifiedByUser property of the microsoft.graph.baseItem entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get lastModifiedByUser from storage
+    description: Identity of the user who last modified the item. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/lastModifiedByUser/mailboxSettings
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get mailboxSettings property value
+    description: Settings for the primary mailbox of the signed-in user. You can get or update settings for sending automatic replies to incoming messages, locale, and time zone. Returned only on $select.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update property mailboxSettings value.
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: mailboxSettings
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          archiveFolder:
+            type: string
+            description: Folder ID of an archive folder for the user.
+            nullable: true
+          automaticRepliesSetting:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.automaticRepliesSetting'
+            - type: object
+              nullable: true
+            description: Configuration settings to automatically notify the sender of an incoming email with a message from the signed-in user.
+          dateFormat:
+            type: string
+            description: The date format for the user's mailbox.
+            nullable: true
+          delegateMeetingMessageDeliveryOptions:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.delegateMeetingMessageDeliveryOptions'
+            - type: object
+              nullable: true
+            description: 'If the user has a calendar delegate, this specifies whether the delegate, mailbox owner, or both receive meeting messages and meeting responses. Possible values are: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly.'
+          language:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.localeInfo'
+            - type: object
+              nullable: true
+            description: The locale information for the user, including the preferred language and country/region.
+          timeFormat:
+            type: string
+            description: The time format for the user's mailbox.
+            nullable: true
+          timeZone:
+            type: string
+            description: The default time zone for the user's mailbox.
+            nullable: true
+          userPurpose:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.userPurpose'
+            - type: object
+              nullable: true
+            description: 'The purpose of the mailbox. Differentiates a mailbox for a single user from a shared mailbox and equipment mailbox in Exchange Online. Possible values are: user, linked, shared, room, equipment, others, unknownFutureValue. Read-only.'
+          workingHours:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.workingHours'
+            - type: object
+              nullable: true
+            description: The days of the week and hours in a specific time zone that the user works.
+          '@odata.type':
+            type: string
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/lastModifiedByUser/serviceProvisioningErrors
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get serviceProvisioningErrors property value
+    description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a user object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/lastModifiedByUser/serviceProvisioningErrors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/items/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/lastModifiedByUser
+  path_description: Provides operations to manage the lastModifiedByUser property of the microsoft.graph.baseItem entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get lastModifiedByUser from storage
+    description: Identity of the user who last modified the item. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/lastModifiedByUser/mailboxSettings
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get mailboxSettings property value
+    description: Settings for the primary mailbox of the signed-in user. You can get or update settings for sending automatic replies to incoming messages, locale, and time zone. Returned only on $select.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update property mailboxSettings value.
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: mailboxSettings
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          archiveFolder:
+            type: string
+            description: Folder ID of an archive folder for the user.
+            nullable: true
+          automaticRepliesSetting:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.automaticRepliesSetting'
+            - type: object
+              nullable: true
+            description: Configuration settings to automatically notify the sender of an incoming email with a message from the signed-in user.
+          dateFormat:
+            type: string
+            description: The date format for the user's mailbox.
+            nullable: true
+          delegateMeetingMessageDeliveryOptions:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.delegateMeetingMessageDeliveryOptions'
+            - type: object
+              nullable: true
+            description: 'If the user has a calendar delegate, this specifies whether the delegate, mailbox owner, or both receive meeting messages and meeting responses. Possible values are: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly.'
+          language:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.localeInfo'
+            - type: object
+              nullable: true
+            description: The locale information for the user, including the preferred language and country/region.
+          timeFormat:
+            type: string
+            description: The time format for the user's mailbox.
+            nullable: true
+          timeZone:
+            type: string
+            description: The default time zone for the user's mailbox.
+            nullable: true
+          userPurpose:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.userPurpose'
+            - type: object
+              nullable: true
+            description: 'The purpose of the mailbox. Differentiates a mailbox for a single user from a shared mailbox and equipment mailbox in Exchange Online. Possible values are: user, linked, shared, room, equipment, others, unknownFutureValue. Read-only.'
+          workingHours:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.workingHours'
+            - type: object
+              nullable: true
+            description: The days of the week and hours in a specific time zone that the user works.
+          '@odata.type':
+            type: string
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/lastModifiedByUser/serviceProvisioningErrors
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get serviceProvisioningErrors property value
+    description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a user object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/containers/{fileStorageContainer-id}/recycleBin/lastModifiedByUser/serviceProvisioningErrors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /storage/fileStorage/containers/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers
+  path_description: Provides operations to manage the deletedContainers property of the microsoft.graph.fileStorage entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get deletedContainers from storage
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to deletedContainers for storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: fileStorageContainer
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            containerTypeId:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              description: Container type ID of the fileStorageContainer. For details about container types, see Container Types. Each container must have only one container type. Read-only.
+              format: uuid
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time of the fileStorageContainer creation. Read-only.
+              format: date-time
+            customProperties:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.fileStorageContainerCustomPropertyDictionary'
+              - type: object
+                nullable: true
+              description: Custom property collection for the fileStorageContainer. Read-write.
+            description:
+              type: string
+              description: Provides a user-visible description of the fileStorageContainer. Read-write.
+              nullable: true
+            displayName:
+              type: string
+              description: The display name of the fileStorageContainer. Read-write.
+            lockState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.siteLockState'
+              - type: object
+                nullable: true
+              description: Indicates the lock state of the fileStorageContainer. The possible values are unlocked and lockedReadOnly. Read-only.
+            settings:
+              $ref: '#/components/schemas/microsoft.graph.fileStorageContainerSettings'
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.fileStorageContainerStatus'
+              - type: object
+                nullable: true
+              description: 'Status of the fileStorageContainer. Containers are created as inactive and require activation. Inactive containers are subjected to automatic deletion in 24 hours. The possible values are: inactive, active. Read-only.'
+            viewpoint:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.fileStorageContainerViewpoint'
+              - type: object
+                nullable: true
+              description: Data specific to the current user. Read-only.
+            drive:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.drive'
+              - type: object
+                nullable: true
+              description: The drive of the resource fileStorageContainer. Read-only.
+              x-ms-navigationProperty: true
+            permissions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.permission'
+              description: 'The set of permissions for users in the fileStorageContainer. Permission for each user is set by the roles property. The possible values are: reader, writer, manager, and owner. Read-write.'
+              x-ms-navigationProperty: true
+            recycleBin:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.recycleBin'
+              - type: object
+                nullable: true
+              description: Recycle bin of the fileStorageContainer. Read-only.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.fileStorageContainer'
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}
+  path_description: Provides operations to manage the deletedContainers property of the microsoft.graph.fileStorage entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get deletedContainers from storage
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property deletedContainers in storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: fileStorageContainer
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            containerTypeId:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              description: Container type ID of the fileStorageContainer. For details about container types, see Container Types. Each container must have only one container type. Read-only.
+              format: uuid
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time of the fileStorageContainer creation. Read-only.
+              format: date-time
+            customProperties:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.fileStorageContainerCustomPropertyDictionary'
+              - type: object
+                nullable: true
+              description: Custom property collection for the fileStorageContainer. Read-write.
+            description:
+              type: string
+              description: Provides a user-visible description of the fileStorageContainer. Read-write.
+              nullable: true
+            displayName:
+              type: string
+              description: The display name of the fileStorageContainer. Read-write.
+            lockState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.siteLockState'
+              - type: object
+                nullable: true
+              description: Indicates the lock state of the fileStorageContainer. The possible values are unlocked and lockedReadOnly. Read-only.
+            settings:
+              $ref: '#/components/schemas/microsoft.graph.fileStorageContainerSettings'
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.fileStorageContainerStatus'
+              - type: object
+                nullable: true
+              description: 'Status of the fileStorageContainer. Containers are created as inactive and require activation. Inactive containers are subjected to automatic deletion in 24 hours. The possible values are: inactive, active. Read-only.'
+            viewpoint:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.fileStorageContainerViewpoint'
+              - type: object
+                nullable: true
+              description: Data specific to the current user. Read-only.
+            drive:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.drive'
+              - type: object
+                nullable: true
+              description: The drive of the resource fileStorageContainer. Read-only.
+              x-ms-navigationProperty: true
+            permissions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.permission'
+              description: 'The set of permissions for users in the fileStorageContainer. Permission for each user is set by the roles property. The possible values are: reader, writer, manager, and owner. Read-write.'
+              x-ms-navigationProperty: true
+            recycleBin:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.recycleBin'
+              - type: object
+                nullable: true
+              description: Recycle bin of the fileStorageContainer. Read-only.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.fileStorageContainer'
+  - method: DELETE
+    summary: Delete navigation property deletedContainers for storage
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/drive
+  path_description: Provides operations to manage the drive property of the microsoft.graph.fileStorageContainer entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get drive from storage
+    description: The drive of the resource fileStorageContainer. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/activate
+  path_description: Provides operations to call the activate method.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: POST
+    summary: Invoke action activate
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/lock
+  path_description: Provides operations to call the lock method.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: POST
+    summary: Invoke action lock
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          lockState:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.siteLockState'
+            - type: object
+              nullable: true
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/permanentDelete
+  path_description: Provides operations to call the permanentDelete method.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: POST
+    summary: Invoke action permanentDelete
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/restore
+  path_description: Provides operations to call the restore method.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: POST
+    summary: Invoke action restore
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/unlock
+  path_description: Provides operations to call the unlock method.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: POST
+    summary: Invoke action unlock
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/permissions
+  path_description: Provides operations to manage the permissions property of the microsoft.graph.fileStorageContainer entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get permissions from storage
+    description: 'The set of permissions for users in the fileStorageContainer. Permission for each user is set by the roles property. The possible values are: reader, writer, manager, and owner. Read-write.'
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to permissions for storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: permission
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            expirationDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: A format of yyyy-MM-ddTHH:mm:ssZ of DateTimeOffset indicates the expiration time of the permission. DateTime.MinValue indicates there's no expiration set for this permission. Optional.
+              format: date-time
+              nullable: true
+            grantedTo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: For user type permissions, the details of the users and applications for this permission. Read-only.
+            grantedToIdentities:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identitySet'
+              description: For type permissions, the details of the users to whom permission was granted. Read-only.
+            grantedToIdentitiesV2:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.sharePointIdentitySet'
+              description: For link type permissions, the details of the users to whom permission was granted. Read-only.
+            grantedToV2:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharePointIdentitySet'
+              - type: object
+                nullable: true
+              description: For user type permissions, the details of the users and applications for this permission. Read-only.
+            hasPassword:
+              type: boolean
+              description: Indicates whether the password is set for this permission. This property only appears in the response. Optional. Read-only. For OneDrive Personal only..
+              nullable: true
+            inheritedFrom:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.itemReference'
+              - type: object
+                nullable: true
+              description: Provides a reference to the ancestor of the current permission, if it's inherited from an ancestor. Read-only.
+            invitation:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharingInvitation'
+              - type: object
+                nullable: true
+              description: Details of any associated sharing invitation for this permission. Read-only.
+            link:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharingLink'
+              - type: object
+                nullable: true
+              description: Provides the link details of the current permission, if it's a link type permission. Read-only.
+            roles:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The type of permission, for example, read. See below for the full list of roles. Read-only.
+            shareId:
+              type: string
+              description: A unique token that can be used to access this shared item via the shares API. Read-only.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.permission'
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/permissions/{permission-id}
+  path_description: Provides operations to manage the permissions property of the microsoft.graph.fileStorageContainer entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: permission-id
+    in: path
+    description: The unique identifier of permission
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: permission
+  methods:
+  - method: GET
+    summary: Get permissions from storage
+    description: 'The set of permissions for users in the fileStorageContainer. Permission for each user is set by the roles property. The possible values are: reader, writer, manager, and owner. Read-write.'
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property permissions in storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: permission
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            expirationDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: A format of yyyy-MM-ddTHH:mm:ssZ of DateTimeOffset indicates the expiration time of the permission. DateTime.MinValue indicates there's no expiration set for this permission. Optional.
+              format: date-time
+              nullable: true
+            grantedTo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: For user type permissions, the details of the users and applications for this permission. Read-only.
+            grantedToIdentities:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identitySet'
+              description: For type permissions, the details of the users to whom permission was granted. Read-only.
+            grantedToIdentitiesV2:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.sharePointIdentitySet'
+              description: For link type permissions, the details of the users to whom permission was granted. Read-only.
+            grantedToV2:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharePointIdentitySet'
+              - type: object
+                nullable: true
+              description: For user type permissions, the details of the users and applications for this permission. Read-only.
+            hasPassword:
+              type: boolean
+              description: Indicates whether the password is set for this permission. This property only appears in the response. Optional. Read-only. For OneDrive Personal only..
+              nullable: true
+            inheritedFrom:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.itemReference'
+              - type: object
+                nullable: true
+              description: Provides a reference to the ancestor of the current permission, if it's inherited from an ancestor. Read-only.
+            invitation:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharingInvitation'
+              - type: object
+                nullable: true
+              description: Details of any associated sharing invitation for this permission. Read-only.
+            link:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharingLink'
+              - type: object
+                nullable: true
+              description: Provides the link details of the current permission, if it's a link type permission. Read-only.
+            roles:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The type of permission, for example, read. See below for the full list of roles. Read-only.
+            shareId:
+              type: string
+              description: A unique token that can be used to access this shared item via the shares API. Read-only.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.permission'
+  - method: DELETE
+    summary: Delete navigation property permissions for storage
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/permissions/{permission-id}/grant
+  path_description: Provides operations to call the grant method.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: permission-id
+    in: path
+    description: The unique identifier of permission
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: permission
+  methods:
+  - method: POST
+    summary: Invoke action grant
+    description: Grant users access to a link represented by a permission.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          roles:
+            type: array
+            items:
+              type: string
+              nullable: true
+          recipients:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.driveRecipient'
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/permissions/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin
+  path_description: Provides operations to manage the recycleBin property of the microsoft.graph.fileStorageContainer entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get recycleBin from storage
+    description: Recycle bin of the fileStorageContainer. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property recycleBin in storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.baseItem'
+        - title: recycleBin
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            settings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.recycleBinSettings'
+              - type: object
+                nullable: true
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.recycleBinItem'
+              description: List of the recycleBinItems deleted by a user.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.recycleBin'
+        x-ms-discriminator-value: '#microsoft.graph.recycleBin'
+  - method: DELETE
+    summary: Delete navigation property recycleBin for storage
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/createdByUser
+  path_description: Provides operations to manage the createdByUser property of the microsoft.graph.baseItem entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get createdByUser from storage
+    description: Identity of the user who created the item. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/createdByUser/mailboxSettings
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get mailboxSettings property value
+    description: Settings for the primary mailbox of the signed-in user. You can get or update settings for sending automatic replies to incoming messages, locale, and time zone. Returned only on $select.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update property mailboxSettings value.
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: mailboxSettings
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          archiveFolder:
+            type: string
+            description: Folder ID of an archive folder for the user.
+            nullable: true
+          automaticRepliesSetting:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.automaticRepliesSetting'
+            - type: object
+              nullable: true
+            description: Configuration settings to automatically notify the sender of an incoming email with a message from the signed-in user.
+          dateFormat:
+            type: string
+            description: The date format for the user's mailbox.
+            nullable: true
+          delegateMeetingMessageDeliveryOptions:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.delegateMeetingMessageDeliveryOptions'
+            - type: object
+              nullable: true
+            description: 'If the user has a calendar delegate, this specifies whether the delegate, mailbox owner, or both receive meeting messages and meeting responses. Possible values are: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly.'
+          language:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.localeInfo'
+            - type: object
+              nullable: true
+            description: The locale information for the user, including the preferred language and country/region.
+          timeFormat:
+            type: string
+            description: The time format for the user's mailbox.
+            nullable: true
+          timeZone:
+            type: string
+            description: The default time zone for the user's mailbox.
+            nullable: true
+          userPurpose:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.userPurpose'
+            - type: object
+              nullable: true
+            description: 'The purpose of the mailbox. Differentiates a mailbox for a single user from a shared mailbox and equipment mailbox in Exchange Online. Possible values are: user, linked, shared, room, equipment, others, unknownFutureValue. Read-only.'
+          workingHours:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.workingHours'
+            - type: object
+              nullable: true
+            description: The days of the week and hours in a specific time zone that the user works.
+          '@odata.type':
+            type: string
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/createdByUser/serviceProvisioningErrors
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get serviceProvisioningErrors property value
+    description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a user object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/createdByUser/serviceProvisioningErrors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/items
+  path_description: Provides operations to manage the items property of the microsoft.graph.recycleBin entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get items from storage
+    description: List of the recycleBinItems deleted by a user.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to items for storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.baseItem'
+        - title: recycleBinItem
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the item was deleted. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            deletedFromLocation:
+              type: string
+              description: Relative URL of the list or folder that originally contained the item.
+              nullable: true
+            size:
+              type: number
+              description: Size of the item in bytes.
+              format: int64
+              nullable: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.recycleBinItem'
+        x-ms-discriminator-value: '#microsoft.graph.recycleBinItem'
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}
+  path_description: Provides operations to manage the items property of the microsoft.graph.recycleBin entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get items from storage
+    description: List of the recycleBinItems deleted by a user.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property items in storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.baseItem'
+        - title: recycleBinItem
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the item was deleted. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            deletedFromLocation:
+              type: string
+              description: Relative URL of the list or folder that originally contained the item.
+              nullable: true
+            size:
+              type: number
+              description: Size of the item in bytes.
+              format: int64
+              nullable: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.recycleBinItem'
+        x-ms-discriminator-value: '#microsoft.graph.recycleBinItem'
+  - method: DELETE
+    summary: Delete navigation property items for storage
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/createdByUser
+  path_description: Provides operations to manage the createdByUser property of the microsoft.graph.baseItem entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get createdByUser from storage
+    description: Identity of the user who created the item. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/createdByUser/mailboxSettings
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get mailboxSettings property value
+    description: Settings for the primary mailbox of the signed-in user. You can get or update settings for sending automatic replies to incoming messages, locale, and time zone. Returned only on $select.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update property mailboxSettings value.
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: mailboxSettings
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          archiveFolder:
+            type: string
+            description: Folder ID of an archive folder for the user.
+            nullable: true
+          automaticRepliesSetting:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.automaticRepliesSetting'
+            - type: object
+              nullable: true
+            description: Configuration settings to automatically notify the sender of an incoming email with a message from the signed-in user.
+          dateFormat:
+            type: string
+            description: The date format for the user's mailbox.
+            nullable: true
+          delegateMeetingMessageDeliveryOptions:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.delegateMeetingMessageDeliveryOptions'
+            - type: object
+              nullable: true
+            description: 'If the user has a calendar delegate, this specifies whether the delegate, mailbox owner, or both receive meeting messages and meeting responses. Possible values are: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly.'
+          language:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.localeInfo'
+            - type: object
+              nullable: true
+            description: The locale information for the user, including the preferred language and country/region.
+          timeFormat:
+            type: string
+            description: The time format for the user's mailbox.
+            nullable: true
+          timeZone:
+            type: string
+            description: The default time zone for the user's mailbox.
+            nullable: true
+          userPurpose:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.userPurpose'
+            - type: object
+              nullable: true
+            description: 'The purpose of the mailbox. Differentiates a mailbox for a single user from a shared mailbox and equipment mailbox in Exchange Online. Possible values are: user, linked, shared, room, equipment, others, unknownFutureValue. Read-only.'
+          workingHours:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.workingHours'
+            - type: object
+              nullable: true
+            description: The days of the week and hours in a specific time zone that the user works.
+          '@odata.type':
+            type: string
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/createdByUser/serviceProvisioningErrors
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get serviceProvisioningErrors property value
+    description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a user object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/createdByUser/serviceProvisioningErrors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/lastModifiedByUser
+  path_description: Provides operations to manage the lastModifiedByUser property of the microsoft.graph.baseItem entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get lastModifiedByUser from storage
+    description: Identity of the user who last modified the item. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/lastModifiedByUser/mailboxSettings
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get mailboxSettings property value
+    description: Settings for the primary mailbox of the signed-in user. You can get or update settings for sending automatic replies to incoming messages, locale, and time zone. Returned only on $select.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update property mailboxSettings value.
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: mailboxSettings
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          archiveFolder:
+            type: string
+            description: Folder ID of an archive folder for the user.
+            nullable: true
+          automaticRepliesSetting:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.automaticRepliesSetting'
+            - type: object
+              nullable: true
+            description: Configuration settings to automatically notify the sender of an incoming email with a message from the signed-in user.
+          dateFormat:
+            type: string
+            description: The date format for the user's mailbox.
+            nullable: true
+          delegateMeetingMessageDeliveryOptions:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.delegateMeetingMessageDeliveryOptions'
+            - type: object
+              nullable: true
+            description: 'If the user has a calendar delegate, this specifies whether the delegate, mailbox owner, or both receive meeting messages and meeting responses. Possible values are: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly.'
+          language:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.localeInfo'
+            - type: object
+              nullable: true
+            description: The locale information for the user, including the preferred language and country/region.
+          timeFormat:
+            type: string
+            description: The time format for the user's mailbox.
+            nullable: true
+          timeZone:
+            type: string
+            description: The default time zone for the user's mailbox.
+            nullable: true
+          userPurpose:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.userPurpose'
+            - type: object
+              nullable: true
+            description: 'The purpose of the mailbox. Differentiates a mailbox for a single user from a shared mailbox and equipment mailbox in Exchange Online. Possible values are: user, linked, shared, room, equipment, others, unknownFutureValue. Read-only.'
+          workingHours:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.workingHours'
+            - type: object
+              nullable: true
+            description: The days of the week and hours in a specific time zone that the user works.
+          '@odata.type':
+            type: string
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/lastModifiedByUser/serviceProvisioningErrors
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get serviceProvisioningErrors property value
+    description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a user object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/items/{recycleBinItem-id}/lastModifiedByUser/serviceProvisioningErrors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  - name: recycleBinItem-id
+    in: path
+    description: The unique identifier of recycleBinItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: recycleBinItem
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/items/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/lastModifiedByUser
+  path_description: Provides operations to manage the lastModifiedByUser property of the microsoft.graph.baseItem entity.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get lastModifiedByUser from storage
+    description: Identity of the user who last modified the item. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/lastModifiedByUser/mailboxSettings
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get mailboxSettings property value
+    description: Settings for the primary mailbox of the signed-in user. You can get or update settings for sending automatic replies to incoming messages, locale, and time zone. Returned only on $select.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update property mailboxSettings value.
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: mailboxSettings
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          archiveFolder:
+            type: string
+            description: Folder ID of an archive folder for the user.
+            nullable: true
+          automaticRepliesSetting:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.automaticRepliesSetting'
+            - type: object
+              nullable: true
+            description: Configuration settings to automatically notify the sender of an incoming email with a message from the signed-in user.
+          dateFormat:
+            type: string
+            description: The date format for the user's mailbox.
+            nullable: true
+          delegateMeetingMessageDeliveryOptions:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.delegateMeetingMessageDeliveryOptions'
+            - type: object
+              nullable: true
+            description: 'If the user has a calendar delegate, this specifies whether the delegate, mailbox owner, or both receive meeting messages and meeting responses. Possible values are: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly.'
+          language:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.localeInfo'
+            - type: object
+              nullable: true
+            description: The locale information for the user, including the preferred language and country/region.
+          timeFormat:
+            type: string
+            description: The time format for the user's mailbox.
+            nullable: true
+          timeZone:
+            type: string
+            description: The default time zone for the user's mailbox.
+            nullable: true
+          userPurpose:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.userPurpose'
+            - type: object
+              nullable: true
+            description: 'The purpose of the mailbox. Differentiates a mailbox for a single user from a shared mailbox and equipment mailbox in Exchange Online. Possible values are: user, linked, shared, room, equipment, others, unknownFutureValue. Read-only.'
+          workingHours:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.workingHours'
+            - type: object
+              nullable: true
+            description: The days of the week and hours in a specific time zone that the user works.
+          '@odata.type':
+            type: string
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/lastModifiedByUser/serviceProvisioningErrors
+  path_description: No description provided.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get serviceProvisioningErrors property value
+    description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a user object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/{fileStorageContainer-id}/recycleBin/lastModifiedByUser/serviceProvisioningErrors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: fileStorageContainer-id
+    in: path
+    description: The unique identifier of fileStorageContainer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: fileStorageContainer
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /storage/fileStorage/deletedContainers/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /storage/settings
+  path_description: Provides operations to manage the settings property of the microsoft.graph.storage entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get settings from storage
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property settings in storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: storageSettings
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            quota:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.unifiedStorageQuota'
+              - type: object
+                nullable: true
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.storageSettings'
+  - method: DELETE
+    summary: Delete navigation property settings for storage
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /storage/settings/quota
+  path_description: Provides operations to manage the quota property of the microsoft.graph.storageSettings entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get quota from storage
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property quota in storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: unifiedStorageQuota
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            deleted:
+              type: number
+              format: int64
+              nullable: true
+            manageWebUrl:
+              type: string
+              nullable: true
+            remaining:
+              type: number
+              format: int64
+              nullable: true
+            state:
+              type: string
+              nullable: true
+            total:
+              type: number
+              format: int64
+              nullable: true
+            used:
+              type: number
+              format: int64
+              nullable: true
+            services:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceStorageQuotaBreakdown'
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.unifiedStorageQuota'
+  - method: DELETE
+    summary: Delete navigation property quota for storage
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /storage/settings/quota/services
+  path_description: Provides operations to manage the services property of the microsoft.graph.unifiedStorageQuota entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get services from storage
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to services for storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.storageQuotaBreakdown'
+        - title: serviceStorageQuotaBreakdown
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.serviceStorageQuotaBreakdown'
+- path: /storage/settings/quota/services/{serviceStorageQuotaBreakdown-id}
+  path_description: Provides operations to manage the services property of the microsoft.graph.unifiedStorageQuota entity.
+  path_parameters:
+  - name: serviceStorageQuotaBreakdown-id
+    in: path
+    description: The unique identifier of serviceStorageQuotaBreakdown
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceStorageQuotaBreakdown
+  methods:
+  - method: GET
+    summary: Get services from storage
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property services in storage
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.storageQuotaBreakdown'
+        - title: serviceStorageQuotaBreakdown
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.serviceStorageQuotaBreakdown'
+  - method: DELETE
+    summary: Delete navigation property services for storage
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /storage/settings/quota/services/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

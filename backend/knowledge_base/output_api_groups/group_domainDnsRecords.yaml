@@ -1,0 +1,189 @@
+- path: /domainDnsRecords
+  path_description: Provides operations to manage the collection of domainDnsRecord entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get entities from domainDnsRecords
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add new entity to domainDnsRecords
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: domainDnsRecord
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            isOptional:
+              type: boolean
+              description: If false, the customer must configure this record at the DNS host for Microsoft Online Services to operate correctly with the domain.
+            label:
+              type: string
+              description: Value used when configuring the name of the DNS record at the DNS host.
+            recordType:
+              type: string
+              description: Indicates what type of DNS record this entity represents. The value can be CName, Mx, Srv, or Txt.
+              nullable: true
+            supportedService:
+              type: string
+              description: 'Microsoft Online Service or feature that has a dependency on this DNS record. Can be one of the following values: null, Email, Sharepoint, EmailInternalRelayOnly, OfficeCommunicationsOnline, SharePointDefaultDomain, FullRedelegation, SharePointPublic, OrgIdAuthentication, Yammer, Intune.'
+            ttl:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Value to use when configuring the time-to-live (ttl) property of the DNS record at the DNS host. Not nullable.
+              format: int32
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.domainDnsCnameRecord': '#/components/schemas/microsoft.graph.domainDnsCnameRecord'
+              '#microsoft.graph.domainDnsMxRecord': '#/components/schemas/microsoft.graph.domainDnsMxRecord'
+              '#microsoft.graph.domainDnsSrvRecord': '#/components/schemas/microsoft.graph.domainDnsSrvRecord'
+              '#microsoft.graph.domainDnsTxtRecord': '#/components/schemas/microsoft.graph.domainDnsTxtRecord'
+              '#microsoft.graph.domainDnsUnavailableRecord': '#/components/schemas/microsoft.graph.domainDnsUnavailableRecord'
+- path: /domainDnsRecords/{domainDnsRecord-id}
+  path_description: Provides operations to manage the collection of domainDnsRecord entities.
+  path_parameters:
+  - name: domainDnsRecord-id
+    in: path
+    description: The unique identifier of domainDnsRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domainDnsRecord
+  methods:
+  - method: GET
+    summary: Get entity from domainDnsRecords by key
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update entity in domainDnsRecords
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: domainDnsRecord
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            isOptional:
+              type: boolean
+              description: If false, the customer must configure this record at the DNS host for Microsoft Online Services to operate correctly with the domain.
+            label:
+              type: string
+              description: Value used when configuring the name of the DNS record at the DNS host.
+            recordType:
+              type: string
+              description: Indicates what type of DNS record this entity represents. The value can be CName, Mx, Srv, or Txt.
+              nullable: true
+            supportedService:
+              type: string
+              description: 'Microsoft Online Service or feature that has a dependency on this DNS record. Can be one of the following values: null, Email, Sharepoint, EmailInternalRelayOnly, OfficeCommunicationsOnline, SharePointDefaultDomain, FullRedelegation, SharePointPublic, OrgIdAuthentication, Yammer, Intune.'
+            ttl:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Value to use when configuring the time-to-live (ttl) property of the DNS record at the DNS host. Not nullable.
+              format: int32
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.domainDnsCnameRecord': '#/components/schemas/microsoft.graph.domainDnsCnameRecord'
+              '#microsoft.graph.domainDnsMxRecord': '#/components/schemas/microsoft.graph.domainDnsMxRecord'
+              '#microsoft.graph.domainDnsSrvRecord': '#/components/schemas/microsoft.graph.domainDnsSrvRecord'
+              '#microsoft.graph.domainDnsTxtRecord': '#/components/schemas/microsoft.graph.domainDnsTxtRecord'
+              '#microsoft.graph.domainDnsUnavailableRecord': '#/components/schemas/microsoft.graph.domainDnsUnavailableRecord'
+  - method: DELETE
+    summary: Delete entity from domainDnsRecords
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /domainDnsRecords/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

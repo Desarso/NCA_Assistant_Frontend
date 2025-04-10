@@ -12,3 +12,4 @@ new.env
 node_modules/
 firebase_credentials.json
 keys.json
+test.py

@@ -1,0 +1,3021 @@
+- path: /admin
+  path_description: Provides operations to manage the admin singleton.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get admin
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: admin
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          edge:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.edge'
+            - type: object
+              nullable: true
+            description: A container for Microsoft Edge resources. Read-only.
+            x-ms-navigationProperty: true
+          microsoft365Apps:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.adminMicrosoft365Apps'
+            - type: object
+              nullable: true
+            description: A container for the Microsoft 365 apps admin functionality.
+            x-ms-navigationProperty: true
+          people:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.peopleAdminSettings'
+            - type: object
+              nullable: true
+            description: Represents a setting to control people-related admin settings in the tenant.
+            x-ms-navigationProperty: true
+          reportSettings:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.adminReportSettings'
+            - type: object
+              nullable: true
+            description: A container for administrative resources to manage reports.
+            x-ms-navigationProperty: true
+          serviceAnnouncement:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.serviceAnnouncement'
+            - type: object
+              nullable: true
+            description: A container for service communications resources. Read-only.
+            x-ms-navigationProperty: true
+          sharepoint:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.sharepoint'
+            - type: object
+              nullable: true
+            x-ms-navigationProperty: true
+          '@odata.type':
+            type: string
+- path: /admin/edge
+  path_description: Provides operations to manage the edge property of the microsoft.graph.admin entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get edge from admin
+    description: A container for Microsoft Edge resources. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property edge in admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: edge
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            internetExplorerMode:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.internetExplorerMode'
+              - type: object
+                nullable: true
+              description: A container for Internet Explorer mode resources.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.edge'
+  - method: DELETE
+    summary: Delete navigation property edge for admin
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/edge/internetExplorerMode
+  path_description: Provides operations to manage the internetExplorerMode property of the microsoft.graph.edge entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get internetExplorerMode from admin
+    description: A container for Internet Explorer mode resources.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property internetExplorerMode in admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: internetExplorerMode
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            siteLists:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.browserSiteList'
+              description: A collection of site lists to support Internet Explorer mode.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.internetExplorerMode'
+  - method: DELETE
+    summary: Delete navigation property internetExplorerMode for admin
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/edge/internetExplorerMode/siteLists
+  path_description: Provides operations to manage the siteLists property of the microsoft.graph.internetExplorerMode entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List browserSiteLists
+    description: Get a list of the browserSiteList objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create browserSiteList
+    description: Create a new browserSiteList object to support Internet Explorer mode.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: browserSiteList
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: The description of the site list.
+            displayName:
+              type: string
+              description: The name of the site list.
+            lastModifiedBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The user who last modified the site list.
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the site list was last modified.
+              format: date-time
+            publishedBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The user who published the site list.
+            publishedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the site list was published.
+              format: date-time
+              nullable: true
+            revision:
+              type: string
+              description: The current revision of the site list.
+            status:
+              $ref: '#/components/schemas/microsoft.graph.browserSiteListStatus'
+            sharedCookies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.browserSharedCookie'
+              description: A collection of shared cookies defined for the site list.
+              x-ms-navigationProperty: true
+            sites:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.browserSite'
+              description: A collection of sites defined for the site list.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          description: A singleton entity which is used to specify IE mode site list metadata
+        x-ms-discriminator-value: '#microsoft.graph.browserSiteList'
+- path: /admin/edge/internetExplorerMode/siteLists/{browserSiteList-id}
+  path_description: Provides operations to manage the siteLists property of the microsoft.graph.internetExplorerMode entity.
+  path_parameters:
+  - name: browserSiteList-id
+    in: path
+    description: The unique identifier of browserSiteList
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: browserSiteList
+  methods:
+  - method: GET
+    summary: Get browserSiteList
+    description: Get a browserSiteList that contains browserSite and browserSharedCookie resources.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update browserSiteList
+    description: Update the properties of a browserSiteList object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: browserSiteList
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: The description of the site list.
+            displayName:
+              type: string
+              description: The name of the site list.
+            lastModifiedBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The user who last modified the site list.
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the site list was last modified.
+              format: date-time
+            publishedBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The user who published the site list.
+            publishedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the site list was published.
+              format: date-time
+              nullable: true
+            revision:
+              type: string
+              description: The current revision of the site list.
+            status:
+              $ref: '#/components/schemas/microsoft.graph.browserSiteListStatus'
+            sharedCookies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.browserSharedCookie'
+              description: A collection of shared cookies defined for the site list.
+              x-ms-navigationProperty: true
+            sites:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.browserSite'
+              description: A collection of sites defined for the site list.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          description: A singleton entity which is used to specify IE mode site list metadata
+        x-ms-discriminator-value: '#microsoft.graph.browserSiteList'
+  - method: DELETE
+    summary: Delete browserSiteList
+    description: Delete a browserSiteList object.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/edge/internetExplorerMode/siteLists/{browserSiteList-id}/publish
+  path_description: Provides operations to call the publish method.
+  path_parameters:
+  - name: browserSiteList-id
+    in: path
+    description: The unique identifier of browserSiteList
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: browserSiteList
+  methods:
+  - method: POST
+    summary: Invoke action publish
+    description: Publish the specified browserSiteList for devices to download.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          revision:
+            type: string
+          sites:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.browserSite'
+          sharedCookies:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.browserSharedCookie'
+- path: /admin/edge/internetExplorerMode/siteLists/{browserSiteList-id}/sharedCookies
+  path_description: Provides operations to manage the sharedCookies property of the microsoft.graph.browserSiteList entity.
+  path_parameters:
+  - name: browserSiteList-id
+    in: path
+    description: The unique identifier of browserSiteList
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: browserSiteList
+  methods:
+  - method: GET
+    summary: List browserSharedCookies
+    description: Get a list of the browserSharedCookie objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create browserSharedCookie
+    description: Create a new browserSharedCookie object in a browserSiteList.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: browserSharedCookie
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            comment:
+              type: string
+              description: The comment for the shared cookie.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the shared cookie was created.
+              format: date-time
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the shared cookie was deleted.
+              format: date-time
+              nullable: true
+            displayName:
+              type: string
+              description: The name of the cookie.
+            history:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.browserSharedCookieHistory'
+              description: The history of modifications applied to the cookie.
+            hostOnly:
+              type: boolean
+              description: Controls whether a cookie is a host-only or domain cookie.
+            hostOrDomain:
+              type: string
+              description: The URL of the cookie.
+            lastModifiedBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The user who last modified the cookie.
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the cookie was last modified.
+              format: date-time
+            path:
+              type: string
+              description: The path of the cookie.
+            sourceEnvironment:
+              $ref: '#/components/schemas/microsoft.graph.browserSharedCookieSourceEnvironment'
+            status:
+              $ref: '#/components/schemas/microsoft.graph.browserSharedCookieStatus'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.browserSharedCookie'
+- path: /admin/edge/internetExplorerMode/siteLists/{browserSiteList-id}/sharedCookies/{browserSharedCookie-id}
+  path_description: Provides operations to manage the sharedCookies property of the microsoft.graph.browserSiteList entity.
+  path_parameters:
+  - name: browserSiteList-id
+    in: path
+    description: The unique identifier of browserSiteList
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: browserSiteList
+  - name: browserSharedCookie-id
+    in: path
+    description: The unique identifier of browserSharedCookie
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: browserSharedCookie
+  methods:
+  - method: GET
+    summary: Get browserSharedCookie
+    description: Get a session cookie that can be shared between a Microsoft Edge process and an Internet Explorer process, while using Internet Explorer mode.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update browserSharedCookie
+    description: Update the properties of a browserSharedCookie object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: browserSharedCookie
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            comment:
+              type: string
+              description: The comment for the shared cookie.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the shared cookie was created.
+              format: date-time
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the shared cookie was deleted.
+              format: date-time
+              nullable: true
+            displayName:
+              type: string
+              description: The name of the cookie.
+            history:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.browserSharedCookieHistory'
+              description: The history of modifications applied to the cookie.
+            hostOnly:
+              type: boolean
+              description: Controls whether a cookie is a host-only or domain cookie.
+            hostOrDomain:
+              type: string
+              description: The URL of the cookie.
+            lastModifiedBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The user who last modified the cookie.
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the cookie was last modified.
+              format: date-time
+            path:
+              type: string
+              description: The path of the cookie.
+            sourceEnvironment:
+              $ref: '#/components/schemas/microsoft.graph.browserSharedCookieSourceEnvironment'
+            status:
+              $ref: '#/components/schemas/microsoft.graph.browserSharedCookieStatus'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.browserSharedCookie'
+  - method: DELETE
+    summary: Delete browserSharedCookie
+    description: Delete a browserSharedCookie from a browserSiteList.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/edge/internetExplorerMode/siteLists/{browserSiteList-id}/sharedCookies/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: browserSiteList-id
+    in: path
+    description: The unique identifier of browserSiteList
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: browserSiteList
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /admin/edge/internetExplorerMode/siteLists/{browserSiteList-id}/sites
+  path_description: Provides operations to manage the sites property of the microsoft.graph.browserSiteList entity.
+  path_parameters:
+  - name: browserSiteList-id
+    in: path
+    description: The unique identifier of browserSiteList
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: browserSiteList
+  methods:
+  - method: GET
+    summary: List browserSites
+    description: Get a list of the browserSite objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create browserSite
+    description: Create a new browserSite object in a browserSiteList.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: browserSite
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            allowRedirect:
+              type: boolean
+              description: Controls the behavior of redirected sites. If true, indicates that the site will open in Internet Explorer 11 or Microsoft Edge even if the site is navigated to as part of a HTTP or meta refresh redirection chain.
+            comment:
+              type: string
+              description: The comment for the site.
+            compatibilityMode:
+              $ref: '#/components/schemas/microsoft.graph.browserSiteCompatibilityMode'
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the site was created.
+              format: date-time
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the site was deleted.
+              format: date-time
+              nullable: true
+            history:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.browserSiteHistory'
+              description: The history of modifications applied to the site.
+            lastModifiedBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The user who last modified the site.
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the site was last modified.
+              format: date-time
+            mergeType:
+              $ref: '#/components/schemas/microsoft.graph.browserSiteMergeType'
+            status:
+              $ref: '#/components/schemas/microsoft.graph.browserSiteStatus'
+            targetEnvironment:
+              $ref: '#/components/schemas/microsoft.graph.browserSiteTargetEnvironment'
+            webUrl:
+              type: string
+              description: The URL of the site.
+            '@odata.type':
+              type: string
+          description: Singleton entity which is used to specify IE mode site metadata
+        x-ms-discriminator-value: '#microsoft.graph.browserSite'
+- path: /admin/edge/internetExplorerMode/siteLists/{browserSiteList-id}/sites/{browserSite-id}
+  path_description: Provides operations to manage the sites property of the microsoft.graph.browserSiteList entity.
+  path_parameters:
+  - name: browserSiteList-id
+    in: path
+    description: The unique identifier of browserSiteList
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: browserSiteList
+  - name: browserSite-id
+    in: path
+    description: The unique identifier of browserSite
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: browserSite
+  methods:
+  - method: GET
+    summary: Get browserSite
+    description: Get a browserSite that resides on a browserSiteList.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update browserSite
+    description: Update the properties of a browserSite object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: browserSite
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            allowRedirect:
+              type: boolean
+              description: Controls the behavior of redirected sites. If true, indicates that the site will open in Internet Explorer 11 or Microsoft Edge even if the site is navigated to as part of a HTTP or meta refresh redirection chain.
+            comment:
+              type: string
+              description: The comment for the site.
+            compatibilityMode:
+              $ref: '#/components/schemas/microsoft.graph.browserSiteCompatibilityMode'
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the site was created.
+              format: date-time
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the site was deleted.
+              format: date-time
+              nullable: true
+            history:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.browserSiteHistory'
+              description: The history of modifications applied to the site.
+            lastModifiedBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The user who last modified the site.
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the site was last modified.
+              format: date-time
+            mergeType:
+              $ref: '#/components/schemas/microsoft.graph.browserSiteMergeType'
+            status:
+              $ref: '#/components/schemas/microsoft.graph.browserSiteStatus'
+            targetEnvironment:
+              $ref: '#/components/schemas/microsoft.graph.browserSiteTargetEnvironment'
+            webUrl:
+              type: string
+              description: The URL of the site.
+            '@odata.type':
+              type: string
+          description: Singleton entity which is used to specify IE mode site metadata
+        x-ms-discriminator-value: '#microsoft.graph.browserSite'
+  - method: DELETE
+    summary: Delete browserSite
+    description: Delete a browserSite from a browserSiteList.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/edge/internetExplorerMode/siteLists/{browserSiteList-id}/sites/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: browserSiteList-id
+    in: path
+    description: The unique identifier of browserSiteList
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: browserSiteList
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /admin/edge/internetExplorerMode/siteLists/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /admin/microsoft365Apps
+  path_description: Provides operations to manage the microsoft365Apps property of the microsoft.graph.admin entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get microsoft365Apps from admin
+    description: A container for the Microsoft 365 apps admin functionality.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property microsoft365Apps in admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: adminMicrosoft365Apps
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            installationOptions:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.m365AppsInstallationOptions'
+              - type: object
+                nullable: true
+              description: A container for tenant-level settings for Microsoft 365 applications.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.adminMicrosoft365Apps'
+  - method: DELETE
+    summary: Delete navigation property microsoft365Apps for admin
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/microsoft365Apps/installationOptions
+  path_description: Provides operations to manage the installationOptions property of the microsoft.graph.adminMicrosoft365Apps entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get m365AppsInstallationOptions
+    description: Read the properties and relationships of an m365AppsInstallationOptions object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update m365AppsInstallationOptions
+    description: Update the properties of an m365AppsInstallationOptions object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: m365AppsInstallationOptions
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            appsForMac:
+              $ref: '#/components/schemas/microsoft.graph.appsInstallationOptionsForMac'
+            appsForWindows:
+              $ref: '#/components/schemas/microsoft.graph.appsInstallationOptionsForWindows'
+            updateChannel:
+              $ref: '#/components/schemas/microsoft.graph.appsUpdateChannelType'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.m365AppsInstallationOptions'
+  - method: DELETE
+    summary: Delete navigation property installationOptions for admin
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/people
+  path_description: Provides operations to manage the people property of the microsoft.graph.admin entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get peopleAdminSettings
+    description: Retrieve the properties and relationships of a peopleAdminSettings object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /admin/people/itemInsights
+  path_description: Provides operations to manage the itemInsights property of the microsoft.graph.peopleAdminSettings entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List itemInsights
+    description: Get the properties of an insightsSettings object to display or return item insights in an organization. To learn how to customize the privacy of item insights in an organization, see Customize item insights privacy in Microsoft Graph.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update insightsSettings
+    description: Update privacy settings to display or return the specified type of insights in an organization. Currently, itemInsights is the only supported type of settings. To learn more about customizing insights privacy for your organization, see Customize item insights privacy in Microsoft Graph.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: insightsSettings
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            disabledForGroup:
+              type: string
+              description: The ID of a Microsoft Entra group, of which the specified type of insights are disabled for its members. The default value is null. Optional.
+              nullable: true
+            isEnabledInOrganization:
+              type: boolean
+              description: true if insights of the specified type are enabled for the organization; false if insights of the specified type are disabled for all users without exceptions. The default value is true. Optional.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.insightsSettings'
+  - method: DELETE
+    summary: Delete navigation property itemInsights for admin
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/people/profileCardProperties
+  path_description: Provides operations to manage the profileCardProperties property of the microsoft.graph.peopleAdminSettings entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List profileCardProperties
+    description: Get a collection of profileCardProperty resources for an organization. Each resource is identified by its directoryPropertyName property.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create profileCardProperty
+    description: Create a new profileCardProperty for an organization. The new property is identified by its directoryPropertyName property. For more information about how to add properties to the profile card for an organization, see Add or remove custom attributes on a profile card using the profile card API.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: profileCardProperty
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            annotations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.profileCardAnnotation'
+              description: Allows an administrator to set a custom display label for the directory property and localize it for the users in their tenant.
+            directoryPropertyName:
+              type: string
+              description: 'Identifies a profileCardProperty resource in Get, Update, or Delete operations. Allows an administrator to surface hidden Microsoft Entra ID properties on the Microsoft 365 profile card within their tenant. When present, the Microsoft Entra ID field referenced in this property is visible to all users in your tenant on the contact pane of the profile card. Allowed values for this field are: UserPrincipalName, Fax, StreetAddress, PostalCode, StateOrProvince, Alias, CustomAttribute1,  CustomAttribute2, CustomAttribute3, CustomAttribute4, CustomAttribute5, CustomAttribute6, CustomAttribute7, CustomAttribute8, CustomAttribute9, CustomAttribute10, CustomAttribute11, CustomAttribute12, CustomAttribute13, CustomAttribute14, CustomAttribute15.'
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.profileCardProperty'
+- path: /admin/people/profileCardProperties/{profileCardProperty-id}
+  path_description: Provides operations to manage the profileCardProperties property of the microsoft.graph.peopleAdminSettings entity.
+  path_parameters:
+  - name: profileCardProperty-id
+    in: path
+    description: The unique identifier of profileCardProperty
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: profileCardProperty
+  methods:
+  - method: GET
+    summary: Get profileCardProperty
+    description: Retrieve the properties of a profileCardProperty entity. The profileCardProperty is identified by its directoryPropertyName property.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update profileCardProperty
+    description: Update the properties of a profileCardProperty object, identified by its directoryPropertyName property.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: profileCardProperty
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            annotations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.profileCardAnnotation'
+              description: Allows an administrator to set a custom display label for the directory property and localize it for the users in their tenant.
+            directoryPropertyName:
+              type: string
+              description: 'Identifies a profileCardProperty resource in Get, Update, or Delete operations. Allows an administrator to surface hidden Microsoft Entra ID properties on the Microsoft 365 profile card within their tenant. When present, the Microsoft Entra ID field referenced in this property is visible to all users in your tenant on the contact pane of the profile card. Allowed values for this field are: UserPrincipalName, Fax, StreetAddress, PostalCode, StateOrProvince, Alias, CustomAttribute1,  CustomAttribute2, CustomAttribute3, CustomAttribute4, CustomAttribute5, CustomAttribute6, CustomAttribute7, CustomAttribute8, CustomAttribute9, CustomAttribute10, CustomAttribute11, CustomAttribute12, CustomAttribute13, CustomAttribute14, CustomAttribute15.'
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.profileCardProperty'
+  - method: DELETE
+    summary: Delete profileCardProperty
+    description: Delete the profileCardProperty object specified by its directoryPropertyName from the organization's profile card, and remove any localized customizations for that property.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/people/profileCardProperties/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /admin/people/pronouns
+  path_description: Provides operations to manage the pronouns property of the microsoft.graph.peopleAdminSettings entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List pronounsSettings
+    description: Get the properties of the pronounsSettings resource for an organization.  For more information on settings to manage pronouns support, see Manage pronouns settings for an organization using the Microsoft Graph API.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update pronounsSettings
+    description: Update the properties of a pronounsSettings object in an organization. For more information on settings to manage pronouns support, see Manage pronouns settings for an organization using the Microsoft Graph API.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: pronounsSettings
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            isEnabledInOrganization:
+              type: boolean
+              description: true to enable pronouns in the organization; otherwise, false. The default value is false, and pronouns are disabled.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.pronounsSettings'
+- path: /admin/reportSettings
+  path_description: Provides operations to manage the reportSettings property of the microsoft.graph.admin entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get adminReportSettings
+    description: Get the tenant-level settings for Microsoft 365 reports.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update adminReportSettings
+    description: Update tenant-level settings for Microsoft 365 reports.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: adminReportSettings
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayConcealedNames:
+              type: boolean
+              description: If set to true, all reports conceal user information such as usernames, groups, and sites. If false, all reports show identifiable information. This property represents a setting in the Microsoft 365 admin center. Required.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.adminReportSettings'
+  - method: DELETE
+    summary: Delete navigation property reportSettings for admin
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/serviceAnnouncement
+  path_description: Provides operations to manage the serviceAnnouncement property of the microsoft.graph.admin entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get serviceAnnouncement from admin
+    description: A container for service communications resources. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property serviceAnnouncement in admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: serviceAnnouncement
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            healthOverviews:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceHealth'
+              description: A collection of service health information for tenant. This property is a contained navigation property, it is nullable and readonly.
+              x-ms-navigationProperty: true
+            issues:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceHealthIssue'
+              description: A collection of service issues for tenant. This property is a contained navigation property, it is nullable and readonly.
+              x-ms-navigationProperty: true
+            messages:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceUpdateMessage'
+              description: A collection of service messages for tenant. This property is a contained navigation property, it is nullable and readonly.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.serviceAnnouncement'
+  - method: DELETE
+    summary: Delete navigation property serviceAnnouncement for admin
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/serviceAnnouncement/healthOverviews
+  path_description: Provides operations to manage the healthOverviews property of the microsoft.graph.serviceAnnouncement entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List healthOverviews
+    description: Retrieve the serviceHealth resources from the healthOverviews navigation property. This operation provides the health report of all subscribed services for a tenant.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to healthOverviews for admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: serviceHealth
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            service:
+              type: string
+              description: The service name. Use the list healthOverviews operation to get exact string names for services subscribed by the tenant.
+            status:
+              $ref: '#/components/schemas/microsoft.graph.serviceHealthStatus'
+            issues:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceHealthIssue'
+              description: A collection of issues that happened on the service, with detailed information for each issue.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.serviceHealth'
+- path: /admin/serviceAnnouncement/healthOverviews/{serviceHealth-id}
+  path_description: Provides operations to manage the healthOverviews property of the microsoft.graph.serviceAnnouncement entity.
+  path_parameters:
+  - name: serviceHealth-id
+    in: path
+    description: The unique identifier of serviceHealth
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceHealth
+  methods:
+  - method: GET
+    summary: Get serviceHealth
+    description: Retrieve the properties and relationships of a serviceHealth object. This operation provides the health information of a specified service for a tenant.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property healthOverviews in admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: serviceHealth
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            service:
+              type: string
+              description: The service name. Use the list healthOverviews operation to get exact string names for services subscribed by the tenant.
+            status:
+              $ref: '#/components/schemas/microsoft.graph.serviceHealthStatus'
+            issues:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceHealthIssue'
+              description: A collection of issues that happened on the service, with detailed information for each issue.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.serviceHealth'
+  - method: DELETE
+    summary: Delete navigation property healthOverviews for admin
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/serviceAnnouncement/healthOverviews/{serviceHealth-id}/issues
+  path_description: Provides operations to manage the issues property of the microsoft.graph.serviceHealth entity.
+  path_parameters:
+  - name: serviceHealth-id
+    in: path
+    description: The unique identifier of serviceHealth
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceHealth
+  methods:
+  - method: GET
+    summary: Get issues from admin
+    description: A collection of issues that happened on the service, with detailed information for each issue.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to issues for admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.serviceAnnouncementBase'
+        - title: serviceHealthIssue
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            classification:
+              $ref: '#/components/schemas/microsoft.graph.serviceHealthClassificationType'
+            feature:
+              type: string
+              description: The feature name of the service issue.
+              nullable: true
+            featureGroup:
+              type: string
+              description: The feature group name of the service issue.
+              nullable: true
+            impactDescription:
+              type: string
+              description: The description of the service issue impact.
+            isResolved:
+              type: boolean
+              description: Indicates whether the issue is resolved.
+            origin:
+              $ref: '#/components/schemas/microsoft.graph.serviceHealthOrigin'
+            posts:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceHealthIssuePost'
+              description: Collection of historical posts for the service issue.
+            service:
+              type: string
+              description: Indicates the service affected by the issue.
+            status:
+              $ref: '#/components/schemas/microsoft.graph.serviceHealthStatus'
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.serviceHealthIssue'
+        x-ms-discriminator-value: '#microsoft.graph.serviceHealthIssue'
+- path: /admin/serviceAnnouncement/healthOverviews/{serviceHealth-id}/issues/{serviceHealthIssue-id}
+  path_description: Provides operations to manage the issues property of the microsoft.graph.serviceHealth entity.
+  path_parameters:
+  - name: serviceHealth-id
+    in: path
+    description: The unique identifier of serviceHealth
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceHealth
+  - name: serviceHealthIssue-id
+    in: path
+    description: The unique identifier of serviceHealthIssue
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceHealthIssue
+  methods:
+  - method: GET
+    summary: Get issues from admin
+    description: A collection of issues that happened on the service, with detailed information for each issue.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property issues in admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.serviceAnnouncementBase'
+        - title: serviceHealthIssue
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            classification:
+              $ref: '#/components/schemas/microsoft.graph.serviceHealthClassificationType'
+            feature:
+              type: string
+              description: The feature name of the service issue.
+              nullable: true
+            featureGroup:
+              type: string
+              description: The feature group name of the service issue.
+              nullable: true
+            impactDescription:
+              type: string
+              description: The description of the service issue impact.
+            isResolved:
+              type: boolean
+              description: Indicates whether the issue is resolved.
+            origin:
+              $ref: '#/components/schemas/microsoft.graph.serviceHealthOrigin'
+            posts:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceHealthIssuePost'
+              description: Collection of historical posts for the service issue.
+            service:
+              type: string
+              description: Indicates the service affected by the issue.
+            status:
+              $ref: '#/components/schemas/microsoft.graph.serviceHealthStatus'
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.serviceHealthIssue'
+        x-ms-discriminator-value: '#microsoft.graph.serviceHealthIssue'
+  - method: DELETE
+    summary: Delete navigation property issues for admin
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/serviceAnnouncement/healthOverviews/{serviceHealth-id}/issues/{serviceHealthIssue-id}/incidentReport()
+  path_description: Provides operations to call the incidentReport method.
+  path_parameters:
+  - name: serviceHealth-id
+    in: path
+    description: The unique identifier of serviceHealth
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceHealth
+  - name: serviceHealthIssue-id
+    in: path
+    description: The unique identifier of serviceHealthIssue
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceHealthIssue
+  methods:
+  - method: GET
+    summary: Invoke function incidentReport
+    description: Provide the Post-Incident Review (PIR) document of a specified service issue for tenant.  An issue only with status of PostIncidentReviewPublished indicates that the PIR document exists for the issue. The operation returns an error if the specified issue doesn't exist for the tenant or if PIR document does not exist for the issue.
+    parameters: []
+    requestBody: null
+- path: /admin/serviceAnnouncement/healthOverviews/{serviceHealth-id}/issues/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: serviceHealth-id
+    in: path
+    description: The unique identifier of serviceHealth
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceHealth
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /admin/serviceAnnouncement/healthOverviews/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /admin/serviceAnnouncement/issues
+  path_description: Provides operations to manage the issues property of the microsoft.graph.serviceAnnouncement entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List issues
+    description: Retrieve serviceHealthIssue resources from the issues navigation property. This operation retrieves information about all service health issues that exist for the tenant.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to issues for admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.serviceAnnouncementBase'
+        - title: serviceHealthIssue
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            classification:
+              $ref: '#/components/schemas/microsoft.graph.serviceHealthClassificationType'
+            feature:
+              type: string
+              description: The feature name of the service issue.
+              nullable: true
+            featureGroup:
+              type: string
+              description: The feature group name of the service issue.
+              nullable: true
+            impactDescription:
+              type: string
+              description: The description of the service issue impact.
+            isResolved:
+              type: boolean
+              description: Indicates whether the issue is resolved.
+            origin:
+              $ref: '#/components/schemas/microsoft.graph.serviceHealthOrigin'
+            posts:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceHealthIssuePost'
+              description: Collection of historical posts for the service issue.
+            service:
+              type: string
+              description: Indicates the service affected by the issue.
+            status:
+              $ref: '#/components/schemas/microsoft.graph.serviceHealthStatus'
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.serviceHealthIssue'
+        x-ms-discriminator-value: '#microsoft.graph.serviceHealthIssue'
+- path: /admin/serviceAnnouncement/issues/{serviceHealthIssue-id}
+  path_description: Provides operations to manage the issues property of the microsoft.graph.serviceAnnouncement entity.
+  path_parameters:
+  - name: serviceHealthIssue-id
+    in: path
+    description: The unique identifier of serviceHealthIssue
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceHealthIssue
+  methods:
+  - method: GET
+    summary: Get serviceHealthIssue
+    description: Retrieve the properties and relationships of a serviceHealthIssue object. This operation retrieves a specified service health issue for tenant. The operation returns an error if the issue does not exist for the tenant.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property issues in admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.serviceAnnouncementBase'
+        - title: serviceHealthIssue
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            classification:
+              $ref: '#/components/schemas/microsoft.graph.serviceHealthClassificationType'
+            feature:
+              type: string
+              description: The feature name of the service issue.
+              nullable: true
+            featureGroup:
+              type: string
+              description: The feature group name of the service issue.
+              nullable: true
+            impactDescription:
+              type: string
+              description: The description of the service issue impact.
+            isResolved:
+              type: boolean
+              description: Indicates whether the issue is resolved.
+            origin:
+              $ref: '#/components/schemas/microsoft.graph.serviceHealthOrigin'
+            posts:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceHealthIssuePost'
+              description: Collection of historical posts for the service issue.
+            service:
+              type: string
+              description: Indicates the service affected by the issue.
+            status:
+              $ref: '#/components/schemas/microsoft.graph.serviceHealthStatus'
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.serviceHealthIssue'
+        x-ms-discriminator-value: '#microsoft.graph.serviceHealthIssue'
+  - method: DELETE
+    summary: Delete navigation property issues for admin
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/serviceAnnouncement/issues/{serviceHealthIssue-id}/incidentReport()
+  path_description: Provides operations to call the incidentReport method.
+  path_parameters:
+  - name: serviceHealthIssue-id
+    in: path
+    description: The unique identifier of serviceHealthIssue
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceHealthIssue
+  methods:
+  - method: GET
+    summary: Invoke function incidentReport
+    description: Provide the Post-Incident Review (PIR) document of a specified service issue for tenant.  An issue only with status of PostIncidentReviewPublished indicates that the PIR document exists for the issue. The operation returns an error if the specified issue doesn't exist for the tenant or if PIR document does not exist for the issue.
+    parameters: []
+    requestBody: null
+- path: /admin/serviceAnnouncement/issues/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /admin/serviceAnnouncement/messages
+  path_description: Provides operations to manage the messages property of the microsoft.graph.serviceAnnouncement entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List serviceAnnouncement messages
+    description: Retrieve the serviceUpdateMessage resources from the messages navigation property. This operation retrieves all service update messages that exist for the tenant.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to messages for admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.serviceAnnouncementBase'
+        - title: serviceUpdateMessage
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            actionRequiredByDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The expected deadline of the action for the message.
+              format: date-time
+              nullable: true
+            attachmentsArchive:
+              type: string
+              description: The zip file that contains all attachments for a message.
+              format: base64url
+              nullable: true
+            body:
+              $ref: '#/components/schemas/microsoft.graph.itemBody'
+            category:
+              $ref: '#/components/schemas/microsoft.graph.serviceUpdateCategory'
+            hasAttachments:
+              type: boolean
+              description: Indicates whether the message has any attachment.
+            isMajorChange:
+              type: boolean
+              description: Indicates whether the message describes a major update for the service.
+              nullable: true
+            services:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The affected services by the service message.
+            severity:
+              $ref: '#/components/schemas/microsoft.graph.serviceUpdateSeverity'
+            tags:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: A collection of tags for the service message. Tags are provided by the service team/support team who post the message to tell whether this message contains privacy data, or whether this message is for a service new feature update, and so on.
+            viewPoint:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.serviceUpdateMessageViewpoint'
+              - type: object
+                nullable: true
+              description: Represents user viewpoints data of the service message. This data includes message status such as whether the user has archived, read, or marked the message as favorite. This property is null when accessed with application permissions.
+            attachments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceAnnouncementAttachment'
+              description: A collection of serviceAnnouncementAttachments.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.serviceUpdateMessage'
+        x-ms-discriminator-value: '#microsoft.graph.serviceUpdateMessage'
+- path: /admin/serviceAnnouncement/messages/{serviceUpdateMessage-id}
+  path_description: Provides operations to manage the messages property of the microsoft.graph.serviceAnnouncement entity.
+  path_parameters:
+  - name: serviceUpdateMessage-id
+    in: path
+    description: The unique identifier of serviceUpdateMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceUpdateMessage
+  methods:
+  - method: GET
+    summary: Get serviceUpdateMessage
+    description: Retrieve the properties and relationships of a serviceUpdateMessage object. This operation retrieves a specified service update message for the tenant. The operation returns an error if the message does not exist for the tenant.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property messages in admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.serviceAnnouncementBase'
+        - title: serviceUpdateMessage
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            actionRequiredByDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The expected deadline of the action for the message.
+              format: date-time
+              nullable: true
+            attachmentsArchive:
+              type: string
+              description: The zip file that contains all attachments for a message.
+              format: base64url
+              nullable: true
+            body:
+              $ref: '#/components/schemas/microsoft.graph.itemBody'
+            category:
+              $ref: '#/components/schemas/microsoft.graph.serviceUpdateCategory'
+            hasAttachments:
+              type: boolean
+              description: Indicates whether the message has any attachment.
+            isMajorChange:
+              type: boolean
+              description: Indicates whether the message describes a major update for the service.
+              nullable: true
+            services:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The affected services by the service message.
+            severity:
+              $ref: '#/components/schemas/microsoft.graph.serviceUpdateSeverity'
+            tags:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: A collection of tags for the service message. Tags are provided by the service team/support team who post the message to tell whether this message contains privacy data, or whether this message is for a service new feature update, and so on.
+            viewPoint:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.serviceUpdateMessageViewpoint'
+              - type: object
+                nullable: true
+              description: Represents user viewpoints data of the service message. This data includes message status such as whether the user has archived, read, or marked the message as favorite. This property is null when accessed with application permissions.
+            attachments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceAnnouncementAttachment'
+              description: A collection of serviceAnnouncementAttachments.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.serviceUpdateMessage'
+        x-ms-discriminator-value: '#microsoft.graph.serviceUpdateMessage'
+  - method: DELETE
+    summary: Delete navigation property messages for admin
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/serviceAnnouncement/messages/{serviceUpdateMessage-id}/attachments
+  path_description: Provides operations to manage the attachments property of the microsoft.graph.serviceUpdateMessage entity.
+  path_parameters:
+  - name: serviceUpdateMessage-id
+    in: path
+    description: The unique identifier of serviceUpdateMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceUpdateMessage
+  methods:
+  - method: GET
+    summary: List attachments
+    description: Get the list of attachments associated with a service message.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to attachments for admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: serviceAnnouncementAttachment
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            content:
+              type: string
+              description: The attachment content.
+              format: base64url
+              nullable: true
+            contentType:
+              type: string
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              format: date-time
+              nullable: true
+            name:
+              type: string
+              nullable: true
+            size:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              format: int32
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.serviceAnnouncementAttachment'
+- path: /admin/serviceAnnouncement/messages/{serviceUpdateMessage-id}/attachments/{serviceAnnouncementAttachment-id}
+  path_description: Provides operations to manage the attachments property of the microsoft.graph.serviceUpdateMessage entity.
+  path_parameters:
+  - name: serviceUpdateMessage-id
+    in: path
+    description: The unique identifier of serviceUpdateMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceUpdateMessage
+  - name: serviceAnnouncementAttachment-id
+    in: path
+    description: The unique identifier of serviceAnnouncementAttachment
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceAnnouncementAttachment
+  methods:
+  - method: GET
+    summary: Get serviceAnnouncementAttachment
+    description: Read the properties and relationships of a serviceAnnouncementAttachment object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property attachments in admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: serviceAnnouncementAttachment
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            content:
+              type: string
+              description: The attachment content.
+              format: base64url
+              nullable: true
+            contentType:
+              type: string
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              format: date-time
+              nullable: true
+            name:
+              type: string
+              nullable: true
+            size:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              format: int32
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.serviceAnnouncementAttachment'
+  - method: DELETE
+    summary: Delete navigation property attachments for admin
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/serviceAnnouncement/messages/{serviceUpdateMessage-id}/attachments/{serviceAnnouncementAttachment-id}/content
+  path_description: Provides operations to manage the media for the admin entity.
+  path_parameters:
+  - name: serviceUpdateMessage-id
+    in: path
+    description: The unique identifier of serviceUpdateMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceUpdateMessage
+  - name: serviceAnnouncementAttachment-id
+    in: path
+    description: The unique identifier of serviceAnnouncementAttachment
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceAnnouncementAttachment
+  methods:
+  - method: GET
+    summary: Get serviceAnnouncementAttachment
+    description: Read the properties and relationships of a serviceAnnouncementAttachment object.
+    parameters: []
+    requestBody: null
+  - method: PUT
+    summary: Update content for the navigation property attachments in admin
+    description: The attachment content.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete content for the navigation property attachments in admin
+    description: The attachment content.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/serviceAnnouncement/messages/{serviceUpdateMessage-id}/attachments/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: serviceUpdateMessage-id
+    in: path
+    description: The unique identifier of serviceUpdateMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceUpdateMessage
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /admin/serviceAnnouncement/messages/{serviceUpdateMessage-id}/attachmentsArchive
+  path_description: Provides operations to manage the media for the admin entity.
+  path_parameters:
+  - name: serviceUpdateMessage-id
+    in: path
+    description: The unique identifier of serviceUpdateMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: serviceUpdateMessage
+  methods:
+  - method: GET
+    summary: List attachments
+    description: Get the list of attachments associated with a service message.
+    parameters: []
+    requestBody: null
+  - method: PUT
+    summary: Update attachmentsArchive for the navigation property messages in admin
+    description: The zip file that contains all attachments for a message.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete attachmentsArchive for the navigation property messages in admin
+    description: The zip file that contains all attachments for a message.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/serviceAnnouncement/messages/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /admin/serviceAnnouncement/messages/archive
+  path_description: Provides operations to call the archive method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action archive
+    description: Archive a list of serviceUpdateMessages for the signed in user.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          messageIds:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /admin/serviceAnnouncement/messages/favorite
+  path_description: Provides operations to call the favorite method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action favorite
+    description: Change the status of a list of serviceUpdateMessages to favorite for the signed in user.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          messageIds:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /admin/serviceAnnouncement/messages/markRead
+  path_description: Provides operations to call the markRead method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action markRead
+    description: Mark a list of serviceUpdateMessages as read for the signed in user.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          messageIds:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /admin/serviceAnnouncement/messages/markUnread
+  path_description: Provides operations to call the markUnread method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action markUnread
+    description: Mark a list of serviceUpdateMessages as unread for the signed in user.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          messageIds:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /admin/serviceAnnouncement/messages/unarchive
+  path_description: Provides operations to call the unarchive method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action unarchive
+    description: Unarchive a list of serviceUpdateMessages for the signed in user.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          messageIds:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /admin/serviceAnnouncement/messages/unfavorite
+  path_description: Provides operations to call the unfavorite method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action unfavorite
+    description: Remove the favorite status of serviceUpdateMessages for the signed in user.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          messageIds:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /admin/sharepoint
+  path_description: Provides operations to manage the sharepoint property of the microsoft.graph.admin entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get sharepoint from admin
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property sharepoint in admin
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: sharepoint
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            settings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharepointSettings'
+              - type: object
+                nullable: true
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.sharepoint'
+  - method: DELETE
+    summary: Delete navigation property sharepoint for admin
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /admin/sharepoint/settings
+  path_description: Provides operations to manage the settings property of the microsoft.graph.sharepoint entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get settings
+    description: Get the tenant-level settings for SharePoint and OneDrive.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update settings
+    description: Update one or more tenant-level settings for SharePoint and OneDrive.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: sharepointSettings
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            allowedDomainGuidsForSyncApp:
+              type: array
+              items:
+                pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+                type: string
+                format: uuid
+                nullable: true
+              description: Collection of trusted domain GUIDs for the OneDrive sync app.
+            availableManagedPathsForSiteCreation:
+              type: array
+              items:
+                type: string
+              description: Collection of managed paths available for site creation. Read-only.
+            deletedUserPersonalSiteRetentionPeriodInDays:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The number of days for preserving a deleted user's OneDrive.
+              format: int32
+              nullable: true
+            excludedFileExtensionsForSyncApp:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: Collection of file extensions not uploaded by the OneDrive sync app.
+            idleSessionSignOut:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.idleSessionSignOut'
+              - type: object
+                nullable: true
+              description: Specifies the idle session sign-out policies for the tenant.
+            imageTaggingOption:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.imageTaggingChoice'
+              - type: object
+                nullable: true
+              description: 'Specifies the image tagging option for the tenant. Possible values are: disabled, basic, enhanced.'
+            isCommentingOnSitePagesEnabled:
+              type: boolean
+              description: Indicates whether comments are allowed on modern site pages in SharePoint.
+              nullable: true
+            isFileActivityNotificationEnabled:
+              type: boolean
+              description: Indicates whether push notifications are enabled for OneDrive events.
+              nullable: true
+            isLegacyAuthProtocolsEnabled:
+              type: boolean
+              description: Indicates whether legacy authentication protocols are enabled for the tenant.
+              nullable: true
+            isLoopEnabled:
+              type: boolean
+              description: Indicates whether if Fluid Framework is allowed on SharePoint sites.
+              nullable: true
+            isMacSyncAppEnabled:
+              type: boolean
+              description: Indicates whether files can be synced using the OneDrive sync app for Mac.
+              nullable: true
+            isRequireAcceptingUserToMatchInvitedUserEnabled:
+              type: boolean
+              description: Indicates whether guests must sign in using the same account to which sharing invitations are sent.
+              nullable: true
+            isResharingByExternalUsersEnabled:
+              type: boolean
+              description: Indicates whether guests are allowed to reshare files, folders, and sites they don't own.
+              nullable: true
+            isSharePointMobileNotificationEnabled:
+              type: boolean
+              description: Indicates whether mobile push notifications are enabled for SharePoint.
+              nullable: true
+            isSharePointNewsfeedEnabled:
+              type: boolean
+              description: Indicates whether the newsfeed is allowed on the modern site pages in SharePoint.
+              nullable: true
+            isSiteCreationEnabled:
+              type: boolean
+              description: Indicates whether users are allowed to create sites.
+              nullable: true
+            isSiteCreationUIEnabled:
+              type: boolean
+              description: Indicates whether the UI commands for creating sites are shown.
+              nullable: true
+            isSitePagesCreationEnabled:
+              type: boolean
+              description: Indicates whether creating new modern pages is allowed on SharePoint sites.
+              nullable: true
+            isSitesStorageLimitAutomatic:
+              type: boolean
+              description: Indicates whether site storage space is automatically managed or if specific storage limits are set per site.
+              nullable: true
+            isSyncButtonHiddenOnPersonalSite:
+              type: boolean
+              description: Indicates whether the sync button in OneDrive is hidden.
+              nullable: true
+            isUnmanagedSyncAppForTenantRestricted:
+              type: boolean
+              description: Indicates whether users are allowed to sync files only on PCs joined to specific domains.
+              nullable: true
+            personalSiteDefaultStorageLimitInMB:
+              type: number
+              description: The default OneDrive storage limit for all new and existing users who are assigned a qualifying license. Measured in megabytes (MB).
+              format: int64
+              nullable: true
+            sharingAllowedDomainList:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: Collection of email domains that are allowed for sharing outside the organization.
+            sharingBlockedDomainList:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: Collection of email domains that are blocked for sharing outside the organization.
+            sharingCapability:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharingCapabilities'
+              - type: object
+                nullable: true
+              description: 'Sharing capability for the tenant. Possible values are: disabled, externalUserSharingOnly, externalUserAndGuestSharing, existingExternalUserSharingOnly.'
+            sharingDomainRestrictionMode:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.sharingDomainRestrictionMode'
+              - type: object
+                nullable: true
+              description: 'Specifies the external sharing mode for domains. Possible values are: none, allowList, blockList.'
+            siteCreationDefaultManagedPath:
+              type: string
+              description: The value of the team site managed path. This is the path under which new team sites will be created.
+            siteCreationDefaultStorageLimitInMB:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The default storage quota for a new site upon creation. Measured in megabytes (MB).
+              format: int32
+              nullable: true
+            tenantDefaultTimezone:
+              type: string
+              description: The default timezone of a tenant for newly created sites. For a list of possible values, see SPRegionalSettings.TimeZones property.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.sharepointSettings'
+  - method: DELETE
+    summary: Delete navigation property settings for admin
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null

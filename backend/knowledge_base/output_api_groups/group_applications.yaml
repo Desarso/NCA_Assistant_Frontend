@@ -1,0 +1,4785 @@
+- path: /applications
+  path_description: Provides operations to manage the collection of application entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List applications
+    description: Get the list of applications in this organization.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create application
+    description: Create a new application object.
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: application
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            addIns:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.addIn'
+              description: Defines custom behavior that a consuming service can use to call an app in specific contexts. For example, applications that can render file streams can set the addIns property for its 'FileHandler' functionality. This lets services like Microsoft 365 call the application in the context of a document the user is working on.
+            api:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.apiApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for an application that implements a web API.
+            appId:
+              type: string
+              description: The unique identifier for the application that is assigned to an application by Microsoft Entra ID. Not nullable. Read-only. Alternate key. Supports $filter (eq).
+              nullable: true
+            applicationTemplateId:
+              type: string
+              description: Unique identifier of the applicationTemplate. Supports $filter (eq, not, ne). Read-only. null if the app wasn't created from an application template.
+              nullable: true
+            appRoles:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.appRole'
+              description: The collection of roles defined for the application. With app role assignments, these roles can be assigned to users, groups, or service principals associated with other applications. Not nullable.
+            authenticationBehaviors:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.authenticationBehaviors'
+              - type: object
+                nullable: true
+            certification:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.certification'
+              - type: object
+                nullable: true
+              description: Specifies the certification status of the application.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time the application was registered. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.  Supports $filter (eq, ne, not, ge, le, in, and eq on null values) and $orderby.
+              format: date-time
+              nullable: true
+            defaultRedirectUri:
+              type: string
+              nullable: true
+            description:
+              type: string
+              description: Free text field to provide a description of the application object to end users. The maximum allowed size is 1,024 characters. Supports $filter (eq, ne, not, ge, le, startsWith) and $search.
+              nullable: true
+            disabledByMicrosoftStatus:
+              type: string
+              description: 'Specifies whether Microsoft has disabled the registered application. Possible values are: null (default value), NotDisabled, and DisabledDueToViolationOfServicesAgreement (reasons include suspicious, abusive, or malicious activity, or a violation of the Microsoft Services Agreement).  Supports $filter (eq, ne, not).'
+              nullable: true
+            displayName:
+              type: string
+              description: The display name for the application. Maximum length is 256 characters. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values), $search, and $orderby.
+              nullable: true
+            groupMembershipClaims:
+              type: string
+              description: 'Configures the groups claim issued in a user or OAuth 2.0 access token that the application expects. To set this attribute, use one of the following valid string values: None, SecurityGroup (for security groups and Microsoft Entra roles), All (this gets all of the security groups, distribution groups, and Microsoft Entra directory roles that the signed-in user is a member of).'
+              nullable: true
+            identifierUris:
+              type: array
+              items:
+                type: string
+              description: Also known as App ID URI, this value is set when an application is used as a resource app. The identifierUris acts as the prefix for the scopes you reference in your API's code, and it must be globally unique. You can use the default value provided, which is in the form api://<appId>, or specify a more readable URI like https://contoso.com/api. For more information on valid identifierUris patterns and best practices, see Microsoft Entra application registration security best practices. Not nullable. Supports $filter (eq, ne, ge, le, startsWith).
+            info:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.informationalUrl'
+              - type: object
+                nullable: true
+              description: 'Basic profile information of the application such as  app''s marketing, support, terms of service and privacy statement URLs. The terms of service and privacy statement are surfaced to users through the user consent experience. For more info, see How to: Add Terms of service and privacy statement for registered Microsoft Entra apps. Supports $filter (eq, ne, not, ge, le, and eq on null values).'
+            isDeviceOnlyAuthSupported:
+              type: boolean
+              description: Specifies whether this application supports device authentication without a user. The default is false.
+              nullable: true
+            isFallbackPublicClient:
+              type: boolean
+              description: Specifies the fallback application type as public client, such as an installed application running on a mobile device. The default value is false, which means the fallback application type is confidential client such as a web app. There are certain scenarios where Microsoft Entra ID can't determine the client application type. For example, the ROPC flow where it's configured without specifying a redirect URI. In those cases, Microsoft Entra ID interprets the application type based on the value of this property.
+              nullable: true
+            keyCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.keyCredential'
+              description: The collection of key credentials associated with the application. Not nullable. Supports $filter (eq, not, ge, le).
+            logo:
+              type: string
+              description: The main logo for the application. Not nullable.
+              format: base64url
+            nativeAuthenticationApisEnabled:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.nativeAuthenticationApisEnabled'
+              - type: object
+                nullable: true
+              description: 'Specifies whether the Native Authentication APIs are enabled for the application. The possible values are: none and all. Default is none. For more information, see Native Authentication.'
+            notes:
+              type: string
+              description: Notes relevant for the management of the application.
+              nullable: true
+            oauth2RequirePostResponse:
+              type: boolean
+            optionalClaims:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.optionalClaims'
+              - type: object
+                nullable: true
+              description: 'Application developers can configure optional claims in their Microsoft Entra applications to specify the claims that are sent to their application by the Microsoft security token service. For more information, see How to: Provide optional claims to your app.'
+            parentalControlSettings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.parentalControlSettings'
+              - type: object
+                nullable: true
+              description: Specifies parental control settings for an application.
+            passwordCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.passwordCredential'
+              description: The collection of password credentials associated with the application. Not nullable.
+            publicClient:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.publicClientApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for installed clients such as desktop or mobile devices.
+            publisherDomain:
+              type: string
+              description: 'The verified publisher domain for the application. Read-only. For more information, see How to: Configure an application''s publisher domain. Supports $filter (eq, ne, ge, le, startsWith).'
+              nullable: true
+            requestSignatureVerification:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.requestSignatureVerification'
+              - type: object
+                nullable: true
+              description: Specifies whether this application requires Microsoft Entra ID to verify the signed authentication requests.
+            requiredResourceAccess:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.requiredResourceAccess'
+              description: Specifies the resources that the application needs to access. This property also specifies the set of delegated permissions and application roles that it needs for each of those resources. This configuration of access to the required resources drives the consent experience. No more than 50 resource services (APIs) can be configured. Beginning mid-October 2021, the total number of required permissions must not exceed 400. For more information, see Limits on requested permissions per app. Not nullable. Supports $filter (eq, not, ge, le).
+            samlMetadataUrl:
+              type: string
+              description: The URL where the service exposes SAML metadata for federation. This property is valid only for single-tenant applications. Nullable.
+              nullable: true
+            serviceManagementReference:
+              type: string
+              description: References application or service contact information from a Service or Asset Management database. Nullable.
+              nullable: true
+            servicePrincipalLockConfiguration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.servicePrincipalLockConfiguration'
+              - type: object
+                nullable: true
+              description: Specifies whether sensitive properties of a multitenant application should be locked for editing after the application is provisioned in a tenant. Nullable. null by default.
+            signInAudience:
+              type: string
+              description: 'Specifies the Microsoft accounts that are supported for the current application. The possible values are: AzureADMyOrg (default), AzureADMultipleOrgs, AzureADandPersonalMicrosoftAccount, and PersonalMicrosoftAccount. See more in the table. The value of this object also limits the number of permissions an app can request. For more information, see Limits on requested permissions per app. The value for this property has implications on other app object properties. As a result, if you change this property, you might need to change other properties first. For more information, see Validation differences for signInAudience.Supports $filter (eq, ne, not).'
+              nullable: true
+            spa:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.spaApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for a single-page application, including sign out URLs and redirect URIs for authorization codes and access tokens.
+            tags:
+              type: array
+              items:
+                type: string
+              description: Custom strings that can be used to categorize and identify the application. Not nullable. Strings added here will also appear in the tags property of any associated service principals.Supports $filter (eq, not, ge, le, startsWith) and $search.
+            tokenEncryptionKeyId:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              description: Specifies the keyId of a public key from the keyCredentials collection. When configured, Microsoft Entra ID encrypts all the tokens it emits by using the key this property points to. The application code that receives the encrypted token must use the matching private key to decrypt the token before it can be used for the signed-in user.
+              format: uuid
+              nullable: true
+            uniqueName:
+              type: string
+              description: The unique identifier that can be assigned to an application and used as an alternate key. Immutable. Read-only.
+              nullable: true
+            verifiedPublisher:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.verifiedPublisher'
+              - type: object
+                nullable: true
+              description: Specifies the verified publisher of the application. For more information about how publisher verification helps support application security, trustworthiness, and compliance, see Publisher verification.
+            web:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.webApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for a web application.
+            appManagementPolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.appManagementPolicy'
+              description: The appManagementPolicy applied to this application.
+              x-ms-navigationProperty: true
+            createdOnBehalfOf:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              - type: object
+                nullable: true
+              description: Supports $filter (/$count eq 0, /$count ne 0). Read-only.
+              x-ms-navigationProperty: true
+            extensionProperties:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.extensionProperty'
+              description: Read-only. Nullable. Supports $expand and $filter (/$count eq 0, /$count ne 0).
+              x-ms-navigationProperty: true
+            federatedIdentityCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.federatedIdentityCredential'
+              description: Federated identities for applications. Supports $expand and $filter (startsWith, /$count eq 0, /$count ne 0).
+              x-ms-navigationProperty: true
+            homeRealmDiscoveryPolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.homeRealmDiscoveryPolicy'
+              x-ms-navigationProperty: true
+            owners:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Directory objects that are owners of this application. The owners are a set of nonadmin users or service principals who are allowed to modify this object. Supports $expand, $filter (/$count eq 0, /$count ne 0, /$count eq 1, /$count ne 1), and $select nested in $expand.
+              x-ms-navigationProperty: true
+            synchronization:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.synchronization'
+              - type: object
+                nullable: true
+              description: Represents the capability for Microsoft Entra identity synchronization through the Microsoft Graph API.
+              x-ms-navigationProperty: true
+            tokenIssuancePolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.tokenIssuancePolicy'
+              x-ms-navigationProperty: true
+            tokenLifetimePolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.tokenLifetimePolicy'
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.application'
+        x-ms-discriminator-value: '#microsoft.graph.application'
+- path: /applications/{application-id}
+  path_description: Provides operations to manage the collection of application entities.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get application
+    description: Get the properties and relationships of an application object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Upsert application
+    description: Create a new application object if it doesn't exist, or update the properties of an existing application object.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: application
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            addIns:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.addIn'
+              description: Defines custom behavior that a consuming service can use to call an app in specific contexts. For example, applications that can render file streams can set the addIns property for its 'FileHandler' functionality. This lets services like Microsoft 365 call the application in the context of a document the user is working on.
+            api:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.apiApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for an application that implements a web API.
+            appId:
+              type: string
+              description: The unique identifier for the application that is assigned to an application by Microsoft Entra ID. Not nullable. Read-only. Alternate key. Supports $filter (eq).
+              nullable: true
+            applicationTemplateId:
+              type: string
+              description: Unique identifier of the applicationTemplate. Supports $filter (eq, not, ne). Read-only. null if the app wasn't created from an application template.
+              nullable: true
+            appRoles:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.appRole'
+              description: The collection of roles defined for the application. With app role assignments, these roles can be assigned to users, groups, or service principals associated with other applications. Not nullable.
+            authenticationBehaviors:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.authenticationBehaviors'
+              - type: object
+                nullable: true
+            certification:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.certification'
+              - type: object
+                nullable: true
+              description: Specifies the certification status of the application.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time the application was registered. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.  Supports $filter (eq, ne, not, ge, le, in, and eq on null values) and $orderby.
+              format: date-time
+              nullable: true
+            defaultRedirectUri:
+              type: string
+              nullable: true
+            description:
+              type: string
+              description: Free text field to provide a description of the application object to end users. The maximum allowed size is 1,024 characters. Supports $filter (eq, ne, not, ge, le, startsWith) and $search.
+              nullable: true
+            disabledByMicrosoftStatus:
+              type: string
+              description: 'Specifies whether Microsoft has disabled the registered application. Possible values are: null (default value), NotDisabled, and DisabledDueToViolationOfServicesAgreement (reasons include suspicious, abusive, or malicious activity, or a violation of the Microsoft Services Agreement).  Supports $filter (eq, ne, not).'
+              nullable: true
+            displayName:
+              type: string
+              description: The display name for the application. Maximum length is 256 characters. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values), $search, and $orderby.
+              nullable: true
+            groupMembershipClaims:
+              type: string
+              description: 'Configures the groups claim issued in a user or OAuth 2.0 access token that the application expects. To set this attribute, use one of the following valid string values: None, SecurityGroup (for security groups and Microsoft Entra roles), All (this gets all of the security groups, distribution groups, and Microsoft Entra directory roles that the signed-in user is a member of).'
+              nullable: true
+            identifierUris:
+              type: array
+              items:
+                type: string
+              description: Also known as App ID URI, this value is set when an application is used as a resource app. The identifierUris acts as the prefix for the scopes you reference in your API's code, and it must be globally unique. You can use the default value provided, which is in the form api://<appId>, or specify a more readable URI like https://contoso.com/api. For more information on valid identifierUris patterns and best practices, see Microsoft Entra application registration security best practices. Not nullable. Supports $filter (eq, ne, ge, le, startsWith).
+            info:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.informationalUrl'
+              - type: object
+                nullable: true
+              description: 'Basic profile information of the application such as  app''s marketing, support, terms of service and privacy statement URLs. The terms of service and privacy statement are surfaced to users through the user consent experience. For more info, see How to: Add Terms of service and privacy statement for registered Microsoft Entra apps. Supports $filter (eq, ne, not, ge, le, and eq on null values).'
+            isDeviceOnlyAuthSupported:
+              type: boolean
+              description: Specifies whether this application supports device authentication without a user. The default is false.
+              nullable: true
+            isFallbackPublicClient:
+              type: boolean
+              description: Specifies the fallback application type as public client, such as an installed application running on a mobile device. The default value is false, which means the fallback application type is confidential client such as a web app. There are certain scenarios where Microsoft Entra ID can't determine the client application type. For example, the ROPC flow where it's configured without specifying a redirect URI. In those cases, Microsoft Entra ID interprets the application type based on the value of this property.
+              nullable: true
+            keyCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.keyCredential'
+              description: The collection of key credentials associated with the application. Not nullable. Supports $filter (eq, not, ge, le).
+            logo:
+              type: string
+              description: The main logo for the application. Not nullable.
+              format: base64url
+            nativeAuthenticationApisEnabled:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.nativeAuthenticationApisEnabled'
+              - type: object
+                nullable: true
+              description: 'Specifies whether the Native Authentication APIs are enabled for the application. The possible values are: none and all. Default is none. For more information, see Native Authentication.'
+            notes:
+              type: string
+              description: Notes relevant for the management of the application.
+              nullable: true
+            oauth2RequirePostResponse:
+              type: boolean
+            optionalClaims:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.optionalClaims'
+              - type: object
+                nullable: true
+              description: 'Application developers can configure optional claims in their Microsoft Entra applications to specify the claims that are sent to their application by the Microsoft security token service. For more information, see How to: Provide optional claims to your app.'
+            parentalControlSettings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.parentalControlSettings'
+              - type: object
+                nullable: true
+              description: Specifies parental control settings for an application.
+            passwordCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.passwordCredential'
+              description: The collection of password credentials associated with the application. Not nullable.
+            publicClient:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.publicClientApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for installed clients such as desktop or mobile devices.
+            publisherDomain:
+              type: string
+              description: 'The verified publisher domain for the application. Read-only. For more information, see How to: Configure an application''s publisher domain. Supports $filter (eq, ne, ge, le, startsWith).'
+              nullable: true
+            requestSignatureVerification:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.requestSignatureVerification'
+              - type: object
+                nullable: true
+              description: Specifies whether this application requires Microsoft Entra ID to verify the signed authentication requests.
+            requiredResourceAccess:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.requiredResourceAccess'
+              description: Specifies the resources that the application needs to access. This property also specifies the set of delegated permissions and application roles that it needs for each of those resources. This configuration of access to the required resources drives the consent experience. No more than 50 resource services (APIs) can be configured. Beginning mid-October 2021, the total number of required permissions must not exceed 400. For more information, see Limits on requested permissions per app. Not nullable. Supports $filter (eq, not, ge, le).
+            samlMetadataUrl:
+              type: string
+              description: The URL where the service exposes SAML metadata for federation. This property is valid only for single-tenant applications. Nullable.
+              nullable: true
+            serviceManagementReference:
+              type: string
+              description: References application or service contact information from a Service or Asset Management database. Nullable.
+              nullable: true
+            servicePrincipalLockConfiguration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.servicePrincipalLockConfiguration'
+              - type: object
+                nullable: true
+              description: Specifies whether sensitive properties of a multitenant application should be locked for editing after the application is provisioned in a tenant. Nullable. null by default.
+            signInAudience:
+              type: string
+              description: 'Specifies the Microsoft accounts that are supported for the current application. The possible values are: AzureADMyOrg (default), AzureADMultipleOrgs, AzureADandPersonalMicrosoftAccount, and PersonalMicrosoftAccount. See more in the table. The value of this object also limits the number of permissions an app can request. For more information, see Limits on requested permissions per app. The value for this property has implications on other app object properties. As a result, if you change this property, you might need to change other properties first. For more information, see Validation differences for signInAudience.Supports $filter (eq, ne, not).'
+              nullable: true
+            spa:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.spaApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for a single-page application, including sign out URLs and redirect URIs for authorization codes and access tokens.
+            tags:
+              type: array
+              items:
+                type: string
+              description: Custom strings that can be used to categorize and identify the application. Not nullable. Strings added here will also appear in the tags property of any associated service principals.Supports $filter (eq, not, ge, le, startsWith) and $search.
+            tokenEncryptionKeyId:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              description: Specifies the keyId of a public key from the keyCredentials collection. When configured, Microsoft Entra ID encrypts all the tokens it emits by using the key this property points to. The application code that receives the encrypted token must use the matching private key to decrypt the token before it can be used for the signed-in user.
+              format: uuid
+              nullable: true
+            uniqueName:
+              type: string
+              description: The unique identifier that can be assigned to an application and used as an alternate key. Immutable. Read-only.
+              nullable: true
+            verifiedPublisher:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.verifiedPublisher'
+              - type: object
+                nullable: true
+              description: Specifies the verified publisher of the application. For more information about how publisher verification helps support application security, trustworthiness, and compliance, see Publisher verification.
+            web:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.webApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for a web application.
+            appManagementPolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.appManagementPolicy'
+              description: The appManagementPolicy applied to this application.
+              x-ms-navigationProperty: true
+            createdOnBehalfOf:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              - type: object
+                nullable: true
+              description: Supports $filter (/$count eq 0, /$count ne 0). Read-only.
+              x-ms-navigationProperty: true
+            extensionProperties:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.extensionProperty'
+              description: Read-only. Nullable. Supports $expand and $filter (/$count eq 0, /$count ne 0).
+              x-ms-navigationProperty: true
+            federatedIdentityCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.federatedIdentityCredential'
+              description: Federated identities for applications. Supports $expand and $filter (startsWith, /$count eq 0, /$count ne 0).
+              x-ms-navigationProperty: true
+            homeRealmDiscoveryPolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.homeRealmDiscoveryPolicy'
+              x-ms-navigationProperty: true
+            owners:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Directory objects that are owners of this application. The owners are a set of nonadmin users or service principals who are allowed to modify this object. Supports $expand, $filter (/$count eq 0, /$count ne 0, /$count eq 1, /$count ne 1), and $select nested in $expand.
+              x-ms-navigationProperty: true
+            synchronization:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.synchronization'
+              - type: object
+                nullable: true
+              description: Represents the capability for Microsoft Entra identity synchronization through the Microsoft Graph API.
+              x-ms-navigationProperty: true
+            tokenIssuancePolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.tokenIssuancePolicy'
+              x-ms-navigationProperty: true
+            tokenLifetimePolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.tokenLifetimePolicy'
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.application'
+        x-ms-discriminator-value: '#microsoft.graph.application'
+  - method: DELETE
+    summary: Delete application
+    description: Delete an application object. When deleted, apps are moved to a temporary container and can be restored within 30 days. After that time, they are permanently deleted.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/appManagementPolicies
+  path_description: Provides operations to manage the appManagementPolicies property of the microsoft.graph.application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get appManagementPolicies from applications
+    description: The appManagementPolicy applied to this application.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/appManagementPolicies/{appManagementPolicy-id}/$ref
+  path_description: Provides operations to manage the collection of application entities.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: appManagementPolicy-id
+    in: path
+    description: The unique identifier of appManagementPolicy
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: appManagementPolicy
+  methods:
+  - method: DELETE
+    summary: Remove appliesTo
+    description: 'Remove an appManagementPolicy policy object from an application or service principal object. When you remove the appManagementPolicy, the application or service principal adopts the tenant-wide tenantAppManagementPolicy setting. '
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/appManagementPolicies/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/appManagementPolicies/$ref
+  path_description: Provides operations to manage the collection of application entities.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get ref of appManagementPolicies from applications
+    description: The appManagementPolicy applied to this application.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Assign appliesTo
+    description: Assign an appManagementPolicy policy object to an application or service principal object. The application or service principal adopts this policy over the tenant-wide tenantAppManagementPolicy setting. Only one policy object can be assigned to an application or service principal.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Remove appliesTo
+    description: 'Remove an appManagementPolicy policy object from an application or service principal object. When you remove the appManagementPolicy, the application or service principal adopts the tenant-wide tenantAppManagementPolicy setting. '
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    - name: '@id'
+      in: query
+      description: The delete Uri
+      required: true
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/createdOnBehalfOf
+  path_description: Provides operations to manage the createdOnBehalfOf property of the microsoft.graph.application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get createdOnBehalfOf from applications
+    description: Supports $filter (/$count eq 0, /$count ne 0). Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/extensionProperties
+  path_description: Provides operations to manage the extensionProperties property of the microsoft.graph.application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: List extensionProperties (directory extensions)
+    description: Retrieve the list of directory extension definitions, represented by extensionProperty objects on an application.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create extensionProperty (directory extension)
+    description: Create a new directory extension definition, represented by an extensionProperty object.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: extensionProperty
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            appDisplayName:
+              type: string
+              description: Display name of the application object on which this extension property is defined. Read-only.
+              nullable: true
+            dataType:
+              type: string
+              description: Specifies the data type of the value the extension property can hold. Following values are supported. Binary - 256 bytes maximumBooleanDateTime - Must be specified in ISO 8601 format. Will be stored in UTC.Integer - 32-bit value.LargeInteger - 64-bit value.String - 256 characters maximumNot nullable. For multivalued directory extensions, these limits apply per value in the collection.
+            isMultiValued:
+              type: boolean
+              description: 'Defines the directory extension as a multi-valued property. When true, the directory extension property can store a collection of objects of the dataType; for example, a collection of string types such as ''extensionb7b1c57b532f40b8b5ed4b7a7ba67401jobGroupTracker'': [''String 1'', ''String 2'']. The default value is false. Supports $filter (eq).'
+            isSyncedFromOnPremises:
+              type: boolean
+              description: Indicates if this extension property was synced from on-premises active directory using Microsoft Entra Connect. Read-only.
+              nullable: true
+            name:
+              type: string
+              description: Name of the extension property. Not nullable. Supports $filter (eq).
+            targetObjects:
+              type: array
+              items:
+                type: string
+              description: Following values are supported. Not nullable. UserGroupAdministrativeUnitApplicationDeviceOrganization
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.extensionProperty'
+        x-ms-discriminator-value: '#microsoft.graph.extensionProperty'
+- path: /applications/{application-id}/extensionProperties/{extensionProperty-id}
+  path_description: Provides operations to manage the extensionProperties property of the microsoft.graph.application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: extensionProperty-id
+    in: path
+    description: The unique identifier of extensionProperty
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: extensionProperty
+  methods:
+  - method: GET
+    summary: Get extensionProperty (directory extension)
+    description: Read a directory extension definition represented by an extensionProperty object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property extensionProperties in applications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: extensionProperty
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            appDisplayName:
+              type: string
+              description: Display name of the application object on which this extension property is defined. Read-only.
+              nullable: true
+            dataType:
+              type: string
+              description: Specifies the data type of the value the extension property can hold. Following values are supported. Binary - 256 bytes maximumBooleanDateTime - Must be specified in ISO 8601 format. Will be stored in UTC.Integer - 32-bit value.LargeInteger - 64-bit value.String - 256 characters maximumNot nullable. For multivalued directory extensions, these limits apply per value in the collection.
+            isMultiValued:
+              type: boolean
+              description: 'Defines the directory extension as a multi-valued property. When true, the directory extension property can store a collection of objects of the dataType; for example, a collection of string types such as ''extensionb7b1c57b532f40b8b5ed4b7a7ba67401jobGroupTracker'': [''String 1'', ''String 2'']. The default value is false. Supports $filter (eq).'
+            isSyncedFromOnPremises:
+              type: boolean
+              description: Indicates if this extension property was synced from on-premises active directory using Microsoft Entra Connect. Read-only.
+              nullable: true
+            name:
+              type: string
+              description: Name of the extension property. Not nullable. Supports $filter (eq).
+            targetObjects:
+              type: array
+              items:
+                type: string
+              description: Following values are supported. Not nullable. UserGroupAdministrativeUnitApplicationDeviceOrganization
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.extensionProperty'
+        x-ms-discriminator-value: '#microsoft.graph.extensionProperty'
+  - method: DELETE
+    summary: Delete extensionProperty (directory extension)
+    description: Delete a directory extension definition represented by an extensionProperty object. You can delete only directory extensions that aren't synced from on-premises active directory (AD).
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/extensionProperties/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/federatedIdentityCredentials
+  path_description: Provides operations to manage the federatedIdentityCredentials property of the microsoft.graph.application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: List federatedIdentityCredentials
+    description: Get a list of the federatedIdentityCredential objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create federatedIdentityCredential
+    description: Create a new federatedIdentityCredential object for an application. By configuring a trust relationship between your Microsoft Entra application registration and the identity provider for your compute platform, you can use tokens issued by that platform to authenticate with Microsoft identity platform and call APIs in the Microsoft ecosystem. Maximum of 20 objects can be added to an application.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: federatedIdentityCredential
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            audiences:
+              type: array
+              items:
+                type: string
+              description: The audience that can appear in the external token. This field is mandatory and should be set to api://AzureADTokenExchange for Microsoft Entra ID. It says what Microsoft identity platform should accept in the aud claim in the incoming token. This value represents Microsoft Entra ID in your external identity provider and has no fixed value across identity providers - you might need to create a new application registration in your identity provider to serve as the audience of this token. This field can only accept a single value and has a limit of 600 characters. Required.
+            description:
+              type: string
+              description: The unvalidated description of the federated identity credential, provided by the user. It has a limit of 600 characters. Optional.
+              nullable: true
+            issuer:
+              type: string
+              description: The URL of the external identity provider, which must match the issuer claim of the external token being exchanged. The combination of the values of issuer and subject must be unique within the app. It has a limit of 600 characters. Required.
+            name:
+              type: string
+              description: The unique identifier for the federated identity credential, which has a limit of 120 characters and must be URL friendly. The string is immutable after it's created. Alternate key. Required. Not nullable. Supports $filter (eq).
+            subject:
+              type: string
+              description: Required. The identifier of the external software workload within the external identity provider. Like the audience value, it has no fixed format; each identity provider uses their own - sometimes a GUID, sometimes a colon delimited identifier, sometimes arbitrary strings. The value here must match the sub claim within the token presented to Microsoft Entra ID. The combination of issuer and subject must be unique within the app. It has a limit of 600 characters. Supports $filter (eq).
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.federatedIdentityCredential'
+- path: /applications/{application-id}/federatedIdentityCredentials/{federatedIdentityCredential-id}
+  path_description: Provides operations to manage the federatedIdentityCredentials property of the microsoft.graph.application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: federatedIdentityCredential-id
+    in: path
+    description: The unique identifier of federatedIdentityCredential
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: federatedIdentityCredential
+  methods:
+  - method: GET
+    summary: Get federatedIdentityCredential
+    description: Read the properties and relationships of a federatedIdentityCredential object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Upsert federatedIdentityCredential
+    description: Create a new federatedIdentityCredential object for an application if it doesn't exist, or update the properties of an existing federatedIdentityCredential object. By configuring a trust relationship between your Microsoft Entra application registration and the identity provider for your compute platform, you can use tokens issued by that platform to authenticate with Microsoft identity platform and call APIs in the Microsoft ecosystem. Maximum of 20 objects can be added to an application.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: federatedIdentityCredential
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            audiences:
+              type: array
+              items:
+                type: string
+              description: The audience that can appear in the external token. This field is mandatory and should be set to api://AzureADTokenExchange for Microsoft Entra ID. It says what Microsoft identity platform should accept in the aud claim in the incoming token. This value represents Microsoft Entra ID in your external identity provider and has no fixed value across identity providers - you might need to create a new application registration in your identity provider to serve as the audience of this token. This field can only accept a single value and has a limit of 600 characters. Required.
+            description:
+              type: string
+              description: The unvalidated description of the federated identity credential, provided by the user. It has a limit of 600 characters. Optional.
+              nullable: true
+            issuer:
+              type: string
+              description: The URL of the external identity provider, which must match the issuer claim of the external token being exchanged. The combination of the values of issuer and subject must be unique within the app. It has a limit of 600 characters. Required.
+            name:
+              type: string
+              description: The unique identifier for the federated identity credential, which has a limit of 120 characters and must be URL friendly. The string is immutable after it's created. Alternate key. Required. Not nullable. Supports $filter (eq).
+            subject:
+              type: string
+              description: Required. The identifier of the external software workload within the external identity provider. Like the audience value, it has no fixed format; each identity provider uses their own - sometimes a GUID, sometimes a colon delimited identifier, sometimes arbitrary strings. The value here must match the sub claim within the token presented to Microsoft Entra ID. The combination of issuer and subject must be unique within the app. It has a limit of 600 characters. Supports $filter (eq).
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.federatedIdentityCredential'
+  - method: DELETE
+    summary: Delete federatedIdentityCredential
+    description: Delete a federatedIdentityCredential object from an application.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/federatedIdentityCredentials(name='{name}')
+  path_description: Provides operations to manage the federatedIdentityCredentials property of the microsoft.graph.application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: name
+    in: path
+    description: Alternate key of federatedIdentityCredential
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Get federatedIdentityCredential
+    description: Read the properties and relationships of a federatedIdentityCredential object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Upsert federatedIdentityCredential
+    description: Create a new federatedIdentityCredential object for an application if it doesn't exist, or update the properties of an existing federatedIdentityCredential object. By configuring a trust relationship between your Microsoft Entra application registration and the identity provider for your compute platform, you can use tokens issued by that platform to authenticate with Microsoft identity platform and call APIs in the Microsoft ecosystem. Maximum of 20 objects can be added to an application.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: federatedIdentityCredential
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            audiences:
+              type: array
+              items:
+                type: string
+              description: The audience that can appear in the external token. This field is mandatory and should be set to api://AzureADTokenExchange for Microsoft Entra ID. It says what Microsoft identity platform should accept in the aud claim in the incoming token. This value represents Microsoft Entra ID in your external identity provider and has no fixed value across identity providers - you might need to create a new application registration in your identity provider to serve as the audience of this token. This field can only accept a single value and has a limit of 600 characters. Required.
+            description:
+              type: string
+              description: The unvalidated description of the federated identity credential, provided by the user. It has a limit of 600 characters. Optional.
+              nullable: true
+            issuer:
+              type: string
+              description: The URL of the external identity provider, which must match the issuer claim of the external token being exchanged. The combination of the values of issuer and subject must be unique within the app. It has a limit of 600 characters. Required.
+            name:
+              type: string
+              description: The unique identifier for the federated identity credential, which has a limit of 120 characters and must be URL friendly. The string is immutable after it's created. Alternate key. Required. Not nullable. Supports $filter (eq).
+            subject:
+              type: string
+              description: Required. The identifier of the external software workload within the external identity provider. Like the audience value, it has no fixed format; each identity provider uses their own - sometimes a GUID, sometimes a colon delimited identifier, sometimes arbitrary strings. The value here must match the sub claim within the token presented to Microsoft Entra ID. The combination of issuer and subject must be unique within the app. It has a limit of 600 characters. Supports $filter (eq).
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.federatedIdentityCredential'
+  - method: DELETE
+    summary: Delete federatedIdentityCredential
+    description: Delete a federatedIdentityCredential object from an application.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/federatedIdentityCredentials/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/homeRealmDiscoveryPolicies
+  path_description: Provides operations to manage the homeRealmDiscoveryPolicies property of the microsoft.graph.application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get homeRealmDiscoveryPolicies from applications
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/homeRealmDiscoveryPolicies/{homeRealmDiscoveryPolicy-id}
+  path_description: Provides operations to manage the homeRealmDiscoveryPolicies property of the microsoft.graph.application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: homeRealmDiscoveryPolicy-id
+    in: path
+    description: The unique identifier of homeRealmDiscoveryPolicy
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: homeRealmDiscoveryPolicy
+  methods:
+  - method: GET
+    summary: Get homeRealmDiscoveryPolicies from applications
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/homeRealmDiscoveryPolicies/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/logo
+  path_description: Provides operations to manage the media for the application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get logo for application from applications
+    description: The main logo for the application. Not nullable.
+    parameters: []
+    requestBody: null
+  - method: PUT
+    summary: Update logo for application in applications
+    description: The main logo for the application. Not nullable.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete logo for application in applications
+    description: The main logo for the application. Not nullable.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/addKey
+  path_description: Provides operations to call the addKey method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: POST
+    summary: Invoke action addKey
+    description: Add a key credential to an application. This method, along with removeKey can be used by an application to automate rolling its expiring keys. As part of the request validation for this method, a proof of possession of an existing key is verified before the action can be performed.  Applications that don’t have any existing valid certificates (no certificates have been added yet, or all certificates have expired), won’t be able to use this service action. You can use the Update application operation to perform an update instead.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          keyCredential:
+            $ref: '#/components/schemas/microsoft.graph.keyCredential'
+          passwordCredential:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.passwordCredential'
+            - type: object
+              nullable: true
+          proof:
+            type: string
+- path: /applications/{application-id}/addPassword
+  path_description: Provides operations to call the addPassword method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: POST
+    summary: Invoke action addPassword
+    description: Adds a strong password or secret to an application. You can also add passwords while creating the application.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          passwordCredential:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.passwordCredential'
+            - type: object
+              nullable: true
+- path: /applications/{application-id}/checkMemberGroups
+  path_description: Provides operations to call the checkMemberGroups method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: POST
+    summary: Invoke action checkMemberGroups
+    description: 'Check for membership in a specified list of group IDs, and return from that list the IDs of groups where a specified object is a member. The specified object can be of one of the following types:
+
+      - user
+
+      - group
+
+      - service principal
+
+      - organizational contact
+
+      - device
+
+      - directory object This function is transitive. You can check up to a maximum of 20 groups per request. This function supports all groups provisioned in Microsoft Entra ID. Because Microsoft 365 groups cannot contain other groups, membership in a Microsoft 365 group is always direct.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          groupIds:
+            type: array
+            items:
+              type: string
+- path: /applications/{application-id}/checkMemberObjects
+  path_description: Provides operations to call the checkMemberObjects method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: POST
+    summary: Invoke action checkMemberObjects
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          ids:
+            type: array
+            items:
+              type: string
+- path: /applications/{application-id}/getMemberGroups
+  path_description: Provides operations to call the getMemberGroups method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: POST
+    summary: Invoke action getMemberGroups
+    description: Return all the group IDs for the groups that the specified user, group, service principal, organizational contact, device, or directory object is a member of. This function is transitive. This API returns up to 11,000 group IDs. If more than 11,000 results are available, it returns a 400 Bad Request error with the DirectoryResultSizeLimitExceeded error code. If you get the DirectoryResultSizeLimitExceeded error code, use the List group transitive memberOf API instead.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          securityEnabledOnly:
+            type: boolean
+            default: false
+            nullable: true
+- path: /applications/{application-id}/getMemberObjects
+  path_description: Provides operations to call the getMemberObjects method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: POST
+    summary: Invoke action getMemberObjects
+    description: 'Return all IDs for the groups, administrative units, and directory roles that an object of one of the following types is a member of:
+
+      - user
+
+      - group
+
+      - service principal
+
+      - organizational contact
+
+      - device
+
+      - directory object This function is transitive. Only users and role-enabled groups can be members of directory roles.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          securityEnabledOnly:
+            type: boolean
+            default: false
+            nullable: true
+- path: /applications/{application-id}/removeKey
+  path_description: Provides operations to call the removeKey method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: POST
+    summary: Invoke action removeKey
+    description: Remove a key credential from an application. This method along with addKey can be used by an application to automate rolling its expiring keys. As part of the request validation for this method, a proof of possession of an existing key is verified before the action can be performed.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          keyId:
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            format: uuid
+          proof:
+            type: string
+- path: /applications/{application-id}/removePassword
+  path_description: Provides operations to call the removePassword method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: POST
+    summary: Invoke action removePassword
+    description: Remove a password from an application.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          keyId:
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            format: uuid
+- path: /applications/{application-id}/restore
+  path_description: Provides operations to call the restore method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: POST
+    summary: Invoke action restore
+    description: Restore a recently deleted application, group, servicePrincipal, administrative unit, or user object from deleted items. If an item was accidentally deleted, you can fully restore the item. However, security groups can't be restored. Also, restoring an application doesn't restore the associated service principal automatically. You must call this API to explicitly restore the deleted service principal. A recently deleted item remains available for up to 30 days. After 30 days, the item is permanently deleted.
+    parameters: []
+    requestBody: null
+- path: /applications/{application-id}/setVerifiedPublisher
+  path_description: Provides operations to call the setVerifiedPublisher method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: POST
+    summary: Invoke action setVerifiedPublisher
+    description: Set the verifiedPublisher on an application. For more information, including prerequisites to setting a verified publisher, see Publisher verification.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          verifiedPublisherId:
+            type: string
+- path: /applications/{application-id}/unsetVerifiedPublisher
+  path_description: Provides operations to call the unsetVerifiedPublisher method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: POST
+    summary: Invoke action unsetVerifiedPublisher
+    description: Unset the verifiedPublisher previously set on an application, removing all verified publisher properties. For more information, see Publisher verification.
+    parameters: []
+    requestBody: null
+- path: /applications/{application-id}/owners
+  path_description: Provides operations to manage the owners property of the microsoft.graph.application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: List owners of an application
+    description: Retrieve a list of owners for an application that are directoryObject types.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/owners/{directoryObject-id}/$ref
+  path_description: Provides operations to manage the collection of application entities.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: DELETE
+    summary: Remove application owner
+    description: Remove an owner from an application. As a recommended best practice, apps should have at least two owners.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/owners/{directoryObject-id}/graph.appRoleAssignment
+  path_description: Casts the previous resource to appRoleAssignment.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.appRoleAssignment
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/owners/{directoryObject-id}/graph.endpoint
+  path_description: Casts the previous resource to endpoint.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.endpoint
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/owners/{directoryObject-id}/graph.servicePrincipal
+  path_description: Casts the previous resource to servicePrincipal.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.servicePrincipal
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/owners/{directoryObject-id}/graph.user
+  path_description: Casts the previous resource to user.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.user
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/owners/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/owners/$ref
+  path_description: Provides operations to manage the collection of application entities.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: List owners of an application
+    description: Retrieve a list of owners for an application that are directoryObject types.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add owner
+    description: Add an owner to an application. Application owners can be individual users, the associated service principal, or another service principal.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Remove application owner
+    description: Remove an owner from an application. As a recommended best practice, apps should have at least two owners.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    - name: '@id'
+      in: query
+      description: The delete Uri
+      required: true
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/owners/graph.appRoleAssignment
+  path_description: Casts the previous resource to appRoleAssignment.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.appRoleAssignment in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/owners/graph.appRoleAssignment/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/owners/graph.endpoint
+  path_description: Casts the previous resource to endpoint.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.endpoint in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/owners/graph.endpoint/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/owners/graph.servicePrincipal
+  path_description: Casts the previous resource to servicePrincipal.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.servicePrincipal in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/owners/graph.servicePrincipal/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/owners/graph.user
+  path_description: Casts the previous resource to user.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.user in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/owners/graph.user/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/synchronization
+  path_description: Provides operations to manage the synchronization property of the microsoft.graph.application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get synchronization from applications
+    description: Represents the capability for Microsoft Entra identity synchronization through the Microsoft Graph API.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PUT
+    summary: Update the navigation property synchronization in applications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: synchronization
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            secrets:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.synchronizationSecretKeyStringValuePair'
+              description: Represents a collection of credentials to access provisioned cloud applications.
+            jobs:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.synchronizationJob'
+              description: Performs synchronization by periodically running in the background, polling for changes in one directory, and pushing them to another directory.
+              x-ms-navigationProperty: true
+            templates:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.synchronizationTemplate'
+              description: Preconfigured synchronization settings for a particular application.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.synchronization'
+  - method: DELETE
+    summary: Delete navigation property synchronization for applications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/synchronization/jobs
+  path_description: Provides operations to manage the jobs property of the microsoft.graph.synchronization entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get jobs from applications
+    description: Performs synchronization by periodically running in the background, polling for changes in one directory, and pushing them to another directory.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to jobs for applications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: synchronizationJob
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            schedule:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.synchronizationSchedule'
+              - type: object
+                nullable: true
+              description: Schedule used to run the job. Read-only.
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.synchronizationStatus'
+              - type: object
+                nullable: true
+              description: Status of the job, which includes when the job was last run, current job state, and errors.
+            synchronizationJobSettings:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.keyValuePair'
+              description: Settings associated with the job. Some settings are inherited from the template.
+            templateId:
+              type: string
+              description: Identifier of the synchronization template this job is based on.
+              nullable: true
+            bulkUpload:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.bulkUpload'
+              - type: object
+                nullable: true
+              description: The bulk upload operation for the job.
+              x-ms-navigationProperty: true
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.synchronizationSchema'
+              - type: object
+                nullable: true
+              description: The synchronization schema configured for the job.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.synchronizationJob'
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}
+  path_description: Provides operations to manage the jobs property of the microsoft.graph.synchronization entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  methods:
+  - method: GET
+    summary: Get jobs from applications
+    description: Performs synchronization by periodically running in the background, polling for changes in one directory, and pushing them to another directory.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property jobs in applications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: synchronizationJob
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            schedule:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.synchronizationSchedule'
+              - type: object
+                nullable: true
+              description: Schedule used to run the job. Read-only.
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.synchronizationStatus'
+              - type: object
+                nullable: true
+              description: Status of the job, which includes when the job was last run, current job state, and errors.
+            synchronizationJobSettings:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.keyValuePair'
+              description: Settings associated with the job. Some settings are inherited from the template.
+            templateId:
+              type: string
+              description: Identifier of the synchronization template this job is based on.
+              nullable: true
+            bulkUpload:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.bulkUpload'
+              - type: object
+                nullable: true
+              description: The bulk upload operation for the job.
+              x-ms-navigationProperty: true
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.synchronizationSchema'
+              - type: object
+                nullable: true
+              description: The synchronization schema configured for the job.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.synchronizationJob'
+  - method: DELETE
+    summary: Delete navigation property jobs for applications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/bulkUpload
+  path_description: Provides operations to manage the bulkUpload property of the microsoft.graph.synchronizationJob entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  methods:
+  - method: GET
+    summary: Get bulkUpload from applications
+    description: The bulk upload operation for the job.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property bulkUpload in applications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: bulkUpload
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.bulkUpload'
+  - method: DELETE
+    summary: Delete navigation property bulkUpload for applications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/bulkUpload/$value
+  path_description: Provides operations to manage the media for the application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  methods:
+  - method: GET
+    summary: Get media content for the navigation property bulkUpload from applications
+    description: The bulk upload operation for the job.
+    parameters: []
+    requestBody: null
+  - method: PUT
+    summary: Update media content for the navigation property bulkUpload in applications
+    description: The bulk upload operation for the job.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete media content for the navigation property bulkUpload in applications
+    description: The bulk upload operation for the job.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/pause
+  path_description: Provides operations to call the pause method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  methods:
+  - method: POST
+    summary: Invoke action pause
+    description: Temporarily stop a running synchronization job. All the progress, including job state, is persisted, and the job will continue from where it left off when a start call is made.
+    parameters: []
+    requestBody: null
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/provisionOnDemand
+  path_description: Provides operations to call the provisionOnDemand method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  methods:
+  - method: POST
+    summary: Invoke action provisionOnDemand
+    description: Select a user and provision the account on-demand. The rate limit for this API is 5 requests per 10 seconds.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          parameters:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.synchronizationJobApplicationParameters'
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/restart
+  path_description: Provides operations to call the restart method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  methods:
+  - method: POST
+    summary: Invoke action restart
+    description: Restart a stopped synchronization job, forcing it to reprocess all the objects in the directory. Optionally clears existing the synchronization state and previous errors.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          criteria:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.synchronizationJobRestartCriteria'
+            - type: object
+              nullable: true
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/start
+  path_description: Provides operations to call the start method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  methods:
+  - method: POST
+    summary: Invoke action start
+    description: 'Start an existing synchronization job. If the job is in a paused state, it continues processing changes from the point where it was paused. If the job is in quarantine, the quarantine status is cleared. Don''t create scripts to call the start job continuously while it''s running because that can cause the service to stop running. Use the start job only when the job is currently paused or in quarantine. '
+    parameters: []
+    requestBody: null
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/validateCredentials
+  path_description: Provides operations to call the validateCredentials method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  methods:
+  - method: POST
+    summary: Invoke action validateCredentials
+    description: Validate that the credentials are valid in the tenant.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          applicationIdentifier:
+            type: string
+            nullable: true
+          templateId:
+            type: string
+            nullable: true
+          useSavedCredentials:
+            type: boolean
+            default: false
+            nullable: true
+          credentials:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.synchronizationSecretKeyStringValuePair'
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/schema
+  path_description: Provides operations to manage the schema property of the microsoft.graph.synchronizationJob entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  methods:
+  - method: GET
+    summary: Get schema from applications
+    description: The synchronization schema configured for the job.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property schema in applications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: synchronizationSchema
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            synchronizationRules:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.synchronizationRule'
+              description: A collection of synchronization rules configured for the synchronizationJob or synchronizationTemplate.
+            version:
+              type: string
+              description: The version of the schema, updated automatically with every schema change.
+              nullable: true
+            directories:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryDefinition'
+              description: Contains the collection of directories and all of their objects.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.synchronizationSchema'
+  - method: DELETE
+    summary: Delete navigation property schema for applications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/schema/directories
+  path_description: Provides operations to manage the directories property of the microsoft.graph.synchronizationSchema entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  methods:
+  - method: GET
+    summary: Get directories from applications
+    description: Contains the collection of directories and all of their objects.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to directories for applications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: directoryDefinition
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            discoverabilities:
+              $ref: '#/components/schemas/microsoft.graph.directoryDefinitionDiscoverabilities'
+            discoveryDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Represents the discovery date and time using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            name:
+              type: string
+              description: Name of the directory. Must be unique within the synchronization schema. Not nullable.
+              nullable: true
+            objects:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.objectDefinition'
+              description: Collection of objects supported by the directory.
+            readOnly:
+              type: boolean
+              description: Whether this object is read-only.
+            version:
+              type: string
+              description: Read only value that indicates version discovered. null if discovery hasn't yet occurred.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.directoryDefinition'
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/schema/directories/{directoryDefinition-id}
+  path_description: Provides operations to manage the directories property of the microsoft.graph.synchronizationSchema entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  - name: directoryDefinition-id
+    in: path
+    description: The unique identifier of directoryDefinition
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryDefinition
+  methods:
+  - method: GET
+    summary: Get directories from applications
+    description: Contains the collection of directories and all of their objects.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property directories in applications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: directoryDefinition
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            discoverabilities:
+              $ref: '#/components/schemas/microsoft.graph.directoryDefinitionDiscoverabilities'
+            discoveryDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Represents the discovery date and time using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            name:
+              type: string
+              description: Name of the directory. Must be unique within the synchronization schema. Not nullable.
+              nullable: true
+            objects:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.objectDefinition'
+              description: Collection of objects supported by the directory.
+            readOnly:
+              type: boolean
+              description: Whether this object is read-only.
+            version:
+              type: string
+              description: Read only value that indicates version discovered. null if discovery hasn't yet occurred.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.directoryDefinition'
+  - method: DELETE
+    summary: Delete navigation property directories for applications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/schema/directories/{directoryDefinition-id}/discover
+  path_description: Provides operations to call the discover method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  - name: directoryDefinition-id
+    in: path
+    description: The unique identifier of directoryDefinition
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryDefinition
+  methods:
+  - method: POST
+    summary: Invoke action discover
+    description: 'Discover the latest schema definition for provisioning to an application. '
+    parameters: []
+    requestBody: null
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/schema/directories/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/schema/filterOperators()
+  path_description: Provides operations to call the filterOperators method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  methods:
+  - method: GET
+    summary: Invoke function filterOperators
+    description: List all operators supported in the scoping filters.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/schema/functions()
+  path_description: Provides operations to call the functions method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  methods:
+  - method: GET
+    summary: Invoke function functions
+    description: List all the functions currently supported in the attributeMappingSource.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/synchronization/jobs/{synchronizationJob-id}/schema/parseExpression
+  path_description: Provides operations to call the parseExpression method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationJob-id
+    in: path
+    description: The unique identifier of synchronizationJob
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationJob
+  methods:
+  - method: POST
+    summary: Invoke action parseExpression
+    description: Parse a given string expression into an attributeMappingSource object. For more information about expressions, see Writing Expressions for Attribute Mappings in Microsoft Entra ID.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          expression:
+            type: string
+            nullable: true
+          testInputObject:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.expressionInputObject'
+            - type: object
+              nullable: true
+          targetAttributeDefinition:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.attributeDefinition'
+            - type: object
+              nullable: true
+- path: /applications/{application-id}/synchronization/jobs/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/synchronization/jobs/validateCredentials
+  path_description: Provides operations to call the validateCredentials method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: POST
+    summary: Invoke action validateCredentials
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          applicationIdentifier:
+            type: string
+            nullable: true
+          templateId:
+            type: string
+            nullable: true
+          useSavedCredentials:
+            type: boolean
+            default: false
+            nullable: true
+          credentials:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.synchronizationSecretKeyStringValuePair'
+- path: /applications/{application-id}/synchronization/acquireAccessToken
+  path_description: Provides operations to call the acquireAccessToken method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: POST
+    summary: Invoke action acquireAccessToken
+    description: Acquire an OAuth access token to authorize the Microsoft Entra provisioning service to provision users into an application.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          credentials:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.synchronizationSecretKeyStringValuePair'
+- path: /applications/{application-id}/synchronization/secrets
+  path_description: No description provided.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: PUT
+    summary: Update property secrets value.
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        type: object
+        properties:
+          value:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.synchronizationSecretKeyStringValuePair'
+- path: /applications/{application-id}/synchronization/secrets/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/synchronization/templates
+  path_description: Provides operations to manage the templates property of the microsoft.graph.synchronization entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get templates from applications
+    description: Preconfigured synchronization settings for a particular application.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to templates for applications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: synchronizationTemplate
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            applicationId:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              description: Identifier of the application this template belongs to.
+              format: uuid
+            default:
+              type: boolean
+              description: true if this template is recommended to be the default for the application.
+            description:
+              type: string
+              description: Description of the template.
+              nullable: true
+            discoverable:
+              type: boolean
+              description: true if this template should appear in the collection of templates available for the application instance (service principal).
+            factoryTag:
+              type: string
+              description: One of the well-known factory tags supported by the synchronization engine. The factoryTag tells the synchronization engine which implementation to use when processing jobs based on this template.
+              nullable: true
+            metadata:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.synchronizationMetadataEntry'
+              description: Additional extension properties. Unless mentioned explicitly, metadata values should not be changed.
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.synchronizationSchema'
+              - type: object
+                nullable: true
+              description: Default synchronization schema for the jobs based on this template.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.synchronizationTemplate'
+- path: /applications/{application-id}/synchronization/templates/{synchronizationTemplate-id}
+  path_description: Provides operations to manage the templates property of the microsoft.graph.synchronization entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationTemplate-id
+    in: path
+    description: The unique identifier of synchronizationTemplate
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationTemplate
+  methods:
+  - method: GET
+    summary: Get templates from applications
+    description: Preconfigured synchronization settings for a particular application.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update synchronizationTemplate
+    description: Update (override) the synchronization template associated with a given application.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: synchronizationTemplate
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            applicationId:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              description: Identifier of the application this template belongs to.
+              format: uuid
+            default:
+              type: boolean
+              description: true if this template is recommended to be the default for the application.
+            description:
+              type: string
+              description: Description of the template.
+              nullable: true
+            discoverable:
+              type: boolean
+              description: true if this template should appear in the collection of templates available for the application instance (service principal).
+            factoryTag:
+              type: string
+              description: One of the well-known factory tags supported by the synchronization engine. The factoryTag tells the synchronization engine which implementation to use when processing jobs based on this template.
+              nullable: true
+            metadata:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.synchronizationMetadataEntry'
+              description: Additional extension properties. Unless mentioned explicitly, metadata values should not be changed.
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.synchronizationSchema'
+              - type: object
+                nullable: true
+              description: Default synchronization schema for the jobs based on this template.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.synchronizationTemplate'
+  - method: DELETE
+    summary: Delete navigation property templates for applications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/synchronization/templates/{synchronizationTemplate-id}/schema
+  path_description: Provides operations to manage the schema property of the microsoft.graph.synchronizationTemplate entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationTemplate-id
+    in: path
+    description: The unique identifier of synchronizationTemplate
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationTemplate
+  methods:
+  - method: GET
+    summary: Get schema from applications
+    description: Default synchronization schema for the jobs based on this template.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property schema in applications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: synchronizationSchema
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            synchronizationRules:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.synchronizationRule'
+              description: A collection of synchronization rules configured for the synchronizationJob or synchronizationTemplate.
+            version:
+              type: string
+              description: The version of the schema, updated automatically with every schema change.
+              nullable: true
+            directories:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryDefinition'
+              description: Contains the collection of directories and all of their objects.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.synchronizationSchema'
+  - method: DELETE
+    summary: Delete navigation property schema for applications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/synchronization/templates/{synchronizationTemplate-id}/schema/directories
+  path_description: Provides operations to manage the directories property of the microsoft.graph.synchronizationSchema entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationTemplate-id
+    in: path
+    description: The unique identifier of synchronizationTemplate
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationTemplate
+  methods:
+  - method: GET
+    summary: Get directories from applications
+    description: Contains the collection of directories and all of their objects.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to directories for applications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: directoryDefinition
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            discoverabilities:
+              $ref: '#/components/schemas/microsoft.graph.directoryDefinitionDiscoverabilities'
+            discoveryDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Represents the discovery date and time using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            name:
+              type: string
+              description: Name of the directory. Must be unique within the synchronization schema. Not nullable.
+              nullable: true
+            objects:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.objectDefinition'
+              description: Collection of objects supported by the directory.
+            readOnly:
+              type: boolean
+              description: Whether this object is read-only.
+            version:
+              type: string
+              description: Read only value that indicates version discovered. null if discovery hasn't yet occurred.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.directoryDefinition'
+- path: /applications/{application-id}/synchronization/templates/{synchronizationTemplate-id}/schema/directories/{directoryDefinition-id}
+  path_description: Provides operations to manage the directories property of the microsoft.graph.synchronizationSchema entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationTemplate-id
+    in: path
+    description: The unique identifier of synchronizationTemplate
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationTemplate
+  - name: directoryDefinition-id
+    in: path
+    description: The unique identifier of directoryDefinition
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryDefinition
+  methods:
+  - method: GET
+    summary: Get directories from applications
+    description: Contains the collection of directories and all of their objects.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property directories in applications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: directoryDefinition
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            discoverabilities:
+              $ref: '#/components/schemas/microsoft.graph.directoryDefinitionDiscoverabilities'
+            discoveryDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Represents the discovery date and time using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            name:
+              type: string
+              description: Name of the directory. Must be unique within the synchronization schema. Not nullable.
+              nullable: true
+            objects:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.objectDefinition'
+              description: Collection of objects supported by the directory.
+            readOnly:
+              type: boolean
+              description: Whether this object is read-only.
+            version:
+              type: string
+              description: Read only value that indicates version discovered. null if discovery hasn't yet occurred.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.directoryDefinition'
+  - method: DELETE
+    summary: Delete navigation property directories for applications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/synchronization/templates/{synchronizationTemplate-id}/schema/directories/{directoryDefinition-id}/discover
+  path_description: Provides operations to call the discover method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationTemplate-id
+    in: path
+    description: The unique identifier of synchronizationTemplate
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationTemplate
+  - name: directoryDefinition-id
+    in: path
+    description: The unique identifier of directoryDefinition
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryDefinition
+  methods:
+  - method: POST
+    summary: Invoke action discover
+    description: 'Discover the latest schema definition for provisioning to an application. '
+    parameters: []
+    requestBody: null
+- path: /applications/{application-id}/synchronization/templates/{synchronizationTemplate-id}/schema/directories/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationTemplate-id
+    in: path
+    description: The unique identifier of synchronizationTemplate
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationTemplate
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/synchronization/templates/{synchronizationTemplate-id}/schema/filterOperators()
+  path_description: Provides operations to call the filterOperators method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationTemplate-id
+    in: path
+    description: The unique identifier of synchronizationTemplate
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationTemplate
+  methods:
+  - method: GET
+    summary: Invoke function filterOperators
+    description: List all operators supported in the scoping filters.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/synchronization/templates/{synchronizationTemplate-id}/schema/functions()
+  path_description: Provides operations to call the functions method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationTemplate-id
+    in: path
+    description: The unique identifier of synchronizationTemplate
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationTemplate
+  methods:
+  - method: GET
+    summary: Invoke function functions
+    description: List all the functions currently supported in the attributeMappingSource.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/synchronization/templates/{synchronizationTemplate-id}/schema/parseExpression
+  path_description: Provides operations to call the parseExpression method.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: synchronizationTemplate-id
+    in: path
+    description: The unique identifier of synchronizationTemplate
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: synchronizationTemplate
+  methods:
+  - method: POST
+    summary: Invoke action parseExpression
+    description: Parse a given string expression into an attributeMappingSource object. For more information about expressions, see Writing Expressions for Attribute Mappings in Microsoft Entra ID.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          expression:
+            type: string
+            nullable: true
+          testInputObject:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.expressionInputObject'
+            - type: object
+              nullable: true
+          targetAttributeDefinition:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.attributeDefinition'
+            - type: object
+              nullable: true
+- path: /applications/{application-id}/synchronization/templates/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/tokenIssuancePolicies
+  path_description: Provides operations to manage the tokenIssuancePolicies property of the microsoft.graph.application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: List assigned tokenIssuancePolicies
+    description: List the tokenIssuancePolicy objects that are assigned to an application.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/tokenIssuancePolicies/{tokenIssuancePolicy-id}/$ref
+  path_description: Provides operations to manage the collection of application entities.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: tokenIssuancePolicy-id
+    in: path
+    description: The unique identifier of tokenIssuancePolicy
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: tokenIssuancePolicy
+  methods:
+  - method: DELETE
+    summary: Remove tokenIssuancePolicy
+    description: Remove a tokenIssuancePolicy from an application.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/tokenIssuancePolicies/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/tokenIssuancePolicies/$ref
+  path_description: Provides operations to manage the collection of application entities.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: List assigned tokenIssuancePolicies
+    description: List the tokenIssuancePolicy objects that are assigned to an application.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Assign tokenIssuancePolicy
+    description: Assign a tokenIssuancePolicy to an application.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Remove tokenIssuancePolicy
+    description: Remove a tokenIssuancePolicy from an application.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    - name: '@id'
+      in: query
+      description: The delete Uri
+      required: true
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/tokenLifetimePolicies
+  path_description: Provides operations to manage the tokenLifetimePolicies property of the microsoft.graph.application entity.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: List assigned tokenLifetimePolicies
+    description: List the tokenLifetimePolicy objects that are assigned to an application. Only one object is returned in the collection because only one tokenLifetimePolicy can be assigned to an application.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/{application-id}/tokenLifetimePolicies/{tokenLifetimePolicy-id}/$ref
+  path_description: Provides operations to manage the collection of application entities.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  - name: tokenLifetimePolicy-id
+    in: path
+    description: The unique identifier of tokenLifetimePolicy
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: tokenLifetimePolicy
+  methods:
+  - method: DELETE
+    summary: Remove tokenLifetimePolicy
+    description: Remove a tokenLifetimePolicy from an application.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/{application-id}/tokenLifetimePolicies/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/{application-id}/tokenLifetimePolicies/$ref
+  path_description: Provides operations to manage the collection of application entities.
+  path_parameters:
+  - name: application-id
+    in: path
+    description: The unique identifier of application
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: application
+  methods:
+  - method: GET
+    summary: List assigned tokenLifetimePolicies
+    description: List the tokenLifetimePolicy objects that are assigned to an application. Only one object is returned in the collection because only one tokenLifetimePolicy can be assigned to an application.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Assign tokenLifetimePolicy
+    description: Assign a tokenLifetimePolicy to an application. You can have multiple tokenLifetimePolicy policies in a tenant but can assign only one tokenLifetimePolicy per application.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Remove tokenLifetimePolicy
+    description: Remove a tokenLifetimePolicy from an application.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    - name: '@id'
+      in: query
+      description: The delete Uri
+      required: true
+      schema:
+        type: string
+    requestBody: null
+- path: /applications/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /applications/delta()
+  path_description: Provides operations to call the delta method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function delta
+    description: Get newly created, updated, or deleted applications without performing a full read of the entire resource collection. For more information, see Use delta query to track changes in Microsoft Graph data for details.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /applications/getAvailableExtensionProperties
+  path_description: Provides operations to call the getAvailableExtensionProperties method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action getAvailableExtensionProperties
+    description: 'Return all directory extension definitions that have been registered in a directory, including through multi-tenant apps. The following entities support extension properties:'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          isSyncedFromOnPremises:
+            type: boolean
+            default: false
+            nullable: true
+- path: /applications/getByIds
+  path_description: Provides operations to call the getByIds method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action getByIds
+    description: 'Return the directory objects specified in a list of IDs. Only a subset of user properties are returned by default in v1.0. Some common uses for this function are to:'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          ids:
+            type: array
+            items:
+              type: string
+          types:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /applications/validateProperties
+  path_description: Provides operations to call the validateProperties method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action validateProperties
+    description: 'Validate that a Microsoft 365 group''s display name or mail nickname complies with naming policies.  Clients can use this API to determine whether a display name or mail nickname is valid before trying to create a Microsoft 365 group. To validate the properties of an existing group, use the group: validateProperties function. The following policy validations are performed for the display name and mail nickname properties:
+
+      1. Validate the prefix and suffix naming policy
+
+      2. Validate the custom banned words policy
+
+      3. Validate that the mail nickname is unique This API only returns the first validation failure that is encountered. If the properties fail multiple validations, only the first validation failure is returned. However, you can validate both the mail nickname and the display name and receive a collection of validation errors if you are only validating the prefix and suffix naming policy. To learn more about configuring naming policies, see Configure naming policy.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          entityType:
+            type: string
+            nullable: true
+          displayName:
+            type: string
+            nullable: true
+          mailNickname:
+            type: string
+            nullable: true
+          onBehalfOfUserId:
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            format: uuid
+            nullable: true

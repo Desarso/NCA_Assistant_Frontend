@@ -1,0 +1,1244 @@
+- path: /agreements
+  path_description: Provides operations to manage the collection of agreement entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get entities from agreements
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add new entity to agreements
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: agreement
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: Display name of the agreement. The display name is used for internal tracking of the agreement but isn't shown to end users who view the agreement. Supports $filter (eq).
+              nullable: true
+            isPerDeviceAcceptanceRequired:
+              type: boolean
+              description: Indicates whether end users are required to accept this agreement on every device that they access it from. The end user is required to register their device in Microsoft Entra ID, if they haven't already done so. Supports $filter (eq).
+              nullable: true
+            isViewingBeforeAcceptanceRequired:
+              type: boolean
+              description: Indicates whether the user has to expand the agreement before accepting. Supports $filter (eq).
+              nullable: true
+            termsExpiration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.termsExpiration'
+              - type: object
+                nullable: true
+              description: Expiration schedule and frequency of agreement for all users. Supports $filter (eq).
+            userReacceptRequiredFrequency:
+              pattern: ^-?P([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+([.][0-9]+)?S)?)?$
+              type: string
+              description: The duration after which the user must reaccept the terms of use. The value is represented in ISO 8601 format for durations. Supports $filter (eq).
+              format: duration
+              nullable: true
+            acceptances:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.agreementAcceptance'
+              description: Read-only. Information about acceptances of this agreement.
+              x-ms-navigationProperty: true
+            file:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.agreementFile'
+              - type: object
+                nullable: true
+              description: Default PDF linked to this agreement.
+              x-ms-navigationProperty: true
+            files:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.agreementFileLocalization'
+              description: PDFs linked to this agreement. This property is in the process of being deprecated. Use the  file property instead. Supports $expand.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreement'
+- path: /agreements/{agreement-id}
+  path_description: Provides operations to manage the collection of agreement entities.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  methods:
+  - method: GET
+    summary: Get entity from agreements by key
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update entity in agreements
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: agreement
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: Display name of the agreement. The display name is used for internal tracking of the agreement but isn't shown to end users who view the agreement. Supports $filter (eq).
+              nullable: true
+            isPerDeviceAcceptanceRequired:
+              type: boolean
+              description: Indicates whether end users are required to accept this agreement on every device that they access it from. The end user is required to register their device in Microsoft Entra ID, if they haven't already done so. Supports $filter (eq).
+              nullable: true
+            isViewingBeforeAcceptanceRequired:
+              type: boolean
+              description: Indicates whether the user has to expand the agreement before accepting. Supports $filter (eq).
+              nullable: true
+            termsExpiration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.termsExpiration'
+              - type: object
+                nullable: true
+              description: Expiration schedule and frequency of agreement for all users. Supports $filter (eq).
+            userReacceptRequiredFrequency:
+              pattern: ^-?P([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+([.][0-9]+)?S)?)?$
+              type: string
+              description: The duration after which the user must reaccept the terms of use. The value is represented in ISO 8601 format for durations. Supports $filter (eq).
+              format: duration
+              nullable: true
+            acceptances:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.agreementAcceptance'
+              description: Read-only. Information about acceptances of this agreement.
+              x-ms-navigationProperty: true
+            file:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.agreementFile'
+              - type: object
+                nullable: true
+              description: Default PDF linked to this agreement.
+              x-ms-navigationProperty: true
+            files:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.agreementFileLocalization'
+              description: PDFs linked to this agreement. This property is in the process of being deprecated. Use the  file property instead. Supports $expand.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreement'
+  - method: DELETE
+    summary: Delete entity from agreements
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /agreements/{agreement-id}/acceptances
+  path_description: Provides operations to manage the acceptances property of the microsoft.graph.agreement entity.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  methods:
+  - method: GET
+    summary: Get acceptances from agreements
+    description: Read-only. Information about acceptances of this agreement.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to acceptances for agreements
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: agreementAcceptance
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            agreementFileId:
+              type: string
+              description: The identifier of the agreement file accepted by the user.
+              nullable: true
+            agreementId:
+              type: string
+              description: The identifier of the agreement.
+              nullable: true
+            deviceDisplayName:
+              type: string
+              description: The display name of the device used for accepting the agreement.
+              nullable: true
+            deviceId:
+              type: string
+              description: The unique identifier of the device used for accepting the agreement. Supports $filter (eq) and eq for null values.
+              nullable: true
+            deviceOSType:
+              type: string
+              description: The operating system used to accept the agreement.
+              nullable: true
+            deviceOSVersion:
+              type: string
+              description: The operating system version of the device used to accept the agreement.
+              nullable: true
+            expirationDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The expiration date time of the acceptance. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Supports $filter (eq, ge, le) and eq for null values.
+              format: date-time
+              nullable: true
+            recordedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.agreementAcceptanceState'
+              - type: object
+                nullable: true
+              description: 'The state of the agreement acceptance. Possible values are: accepted, declined. Supports $filter (eq).'
+            userDisplayName:
+              type: string
+              description: Display name of the user when the acceptance was recorded.
+              nullable: true
+            userEmail:
+              type: string
+              description: Email of the user when the acceptance was recorded.
+              nullable: true
+            userId:
+              type: string
+              description: The identifier of the user who accepted the agreement. Supports $filter (eq).
+              nullable: true
+            userPrincipalName:
+              type: string
+              description: UPN of the user when the acceptance was recorded.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreementAcceptance'
+- path: /agreements/{agreement-id}/acceptances/{agreementAcceptance-id}
+  path_description: Provides operations to manage the acceptances property of the microsoft.graph.agreement entity.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  - name: agreementAcceptance-id
+    in: path
+    description: The unique identifier of agreementAcceptance
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreementAcceptance
+  methods:
+  - method: GET
+    summary: Get acceptances from agreements
+    description: Read-only. Information about acceptances of this agreement.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property acceptances in agreements
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: agreementAcceptance
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            agreementFileId:
+              type: string
+              description: The identifier of the agreement file accepted by the user.
+              nullable: true
+            agreementId:
+              type: string
+              description: The identifier of the agreement.
+              nullable: true
+            deviceDisplayName:
+              type: string
+              description: The display name of the device used for accepting the agreement.
+              nullable: true
+            deviceId:
+              type: string
+              description: The unique identifier of the device used for accepting the agreement. Supports $filter (eq) and eq for null values.
+              nullable: true
+            deviceOSType:
+              type: string
+              description: The operating system used to accept the agreement.
+              nullable: true
+            deviceOSVersion:
+              type: string
+              description: The operating system version of the device used to accept the agreement.
+              nullable: true
+            expirationDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The expiration date time of the acceptance. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Supports $filter (eq, ge, le) and eq for null values.
+              format: date-time
+              nullable: true
+            recordedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.agreementAcceptanceState'
+              - type: object
+                nullable: true
+              description: 'The state of the agreement acceptance. Possible values are: accepted, declined. Supports $filter (eq).'
+            userDisplayName:
+              type: string
+              description: Display name of the user when the acceptance was recorded.
+              nullable: true
+            userEmail:
+              type: string
+              description: Email of the user when the acceptance was recorded.
+              nullable: true
+            userId:
+              type: string
+              description: The identifier of the user who accepted the agreement. Supports $filter (eq).
+              nullable: true
+            userPrincipalName:
+              type: string
+              description: UPN of the user when the acceptance was recorded.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreementAcceptance'
+  - method: DELETE
+    summary: Delete navigation property acceptances for agreements
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /agreements/{agreement-id}/acceptances/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /agreements/{agreement-id}/file
+  path_description: Provides operations to manage the file property of the microsoft.graph.agreement entity.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  methods:
+  - method: GET
+    summary: Get agreementFile
+    description: Retrieve the details of an agreement file, including the language and version information. The default file can have multiple versions, each with its own language, that can be retrieved by specifying the Accept-Language header.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property file in agreements
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.agreementFileProperties'
+        - title: agreementFile
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            localizations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.agreementFileLocalization'
+              description: The localized version of the terms of use agreement files attached to the agreement.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreementFile'
+  - method: DELETE
+    summary: Delete navigation property file for agreements
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /agreements/{agreement-id}/file/localizations
+  path_description: Provides operations to manage the localizations property of the microsoft.graph.agreementFile entity.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  methods:
+  - method: GET
+    summary: List agreementFileLocalizations
+    description: Get a list of the default and localized agreement files.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to localizations for agreements
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.agreementFileProperties'
+        - title: agreementFileLocalization
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            versions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.agreementFileVersion'
+              description: Read-only. Customized versions of the terms of use agreement in the Microsoft Entra tenant.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreementFileLocalization'
+- path: /agreements/{agreement-id}/file/localizations/{agreementFileLocalization-id}
+  path_description: Provides operations to manage the localizations property of the microsoft.graph.agreementFile entity.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  - name: agreementFileLocalization-id
+    in: path
+    description: The unique identifier of agreementFileLocalization
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreementFileLocalization
+  methods:
+  - method: GET
+    summary: Get localizations from agreements
+    description: The localized version of the terms of use agreement files attached to the agreement.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property localizations in agreements
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.agreementFileProperties'
+        - title: agreementFileLocalization
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            versions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.agreementFileVersion'
+              description: Read-only. Customized versions of the terms of use agreement in the Microsoft Entra tenant.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreementFileLocalization'
+  - method: DELETE
+    summary: Delete navigation property localizations for agreements
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /agreements/{agreement-id}/file/localizations/{agreementFileLocalization-id}/versions
+  path_description: Provides operations to manage the versions property of the microsoft.graph.agreementFileLocalization entity.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  - name: agreementFileLocalization-id
+    in: path
+    description: The unique identifier of agreementFileLocalization
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreementFileLocalization
+  methods:
+  - method: GET
+    summary: Get versions from agreements
+    description: Read-only. Customized versions of the terms of use agreement in the Microsoft Entra tenant.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to versions for agreements
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.agreementFileProperties'
+        - title: agreementFileVersion
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreementFileVersion'
+- path: /agreements/{agreement-id}/file/localizations/{agreementFileLocalization-id}/versions/{agreementFileVersion-id}
+  path_description: Provides operations to manage the versions property of the microsoft.graph.agreementFileLocalization entity.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  - name: agreementFileLocalization-id
+    in: path
+    description: The unique identifier of agreementFileLocalization
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreementFileLocalization
+  - name: agreementFileVersion-id
+    in: path
+    description: The unique identifier of agreementFileVersion
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreementFileVersion
+  methods:
+  - method: GET
+    summary: Get versions from agreements
+    description: Read-only. Customized versions of the terms of use agreement in the Microsoft Entra tenant.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property versions in agreements
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.agreementFileProperties'
+        - title: agreementFileVersion
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreementFileVersion'
+  - method: DELETE
+    summary: Delete navigation property versions for agreements
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /agreements/{agreement-id}/file/localizations/{agreementFileLocalization-id}/versions/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  - name: agreementFileLocalization-id
+    in: path
+    description: The unique identifier of agreementFileLocalization
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreementFileLocalization
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /agreements/{agreement-id}/file/localizations/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /agreements/{agreement-id}/files
+  path_description: Provides operations to manage the files property of the microsoft.graph.agreement entity.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  methods:
+  - method: GET
+    summary: Get files from agreements
+    description: PDFs linked to this agreement. This property is in the process of being deprecated. Use the  file property instead. Supports $expand.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to files for agreements
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.agreementFileProperties'
+        - title: agreementFileLocalization
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            versions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.agreementFileVersion'
+              description: Read-only. Customized versions of the terms of use agreement in the Microsoft Entra tenant.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreementFileLocalization'
+- path: /agreements/{agreement-id}/files/{agreementFileLocalization-id}
+  path_description: Provides operations to manage the files property of the microsoft.graph.agreement entity.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  - name: agreementFileLocalization-id
+    in: path
+    description: The unique identifier of agreementFileLocalization
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreementFileLocalization
+  methods:
+  - method: GET
+    summary: Get files from agreements
+    description: PDFs linked to this agreement. This property is in the process of being deprecated. Use the  file property instead. Supports $expand.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property files in agreements
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.agreementFileProperties'
+        - title: agreementFileLocalization
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            versions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.agreementFileVersion'
+              description: Read-only. Customized versions of the terms of use agreement in the Microsoft Entra tenant.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreementFileLocalization'
+  - method: DELETE
+    summary: Delete navigation property files for agreements
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /agreements/{agreement-id}/files/{agreementFileLocalization-id}/versions
+  path_description: Provides operations to manage the versions property of the microsoft.graph.agreementFileLocalization entity.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  - name: agreementFileLocalization-id
+    in: path
+    description: The unique identifier of agreementFileLocalization
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreementFileLocalization
+  methods:
+  - method: GET
+    summary: Get versions from agreements
+    description: Read-only. Customized versions of the terms of use agreement in the Microsoft Entra tenant.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to versions for agreements
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.agreementFileProperties'
+        - title: agreementFileVersion
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreementFileVersion'
+- path: /agreements/{agreement-id}/files/{agreementFileLocalization-id}/versions/{agreementFileVersion-id}
+  path_description: Provides operations to manage the versions property of the microsoft.graph.agreementFileLocalization entity.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  - name: agreementFileLocalization-id
+    in: path
+    description: The unique identifier of agreementFileLocalization
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreementFileLocalization
+  - name: agreementFileVersion-id
+    in: path
+    description: The unique identifier of agreementFileVersion
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreementFileVersion
+  methods:
+  - method: GET
+    summary: Get versions from agreements
+    description: Read-only. Customized versions of the terms of use agreement in the Microsoft Entra tenant.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property versions in agreements
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.agreementFileProperties'
+        - title: agreementFileVersion
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreementFileVersion'
+  - method: DELETE
+    summary: Delete navigation property versions for agreements
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /agreements/{agreement-id}/files/{agreementFileLocalization-id}/versions/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  - name: agreementFileLocalization-id
+    in: path
+    description: The unique identifier of agreementFileLocalization
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreementFileLocalization
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /agreements/{agreement-id}/files/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: agreement-id
+    in: path
+    description: The unique identifier of agreement
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreement
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

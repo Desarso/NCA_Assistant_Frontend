@@ -1,0 +1,2423 @@
+- path: /applications(appId='{appId}')
+  path_description: Provides operations to manage the collection of application entities.
+  path_parameters:
+  - name: appId
+    in: path
+    description: Alternate key of application
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Get application
+    description: Get the properties and relationships of an application object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Upsert application
+    description: Create a new application object if it doesn't exist, or update the properties of an existing application object.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: application
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            addIns:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.addIn'
+              description: Defines custom behavior that a consuming service can use to call an app in specific contexts. For example, applications that can render file streams can set the addIns property for its 'FileHandler' functionality. This lets services like Microsoft 365 call the application in the context of a document the user is working on.
+            api:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.apiApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for an application that implements a web API.
+            appId:
+              type: string
+              description: The unique identifier for the application that is assigned to an application by Microsoft Entra ID. Not nullable. Read-only. Alternate key. Supports $filter (eq).
+              nullable: true
+            applicationTemplateId:
+              type: string
+              description: Unique identifier of the applicationTemplate. Supports $filter (eq, not, ne). Read-only. null if the app wasn't created from an application template.
+              nullable: true
+            appRoles:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.appRole'
+              description: The collection of roles defined for the application. With app role assignments, these roles can be assigned to users, groups, or service principals associated with other applications. Not nullable.
+            authenticationBehaviors:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.authenticationBehaviors'
+              - type: object
+                nullable: true
+            certification:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.certification'
+              - type: object
+                nullable: true
+              description: Specifies the certification status of the application.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time the application was registered. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.  Supports $filter (eq, ne, not, ge, le, in, and eq on null values) and $orderby.
+              format: date-time
+              nullable: true
+            defaultRedirectUri:
+              type: string
+              nullable: true
+            description:
+              type: string
+              description: Free text field to provide a description of the application object to end users. The maximum allowed size is 1,024 characters. Supports $filter (eq, ne, not, ge, le, startsWith) and $search.
+              nullable: true
+            disabledByMicrosoftStatus:
+              type: string
+              description: 'Specifies whether Microsoft has disabled the registered application. Possible values are: null (default value), NotDisabled, and DisabledDueToViolationOfServicesAgreement (reasons include suspicious, abusive, or malicious activity, or a violation of the Microsoft Services Agreement).  Supports $filter (eq, ne, not).'
+              nullable: true
+            displayName:
+              type: string
+              description: The display name for the application. Maximum length is 256 characters. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values), $search, and $orderby.
+              nullable: true
+            groupMembershipClaims:
+              type: string
+              description: 'Configures the groups claim issued in a user or OAuth 2.0 access token that the application expects. To set this attribute, use one of the following valid string values: None, SecurityGroup (for security groups and Microsoft Entra roles), All (this gets all of the security groups, distribution groups, and Microsoft Entra directory roles that the signed-in user is a member of).'
+              nullable: true
+            identifierUris:
+              type: array
+              items:
+                type: string
+              description: Also known as App ID URI, this value is set when an application is used as a resource app. The identifierUris acts as the prefix for the scopes you reference in your API's code, and it must be globally unique. You can use the default value provided, which is in the form api://<appId>, or specify a more readable URI like https://contoso.com/api. For more information on valid identifierUris patterns and best practices, see Microsoft Entra application registration security best practices. Not nullable. Supports $filter (eq, ne, ge, le, startsWith).
+            info:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.informationalUrl'
+              - type: object
+                nullable: true
+              description: 'Basic profile information of the application such as  app''s marketing, support, terms of service and privacy statement URLs. The terms of service and privacy statement are surfaced to users through the user consent experience. For more info, see How to: Add Terms of service and privacy statement for registered Microsoft Entra apps. Supports $filter (eq, ne, not, ge, le, and eq on null values).'
+            isDeviceOnlyAuthSupported:
+              type: boolean
+              description: Specifies whether this application supports device authentication without a user. The default is false.
+              nullable: true
+            isFallbackPublicClient:
+              type: boolean
+              description: Specifies the fallback application type as public client, such as an installed application running on a mobile device. The default value is false, which means the fallback application type is confidential client such as a web app. There are certain scenarios where Microsoft Entra ID can't determine the client application type. For example, the ROPC flow where it's configured without specifying a redirect URI. In those cases, Microsoft Entra ID interprets the application type based on the value of this property.
+              nullable: true
+            keyCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.keyCredential'
+              description: The collection of key credentials associated with the application. Not nullable. Supports $filter (eq, not, ge, le).
+            logo:
+              type: string
+              description: The main logo for the application. Not nullable.
+              format: base64url
+            nativeAuthenticationApisEnabled:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.nativeAuthenticationApisEnabled'
+              - type: object
+                nullable: true
+              description: 'Specifies whether the Native Authentication APIs are enabled for the application. The possible values are: none and all. Default is none. For more information, see Native Authentication.'
+            notes:
+              type: string
+              description: Notes relevant for the management of the application.
+              nullable: true
+            oauth2RequirePostResponse:
+              type: boolean
+            optionalClaims:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.optionalClaims'
+              - type: object
+                nullable: true
+              description: 'Application developers can configure optional claims in their Microsoft Entra applications to specify the claims that are sent to their application by the Microsoft security token service. For more information, see How to: Provide optional claims to your app.'
+            parentalControlSettings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.parentalControlSettings'
+              - type: object
+                nullable: true
+              description: Specifies parental control settings for an application.
+            passwordCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.passwordCredential'
+              description: The collection of password credentials associated with the application. Not nullable.
+            publicClient:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.publicClientApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for installed clients such as desktop or mobile devices.
+            publisherDomain:
+              type: string
+              description: 'The verified publisher domain for the application. Read-only. For more information, see How to: Configure an application''s publisher domain. Supports $filter (eq, ne, ge, le, startsWith).'
+              nullable: true
+            requestSignatureVerification:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.requestSignatureVerification'
+              - type: object
+                nullable: true
+              description: Specifies whether this application requires Microsoft Entra ID to verify the signed authentication requests.
+            requiredResourceAccess:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.requiredResourceAccess'
+              description: Specifies the resources that the application needs to access. This property also specifies the set of delegated permissions and application roles that it needs for each of those resources. This configuration of access to the required resources drives the consent experience. No more than 50 resource services (APIs) can be configured. Beginning mid-October 2021, the total number of required permissions must not exceed 400. For more information, see Limits on requested permissions per app. Not nullable. Supports $filter (eq, not, ge, le).
+            samlMetadataUrl:
+              type: string
+              description: The URL where the service exposes SAML metadata for federation. This property is valid only for single-tenant applications. Nullable.
+              nullable: true
+            serviceManagementReference:
+              type: string
+              description: References application or service contact information from a Service or Asset Management database. Nullable.
+              nullable: true
+            servicePrincipalLockConfiguration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.servicePrincipalLockConfiguration'
+              - type: object
+                nullable: true
+              description: Specifies whether sensitive properties of a multitenant application should be locked for editing after the application is provisioned in a tenant. Nullable. null by default.
+            signInAudience:
+              type: string
+              description: 'Specifies the Microsoft accounts that are supported for the current application. The possible values are: AzureADMyOrg (default), AzureADMultipleOrgs, AzureADandPersonalMicrosoftAccount, and PersonalMicrosoftAccount. See more in the table. The value of this object also limits the number of permissions an app can request. For more information, see Limits on requested permissions per app. The value for this property has implications on other app object properties. As a result, if you change this property, you might need to change other properties first. For more information, see Validation differences for signInAudience.Supports $filter (eq, ne, not).'
+              nullable: true
+            spa:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.spaApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for a single-page application, including sign out URLs and redirect URIs for authorization codes and access tokens.
+            tags:
+              type: array
+              items:
+                type: string
+              description: Custom strings that can be used to categorize and identify the application. Not nullable. Strings added here will also appear in the tags property of any associated service principals.Supports $filter (eq, not, ge, le, startsWith) and $search.
+            tokenEncryptionKeyId:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              description: Specifies the keyId of a public key from the keyCredentials collection. When configured, Microsoft Entra ID encrypts all the tokens it emits by using the key this property points to. The application code that receives the encrypted token must use the matching private key to decrypt the token before it can be used for the signed-in user.
+              format: uuid
+              nullable: true
+            uniqueName:
+              type: string
+              description: The unique identifier that can be assigned to an application and used as an alternate key. Immutable. Read-only.
+              nullable: true
+            verifiedPublisher:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.verifiedPublisher'
+              - type: object
+                nullable: true
+              description: Specifies the verified publisher of the application. For more information about how publisher verification helps support application security, trustworthiness, and compliance, see Publisher verification.
+            web:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.webApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for a web application.
+            appManagementPolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.appManagementPolicy'
+              description: The appManagementPolicy applied to this application.
+              x-ms-navigationProperty: true
+            createdOnBehalfOf:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              - type: object
+                nullable: true
+              description: Supports $filter (/$count eq 0, /$count ne 0). Read-only.
+              x-ms-navigationProperty: true
+            extensionProperties:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.extensionProperty'
+              description: Read-only. Nullable. Supports $expand and $filter (/$count eq 0, /$count ne 0).
+              x-ms-navigationProperty: true
+            federatedIdentityCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.federatedIdentityCredential'
+              description: Federated identities for applications. Supports $expand and $filter (startsWith, /$count eq 0, /$count ne 0).
+              x-ms-navigationProperty: true
+            homeRealmDiscoveryPolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.homeRealmDiscoveryPolicy'
+              x-ms-navigationProperty: true
+            owners:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Directory objects that are owners of this application. The owners are a set of nonadmin users or service principals who are allowed to modify this object. Supports $expand, $filter (/$count eq 0, /$count ne 0, /$count eq 1, /$count ne 1), and $select nested in $expand.
+              x-ms-navigationProperty: true
+            synchronization:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.synchronization'
+              - type: object
+                nullable: true
+              description: Represents the capability for Microsoft Entra identity synchronization through the Microsoft Graph API.
+              x-ms-navigationProperty: true
+            tokenIssuancePolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.tokenIssuancePolicy'
+              x-ms-navigationProperty: true
+            tokenLifetimePolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.tokenLifetimePolicy'
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.application'
+        x-ms-discriminator-value: '#microsoft.graph.application'
+  - method: DELETE
+    summary: Delete application
+    description: Delete an application object. When deleted, apps are moved to a temporary container and can be restored within 30 days. After that time, they are permanently deleted.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /applications(uniqueName='{uniqueName}')
+  path_description: Provides operations to manage the collection of application entities.
+  path_parameters:
+  - name: uniqueName
+    in: path
+    description: Alternate key of application
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Get application
+    description: Get the properties and relationships of an application object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Upsert application
+    description: Create a new application object if it doesn't exist, or update the properties of an existing application object.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: application
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            addIns:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.addIn'
+              description: Defines custom behavior that a consuming service can use to call an app in specific contexts. For example, applications that can render file streams can set the addIns property for its 'FileHandler' functionality. This lets services like Microsoft 365 call the application in the context of a document the user is working on.
+            api:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.apiApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for an application that implements a web API.
+            appId:
+              type: string
+              description: The unique identifier for the application that is assigned to an application by Microsoft Entra ID. Not nullable. Read-only. Alternate key. Supports $filter (eq).
+              nullable: true
+            applicationTemplateId:
+              type: string
+              description: Unique identifier of the applicationTemplate. Supports $filter (eq, not, ne). Read-only. null if the app wasn't created from an application template.
+              nullable: true
+            appRoles:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.appRole'
+              description: The collection of roles defined for the application. With app role assignments, these roles can be assigned to users, groups, or service principals associated with other applications. Not nullable.
+            authenticationBehaviors:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.authenticationBehaviors'
+              - type: object
+                nullable: true
+            certification:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.certification'
+              - type: object
+                nullable: true
+              description: Specifies the certification status of the application.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time the application was registered. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.  Supports $filter (eq, ne, not, ge, le, in, and eq on null values) and $orderby.
+              format: date-time
+              nullable: true
+            defaultRedirectUri:
+              type: string
+              nullable: true
+            description:
+              type: string
+              description: Free text field to provide a description of the application object to end users. The maximum allowed size is 1,024 characters. Supports $filter (eq, ne, not, ge, le, startsWith) and $search.
+              nullable: true
+            disabledByMicrosoftStatus:
+              type: string
+              description: 'Specifies whether Microsoft has disabled the registered application. Possible values are: null (default value), NotDisabled, and DisabledDueToViolationOfServicesAgreement (reasons include suspicious, abusive, or malicious activity, or a violation of the Microsoft Services Agreement).  Supports $filter (eq, ne, not).'
+              nullable: true
+            displayName:
+              type: string
+              description: The display name for the application. Maximum length is 256 characters. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values), $search, and $orderby.
+              nullable: true
+            groupMembershipClaims:
+              type: string
+              description: 'Configures the groups claim issued in a user or OAuth 2.0 access token that the application expects. To set this attribute, use one of the following valid string values: None, SecurityGroup (for security groups and Microsoft Entra roles), All (this gets all of the security groups, distribution groups, and Microsoft Entra directory roles that the signed-in user is a member of).'
+              nullable: true
+            identifierUris:
+              type: array
+              items:
+                type: string
+              description: Also known as App ID URI, this value is set when an application is used as a resource app. The identifierUris acts as the prefix for the scopes you reference in your API's code, and it must be globally unique. You can use the default value provided, which is in the form api://<appId>, or specify a more readable URI like https://contoso.com/api. For more information on valid identifierUris patterns and best practices, see Microsoft Entra application registration security best practices. Not nullable. Supports $filter (eq, ne, ge, le, startsWith).
+            info:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.informationalUrl'
+              - type: object
+                nullable: true
+              description: 'Basic profile information of the application such as  app''s marketing, support, terms of service and privacy statement URLs. The terms of service and privacy statement are surfaced to users through the user consent experience. For more info, see How to: Add Terms of service and privacy statement for registered Microsoft Entra apps. Supports $filter (eq, ne, not, ge, le, and eq on null values).'
+            isDeviceOnlyAuthSupported:
+              type: boolean
+              description: Specifies whether this application supports device authentication without a user. The default is false.
+              nullable: true
+            isFallbackPublicClient:
+              type: boolean
+              description: Specifies the fallback application type as public client, such as an installed application running on a mobile device. The default value is false, which means the fallback application type is confidential client such as a web app. There are certain scenarios where Microsoft Entra ID can't determine the client application type. For example, the ROPC flow where it's configured without specifying a redirect URI. In those cases, Microsoft Entra ID interprets the application type based on the value of this property.
+              nullable: true
+            keyCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.keyCredential'
+              description: The collection of key credentials associated with the application. Not nullable. Supports $filter (eq, not, ge, le).
+            logo:
+              type: string
+              description: The main logo for the application. Not nullable.
+              format: base64url
+            nativeAuthenticationApisEnabled:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.nativeAuthenticationApisEnabled'
+              - type: object
+                nullable: true
+              description: 'Specifies whether the Native Authentication APIs are enabled for the application. The possible values are: none and all. Default is none. For more information, see Native Authentication.'
+            notes:
+              type: string
+              description: Notes relevant for the management of the application.
+              nullable: true
+            oauth2RequirePostResponse:
+              type: boolean
+            optionalClaims:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.optionalClaims'
+              - type: object
+                nullable: true
+              description: 'Application developers can configure optional claims in their Microsoft Entra applications to specify the claims that are sent to their application by the Microsoft security token service. For more information, see How to: Provide optional claims to your app.'
+            parentalControlSettings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.parentalControlSettings'
+              - type: object
+                nullable: true
+              description: Specifies parental control settings for an application.
+            passwordCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.passwordCredential'
+              description: The collection of password credentials associated with the application. Not nullable.
+            publicClient:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.publicClientApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for installed clients such as desktop or mobile devices.
+            publisherDomain:
+              type: string
+              description: 'The verified publisher domain for the application. Read-only. For more information, see How to: Configure an application''s publisher domain. Supports $filter (eq, ne, ge, le, startsWith).'
+              nullable: true
+            requestSignatureVerification:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.requestSignatureVerification'
+              - type: object
+                nullable: true
+              description: Specifies whether this application requires Microsoft Entra ID to verify the signed authentication requests.
+            requiredResourceAccess:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.requiredResourceAccess'
+              description: Specifies the resources that the application needs to access. This property also specifies the set of delegated permissions and application roles that it needs for each of those resources. This configuration of access to the required resources drives the consent experience. No more than 50 resource services (APIs) can be configured. Beginning mid-October 2021, the total number of required permissions must not exceed 400. For more information, see Limits on requested permissions per app. Not nullable. Supports $filter (eq, not, ge, le).
+            samlMetadataUrl:
+              type: string
+              description: The URL where the service exposes SAML metadata for federation. This property is valid only for single-tenant applications. Nullable.
+              nullable: true
+            serviceManagementReference:
+              type: string
+              description: References application or service contact information from a Service or Asset Management database. Nullable.
+              nullable: true
+            servicePrincipalLockConfiguration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.servicePrincipalLockConfiguration'
+              - type: object
+                nullable: true
+              description: Specifies whether sensitive properties of a multitenant application should be locked for editing after the application is provisioned in a tenant. Nullable. null by default.
+            signInAudience:
+              type: string
+              description: 'Specifies the Microsoft accounts that are supported for the current application. The possible values are: AzureADMyOrg (default), AzureADMultipleOrgs, AzureADandPersonalMicrosoftAccount, and PersonalMicrosoftAccount. See more in the table. The value of this object also limits the number of permissions an app can request. For more information, see Limits on requested permissions per app. The value for this property has implications on other app object properties. As a result, if you change this property, you might need to change other properties first. For more information, see Validation differences for signInAudience.Supports $filter (eq, ne, not).'
+              nullable: true
+            spa:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.spaApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for a single-page application, including sign out URLs and redirect URIs for authorization codes and access tokens.
+            tags:
+              type: array
+              items:
+                type: string
+              description: Custom strings that can be used to categorize and identify the application. Not nullable. Strings added here will also appear in the tags property of any associated service principals.Supports $filter (eq, not, ge, le, startsWith) and $search.
+            tokenEncryptionKeyId:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              description: Specifies the keyId of a public key from the keyCredentials collection. When configured, Microsoft Entra ID encrypts all the tokens it emits by using the key this property points to. The application code that receives the encrypted token must use the matching private key to decrypt the token before it can be used for the signed-in user.
+              format: uuid
+              nullable: true
+            uniqueName:
+              type: string
+              description: The unique identifier that can be assigned to an application and used as an alternate key. Immutable. Read-only.
+              nullable: true
+            verifiedPublisher:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.verifiedPublisher'
+              - type: object
+                nullable: true
+              description: Specifies the verified publisher of the application. For more information about how publisher verification helps support application security, trustworthiness, and compliance, see Publisher verification.
+            web:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.webApplication'
+              - type: object
+                nullable: true
+              description: Specifies settings for a web application.
+            appManagementPolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.appManagementPolicy'
+              description: The appManagementPolicy applied to this application.
+              x-ms-navigationProperty: true
+            createdOnBehalfOf:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              - type: object
+                nullable: true
+              description: Supports $filter (/$count eq 0, /$count ne 0). Read-only.
+              x-ms-navigationProperty: true
+            extensionProperties:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.extensionProperty'
+              description: Read-only. Nullable. Supports $expand and $filter (/$count eq 0, /$count ne 0).
+              x-ms-navigationProperty: true
+            federatedIdentityCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.federatedIdentityCredential'
+              description: Federated identities for applications. Supports $expand and $filter (startsWith, /$count eq 0, /$count ne 0).
+              x-ms-navigationProperty: true
+            homeRealmDiscoveryPolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.homeRealmDiscoveryPolicy'
+              x-ms-navigationProperty: true
+            owners:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Directory objects that are owners of this application. The owners are a set of nonadmin users or service principals who are allowed to modify this object. Supports $expand, $filter (/$count eq 0, /$count ne 0, /$count eq 1, /$count ne 1), and $select nested in $expand.
+              x-ms-navigationProperty: true
+            synchronization:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.synchronization'
+              - type: object
+                nullable: true
+              description: Represents the capability for Microsoft Entra identity synchronization through the Microsoft Graph API.
+              x-ms-navigationProperty: true
+            tokenIssuancePolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.tokenIssuancePolicy'
+              x-ms-navigationProperty: true
+            tokenLifetimePolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.tokenLifetimePolicy'
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.application'
+        x-ms-discriminator-value: '#microsoft.graph.application'
+  - method: DELETE
+    summary: Delete application
+    description: Delete an application object. When deleted, apps are moved to a temporary container and can be restored within 30 days. After that time, they are permanently deleted.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /devices(deviceId='{deviceId}')
+  path_description: Provides operations to manage the collection of device entities.
+  path_parameters:
+  - name: deviceId
+    in: path
+    description: Alternate key of device
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Get device
+    description: Get the properties and relationships of a device object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update device
+    description: Update the properties of a registered device. Only certain properties of a device can be updated through approved Mobile Device Managment (MDM) apps.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: device
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            accountEnabled:
+              type: boolean
+              description: true if the account is enabled; otherwise, false. Required. Default is true.  Supports $filter (eq, ne, not, in). Only callers with at least the Cloud Device Administrator role can set this property.
+              nullable: true
+            alternativeSecurityIds:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.alternativeSecurityId'
+              description: For internal use only. Not nullable. Supports $filter (eq, not, ge, le).
+            approximateLastSignInDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only. Supports $filter (eq, ne, not, ge, le, and eq on null values) and $orderby.
+              format: date-time
+              nullable: true
+            complianceExpirationDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The timestamp when the device is no longer deemed compliant. The timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+              format: date-time
+              nullable: true
+            deviceCategory:
+              type: string
+              description: User-defined property set by Intune to automatically add devices to groups and simplify managing devices.
+              nullable: true
+            deviceId:
+              type: string
+              description: Unique identifier set by Azure Device Registration Service at the time of registration. This alternate key can be used to reference the device object. Supports $filter (eq, ne, not, startsWith).
+              nullable: true
+            deviceMetadata:
+              type: string
+              description: For internal use only. Set to null.
+              nullable: true
+            deviceOwnership:
+              type: string
+              description: 'Ownership of the device. Intune sets this property. Possible values are: unknown, company, personal.'
+              nullable: true
+            deviceVersion:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: For internal use only.
+              format: int32
+              nullable: true
+            displayName:
+              type: string
+              description: The display name for the device. Maximum length is 256 characters. Required. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values), $search, and $orderby.
+              nullable: true
+            enrollmentProfileName:
+              type: string
+              description: Enrollment profile applied to the device. For example, Apple Device Enrollment Profile, Device enrollment - Corporate device identifiers, or Windows Autopilot profile name. This property is set by Intune.
+              nullable: true
+            enrollmentType:
+              type: string
+              description: 'Enrollment type of the device. Intune sets this property. Possible values are: unknown, userEnrollment, deviceEnrollmentManager, appleBulkWithUser, appleBulkWithoutUser, windowsAzureADJoin, windowsBulkUserless, windowsAutoEnrollment, windowsBulkAzureDomainJoin, windowsCoManagement, windowsAzureADJoinUsingDeviceAuth,appleUserEnrollment, appleUserEnrollmentWithServiceAccount. NOTE: This property might return other values apart from those listed.'
+              nullable: true
+            isCompliant:
+              type: boolean
+              description: true if the device complies with Mobile Device Management (MDM) policies; otherwise, false. Read-only. This can only be updated by Intune for any device OS type or by an approved MDM app for Windows OS devices. Supports $filter (eq, ne, not).
+              nullable: true
+            isManaged:
+              type: boolean
+              description: true if the device is managed by a Mobile Device Management (MDM) app; otherwise, false. This can only be updated by Intune for any device OS type or by an approved MDM app for Windows OS devices. Supports $filter (eq, ne, not).
+              nullable: true
+            isManagementRestricted:
+              type: boolean
+              nullable: true
+            isRooted:
+              type: boolean
+              description: true if the device is rooted or jail-broken. This property can only be updated by Intune.
+              nullable: true
+            managementType:
+              type: string
+              description: 'The management channel of the device. This property is set by Intune. Possible values are: eas, mdm, easMdm, intuneClient, easIntuneClient, configurationManagerClient, configurationManagerClientMdm, configurationManagerClientMdmEas, unknown, jamf, googleCloudDevicePolicyController.'
+              nullable: true
+            manufacturer:
+              type: string
+              description: Manufacturer of the device. Read-only.
+              nullable: true
+            mdmAppId:
+              type: string
+              description: Application identifier used to register device into MDM. Read-only. Supports $filter (eq, ne, not, startsWith).
+              nullable: true
+            model:
+              type: string
+              description: Model of the device. Read-only.
+              nullable: true
+            onPremisesLastSyncDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The last time at which the object was synced with the on-premises directory. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z Read-only. Supports $filter (eq, ne, not, ge, le, in).
+              format: date-time
+              nullable: true
+            onPremisesSecurityIdentifier:
+              type: string
+              description: The on-premises security identifier (SID) for the user who was synchronized from on-premises to the cloud. Read-only. Returned only on $select. Supports $filter (eq).
+              nullable: true
+            onPremisesSyncEnabled:
+              type: boolean
+              description: true if this object is synced from an on-premises directory; false if this object was originally synced from an on-premises directory but is no longer synced; null if this object has never been synced from an on-premises directory (default). Read-only. Supports $filter (eq, ne, not, in, and eq on null values).
+              nullable: true
+            operatingSystem:
+              type: string
+              description: The type of operating system on the device. Required. Supports $filter (eq, ne, not, ge, le, startsWith, and eq on null values).
+              nullable: true
+            operatingSystemVersion:
+              type: string
+              description: The version of the operating system on the device. Required. Supports $filter (eq, ne, not, ge, le, startsWith, and eq on null values).
+              nullable: true
+            physicalIds:
+              type: array
+              items:
+                type: string
+              description: For internal use only. Not nullable. Supports $filter (eq, not, ge, le, startsWith,/$count eq 0, /$count ne 0).
+            profileType:
+              type: string
+              description: 'The profile type of the device. Possible values: RegisteredDevice (default), SecureVM, Printer, Shared, IoT.'
+              nullable: true
+            registrationDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time of when the device was registered. The timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+              format: date-time
+              nullable: true
+            systemLabels:
+              type: array
+              items:
+                type: string
+              description: List of labels applied to the device by the system. Supports $filter (/$count eq 0, /$count ne 0).
+            trustType:
+              type: string
+              description: 'Type of trust for the joined device. Read-only. Possible values:  Workplace (indicates bring your own personal devices), AzureAd (Cloud-only joined devices), ServerAd (on-premises domain joined devices joined to Microsoft Entra ID). For more information, see Introduction to device management in Microsoft Entra ID. Supports $filter (eq, ne, not, in).'
+              nullable: true
+            extensions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.extension'
+              description: The collection of open extensions defined for the device. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            memberOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Groups and administrative units that this device is a member of. Read-only. Nullable. Supports $expand.
+              x-ms-navigationProperty: true
+            registeredOwners:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The user that cloud joined the device or registered their personal device. The registered owner is set at the time of registration. Read-only. Nullable. Supports $expand.
+              x-ms-navigationProperty: true
+            registeredUsers:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Collection of registered users of the device. For cloud joined devices and registered personal devices, registered users are set to the same value as registered owners at the time of registration. Read-only. Nullable. Supports $expand.
+              x-ms-navigationProperty: true
+            transitiveMemberOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Groups and administrative units that the device is a member of. This operation is transitive. Supports $expand.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.device'
+        x-ms-discriminator-value: '#microsoft.graph.device'
+  - method: DELETE
+    summary: Delete device
+    description: Delete a registered device.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directoryRoles(roleTemplateId='{roleTemplateId}')
+  path_description: Provides operations to manage the collection of directoryRole entities.
+  path_parameters:
+  - name: roleTemplateId
+    in: path
+    description: Alternate key of directoryRole
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Get directoryRole
+    description: Retrieve the properties of a directoryRole object. The role must be activated in tenant for a successful response. You can use both the object ID and template ID of the directoryRole with this API. The template ID of a built-in role is immutable and can be seen in the role description on the Microsoft Entra admin center. For details, see Role template IDs.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update entity in directoryRoles by roleTemplateId
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: directoryRole
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: The description for the directory role. Read-only. Supports $filter (eq), $search, $select.
+              nullable: true
+            displayName:
+              type: string
+              description: The display name for the directory role. Read-only. Supports $filter (eq), $search, $select.
+              nullable: true
+            roleTemplateId:
+              type: string
+              description: The id of the directoryRoleTemplate that this role is based on. The property must be specified when activating a directory role in a tenant with a POST operation. After the directory role has been activated, the property is read only. Supports $filter (eq), $select.
+              nullable: true
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: 'Users that are members of this directory role. HTTP Methods: GET, POST, DELETE. Read-only. Nullable. Supports $expand.'
+              x-ms-navigationProperty: true
+            scopedMembers:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.scopedRoleMembership'
+              description: Members of this directory role that are scoped to administrative units. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.directoryRole'
+        x-ms-discriminator-value: '#microsoft.graph.directoryRole'
+  - method: DELETE
+    summary: Delete entity from directoryRoles by roleTemplateId
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /groups(uniqueName='{uniqueName}')
+  path_description: Provides operations to manage the collection of group entities.
+  path_parameters:
+  - name: uniqueName
+    in: path
+    description: Alternate key of group
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Get group
+    description: Get the properties and relationships of a group object. This operation returns by default only a subset of all the available properties, as noted in the Properties section. To get properties that aren't_ returned by default, specify them in a $select OData query option. The hasMembersWithLicenseErrors and isArchived properties are an exception and aren't returned in the $select query.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Upsert group
+    description: 'Create a new group object if it doesn''t exist, or update the properties of an existing group object.
+
+      You can create or update the following types of group: By default, this operation returns only a subset of the properties for each group. For a list of properties that are returned by default, see the Properties section of the group resource. To get properties that are not returned by default, do a GET operation and specify the properties in a $select OData query option.'
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: group
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            allowExternalSenders:
+              type: boolean
+              description: Indicates if people external to the organization can send messages to the group. The default value is false. Returned only on $select. Supported only on the Get group API (GET /groups/{ID}).
+              nullable: true
+            assignedLabels:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.assignedLabel'
+              description: The list of sensitivity label pairs (label ID, label name) associated with a Microsoft 365 group. Returned only on $select. This property can be updated only in delegated scenarios where the caller requires both the Microsoft Graph permission and a supported administrator role.
+            assignedLicenses:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.assignedLicense'
+              description: The licenses that are assigned to the group. Returned only on $select. Supports $filter (eq).Read-only.
+            autoSubscribeNewMembers:
+              type: boolean
+              description: Indicates if new members added to the group are autosubscribed to receive email notifications. You can set this property in a PATCH request for the group; don't set it in the initial POST request that creates the group. Default value is false. Returned only on $select. Supported only on the Get group API (GET /groups/{ID}).
+              nullable: true
+            classification:
+              type: string
+              description: Describes a classification for the group (such as low, medium, or high business impact). Valid values for this property are defined by creating a ClassificationList setting value, based on the template definition.Returned by default. Supports $filter (eq, ne, not, ge, le, startsWith).
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Timestamp of when the group was created. The value can't be modified and is automatically populated when the group is created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on January 1, 2014 is 2014-01-01T00:00:00Z. Returned by default. Read-only.
+              format: date-time
+              nullable: true
+            description:
+              type: string
+              description: An optional description for the group. Returned by default. Supports $filter (eq, ne, not, ge, le, startsWith) and $search.
+              nullable: true
+            displayName:
+              type: string
+              description: The display name for the group. This property is required when a group is created and can't be cleared during updates. Maximum length is 256 characters. Returned by default. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values), $search, and $orderby.
+              nullable: true
+            expirationDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Timestamp of when the group is set to expire. It's null for security groups, but for Microsoft 365 groups, it represents when the group is set to expire as defined in the groupLifecyclePolicy. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on January 1, 2014 is 2014-01-01T00:00:00Z. Returned by default. Supports $filter (eq, ne, not, ge, le, in). Read-only.
+              format: date-time
+              nullable: true
+            groupTypes:
+              type: array
+              items:
+                type: string
+              description: Specifies the group type and its membership. If the collection contains Unified, the group is a Microsoft 365 group; otherwise, it's either a security group or a distribution group. For details, see groups overview.If the collection includes DynamicMembership, the group has dynamic membership; otherwise, membership is static. Returned by default. Supports $filter (eq, not).
+            hasMembersWithLicenseErrors:
+              type: boolean
+              description: Indicates whether there are members in this group that have license errors from its group-based license assignment. This property is never returned on a GET operation. You can use it as a $filter argument to get groups that have members with license errors (that is, filter for this property being true). See an example. Supports $filter (eq).
+              nullable: true
+            hideFromAddressLists:
+              type: boolean
+              description: 'True if the group isn''t displayed in certain parts of the Outlook UI: the Address Book, address lists for selecting message recipients, and the Browse Groups dialog for searching groups; otherwise, false. The default value is false. Returned only on $select. Supported only on the Get group API (GET /groups/{ID}).'
+              nullable: true
+            hideFromOutlookClients:
+              type: boolean
+              description: True if the group isn't displayed in Outlook clients, such as Outlook for Windows and Outlook on the web; otherwise, false. The default value is false. Returned only on $select. Supported only on the Get group API (GET /groups/{ID}).
+              nullable: true
+            isArchived:
+              type: boolean
+              description: When a group is associated with a team, this property determines whether the team is in read-only mode.To read this property, use the /group/{groupId}/team endpoint or the Get team API. To update this property, use the archiveTeam and unarchiveTeam APIs.
+              nullable: true
+            isAssignableToRole:
+              type: boolean
+              description: Indicates whether this group can be assigned to a Microsoft Entra role. Optional. This property can only be set while creating the group and is immutable. If set to true, the securityEnabled property must also be set to true, visibility must be Hidden, and the group can't be a dynamic group (that is, groupTypes can't contain DynamicMembership). Only callers with at least the Privileged Role Administrator role can set this property. The caller must also be assigned the RoleManagement.ReadWrite.Directory permission to set this property or update the membership of such groups. For more, see Using a group to manage Microsoft Entra role assignmentsUsing this feature requires a Microsoft Entra ID P1 license. Returned by default. Supports $filter (eq, ne, not).
+              nullable: true
+            isManagementRestricted:
+              type: boolean
+              nullable: true
+            isSubscribedByMail:
+              type: boolean
+              description: Indicates whether the signed-in user is subscribed to receive email conversations. The default value is true. Returned only on $select. Supported only on the Get group API (GET /groups/{ID}).
+              nullable: true
+            licenseProcessingState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.licenseProcessingState'
+              - type: object
+                nullable: true
+              description: 'Indicates the status of the group license assignment to all group members. The default value is false. Read-only. Possible values: QueuedForProcessing, ProcessingInProgress, and ProcessingComplete.Returned only on $select. Read-only.'
+            mail:
+              type: string
+              description: The SMTP address for the group, for example, 'serviceadmins@contoso.com'. Returned by default. Read-only. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            mailEnabled:
+              type: boolean
+              description: Specifies whether the group is mail-enabled. Required. Returned by default. Supports $filter (eq, ne, not).
+              nullable: true
+            mailNickname:
+              type: string
+              description: 'The mail alias for the group, unique for Microsoft 365 groups in the organization. Maximum length is 64 characters. This property can contain only characters in the ASCII character set 0 - 127 except the following characters: @ () / [] '' ; : <> , SPACE. Required. Returned by default. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values).'
+              nullable: true
+            membershipRule:
+              type: string
+              description: The rule that determines members for this group if the group is a dynamic group (groupTypes contains DynamicMembership). For more information about the syntax of the membership rule, see Membership Rules syntax. Returned by default. Supports $filter (eq, ne, not, ge, le, startsWith).
+              nullable: true
+            membershipRuleProcessingState:
+              type: string
+              description: Indicates whether the dynamic membership processing is on or paused. Possible values are On or Paused. Returned by default. Supports $filter (eq, ne, not, in).
+              nullable: true
+            onPremisesDomainName:
+              type: string
+              description: Contains the on-premises domain FQDN, also called dnsDomainName synchronized from the on-premises directory. The property is only populated for customers synchronizing their on-premises directory to Microsoft Entra ID via Microsoft Entra Connect.Returned by default. Read-only.
+              nullable: true
+            onPremisesLastSyncDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Indicates the last time at which the group was synced with the on-premises directory. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on January 1, 2014 is 2014-01-01T00:00:00Z. Returned by default. Read-only. Supports $filter (eq, ne, not, ge, le, in).
+              format: date-time
+              nullable: true
+            onPremisesNetBiosName:
+              type: string
+              description: Contains the on-premises netBios name synchronized from the on-premises directory. The property is only populated for customers synchronizing their on-premises directory to Microsoft Entra ID via Microsoft Entra Connect.Returned by default. Read-only.
+              nullable: true
+            onPremisesProvisioningErrors:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.onPremisesProvisioningError'
+              description: Errors when using Microsoft synchronization product during provisioning. Returned by default. Supports $filter (eq, not).
+            onPremisesSamAccountName:
+              type: string
+              description: Contains the on-premises SAM account name synchronized from the on-premises directory. The property is only populated for customers synchronizing their on-premises directory to Microsoft Entra ID via Microsoft Entra Connect.Returned by default. Supports $filter (eq, ne, not, ge, le, in, startsWith). Read-only.
+              nullable: true
+            onPremisesSecurityIdentifier:
+              type: string
+              description: Contains the on-premises security identifier (SID) for the group synchronized from on-premises to the cloud. Read-only. Returned by default. Supports $filter (eq including on null values).
+              nullable: true
+            onPremisesSyncEnabled:
+              type: boolean
+              description: true if this group is synced from an on-premises directory; false if this group was originally synced from an on-premises directory but is no longer synced; null if this object has never synced from an on-premises directory (default). Returned by default. Read-only. Supports $filter (eq, ne, not, in, and eq on null values).
+              nullable: true
+            preferredDataLocation:
+              type: string
+              description: 'The preferred data location for the Microsoft 365 group. By default, the group inherits the group creator''s preferred data location. To set this property, the calling app must be granted the Directory.ReadWrite.All permission and the user be assigned at least one of the following Microsoft Entra roles: User Account Administrator Directory Writer  Exchange Administrator  SharePoint Administrator  For more information about this property, see OneDrive Online Multi-Geo. Nullable. Returned by default.'
+              nullable: true
+            preferredLanguage:
+              type: string
+              description: The preferred language for a Microsoft 365 group. Should follow ISO 639-1 Code; for example, en-US. Returned by default. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            proxyAddresses:
+              type: array
+              items:
+                type: string
+              description: 'Email addresses for the group that direct to the same group mailbox. For example: [''SMTP: bob@contoso.com'', ''smtp: bob@sales.contoso.com'']. The any operator is required to filter expressions on multi-valued properties. Returned by default. Read-only. Not nullable. Supports $filter (eq, not, ge, le, startsWith, endsWith, /$count eq 0, /$count ne 0).'
+            renewedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Timestamp of when the group was last renewed. This value can't be modified directly and is only updated via the renew service action. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on January 1, 2014 is 2014-01-01T00:00:00Z. Returned by default. Supports $filter (eq, ne, not, ge, le, in). Read-only.
+              format: date-time
+              nullable: true
+            securityEnabled:
+              type: boolean
+              description: Specifies whether the group is a security group. Required. Returned by default. Supports $filter (eq, ne, not, in).
+              nullable: true
+            securityIdentifier:
+              type: string
+              description: Security identifier of the group, used in Windows scenarios. Read-only. Returned by default.
+              nullable: true
+            serviceProvisioningErrors:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceProvisioningError'
+              description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a group object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+            theme:
+              type: string
+              description: Specifies a Microsoft 365 group's color theme. Possible values are Teal, Purple, Green, Blue, Pink, Orange, or Red. Returned by default.
+              nullable: true
+            uniqueName:
+              type: string
+              description: The unique identifier that can be assigned to a group and used as an alternate key. Immutable. Read-only.
+              nullable: true
+            unseenCount:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Count of conversations that received new posts since the signed-in user last visited the group. Returned only on $select. Supported only on the Get group API (GET /groups/{ID}).
+              format: int32
+              nullable: true
+            visibility:
+              type: string
+              description: 'Specifies the group join policy and group content visibility for groups. Possible values are: Private, Public, or HiddenMembership. HiddenMembership can be set only for Microsoft 365 groups when the groups are created. It can''t be updated later. Other values of visibility can be updated after group creation. If visibility value isn''t specified during group creation on Microsoft Graph, a security group is created as Private by default, and the Microsoft 365 group is Public. Groups assignable to roles are always Private. To learn more, see group visibility options. Returned by default. Nullable.'
+              nullable: true
+            acceptedSenders:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The list of users or groups allowed to create posts or calendar events in this group. If this list is nonempty, then only users or groups listed here are allowed to post.
+              x-ms-navigationProperty: true
+            appRoleAssignments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.appRoleAssignment'
+              description: Represents the app roles granted to a group for an application. Supports $expand.
+              x-ms-navigationProperty: true
+            calendar:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.calendar'
+              - type: object
+                nullable: true
+              description: The group's calendar. Read-only.
+              x-ms-navigationProperty: true
+            calendarView:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.event'
+              description: The calendar view for the calendar. Read-only.
+              x-ms-navigationProperty: true
+            conversations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.conversation'
+              description: The group's conversations.
+              x-ms-navigationProperty: true
+            createdOnBehalfOf:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              - type: object
+                nullable: true
+              description: 'The user (or application) that created the group. NOTE: This property isn''t set if the user is an administrator. Read-only.'
+              x-ms-navigationProperty: true
+            drive:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.drive'
+              - type: object
+                nullable: true
+              description: The group's default drive. Read-only.
+              x-ms-navigationProperty: true
+            drives:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.drive'
+              description: The group's drives. Read-only.
+              x-ms-navigationProperty: true
+            events:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.event'
+              description: The group's calendar events.
+              x-ms-navigationProperty: true
+            extensions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.extension'
+              description: The collection of open extensions defined for the group. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            groupLifecyclePolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.groupLifecyclePolicy'
+              description: The collection of lifecycle policies for this group. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            memberOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: 'Groups that this group is a member of. HTTP Methods: GET (supported for all groups). Read-only. Nullable. Supports $expand.'
+              x-ms-navigationProperty: true
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The members of this group, who can be users, devices, other groups, or service principals. Supports the List members, Add member, and Remove member operations. Nullable. Supports $expand including nested $select. For example, /groups?$filter=startsWith(displayName,'Role')&$select=id,displayName&$expand=members($select=id,userPrincipalName,displayName).
+              x-ms-navigationProperty: true
+            membersWithLicenseErrors:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: A list of group members with license errors from this group-based license assignment. Read-only.
+              x-ms-navigationProperty: true
+            onenote:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.onenote'
+              - type: object
+                nullable: true
+              x-ms-navigationProperty: true
+            owners:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The owners of the group who can be users or service principals. Limited to 100 owners. Nullable. If this property isn't specified when creating a Microsoft 365 group the calling user (admin or non-admin) is automatically assigned as the group owner. A non-admin user can't explicitly add themselves to this collection when they're creating the group. For more information, see the related known issue. For security groups, the admin user isn't automatically added to this collection. For more information, see the related known issue. Supports $filter (/$count eq 0, /$count ne 0, /$count eq 1, /$count ne 1); Supports $expand including nested $select. For example, /groups?$filter=startsWith(displayName,'Role')&$select=id,displayName&$expand=owners($select=id,userPrincipalName,displayName).
+              x-ms-navigationProperty: true
+            permissionGrants:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.resourceSpecificPermissionGrant'
+              x-ms-navigationProperty: true
+            photo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.profilePhoto'
+              - type: object
+                nullable: true
+              description: The group's profile photo
+              x-ms-navigationProperty: true
+            photos:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.profilePhoto'
+              description: The profile photos owned by the group. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            planner:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.plannerGroup'
+              - type: object
+                nullable: true
+              description: Entry-point to Planner resource that might exist for a Unified Group.
+              x-ms-navigationProperty: true
+            rejectedSenders:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The list of users or groups not allowed to create posts or calendar events in this group. Nullable
+              x-ms-navigationProperty: true
+            settings:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.groupSetting'
+              description: Settings that can govern this group's behavior, like whether members can invite guests to the group. Nullable.
+              x-ms-navigationProperty: true
+            sites:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.site'
+              description: The list of SharePoint sites in this group. Access the default site with /sites/root.
+              x-ms-navigationProperty: true
+            team:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.team'
+              - type: object
+                nullable: true
+              description: The team associated with this group.
+              x-ms-navigationProperty: true
+            threads:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.conversationThread'
+              description: The group's conversation threads. Nullable.
+              x-ms-navigationProperty: true
+            transitiveMemberOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The groups that a group is a member of, either directly or through nested membership. Nullable.
+              x-ms-navigationProperty: true
+            transitiveMembers:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The direct and transitive members of a group. Nullable.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.group'
+          description: Represents a Microsoft Entra group.
+        x-ms-discriminator-value: '#microsoft.graph.group'
+  - method: DELETE
+    summary: Delete group
+    description: Delete a group. When deleted, Microsoft 365 groups are moved to a temporary container and can be restored within 30 days. After that time, they're permanently deleted. This isn't applicable to Security groups and Distribution groups which are permanently deleted immediately. To learn more, see deletedItems.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /servicePrincipals(appId='{appId}')
+  path_description: Provides operations to manage the collection of servicePrincipal entities.
+  path_parameters:
+  - name: appId
+    in: path
+    description: Alternate key of servicePrincipal
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Get servicePrincipal
+    description: Retrieve the properties and relationships of a servicePrincipal object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Upsert servicePrincipal
+    description: Create a new servicePrincipal object if it doesn't exist, or update the properties of an existing servicePrincipal object.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: servicePrincipal
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            accountEnabled:
+              type: boolean
+              description: true if the service principal account is enabled; otherwise, false. If set to false, then no users are able to sign in to this app, even if they're assigned to it. Supports $filter (eq, ne, not, in).
+              nullable: true
+            addIns:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.addIn'
+              description: Defines custom behavior that a consuming service can use to call an app in specific contexts. For example, applications that can render file streams may set the addIns property for its 'FileHandler' functionality. This lets services like Microsoft 365 call the application in the context of a document the user is working on.
+            alternativeNames:
+              type: array
+              items:
+                type: string
+              description: Used to retrieve service principals by subscription, identify resource group and full resource IDs for managed identities. Supports $filter (eq, not, ge, le, startsWith).
+            appDescription:
+              type: string
+              description: The description exposed by the associated application.
+              nullable: true
+            appDisplayName:
+              type: string
+              description: The display name exposed by the associated application. Maximum length is 256 characters.
+              nullable: true
+            appId:
+              type: string
+              description: The unique identifier for the associated application (its appId property). Alternate key. Supports $filter (eq, ne, not, in, startsWith).
+              nullable: true
+            applicationTemplateId:
+              type: string
+              description: Unique identifier of the applicationTemplate. Supports $filter (eq, not, ne). Read-only. null if the service principal wasn't created from an application template.
+              nullable: true
+            appOwnerOrganizationId:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              description: Contains the tenant ID where the application is registered. This is applicable only to service principals backed by applications. Supports $filter (eq, ne, NOT, ge, le).
+              format: uuid
+              nullable: true
+            appRoleAssignmentRequired:
+              type: boolean
+              description: Specifies whether users or other service principals need to be granted an app role assignment for this service principal before users can sign in or apps can get tokens. The default value is false. Not nullable. Supports $filter (eq, ne, NOT).
+            appRoles:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.appRole'
+              description: The roles exposed by the application that's linked to this service principal. For more information, see the appRoles property definition on the application entity. Not nullable.
+            customSecurityAttributes:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.customSecurityAttributeValue'
+              - type: object
+                nullable: true
+              description: An open complex type that holds the value of a custom security attribute that is assigned to a directory object. Nullable. Returned only on $select. Supports $filter (eq, ne, not, startsWith). Filter value is case sensitive. To read this property, the calling app must be assigned the CustomSecAttributeAssignment.Read.All permission. To write this property, the calling app must be assigned the CustomSecAttributeAssignment.ReadWrite.All permissions. To read or write this property in delegated scenarios, the admin must be assigned the Attribute Assignment Administrator role.
+            description:
+              type: string
+              description: Free text field to provide an internal end-user facing description of the service principal. End-user portals such MyApps displays the application description in this field. The maximum allowed size is 1,024 characters. Supports $filter (eq, ne, not, ge, le, startsWith) and $search.
+              nullable: true
+            disabledByMicrosoftStatus:
+              type: string
+              description: 'Specifies whether Microsoft has disabled the registered application. Possible values are: null (default value), NotDisabled, and DisabledDueToViolationOfServicesAgreement (reasons include suspicious, abusive, or malicious activity, or a violation of the Microsoft Services Agreement).  Supports $filter (eq, ne, not).'
+              nullable: true
+            displayName:
+              type: string
+              description: The display name for the service principal. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values), $search, and $orderby.
+              nullable: true
+            homepage:
+              type: string
+              description: Home page or landing page of the application.
+              nullable: true
+            info:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.informationalUrl'
+              - type: object
+                nullable: true
+              description: 'Basic profile information of the acquired application such as app''s marketing, support, terms of service and privacy statement URLs. The terms of service and privacy statement are surfaced to users through the user consent experience. For more info, see How to: Add Terms of service and privacy statement for registered Microsoft Entra apps. Supports $filter (eq, ne, not, ge, le, and eq on null values).'
+            keyCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.keyCredential'
+              description: The collection of key credentials associated with the service principal. Not nullable. Supports $filter (eq, not, ge, le).
+            loginUrl:
+              type: string
+              description: Specifies the URL where the service provider redirects the user to Microsoft Entra ID to authenticate. Microsoft Entra ID uses the URL to launch the application from Microsoft 365 or the Microsoft Entra My Apps. When blank, Microsoft Entra ID performs IdP-initiated sign-on for applications configured with SAML-based single sign-on. The user launches the application from Microsoft 365, the Microsoft Entra My Apps, or the Microsoft Entra SSO URL.
+              nullable: true
+            logoutUrl:
+              type: string
+              description: Specifies the URL that the Microsoft's authorization service uses to sign out a user using OpenID Connect front-channel, back-channel, or SAML sign out protocols.
+              nullable: true
+            notes:
+              type: string
+              description: Free text field to capture information about the service principal, typically used for operational purposes. Maximum allowed size is 1,024 characters.
+              nullable: true
+            notificationEmailAddresses:
+              type: array
+              items:
+                type: string
+              description: Specifies the list of email addresses where Microsoft Entra ID sends a notification when the active certificate is near the expiration date. This is only for the certificates used to sign the SAML token issued for Microsoft Entra Gallery applications.
+            oauth2PermissionScopes:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.permissionScope'
+              description: The delegated permissions exposed by the application. For more information, see the oauth2PermissionScopes property on the application entity's api property. Not nullable.
+            passwordCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.passwordCredential'
+              description: The collection of password credentials associated with the application. Not nullable.
+            preferredSingleSignOnMode:
+              type: string
+              description: 'Specifies the single sign-on mode configured for this application. Microsoft Entra ID uses the preferred single sign-on mode to launch the application from Microsoft 365 or the My Apps portal. The supported values are password, saml, notSupported, and oidc. Note: This field might be null for older SAML apps and for OIDC applications where it isn''t set automatically.'
+              nullable: true
+            preferredTokenSigningKeyThumbprint:
+              type: string
+              description: This property can be used on SAML applications (apps that have preferredSingleSignOnMode set to saml) to control which certificate is used to sign the SAML responses. For applications that aren't SAML, don't write or otherwise rely on this property.
+              nullable: true
+            replyUrls:
+              type: array
+              items:
+                type: string
+              description: The URLs that user tokens are sent to for sign in with the associated application, or the redirect URIs that OAuth 2.0 authorization codes and access tokens are sent to for the associated application. Not nullable.
+            resourceSpecificApplicationPermissions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.resourceSpecificPermission'
+              description: The resource-specific application permissions exposed by this application. Currently, resource-specific permissions are only supported for Teams apps accessing to specific chats and teams using Microsoft Graph. Read-only.
+            samlSingleSignOnSettings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.samlSingleSignOnSettings'
+              - type: object
+                nullable: true
+              description: The collection for settings related to saml single sign-on.
+            servicePrincipalNames:
+              type: array
+              items:
+                type: string
+              description: Contains the list of identifiersUris, copied over from the associated application. Additional values can be added to hybrid applications. These values can be used to identify the permissions exposed by this app within Microsoft Entra ID. For example,Client apps can specify a resource URI that is based on the values of this property to acquire an access token, which is the URI returned in the 'aud' claim.The any operator is required for filter expressions on multi-valued properties. Not nullable.  Supports $filter (eq, not, ge, le, startsWith).
+            servicePrincipalType:
+              type: string
+              description: 'Identifies whether the service principal represents an application, a managed identity, or a legacy application. This is set by Microsoft Entra ID internally. The servicePrincipalType property can be set to three different values: Application - A service principal that represents an application or service. The appId property identifies the associated app registration, and matches the appId of an application, possibly from a different tenant. If the associated app registration is missing, tokens aren''t issued for the service principal.ManagedIdentity - A service principal that represents a managed identity. Service principals representing managed identities can be granted access and permissions, but can''t be updated or modified directly.Legacy - A service principal that represents an app created before app registrations, or through legacy experiences. A legacy service principal can have credentials, service principal names, reply URLs, and other properties that
+                are editable by an authorized user, but doesn''t have an associated app registration. The appId value doesn''t associate the service principal with an app registration. The service principal can only be used in the tenant where it was created.SocialIdp - For internal use.'
+              nullable: true
+            signInAudience:
+              type: string
+              description: 'Specifies the Microsoft accounts that are supported for the current application. Read-only. Supported values are:AzureADMyOrg: Users with a Microsoft work or school account in my organization''s Microsoft Entra tenant (single-tenant).AzureADMultipleOrgs: Users with a Microsoft work or school account in any organization''s Microsoft Entra tenant (multitenant).AzureADandPersonalMicrosoftAccount: Users with a personal Microsoft account, or a work or school account in any organization''s Microsoft Entra tenant.PersonalMicrosoftAccount: Users with a personal Microsoft account only.'
+              nullable: true
+            tags:
+              type: array
+              items:
+                type: string
+              description: Custom strings that can be used to categorize and identify the service principal. Not nullable. The value is the union of strings set here and on the associated application entity's tags property.Supports $filter (eq, not, ge, le, startsWith).
+            tokenEncryptionKeyId:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              description: Specifies the keyId of a public key from the keyCredentials collection. When configured, Microsoft Entra ID issues tokens for this application encrypted using the key specified by this property. The application code that receives the encrypted token must use the matching private key to decrypt the token before it can be used for the signed-in user.
+              format: uuid
+              nullable: true
+            verifiedPublisher:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.verifiedPublisher'
+              - type: object
+                nullable: true
+              description: Specifies the verified publisher of the application that's linked to this service principal.
+            appManagementPolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.appManagementPolicy'
+              description: The appManagementPolicy applied to this application.
+              x-ms-navigationProperty: true
+            appRoleAssignedTo:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.appRoleAssignment'
+              description: App role assignments for this app or service, granted to users, groups, and other service principals. Supports $expand.
+              x-ms-navigationProperty: true
+            appRoleAssignments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.appRoleAssignment'
+              description: App role assignment for another app or service, granted to this service principal. Supports $expand.
+              x-ms-navigationProperty: true
+            claimsMappingPolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.claimsMappingPolicy'
+              description: The claimsMappingPolicies assigned to this service principal. Supports $expand.
+              x-ms-navigationProperty: true
+            createdObjects:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Directory objects created by this service principal. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            delegatedPermissionClassifications:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.delegatedPermissionClassification'
+              x-ms-navigationProperty: true
+            endpoints:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.endpoint'
+              x-ms-navigationProperty: true
+            federatedIdentityCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.federatedIdentityCredential'
+              description: Federated identities for a specific type of service principal - managed identity. Supports $expand and $filter (/$count eq 0, /$count ne 0).
+              x-ms-navigationProperty: true
+            homeRealmDiscoveryPolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.homeRealmDiscoveryPolicy'
+              description: The homeRealmDiscoveryPolicies assigned to this service principal. Supports $expand.
+              x-ms-navigationProperty: true
+            memberOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: 'Roles that this service principal is a member of. HTTP Methods: GET Read-only. Nullable. Supports $expand.'
+              x-ms-navigationProperty: true
+            oauth2PermissionGrants:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.oAuth2PermissionGrant'
+              description: Delegated permission grants authorizing this service principal to access an API on behalf of a signed-in user. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            ownedObjects:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Directory objects that this service principal owns. Read-only. Nullable. Supports $expand, $select nested in $expand, and $filter (/$count eq 0, /$count ne 0, /$count eq 1, /$count ne 1).
+              x-ms-navigationProperty: true
+            owners:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Directory objects that are owners of this servicePrincipal. The owners are a set of nonadmin users or servicePrincipals who are allowed to modify this object. Supports $expand, $filter (/$count eq 0, /$count ne 0, /$count eq 1, /$count ne 1), and $select nested in $expand.
+              x-ms-navigationProperty: true
+            remoteDesktopSecurityConfiguration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.remoteDesktopSecurityConfiguration'
+              - type: object
+                nullable: true
+              description: The remoteDesktopSecurityConfiguration object applied to this service principal. Supports $filter (eq) for isRemoteDesktopProtocolEnabled property.
+              x-ms-navigationProperty: true
+            synchronization:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.synchronization'
+              - type: object
+                nullable: true
+              description: Represents the capability for Microsoft Entra identity synchronization through the Microsoft Graph API.
+              x-ms-navigationProperty: true
+            tokenIssuancePolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.tokenIssuancePolicy'
+              description: The tokenIssuancePolicies assigned to this service principal.
+              x-ms-navigationProperty: true
+            tokenLifetimePolicies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.tokenLifetimePolicy'
+              description: The tokenLifetimePolicies assigned to this service principal.
+              x-ms-navigationProperty: true
+            transitiveMemberOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.servicePrincipal'
+        x-ms-discriminator-value: '#microsoft.graph.servicePrincipal'
+  - method: DELETE
+    summary: Delete servicePrincipal
+    description: Delete a servicePrincipal object.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /users(userPrincipalName='{userPrincipalName}')
+  path_description: Provides operations to manage the collection of user entities.
+  path_parameters:
+  - name: userPrincipalName
+    in: path
+    description: Alternate key of user
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Get user
+    description: Read properties and relationships of the user object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update user
+    description: Update the properties of a user object.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: user
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            aboutMe:
+              type: string
+              description: A freeform text entry field for the user to describe themselves. Returned only on $select.
+              nullable: true
+            accountEnabled:
+              type: boolean
+              description: true if the account is enabled; otherwise, false. This property is required when a user is created. Returned only on $select. Supports $filter (eq, ne, not, and in).
+              nullable: true
+            ageGroup:
+              type: string
+              description: 'Sets the age group of the user. Allowed values: null, Minor, NotAdult, and Adult. For more information, see legal age group property definitions. Returned only on $select. Supports $filter (eq, ne, not, and in).'
+              nullable: true
+            assignedLicenses:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.assignedLicense'
+              description: The licenses that are assigned to the user, including inherited (group-based) licenses. This property doesn't differentiate between directly assigned and inherited licenses. Use the licenseAssignmentStates property to identify the directly assigned and inherited licenses. Not nullable. Returned only on $select. Supports $filter (eq, not, /$count eq 0, /$count ne 0).
+            assignedPlans:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.assignedPlan'
+              description: The plans that are assigned to the user. Read-only. Not nullable. Returned only on $select. Supports $filter (eq and not).
+            authorizationInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.authorizationInfo'
+              - type: object
+                nullable: true
+            birthday:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The birthday of the user. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014, is 2014-01-01T00:00:00Z. Returned only on $select.
+              format: date-time
+            businessPhones:
+              type: array
+              items:
+                type: string
+              description: 'The telephone numbers for the user. NOTE: Although it''s a string collection, only one number can be set for this property. Read-only for users synced from the on-premises directory. Returned by default. Supports $filter (eq, not, ge, le, startsWith).'
+            city:
+              type: string
+              description: The city where the user is located. Maximum length is 128 characters. Returned only on $select. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            companyName:
+              type: string
+              description: The name of the company that the user is associated with. This property can be useful for describing the company that a guest comes from. The maximum length is 64 characters.Returned only on $select. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            consentProvidedForMinor:
+              type: string
+              description: 'Sets whether consent was obtained for minors. Allowed values: null, Granted, Denied, and NotRequired. For more information, see legal age group property definitions. Returned only on $select. Supports $filter (eq, ne, not, and in).'
+              nullable: true
+            country:
+              type: string
+              description: The country or region where the user is located; for example, US or UK. Maximum length is 128 characters. Returned only on $select. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time the user was created, in ISO 8601 format and UTC. The value can't be modified and is automatically populated when the entity is created. Nullable. For on-premises users, the value represents when they were first created in Microsoft Entra ID. Property is null for some users created before June 2018 and on-premises users that were synced to Microsoft Entra ID before June 2018. Read-only. Returned only on $select. Supports $filter (eq, ne, not , ge, le, in).
+              format: date-time
+              nullable: true
+            creationType:
+              type: string
+              description: 'Indicates whether the user account was created through one of the following methods:  As a regular school or work account (null). As an external account (Invitation). As a local account for an Azure Active Directory B2C tenant (LocalAccount). Through self-service sign-up by an internal user using email verification (EmailVerified). Through self-service sign-up by a guest signing up through a link that is part of a user flow (SelfServiceSignUp). Read-only.Returned only on $select. Supports $filter (eq, ne, not, in).'
+              nullable: true
+            customSecurityAttributes:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.customSecurityAttributeValue'
+              - type: object
+                nullable: true
+              description: An open complex type that holds the value of a custom security attribute that is assigned to a directory object. Nullable. Returned only on $select. Supports $filter (eq, ne, not, startsWith). The filter value is case-sensitive. To read this property, the calling app must be assigned the CustomSecAttributeAssignment.Read.All permission. To write this property, the calling app must be assigned the CustomSecAttributeAssignment.ReadWrite.All permissions. To read or write this property in delegated scenarios, the admin must be assigned the Attribute Assignment Administrator role.
+            department:
+              type: string
+              description: The name of the department in which the user works. Maximum length is 64 characters. Returned only on $select. Supports $filter (eq, ne, not , ge, le, in, and eq on null values).
+              nullable: true
+            deviceEnrollmentLimit:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The limit on the maximum number of devices that the user is permitted to enroll. Allowed values are 5 or 1000.
+              format: int32
+            displayName:
+              type: string
+              description: The name displayed in the address book for the user. This value is usually the combination of the user's first name, middle initial, and family name. This property is required when a user is created and it can't be cleared during updates. Maximum length is 256 characters. Returned by default. Supports $filter (eq, ne, not , ge, le, in, startsWith, and eq on null values), $orderby, and $search.
+              nullable: true
+            employeeHireDate:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the user was hired or will start work in a future hire. Returned only on $select. Supports $filter (eq, ne, not , ge, le, in).
+              format: date-time
+              nullable: true
+            employeeId:
+              type: string
+              description: The employee identifier assigned to the user by the organization. The maximum length is 16 characters. Returned only on $select. Supports $filter (eq, ne, not , ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            employeeLeaveDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: 'The date and time when the user left or will leave the organization. To read this property, the calling app must be assigned the User-LifeCycleInfo.Read.All permission. To write this property, the calling app must be assigned the User.Read.All and User-LifeCycleInfo.ReadWrite.All permissions. To read this property in delegated scenarios, the admin needs at least one of the following Microsoft Entra roles: Lifecycle Workflows Administrator (least privilege), Global Reader. To write this property in delegated scenarios, the admin needs the Global Administrator role. Supports $filter (eq, ne, not , ge, le, in). For more information, see Configure the employeeLeaveDateTime property for a user.'
+              format: date-time
+              nullable: true
+            employeeOrgData:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.employeeOrgData'
+              - type: object
+                nullable: true
+              description: Represents organization data (for example, division and costCenter) associated with a user. Returned only on $select. Supports $filter (eq, ne, not , ge, le, in).
+            employeeType:
+              type: string
+              description: Captures enterprise worker type. For example, Employee, Contractor, Consultant, or Vendor. Returned only on $select. Supports $filter (eq, ne, not , ge, le, in, startsWith).
+              nullable: true
+            externalUserState:
+              type: string
+              description: For a guest invited to the tenant using the invitation API, this property represents the invited user's invitation status. For invited users, the state can be PendingAcceptance or Accepted, or null for all other users. Returned only on $select. Supports $filter (eq, ne, not , in).
+              nullable: true
+            externalUserStateChangeDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Shows the timestamp for the latest change to the externalUserState property. Returned only on $select. Supports $filter (eq, ne, not , in).
+              format: date-time
+              nullable: true
+            faxNumber:
+              type: string
+              description: The fax number of the user. Returned only on $select. Supports $filter (eq, ne, not , ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            givenName:
+              type: string
+              description: The given name (first name) of the user. Maximum length is 64 characters. Returned by default. Supports $filter (eq, ne, not , ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            hireDate:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: 'The hire date of the user. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014, is 2014-01-01T00:00:00Z. Returned only on $select.  Note: This property is specific to SharePoint in Microsoft 365. We recommend using the native employeeHireDate property to set and update hire date values using Microsoft Graph APIs.'
+              format: date-time
+            identities:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.objectIdentity'
+              description: Represents the identities that can be used to sign in to this user account. Microsoft (also known as a local account), organizations, or social identity providers such as Facebook, Google, and Microsoft can provide identity and tie it to a user account. It might contain multiple items with the same signInType value. Returned only on $select.  Supports $filter (eq) with limitations.
+            imAddresses:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The instant message voice-over IP (VOIP) session initiation protocol (SIP) addresses for the user. Read-only. Returned only on $select. Supports $filter (eq, not, ge, le, startsWith).
+            interests:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: A list for the user to describe their interests. Returned only on $select.
+            isManagementRestricted:
+              type: boolean
+              nullable: true
+            isResourceAccount:
+              type: boolean
+              description: Don't use – reserved for future use.
+              nullable: true
+            jobTitle:
+              type: string
+              description: The user's job title. Maximum length is 128 characters. Returned by default. Supports $filter (eq, ne, not , ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            lastPasswordChangeDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The time when this Microsoft Entra user last changed their password or when their password was created, whichever date the latest action was performed. The date and time information uses ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Returned only on $select.
+              format: date-time
+              nullable: true
+            legalAgeGroupClassification:
+              type: string
+              description: 'Used by enterprise applications to determine the legal age group of the user. This property is read-only and calculated based on ageGroup and consentProvidedForMinor properties. Allowed values: null, Undefined,  MinorWithOutParentalConsent, MinorWithParentalConsent, MinorNoParentalConsentRequired, NotAdult, and Adult. For more information, see legal age group property definitions. Returned only on $select.'
+              nullable: true
+            licenseAssignmentStates:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.licenseAssignmentState'
+              description: State of license assignments for this user. Also indicates licenses that are directly assigned or the user inherited through group memberships. Read-only. Returned only on $select.
+            mail:
+              type: string
+              description: 'The SMTP address for the user, for example, jeff@contoso.com. Changes to this property update the user''s proxyAddresses collection to include the value as an SMTP address. This property can''t contain accent characters.  NOTE: We don''t recommend updating this property for Azure AD B2C user profiles. Use the otherMails property instead. Returned by default. Supports $filter (eq, ne, not, ge, le, in, startsWith, endsWith, and eq on null values).'
+              nullable: true
+            mailboxSettings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.mailboxSettings'
+              - type: object
+                nullable: true
+              description: Settings for the primary mailbox of the signed-in user. You can get or update settings for sending automatic replies to incoming messages, locale, and time zone. Returned only on $select.
+            mailNickname:
+              type: string
+              description: The mail alias for the user. This property must be specified when a user is created. Maximum length is 64 characters. Returned only on $select. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            mobilePhone:
+              type: string
+              description: The primary cellular telephone number for the user. Read-only for users synced from the on-premises directory. Maximum length is 64 characters. Returned by default. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values) and $search.
+              nullable: true
+            mySite:
+              type: string
+              description: The URL for the user's site. Returned only on $select.
+              nullable: true
+            officeLocation:
+              type: string
+              description: The office location in the user's place of business. Returned by default. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            onPremisesDistinguishedName:
+              type: string
+              description: Contains the on-premises Active Directory distinguished name or DN. The property is only populated for customers who are synchronizing their on-premises directory to Microsoft Entra ID via Microsoft Entra Connect. Read-only. Returned only on $select.
+              nullable: true
+            onPremisesDomainName:
+              type: string
+              description: Contains the on-premises domainFQDN, also called dnsDomainName synchronized from the on-premises directory. The property is only populated for customers who are synchronizing their on-premises directory to Microsoft Entra ID via Microsoft Entra Connect. Read-only. Returned only on $select.
+              nullable: true
+            onPremisesExtensionAttributes:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.onPremisesExtensionAttributes'
+              - type: object
+                nullable: true
+              description: Contains extensionAttributes1-15 for the user. These extension attributes are also known as Exchange custom attributes 1-15. Each attribute can store up to 1024 characters. For an onPremisesSyncEnabled user, the source of authority for this set of properties is the on-premises and is read-only. For a cloud-only user (where onPremisesSyncEnabled is false), these properties can be set during the creation or update of a user object.  For a cloud-only user previously synced from on-premises Active Directory, these properties are read-only in Microsoft Graph but can be fully managed through the Exchange Admin Center or the Exchange Online V2 module in PowerShell. Returned only on $select. Supports $filter (eq, ne, not, in).
+            onPremisesImmutableId:
+              type: string
+              description: 'This property is used to associate an on-premises Active Directory user account to their Microsoft Entra user object. This property must be specified when creating a new user account in the Graph if you''re using a federated domain for the user''s userPrincipalName (UPN) property. NOTE: The $ and _ characters can''t be used when specifying this property. Returned only on $select. Supports $filter (eq, ne, not, ge, le, in).'
+              nullable: true
+            onPremisesLastSyncDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: 'Indicates the last time at which the object was synced with the on-premises directory; for example: 2013-02-16T03:04:54Z. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only. Returned only on $select. Supports $filter (eq, ne, not, ge, le, in).'
+              format: date-time
+              nullable: true
+            onPremisesProvisioningErrors:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.onPremisesProvisioningError'
+              description: Errors when using Microsoft synchronization product during provisioning. Returned only on $select. Supports $filter (eq, not, ge, le).
+            onPremisesSamAccountName:
+              type: string
+              description: Contains the on-premises samAccountName synchronized from the on-premises directory. The property is only populated for customers who are synchronizing their on-premises directory to Microsoft Entra ID via Microsoft Entra Connect. Read-only. Returned only on $select. Supports $filter (eq, ne, not, ge, le, in, startsWith).
+              nullable: true
+            onPremisesSecurityIdentifier:
+              type: string
+              description: Contains the on-premises security identifier (SID) for the user that was synchronized from on-premises to the cloud. Read-only. Returned only on $select. Supports $filter (eq including on null values).
+              nullable: true
+            onPremisesSyncEnabled:
+              type: boolean
+              description: true if this user object is currently being synced from an on-premises Active Directory (AD); otherwise the user isn't being synced and can be managed in Microsoft Entra ID. Read-only. Returned only on $select. Supports $filter (eq, ne, not, in, and eq on null values).
+              nullable: true
+            onPremisesUserPrincipalName:
+              type: string
+              description: Contains the on-premises userPrincipalName synchronized from the on-premises directory. The property is only populated for customers who are synchronizing their on-premises directory to Microsoft Entra ID via Microsoft Entra Connect. Read-only. Returned only on $select. Supports $filter (eq, ne, not, ge, le, in, startsWith).
+              nullable: true
+            otherMails:
+              type: array
+              items:
+                type: string
+              description: 'A list of other email addresses for the user; for example: [''bob@contoso.com'', ''Robert@fabrikam.com'']. Can store up to 250 values, each with a limit of 250 characters. NOTE: This property can''t contain accent characters. Returned only on $select. Supports $filter (eq, not, ge, le, in, startsWith, endsWith, /$count eq 0, /$count ne 0).'
+            passwordPolicies:
+              type: string
+              description: 'Specifies password policies for the user. This value is an enumeration with one possible value being DisableStrongPassword, which allows weaker passwords than the default policy to be specified. DisablePasswordExpiration can also be specified. The two might be specified together; for example: DisablePasswordExpiration, DisableStrongPassword. Returned only on $select. For more information on the default password policies, see Microsoft Entra password policies. Supports $filter (ne, not, and eq on null values).'
+              nullable: true
+            passwordProfile:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.passwordProfile'
+              - type: object
+                nullable: true
+              description: 'Specifies the password profile for the user. The profile contains the user''s password. This property is required when a user is created. The password in the profile must satisfy minimum requirements as specified by the passwordPolicies property. By default, a strong password is required. Returned only on $select. Supports $filter (eq, ne, not, in, and eq on null values). To update this property:  User-PasswordProfile.ReadWrite.All is the least privileged permission to update this property.  In delegated scenarios, the User Administrator Microsoft Entra role is the least privileged admin role supported to update this property for nonadmin users. Privileged Authentication Administrator is the least privileged role that''s allowed to update this property for all administrators in the tenant. In general, the signed-in user must have a higher privileged administrator role as indicated in Who can reset passwords.  In app-only scenarios, the calling app must be assigned
+                a supported permission and at least the User Administrator Microsoft Entra role.'
+            pastProjects:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: A list for the user to enumerate their past projects. Returned only on $select.
+            postalCode:
+              type: string
+              description: The postal code for the user's postal address. The postal code is specific to the user's country or region. In the United States of America, this attribute contains the ZIP code. Maximum length is 40 characters. Returned only on $select. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            preferredDataLocation:
+              type: string
+              description: The preferred data location for the user. For more information, see OneDrive Online Multi-Geo.
+              nullable: true
+            preferredLanguage:
+              type: string
+              description: 'The preferred language for the user. The preferred language format is based on RFC 4646. The name is a combination of an ISO 639 two-letter lowercase culture code associated with the language, and an ISO 3166 two-letter uppercase subculture code associated with the country or region. Example: ''en-US'', or ''es-ES''. Returned by default. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values)'
+              nullable: true
+            preferredName:
+              type: string
+              description: The preferred name for the user. Not Supported. This attribute returns an empty string.Returned only on $select.
+              nullable: true
+            print:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.userPrint'
+              - type: object
+                nullable: true
+            provisionedPlans:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.provisionedPlan'
+              description: The plans that are provisioned for the user. Read-only. Not nullable. Returned only on $select. Supports $filter (eq, not, ge, le).
+            proxyAddresses:
+              type: array
+              items:
+                type: string
+              description: 'For example: [''SMTP: bob@contoso.com'', ''smtp: bob@sales.contoso.com'']. Changes to the mail property update this collection to include the value as an SMTP address. For more information, see mail and proxyAddresses properties. The proxy address prefixed with SMTP (capitalized) is the primary proxy address, while those addresses prefixed with smtp are the secondary proxy addresses. For Azure AD B2C accounts, this property has a limit of 10 unique addresses. Read-only in Microsoft Graph; you can update this property only through the Microsoft 365 admin center. Not nullable. Returned only on $select. Supports $filter (eq, not, ge, le, startsWith, endsWith, /$count eq 0, /$count ne 0).'
+            responsibilities:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: A list for the user to enumerate their responsibilities. Returned only on $select.
+            schools:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: A list for the user to enumerate the schools they attended. Returned only on $select.
+            securityIdentifier:
+              type: string
+              description: Security identifier (SID) of the user, used in Windows scenarios. Read-only. Returned by default. Supports $select and $filter (eq, not, ge, le, startsWith).
+              nullable: true
+            serviceProvisioningErrors:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceProvisioningError'
+              description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a user object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+            showInAddressList:
+              type: boolean
+              description: Do not use in Microsoft Graph. Manage this property through the Microsoft 365 admin center instead. Represents whether the user should be included in the Outlook global address list. See Known issue.
+              nullable: true
+            signInActivity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.signInActivity'
+              - type: object
+                nullable: true
+              description: 'Get the last signed-in date and request ID of the sign-in for a given user. Read-only.Returned only on $select. Supports $filter (eq, ne, not, ge, le) but not with any other filterable properties. Note: Details for this property require a Microsoft Entra ID P1 or P2 license and the AuditLog.Read.All permission.This property isn''t returned for a user who never signed in or last signed in before April 2020.'
+            signInSessionsValidFromDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Any refresh tokens or session tokens (session cookies) issued before this time are invalid. Applications get an error when using an invalid refresh or session token to acquire a delegated access token (to access APIs such as Microsoft Graph). If this happens, the application needs to acquire a new refresh token by requesting the authorized endpoint. Read-only. Use revokeSignInSessions to reset. Returned only on $select.
+              format: date-time
+              nullable: true
+            skills:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: A list for the user to enumerate their skills. Returned only on $select.
+            state:
+              type: string
+              description: The state or province in the user's address. Maximum length is 128 characters. Returned only on $select. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            streetAddress:
+              type: string
+              description: The street address of the user's place of business. Maximum length is 1,024 characters. Returned only on $select. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            surname:
+              type: string
+              description: The user's surname (family name or last name). Maximum length is 64 characters. Returned by default. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values).
+              nullable: true
+            usageLocation:
+              type: string
+              description: 'A two-letter country code (ISO standard 3166). Required for users that are assigned licenses due to legal requirements to check for availability of services in countries/regions. Examples include: US, JP, and GB. Not nullable. Returned only on $select. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values).'
+              nullable: true
+            userPrincipalName:
+              type: string
+              description: 'The user principal name (UPN) of the user. The UPN is an Internet-style sign-in name for the user based on the Internet standard RFC 822. By convention, this value should map to the user''s email name. The general format is alias@domain, where the domain must be present in the tenant''s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.NOTE: This property can''t contain accent characters. Only the following characters are allowed A - Z, a - z, 0 - 9, '' . - _ ! # ^ ~. For the complete list of allowed characters, see username policies. Returned by default. Supports $filter (eq, ne, not, ge, le, in, startsWith, endsWith) and $orderby.'
+              nullable: true
+            userType:
+              type: string
+              description: 'A string value that can be used to classify user types in your directory. The possible values are Member and Guest. Returned only on $select. Supports $filter (eq, ne, not, in, and eq on null values). NOTE: For more information about the permissions for members and guests, see What are the default user permissions in Microsoft Entra ID?'
+              nullable: true
+            activities:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.userActivity'
+              description: The user's activities across devices. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            agreementAcceptances:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.agreementAcceptance'
+              description: The user's terms of use acceptance statuses. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            appRoleAssignments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.appRoleAssignment'
+              description: Represents the app roles a user is granted for an application. Supports $expand.
+              x-ms-navigationProperty: true
+            authentication:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.authentication'
+              - type: object
+                nullable: true
+              description: The authentication methods that are supported for the user.
+              x-ms-navigationProperty: true
+            calendar:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.calendar'
+              - type: object
+                nullable: true
+              description: The user's primary calendar. Read-only.
+              x-ms-navigationProperty: true
+            calendarGroups:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.calendarGroup'
+              description: The user's calendar groups. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            calendars:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.calendar'
+              description: The user's calendars. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            calendarView:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.event'
+              description: The calendar view for the calendar. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            chats:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chat'
+              x-ms-navigationProperty: true
+            cloudClipboard:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.cloudClipboardRoot'
+              - type: object
+                nullable: true
+              x-ms-navigationProperty: true
+            contactFolders:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.contactFolder'
+              description: The user's contacts folders. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            contacts:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.contact'
+              description: The user's contacts. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            createdObjects:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Directory objects that the user created. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            deviceManagementTroubleshootingEvents:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.deviceManagementTroubleshootingEvent'
+              description: The list of troubleshooting events for this user.
+              x-ms-navigationProperty: true
+            directReports:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The users and contacts that report to the user. (The users and contacts that have their manager property set to this user.) Read-only. Nullable. Supports $expand.
+              x-ms-navigationProperty: true
+            drive:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.drive'
+              - type: object
+                nullable: true
+              description: The user's OneDrive. Read-only.
+              x-ms-navigationProperty: true
+            drives:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.drive'
+              description: A collection of drives available for this user. Read-only.
+              x-ms-navigationProperty: true
+            employeeExperience:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.employeeExperienceUser'
+              - type: object
+                nullable: true
+              x-ms-navigationProperty: true
+            events:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.event'
+              description: The user's events. Default is to show Events under the Default Calendar. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            extensions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.extension'
+              description: The collection of open extensions defined for the user. Read-only. Supports $expand. Nullable.
+              x-ms-navigationProperty: true
+            followedSites:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.site'
+              x-ms-navigationProperty: true
+            inferenceClassification:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.inferenceClassification'
+              - type: object
+                nullable: true
+              description: Relevance classification of the user's messages based on explicit designations that override inferred relevance or importance.
+              x-ms-navigationProperty: true
+            insights:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.itemInsights'
+              - type: object
+                nullable: true
+              description: Represents relationships between a user and items such as OneDrive for work or school documents, calculated using advanced analytics and machine learning techniques. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            joinedTeams:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.team'
+              x-ms-navigationProperty: true
+            licenseDetails:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.licenseDetails'
+              description: A collection of this user's license details. Read-only.
+              x-ms-navigationProperty: true
+            mailFolders:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.mailFolder'
+              description: The user's mail folders. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            managedAppRegistrations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.managedAppRegistration'
+              description: Zero or more managed app registrations that belong to the user.
+              x-ms-navigationProperty: true
+            managedDevices:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.managedDevice'
+              description: The managed devices associated with the user.
+              x-ms-navigationProperty: true
+            manager:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              - type: object
+                nullable: true
+              description: The user or contact that is this user's manager. Read-only. Supports $expand.
+              x-ms-navigationProperty: true
+            memberOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The groups and directory roles that the user is a member of. Read-only. Nullable. Supports $expand.
+              x-ms-navigationProperty: true
+            messages:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.message'
+              description: The messages in a mailbox or folder. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            oauth2PermissionGrants:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.oAuth2PermissionGrant'
+              x-ms-navigationProperty: true
+            onenote:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.onenote'
+              - type: object
+                nullable: true
+              x-ms-navigationProperty: true
+            onlineMeetings:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.onlineMeeting'
+              description: Information about a meeting, including the URL used to join a meeting, the attendees list, and the description.
+              x-ms-navigationProperty: true
+            outlook:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.outlookUser'
+              - type: object
+                nullable: true
+              x-ms-navigationProperty: true
+            ownedDevices:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Devices the user owns. Read-only. Nullable. Supports $expand and $filter (/$count eq 0, /$count ne 0, /$count eq 1, /$count ne 1).
+              x-ms-navigationProperty: true
+            ownedObjects:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Directory objects the user owns. Read-only. Nullable. Supports $expand, $select nested in $expand, and $filter (/$count eq 0, /$count ne 0, /$count eq 1, /$count ne 1).
+              x-ms-navigationProperty: true
+            people:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.person'
+              description: People that are relevant to the user. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            permissionGrants:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.resourceSpecificPermissionGrant'
+              description: List all resource-specific permission grants of a user.
+              x-ms-navigationProperty: true
+            photo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.profilePhoto'
+              - type: object
+                nullable: true
+              description: The user's profile photo. Read-only.
+              x-ms-navigationProperty: true
+            photos:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.profilePhoto'
+              description: The collection of the user's profile photos in different sizes. Read-only.
+              x-ms-navigationProperty: true
+            planner:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.plannerUser'
+              - type: object
+                nullable: true
+              description: Entry-point to the Planner resource that might exist for a user. Read-only.
+              x-ms-navigationProperty: true
+            presence:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.presence'
+              - type: object
+                nullable: true
+              x-ms-navigationProperty: true
+            registeredDevices:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Devices that are registered for the user. Read-only. Nullable. Supports $expand and returns up to 100 objects.
+              x-ms-navigationProperty: true
+            scopedRoleMemberOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.scopedRoleMembership'
+              x-ms-navigationProperty: true
+            settings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.userSettings'
+              - type: object
+                nullable: true
+              x-ms-navigationProperty: true
+            solutions:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.userSolutionRoot'
+              - type: object
+                nullable: true
+              description: The identifier that relates the user to the working time schedule triggers. Read-Only. Nullable
+              x-ms-navigationProperty: true
+            sponsors:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: 'The users and groups responsible for this guest''s privileges in the tenant and keeping the guest''s information and access updated. (HTTP Methods: GET, POST, DELETE.). Supports $expand.'
+              x-ms-navigationProperty: true
+            teamwork:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.userTeamwork'
+              - type: object
+                nullable: true
+              description: A container for Microsoft Teams features available for the user. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            todo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.todo'
+              - type: object
+                nullable: true
+              description: Represents the To Do services available to a user.
+              x-ms-navigationProperty: true
+            transitiveMemberOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The groups, including nested groups, and directory roles that a user is a member of. Nullable.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.user'
+          description: Represents a Microsoft Entra user account.
+        x-ms-discriminator-value: '#microsoft.graph.user'
+  - method: DELETE
+    summary: Delete user
+    description: Deletes a user.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null

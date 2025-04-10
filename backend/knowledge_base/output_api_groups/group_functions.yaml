@@ -1,0 +1,147 @@
+- path: /functions
+  path_description: Provides operations to manage the collection of attributeMappingFunctionSchema entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get entities from functions
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add new entity to functions
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: attributeMappingFunctionSchema
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            parameters:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.attributeMappingParameterSchema'
+              description: Collection of function parameters.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.attributeMappingFunctionSchema'
+- path: /functions/{attributeMappingFunctionSchema-id}
+  path_description: Provides operations to manage the collection of attributeMappingFunctionSchema entities.
+  path_parameters:
+  - name: attributeMappingFunctionSchema-id
+    in: path
+    description: The unique identifier of attributeMappingFunctionSchema
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: attributeMappingFunctionSchema
+  methods:
+  - method: GET
+    summary: Get entity from functions by key
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update entity in functions
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: attributeMappingFunctionSchema
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            parameters:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.attributeMappingParameterSchema'
+              description: Collection of function parameters.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.attributeMappingFunctionSchema'
+  - method: DELETE
+    summary: Delete entity from functions
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /functions/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

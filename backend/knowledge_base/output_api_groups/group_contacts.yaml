@@ -1,0 +1,1981 @@
+- path: /contacts
+  path_description: Provides operations to manage the collection of orgContact entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List orgContacts
+    description: Get the list of organizational contacts for this organization.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add new entity to contacts
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: orgContact
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            addresses:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.physicalOfficeAddress'
+              description: Postal addresses for this organizational contact. For now a contact can only have one physical address.
+            companyName:
+              type: string
+              description: Name of the company that this organizational contact belongs to.  Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values).
+              nullable: true
+            department:
+              type: string
+              description: The name for the department in which the contact works.  Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values).
+              nullable: true
+            displayName:
+              type: string
+              description: Display name for this organizational contact. Maximum length is 256 characters. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values), $search, and $orderby.
+              nullable: true
+            givenName:
+              type: string
+              description: First name for this organizational contact. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values).
+              nullable: true
+            jobTitle:
+              type: string
+              description: Job title for this organizational contact. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values).
+              nullable: true
+            mail:
+              type: string
+              description: The SMTP address for the contact, for example, 'jeff@contoso.com'. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values).
+              nullable: true
+            mailNickname:
+              type: string
+              description: Email alias (portion of email address pre-pending the @ symbol) for this organizational contact. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values).
+              nullable: true
+            onPremisesLastSyncDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when this organizational contact was last synchronized from on-premises AD. This date and time information uses ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Supports $filter (eq, ne, not, ge, le, in).
+              format: date-time
+              nullable: true
+            onPremisesProvisioningErrors:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.onPremisesProvisioningError'
+              description: List of any synchronization provisioning errors for this organizational contact. Supports $filter (eq, not for category and propertyCausingError), /$count eq 0, /$count ne 0.
+            onPremisesSyncEnabled:
+              type: boolean
+              description: true if this object is synced from an on-premises directory; false if this object was originally synced from an on-premises directory but is no longer synced and now mastered in Exchange; null if this object has never been synced from an on-premises directory (default).   Supports $filter (eq, ne, not, in, and eq for null values).
+              nullable: true
+            phones:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.phone'
+              description: List of phones for this organizational contact. Phone types can be mobile, business, and businessFax. Only one of each type can ever be present in the collection.
+            proxyAddresses:
+              type: array
+              items:
+                type: string
+              description: 'For example: ''SMTP: bob@contoso.com'', ''smtp: bob@sales.contoso.com''. The any operator is required for filter expressions on multi-valued properties. Supports $filter (eq, not, ge, le, startsWith, /$count eq 0, /$count ne 0).'
+            serviceProvisioningErrors:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceProvisioningError'
+              description: Errors published by a federated service describing a non-transient, service-specific error regarding the properties or link from an organizational contact object .  Supports $filter (eq, not, for isResolved and serviceInstance).
+            surname:
+              type: string
+              description: Last name for this organizational contact. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values).
+              nullable: true
+            directReports:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The contact's direct reports. (The users and contacts that have their manager property set to this contact.)  Read-only. Nullable. Supports $expand.
+              x-ms-navigationProperty: true
+            manager:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              - type: object
+                nullable: true
+              description: The user or contact that is this contact's manager. Read-only. Supports $expand and $filter (eq) by id.
+              x-ms-navigationProperty: true
+            memberOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Groups that this contact is a member of. Read-only. Nullable. Supports $expand.
+              x-ms-navigationProperty: true
+            transitiveMemberOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Groups that this contact is a member of, including groups that the contact is nested under. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.orgContact'
+        x-ms-discriminator-value: '#microsoft.graph.orgContact'
+- path: /contacts/{orgContact-id}
+  path_description: Provides operations to manage the collection of orgContact entities.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get orgContact
+    description: Get the properties and relationships of an organizational contact.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update entity in contacts
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: orgContact
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            addresses:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.physicalOfficeAddress'
+              description: Postal addresses for this organizational contact. For now a contact can only have one physical address.
+            companyName:
+              type: string
+              description: Name of the company that this organizational contact belongs to.  Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values).
+              nullable: true
+            department:
+              type: string
+              description: The name for the department in which the contact works.  Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values).
+              nullable: true
+            displayName:
+              type: string
+              description: Display name for this organizational contact. Maximum length is 256 characters. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values), $search, and $orderby.
+              nullable: true
+            givenName:
+              type: string
+              description: First name for this organizational contact. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values).
+              nullable: true
+            jobTitle:
+              type: string
+              description: Job title for this organizational contact. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values).
+              nullable: true
+            mail:
+              type: string
+              description: The SMTP address for the contact, for example, 'jeff@contoso.com'. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values).
+              nullable: true
+            mailNickname:
+              type: string
+              description: Email alias (portion of email address pre-pending the @ symbol) for this organizational contact. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values).
+              nullable: true
+            onPremisesLastSyncDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when this organizational contact was last synchronized from on-premises AD. This date and time information uses ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Supports $filter (eq, ne, not, ge, le, in).
+              format: date-time
+              nullable: true
+            onPremisesProvisioningErrors:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.onPremisesProvisioningError'
+              description: List of any synchronization provisioning errors for this organizational contact. Supports $filter (eq, not for category and propertyCausingError), /$count eq 0, /$count ne 0.
+            onPremisesSyncEnabled:
+              type: boolean
+              description: true if this object is synced from an on-premises directory; false if this object was originally synced from an on-premises directory but is no longer synced and now mastered in Exchange; null if this object has never been synced from an on-premises directory (default).   Supports $filter (eq, ne, not, in, and eq for null values).
+              nullable: true
+            phones:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.phone'
+              description: List of phones for this organizational contact. Phone types can be mobile, business, and businessFax. Only one of each type can ever be present in the collection.
+            proxyAddresses:
+              type: array
+              items:
+                type: string
+              description: 'For example: ''SMTP: bob@contoso.com'', ''smtp: bob@sales.contoso.com''. The any operator is required for filter expressions on multi-valued properties. Supports $filter (eq, not, ge, le, startsWith, /$count eq 0, /$count ne 0).'
+            serviceProvisioningErrors:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.serviceProvisioningError'
+              description: Errors published by a federated service describing a non-transient, service-specific error regarding the properties or link from an organizational contact object .  Supports $filter (eq, not, for isResolved and serviceInstance).
+            surname:
+              type: string
+              description: Last name for this organizational contact. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq for null values).
+              nullable: true
+            directReports:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The contact's direct reports. (The users and contacts that have their manager property set to this contact.)  Read-only. Nullable. Supports $expand.
+              x-ms-navigationProperty: true
+            manager:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              - type: object
+                nullable: true
+              description: The user or contact that is this contact's manager. Read-only. Supports $expand and $filter (eq) by id.
+              x-ms-navigationProperty: true
+            memberOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Groups that this contact is a member of. Read-only. Nullable. Supports $expand.
+              x-ms-navigationProperty: true
+            transitiveMemberOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Groups that this contact is a member of, including groups that the contact is nested under. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.orgContact'
+        x-ms-discriminator-value: '#microsoft.graph.orgContact'
+  - method: DELETE
+    summary: Delete entity from contacts
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/directReports
+  path_description: Provides operations to manage the directReports property of the microsoft.graph.orgContact entity.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: List directReports
+    description: Get the direct reports for this organizational contact.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/directReports/{directoryObject-id}
+  path_description: Provides operations to manage the directReports property of the microsoft.graph.orgContact entity.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get directReports from contacts
+    description: The contact's direct reports. (The users and contacts that have their manager property set to this contact.)  Read-only. Nullable. Supports $expand.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/directReports/{directoryObject-id}/graph.orgContact
+  path_description: Casts the previous resource to orgContact.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.orgContact
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/directReports/{directoryObject-id}/graph.user
+  path_description: Casts the previous resource to user.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.user
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/directReports/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /contacts/{orgContact-id}/directReports/graph.orgContact
+  path_description: Casts the previous resource to orgContact.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.orgContact in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/directReports/graph.orgContact/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /contacts/{orgContact-id}/directReports/graph.user
+  path_description: Casts the previous resource to user.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.user in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/directReports/graph.user/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /contacts/{orgContact-id}/manager
+  path_description: Provides operations to manage the manager property of the microsoft.graph.orgContact entity.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get manager
+    description: Get this organizational contact's manager.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/memberOf
+  path_description: Provides operations to manage the memberOf property of the microsoft.graph.orgContact entity.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: List memberOf
+    description: List the groups that this organizational contact is a member of.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/memberOf/{directoryObject-id}
+  path_description: Provides operations to manage the memberOf property of the microsoft.graph.orgContact entity.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get memberOf from contacts
+    description: Groups that this contact is a member of. Read-only. Nullable. Supports $expand.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/memberOf/{directoryObject-id}/graph.administrativeUnit
+  path_description: Casts the previous resource to administrativeUnit.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.administrativeUnit
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/memberOf/{directoryObject-id}/graph.group
+  path_description: Casts the previous resource to group.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.group
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/memberOf/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /contacts/{orgContact-id}/memberOf/graph.administrativeUnit
+  path_description: Casts the previous resource to administrativeUnit.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.administrativeUnit in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/memberOf/graph.administrativeUnit/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /contacts/{orgContact-id}/memberOf/graph.group
+  path_description: Casts the previous resource to group.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.group in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/memberOf/graph.group/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /contacts/{orgContact-id}/checkMemberGroups
+  path_description: Provides operations to call the checkMemberGroups method.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: POST
+    summary: Invoke action checkMemberGroups
+    description: 'Check for membership in a specified list of group IDs, and return from that list the IDs of groups where a specified object is a member. The specified object can be of one of the following types:
+
+      - user
+
+      - group
+
+      - service principal
+
+      - organizational contact
+
+      - device
+
+      - directory object This function is transitive. You can check up to a maximum of 20 groups per request. This function supports all groups provisioned in Microsoft Entra ID. Because Microsoft 365 groups cannot contain other groups, membership in a Microsoft 365 group is always direct.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          groupIds:
+            type: array
+            items:
+              type: string
+- path: /contacts/{orgContact-id}/checkMemberObjects
+  path_description: Provides operations to call the checkMemberObjects method.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: POST
+    summary: Invoke action checkMemberObjects
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          ids:
+            type: array
+            items:
+              type: string
+- path: /contacts/{orgContact-id}/getMemberGroups
+  path_description: Provides operations to call the getMemberGroups method.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: POST
+    summary: Invoke action getMemberGroups
+    description: Return all the group IDs for the groups that the specified user, group, service principal, organizational contact, device, or directory object is a member of. This function is transitive. This API returns up to 11,000 group IDs. If more than 11,000 results are available, it returns a 400 Bad Request error with the DirectoryResultSizeLimitExceeded error code. If you get the DirectoryResultSizeLimitExceeded error code, use the List group transitive memberOf API instead.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          securityEnabledOnly:
+            type: boolean
+            default: false
+            nullable: true
+- path: /contacts/{orgContact-id}/getMemberObjects
+  path_description: Provides operations to call the getMemberObjects method.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: POST
+    summary: Invoke action getMemberObjects
+    description: 'Return all IDs for the groups, administrative units, and directory roles that an object of one of the following types is a member of:
+
+      - user
+
+      - group
+
+      - service principal
+
+      - organizational contact
+
+      - device
+
+      - directory object This function is transitive. Only users and role-enabled groups can be members of directory roles.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          securityEnabledOnly:
+            type: boolean
+            default: false
+            nullable: true
+- path: /contacts/{orgContact-id}/restore
+  path_description: Provides operations to call the restore method.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: POST
+    summary: Invoke action restore
+    description: Restore a recently deleted application, group, servicePrincipal, administrative unit, or user object from deleted items. If an item was accidentally deleted, you can fully restore the item. However, security groups can't be restored. Also, restoring an application doesn't restore the associated service principal automatically. You must call this API to explicitly restore the deleted service principal. A recently deleted item remains available for up to 30 days. After 30 days, the item is permanently deleted.
+    parameters: []
+    requestBody: null
+- path: /contacts/{orgContact-id}/retryServiceProvisioning
+  path_description: Provides operations to call the retryServiceProvisioning method.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: POST
+    summary: Invoke action retryServiceProvisioning
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /contacts/{orgContact-id}/serviceProvisioningErrors
+  path_description: No description provided.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get serviceProvisioningErrors property value
+    description: Errors published by a federated service describing a non-transient, service-specific error regarding the properties or link from an organizational contact object .  Supports $filter (eq, not, for isResolved and serviceInstance).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/serviceProvisioningErrors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /contacts/{orgContact-id}/transitiveMemberOf
+  path_description: Provides operations to manage the transitiveMemberOf property of the microsoft.graph.orgContact entity.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: List transitiveMemberOf
+    description: Get groups that this organizational contact is a member of. The API request is transitive, and returns all groups the organizational contact is a nested member of.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/transitiveMemberOf/{directoryObject-id}
+  path_description: Provides operations to manage the transitiveMemberOf property of the microsoft.graph.orgContact entity.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get transitiveMemberOf from contacts
+    description: Groups that this contact is a member of, including groups that the contact is nested under. Read-only. Nullable.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/transitiveMemberOf/{directoryObject-id}/graph.administrativeUnit
+  path_description: Casts the previous resource to administrativeUnit.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.administrativeUnit
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/transitiveMemberOf/{directoryObject-id}/graph.group
+  path_description: Casts the previous resource to group.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.group
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/transitiveMemberOf/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /contacts/{orgContact-id}/transitiveMemberOf/graph.administrativeUnit
+  path_description: Casts the previous resource to administrativeUnit.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.administrativeUnit in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/transitiveMemberOf/graph.administrativeUnit/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /contacts/{orgContact-id}/transitiveMemberOf/graph.group
+  path_description: Casts the previous resource to group.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.group in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/{orgContact-id}/transitiveMemberOf/graph.group/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: orgContact-id
+    in: path
+    description: The unique identifier of orgContact
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: orgContact
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /contacts/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /contacts/delta()
+  path_description: Provides operations to call the delta method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function delta
+    description: Get newly created, updated, or deleted organizational contacts without having to perform a full read of the entire collection. For more information, see Use delta query to track changes in Microsoft Graph data for details.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /contacts/getAvailableExtensionProperties
+  path_description: Provides operations to call the getAvailableExtensionProperties method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action getAvailableExtensionProperties
+    description: 'Return all directory extension definitions that have been registered in a directory, including through multi-tenant apps. The following entities support extension properties:'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          isSyncedFromOnPremises:
+            type: boolean
+            default: false
+            nullable: true
+- path: /contacts/getByIds
+  path_description: Provides operations to call the getByIds method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action getByIds
+    description: 'Return the directory objects specified in a list of IDs. Only a subset of user properties are returned by default in v1.0. Some common uses for this function are to:'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          ids:
+            type: array
+            items:
+              type: string
+          types:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /contacts/validateProperties
+  path_description: Provides operations to call the validateProperties method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action validateProperties
+    description: 'Validate that a Microsoft 365 group''s display name or mail nickname complies with naming policies.  Clients can use this API to determine whether a display name or mail nickname is valid before trying to create a Microsoft 365 group. To validate the properties of an existing group, use the group: validateProperties function. The following policy validations are performed for the display name and mail nickname properties:
+
+      1. Validate the prefix and suffix naming policy
+
+      2. Validate the custom banned words policy
+
+      3. Validate that the mail nickname is unique This API only returns the first validation failure that is encountered. If the properties fail multiple validations, only the first validation failure is returned. However, you can validate both the mail nickname and the display name and receive a collection of validation errors if you are only validating the prefix and suffix naming policy. To learn more about configuring naming policies, see Configure naming policy.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          entityType:
+            type: string
+            nullable: true
+          displayName:
+            type: string
+            nullable: true
+          mailNickname:
+            type: string
+            nullable: true
+          onBehalfOfUserId:
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            format: uuid
+            nullable: true

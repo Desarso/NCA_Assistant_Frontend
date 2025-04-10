@@ -1,0 +1,492 @@
+- path: /directoryObjects
+  path_description: Provides operations to manage the collection of directoryObject entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get entities from directoryObjects
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add new entity to directoryObjects
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: directoryObject
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when this object was deleted. Always null when the object hasn't been deleted.
+              format: date-time
+              nullable: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.administrativeUnit': '#/components/schemas/microsoft.graph.administrativeUnit'
+              '#microsoft.graph.application': '#/components/schemas/microsoft.graph.application'
+              '#microsoft.graph.appRoleAssignment': '#/components/schemas/microsoft.graph.appRoleAssignment'
+              '#microsoft.graph.contract': '#/components/schemas/microsoft.graph.contract'
+              '#microsoft.graph.device': '#/components/schemas/microsoft.graph.device'
+              '#microsoft.graph.directoryObjectPartnerReference': '#/components/schemas/microsoft.graph.directoryObjectPartnerReference'
+              '#microsoft.graph.directoryRole': '#/components/schemas/microsoft.graph.directoryRole'
+              '#microsoft.graph.directoryRoleTemplate': '#/components/schemas/microsoft.graph.directoryRoleTemplate'
+              '#microsoft.graph.endpoint': '#/components/schemas/microsoft.graph.endpoint'
+              '#microsoft.graph.extensionProperty': '#/components/schemas/microsoft.graph.extensionProperty'
+              '#microsoft.graph.group': '#/components/schemas/microsoft.graph.group'
+              '#microsoft.graph.groupSettingTemplate': '#/components/schemas/microsoft.graph.groupSettingTemplate'
+              '#microsoft.graph.multiTenantOrganizationMember': '#/components/schemas/microsoft.graph.multiTenantOrganizationMember'
+              '#microsoft.graph.organization': '#/components/schemas/microsoft.graph.organization'
+              '#microsoft.graph.orgContact': '#/components/schemas/microsoft.graph.orgContact'
+              '#microsoft.graph.policyBase': '#/components/schemas/microsoft.graph.policyBase'
+              '#microsoft.graph.appManagementPolicy': '#/components/schemas/microsoft.graph.appManagementPolicy'
+              '#microsoft.graph.authorizationPolicy': '#/components/schemas/microsoft.graph.authorizationPolicy'
+              '#microsoft.graph.crossTenantAccessPolicy': '#/components/schemas/microsoft.graph.crossTenantAccessPolicy'
+              '#microsoft.graph.identitySecurityDefaultsEnforcementPolicy': '#/components/schemas/microsoft.graph.identitySecurityDefaultsEnforcementPolicy'
+              '#microsoft.graph.permissionGrantPolicy': '#/components/schemas/microsoft.graph.permissionGrantPolicy'
+              '#microsoft.graph.stsPolicy': '#/components/schemas/microsoft.graph.stsPolicy'
+              '#microsoft.graph.activityBasedTimeoutPolicy': '#/components/schemas/microsoft.graph.activityBasedTimeoutPolicy'
+              '#microsoft.graph.claimsMappingPolicy': '#/components/schemas/microsoft.graph.claimsMappingPolicy'
+              '#microsoft.graph.homeRealmDiscoveryPolicy': '#/components/schemas/microsoft.graph.homeRealmDiscoveryPolicy'
+              '#microsoft.graph.tokenIssuancePolicy': '#/components/schemas/microsoft.graph.tokenIssuancePolicy'
+              '#microsoft.graph.tokenLifetimePolicy': '#/components/schemas/microsoft.graph.tokenLifetimePolicy'
+              '#microsoft.graph.tenantAppManagementPolicy': '#/components/schemas/microsoft.graph.tenantAppManagementPolicy'
+              '#microsoft.graph.resourceSpecificPermissionGrant': '#/components/schemas/microsoft.graph.resourceSpecificPermissionGrant'
+              '#microsoft.graph.servicePrincipal': '#/components/schemas/microsoft.graph.servicePrincipal'
+              '#microsoft.graph.user': '#/components/schemas/microsoft.graph.user'
+- path: /directoryObjects/{directoryObject-id}
+  path_description: Provides operations to manage the collection of directoryObject entities.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get directoryObject
+    description: Retrieve the properties and relationships of a directoryObject object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update entity in directoryObjects
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: directoryObject
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when this object was deleted. Always null when the object hasn't been deleted.
+              format: date-time
+              nullable: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.administrativeUnit': '#/components/schemas/microsoft.graph.administrativeUnit'
+              '#microsoft.graph.application': '#/components/schemas/microsoft.graph.application'
+              '#microsoft.graph.appRoleAssignment': '#/components/schemas/microsoft.graph.appRoleAssignment'
+              '#microsoft.graph.contract': '#/components/schemas/microsoft.graph.contract'
+              '#microsoft.graph.device': '#/components/schemas/microsoft.graph.device'
+              '#microsoft.graph.directoryObjectPartnerReference': '#/components/schemas/microsoft.graph.directoryObjectPartnerReference'
+              '#microsoft.graph.directoryRole': '#/components/schemas/microsoft.graph.directoryRole'
+              '#microsoft.graph.directoryRoleTemplate': '#/components/schemas/microsoft.graph.directoryRoleTemplate'
+              '#microsoft.graph.endpoint': '#/components/schemas/microsoft.graph.endpoint'
+              '#microsoft.graph.extensionProperty': '#/components/schemas/microsoft.graph.extensionProperty'
+              '#microsoft.graph.group': '#/components/schemas/microsoft.graph.group'
+              '#microsoft.graph.groupSettingTemplate': '#/components/schemas/microsoft.graph.groupSettingTemplate'
+              '#microsoft.graph.multiTenantOrganizationMember': '#/components/schemas/microsoft.graph.multiTenantOrganizationMember'
+              '#microsoft.graph.organization': '#/components/schemas/microsoft.graph.organization'
+              '#microsoft.graph.orgContact': '#/components/schemas/microsoft.graph.orgContact'
+              '#microsoft.graph.policyBase': '#/components/schemas/microsoft.graph.policyBase'
+              '#microsoft.graph.appManagementPolicy': '#/components/schemas/microsoft.graph.appManagementPolicy'
+              '#microsoft.graph.authorizationPolicy': '#/components/schemas/microsoft.graph.authorizationPolicy'
+              '#microsoft.graph.crossTenantAccessPolicy': '#/components/schemas/microsoft.graph.crossTenantAccessPolicy'
+              '#microsoft.graph.identitySecurityDefaultsEnforcementPolicy': '#/components/schemas/microsoft.graph.identitySecurityDefaultsEnforcementPolicy'
+              '#microsoft.graph.permissionGrantPolicy': '#/components/schemas/microsoft.graph.permissionGrantPolicy'
+              '#microsoft.graph.stsPolicy': '#/components/schemas/microsoft.graph.stsPolicy'
+              '#microsoft.graph.activityBasedTimeoutPolicy': '#/components/schemas/microsoft.graph.activityBasedTimeoutPolicy'
+              '#microsoft.graph.claimsMappingPolicy': '#/components/schemas/microsoft.graph.claimsMappingPolicy'
+              '#microsoft.graph.homeRealmDiscoveryPolicy': '#/components/schemas/microsoft.graph.homeRealmDiscoveryPolicy'
+              '#microsoft.graph.tokenIssuancePolicy': '#/components/schemas/microsoft.graph.tokenIssuancePolicy'
+              '#microsoft.graph.tokenLifetimePolicy': '#/components/schemas/microsoft.graph.tokenLifetimePolicy'
+              '#microsoft.graph.tenantAppManagementPolicy': '#/components/schemas/microsoft.graph.tenantAppManagementPolicy'
+              '#microsoft.graph.resourceSpecificPermissionGrant': '#/components/schemas/microsoft.graph.resourceSpecificPermissionGrant'
+              '#microsoft.graph.servicePrincipal': '#/components/schemas/microsoft.graph.servicePrincipal'
+              '#microsoft.graph.user': '#/components/schemas/microsoft.graph.user'
+  - method: DELETE
+    summary: Delete directoryObject
+    description: Delete a directory object, for example, a group, user, application, or service principal.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directoryObjects/{directoryObject-id}/checkMemberGroups
+  path_description: Provides operations to call the checkMemberGroups method.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: POST
+    summary: Invoke action checkMemberGroups
+    description: 'Check for membership in a specified list of group IDs, and return from that list the IDs of groups where a specified object is a member. The specified object can be of one of the following types:
+
+      - user
+
+      - group
+
+      - service principal
+
+      - organizational contact
+
+      - device
+
+      - directory object This function is transitive. You can check up to a maximum of 20 groups per request. This function supports all groups provisioned in Microsoft Entra ID. Because Microsoft 365 groups cannot contain other groups, membership in a Microsoft 365 group is always direct.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          groupIds:
+            type: array
+            items:
+              type: string
+- path: /directoryObjects/{directoryObject-id}/checkMemberObjects
+  path_description: Provides operations to call the checkMemberObjects method.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: POST
+    summary: Invoke action checkMemberObjects
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          ids:
+            type: array
+            items:
+              type: string
+- path: /directoryObjects/{directoryObject-id}/getMemberGroups
+  path_description: Provides operations to call the getMemberGroups method.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: POST
+    summary: Invoke action getMemberGroups
+    description: Return all the group IDs for the groups that the specified user, group, service principal, organizational contact, device, or directory object is a member of. This function is transitive. This API returns up to 11,000 group IDs. If more than 11,000 results are available, it returns a 400 Bad Request error with the DirectoryResultSizeLimitExceeded error code. If you get the DirectoryResultSizeLimitExceeded error code, use the List group transitive memberOf API instead.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          securityEnabledOnly:
+            type: boolean
+            default: false
+            nullable: true
+- path: /directoryObjects/{directoryObject-id}/getMemberObjects
+  path_description: Provides operations to call the getMemberObjects method.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: POST
+    summary: Invoke action getMemberObjects
+    description: 'Return all IDs for the groups, administrative units, and directory roles that an object of one of the following types is a member of:
+
+      - user
+
+      - group
+
+      - service principal
+
+      - organizational contact
+
+      - device
+
+      - directory object This function is transitive. Only users and role-enabled groups can be members of directory roles.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          securityEnabledOnly:
+            type: boolean
+            default: false
+            nullable: true
+- path: /directoryObjects/{directoryObject-id}/restore
+  path_description: Provides operations to call the restore method.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: POST
+    summary: Invoke action restore
+    description: Restore a recently deleted application, group, servicePrincipal, administrative unit, or user object from deleted items. If an item was accidentally deleted, you can fully restore the item. However, security groups can't be restored. Also, restoring an application doesn't restore the associated service principal automatically. You must call this API to explicitly restore the deleted service principal. A recently deleted item remains available for up to 30 days. After 30 days, the item is permanently deleted.
+    parameters: []
+    requestBody: null
+- path: /directoryObjects/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directoryObjects/delta()
+  path_description: Provides operations to call the delta method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function delta
+    description: Get newly created, updated, or deleted directory objects without performing a full read of the entire directoryObject collection. For more information, see Use delta query to track changes in Microsoft Graph data for details.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryObjects/getAvailableExtensionProperties
+  path_description: Provides operations to call the getAvailableExtensionProperties method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action getAvailableExtensionProperties
+    description: 'Return all directory extension definitions that have been registered in a directory, including through multi-tenant apps. The following entities support extension properties:'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          isSyncedFromOnPremises:
+            type: boolean
+            default: false
+            nullable: true
+- path: /directoryObjects/getByIds
+  path_description: Provides operations to call the getByIds method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action getByIds
+    description: 'Return the directory objects specified in a list of IDs. Only a subset of user properties are returned by default in v1.0. Some common uses for this function are to:'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          ids:
+            type: array
+            items:
+              type: string
+          types:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /directoryObjects/validateProperties
+  path_description: Provides operations to call the validateProperties method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action validateProperties
+    description: 'Validate that a Microsoft 365 group''s display name or mail nickname complies with naming policies.  Clients can use this API to determine whether a display name or mail nickname is valid before trying to create a Microsoft 365 group. To validate the properties of an existing group, use the group: validateProperties function. The following policy validations are performed for the display name and mail nickname properties:
+
+      1. Validate the prefix and suffix naming policy
+
+      2. Validate the custom banned words policy
+
+      3. Validate that the mail nickname is unique This API only returns the first validation failure that is encountered. If the properties fail multiple validations, only the first validation failure is returned. However, you can validate both the mail nickname and the display name and receive a collection of validation errors if you are only validating the prefix and suffix naming policy. To learn more about configuring naming policies, see Configure naming policy.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          entityType:
+            type: string
+            nullable: true
+          displayName:
+            type: string
+            nullable: true
+          mailNickname:
+            type: string
+            nullable: true
+          onBehalfOfUserId:
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            format: uuid
+            nullable: true

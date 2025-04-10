@@ -1,0 +1,1164 @@
+- path: /domains
+  path_description: Provides operations to manage the collection of domain entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List domains
+    description: Retrieve a list of domain objects.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create domain
+    description: 'Adds a domain to the tenant. Important: You cannot use an associated domain with your Microsoft Entra tenant until ownership is verified. See List verificationDnsRecords for details. Root domains require verification. For example, contoso.com requires verification. If a root domain is verified, subdomains of the root domain are automatically verified. For example, subdomain.contoso.com is automatically be verified if contoso.com has been verified.'
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: domain
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            authenticationType:
+              type: string
+              description: Indicates the configured authentication type for the domain. The value is either Managed or Federated. Managed indicates a cloud managed domain where Microsoft Entra ID performs user authentication. Federated indicates authentication is federated with an identity provider such as the tenant's on-premises Active Directory via Active Directory Federation Services. Not nullable.  To update this property in delegated scenarios, the calling app must be assigned the Directory.AccessAsUser.All delegated permission.
+            availabilityStatus:
+              type: string
+              description: This property is always null except when the verify action is used. When the verify action is used, a domain entity is returned in the response. The availabilityStatus property of the domain entity in the response is either AvailableImmediately or EmailVerifiedDomainTakeoverScheduled.
+              nullable: true
+            isAdminManaged:
+              type: boolean
+              description: The value of the property is false if the DNS record management of the domain is delegated to Microsoft 365. Otherwise, the value is true. Not nullable
+            isDefault:
+              type: boolean
+              description: true if this is the default domain that is used for user creation. There's only one default domain per company. Not nullable.
+            isInitial:
+              type: boolean
+              description: true if this is the initial domain created by Microsoft Online Services (contoso.com). There's only one initial domain per company. Not nullable
+            isRoot:
+              type: boolean
+              description: true if the domain is a verified root domain. Otherwise, false if the domain is a subdomain or unverified. Not nullable.
+            isVerified:
+              type: boolean
+              description: true if the domain completed domain ownership verification. Not nullable.
+            manufacturer:
+              type: string
+              nullable: true
+            model:
+              type: string
+              nullable: true
+            passwordNotificationWindowInDays:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Specifies the number of days before a user receives notification that their password expires. If the property isn't set, a default value of 14 days is used.
+              format: int32
+              nullable: true
+            passwordValidityPeriodInDays:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Specifies the length of time that a password is valid before it must be changed. If the property isn't set, a default value of 90 days is used.
+              format: int32
+              nullable: true
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.domainState'
+              - type: object
+                nullable: true
+              description: Status of asynchronous operations scheduled for the domain.
+            supportedServices:
+              type: array
+              items:
+                type: string
+              description: 'The capabilities assigned to the domain. Can include 0, 1 or more of following values: Email, Sharepoint, EmailInternalRelayOnly, OfficeCommunicationsOnline, SharePointDefaultDomain, FullRedelegation, SharePointPublic, OrgIdAuthentication, Yammer, Intune. The values that you can add or remove using the API include: Email, OfficeCommunicationsOnline, Yammer. Not nullable.'
+            domainNameReferences:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The objects such as users and groups that reference the domain ID. Read-only, Nullable. Doesn't support $expand. Supports $filter by the OData type of objects returned. For example, /domains/{domainId}/domainNameReferences/microsoft.graph.user and /domains/{domainId}/domainNameReferences/microsoft.graph.group.
+              x-ms-navigationProperty: true
+            federationConfiguration:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.internalDomainFederation'
+              description: Domain settings configured by a customer when federated with Microsoft Entra ID. Doesn't support $expand.
+              x-ms-navigationProperty: true
+            rootDomain:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.domain'
+              - type: object
+                nullable: true
+              description: Root domain of a subdomain. Read-only, Nullable. Supports $expand.
+              x-ms-navigationProperty: true
+            serviceConfigurationRecords:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.domainDnsRecord'
+              description: DNS records the customer adds to the DNS zone file of the domain before the domain can be used by Microsoft Online services. Read-only, Nullable. Doesn't support $expand.
+              x-ms-navigationProperty: true
+            verificationDnsRecords:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.domainDnsRecord'
+              description: DNS records that the customer adds to the DNS zone file of the domain before the customer can complete domain ownership verification with Microsoft Entra ID. Read-only, Nullable. Doesn't support $expand.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.domain'
+- path: /domains/{domain-id}
+  path_description: Provides operations to manage the collection of domain entities.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  methods:
+  - method: GET
+    summary: Get domain
+    description: Retrieve the properties and relationships of domain object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update domain
+    description: Update the properties of domain object. Only verified domains can be updated.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: domain
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            authenticationType:
+              type: string
+              description: Indicates the configured authentication type for the domain. The value is either Managed or Federated. Managed indicates a cloud managed domain where Microsoft Entra ID performs user authentication. Federated indicates authentication is federated with an identity provider such as the tenant's on-premises Active Directory via Active Directory Federation Services. Not nullable.  To update this property in delegated scenarios, the calling app must be assigned the Directory.AccessAsUser.All delegated permission.
+            availabilityStatus:
+              type: string
+              description: This property is always null except when the verify action is used. When the verify action is used, a domain entity is returned in the response. The availabilityStatus property of the domain entity in the response is either AvailableImmediately or EmailVerifiedDomainTakeoverScheduled.
+              nullable: true
+            isAdminManaged:
+              type: boolean
+              description: The value of the property is false if the DNS record management of the domain is delegated to Microsoft 365. Otherwise, the value is true. Not nullable
+            isDefault:
+              type: boolean
+              description: true if this is the default domain that is used for user creation. There's only one default domain per company. Not nullable.
+            isInitial:
+              type: boolean
+              description: true if this is the initial domain created by Microsoft Online Services (contoso.com). There's only one initial domain per company. Not nullable
+            isRoot:
+              type: boolean
+              description: true if the domain is a verified root domain. Otherwise, false if the domain is a subdomain or unverified. Not nullable.
+            isVerified:
+              type: boolean
+              description: true if the domain completed domain ownership verification. Not nullable.
+            manufacturer:
+              type: string
+              nullable: true
+            model:
+              type: string
+              nullable: true
+            passwordNotificationWindowInDays:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Specifies the number of days before a user receives notification that their password expires. If the property isn't set, a default value of 14 days is used.
+              format: int32
+              nullable: true
+            passwordValidityPeriodInDays:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Specifies the length of time that a password is valid before it must be changed. If the property isn't set, a default value of 90 days is used.
+              format: int32
+              nullable: true
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.domainState'
+              - type: object
+                nullable: true
+              description: Status of asynchronous operations scheduled for the domain.
+            supportedServices:
+              type: array
+              items:
+                type: string
+              description: 'The capabilities assigned to the domain. Can include 0, 1 or more of following values: Email, Sharepoint, EmailInternalRelayOnly, OfficeCommunicationsOnline, SharePointDefaultDomain, FullRedelegation, SharePointPublic, OrgIdAuthentication, Yammer, Intune. The values that you can add or remove using the API include: Email, OfficeCommunicationsOnline, Yammer. Not nullable.'
+            domainNameReferences:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The objects such as users and groups that reference the domain ID. Read-only, Nullable. Doesn't support $expand. Supports $filter by the OData type of objects returned. For example, /domains/{domainId}/domainNameReferences/microsoft.graph.user and /domains/{domainId}/domainNameReferences/microsoft.graph.group.
+              x-ms-navigationProperty: true
+            federationConfiguration:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.internalDomainFederation'
+              description: Domain settings configured by a customer when federated with Microsoft Entra ID. Doesn't support $expand.
+              x-ms-navigationProperty: true
+            rootDomain:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.domain'
+              - type: object
+                nullable: true
+              description: Root domain of a subdomain. Read-only, Nullable. Supports $expand.
+              x-ms-navigationProperty: true
+            serviceConfigurationRecords:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.domainDnsRecord'
+              description: DNS records the customer adds to the DNS zone file of the domain before the domain can be used by Microsoft Online services. Read-only, Nullable. Doesn't support $expand.
+              x-ms-navigationProperty: true
+            verificationDnsRecords:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.domainDnsRecord'
+              description: DNS records that the customer adds to the DNS zone file of the domain before the customer can complete domain ownership verification with Microsoft Entra ID. Read-only, Nullable. Doesn't support $expand.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.domain'
+  - method: DELETE
+    summary: Delete domain
+    description: Delete a domain from a tenant.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /domains/{domain-id}/domainNameReferences
+  path_description: Provides operations to manage the domainNameReferences property of the microsoft.graph.domain entity.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  methods:
+  - method: GET
+    summary: List domainNameReferences
+    description: Retrieve a list of directoryObject with a reference to the domain. The returned list will contain all directory objects that have a dependency on the domain.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /domains/{domain-id}/domainNameReferences/{directoryObject-id}
+  path_description: Provides operations to manage the domainNameReferences property of the microsoft.graph.domain entity.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get domainNameReferences from domains
+    description: The objects such as users and groups that reference the domain ID. Read-only, Nullable. Doesn't support $expand. Supports $filter by the OData type of objects returned. For example, /domains/{domainId}/domainNameReferences/microsoft.graph.user and /domains/{domainId}/domainNameReferences/microsoft.graph.group.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /domains/{domain-id}/domainNameReferences/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /domains/{domain-id}/federationConfiguration
+  path_description: Provides operations to manage the federationConfiguration property of the microsoft.graph.domain entity.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  methods:
+  - method: GET
+    summary: List internalDomainFederations
+    description: Read the properties of the internalDomainFederation objects for the domain. This API returns only one object in the collection.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create internalDomainFederation
+    description: Create a new internalDomainFederation object.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.samlOrWsFedProvider'
+        - title: internalDomainFederation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            activeSignInUri:
+              type: string
+              description: URL of the endpoint used by active clients when authenticating with federated domains set up for single sign-on in Microsoft Entra ID. Corresponds to the ActiveLogOnUri property of the Set-EntraDomainFederationSettings PowerShell cmdlet.
+              nullable: true
+            federatedIdpMfaBehavior:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.federatedIdpMfaBehavior'
+              - type: object
+                nullable: true
+              description: 'Determines whether Microsoft Entra ID accepts the MFA performed by the federated IdP when a federated user accesses an application that is governed by a conditional access policy that requires MFA. The possible values are: acceptIfMfaDoneByFederatedIdp, enforceMfaByFederatedIdp, rejectMfaByFederatedIdp, unknownFutureValue. For more information, see federatedIdpMfaBehavior values.'
+            isSignedAuthenticationRequestRequired:
+              type: boolean
+              description: If true, when SAML authentication requests are sent to the federated SAML IdP, Microsoft Entra ID will sign those requests using the OrgID signing key. If false (default), the SAML authentication requests sent to the federated IdP aren't signed.
+              nullable: true
+            nextSigningCertificate:
+              type: string
+              description: Fallback token signing certificate that can also be used to sign tokens, for example when the primary signing certificate expires. Formatted as Base64 encoded strings of the public portion of the federated IdP's token signing certificate. Needs to be compatible with the X509Certificate2 class. Much like the signingCertificate, the nextSigningCertificate property is used if a rollover is required outside of the auto-rollover update, a new federation service is being set up, or if the new token signing certificate isn't present in the federation properties after the federation service certificate has been updated.
+              nullable: true
+            passwordResetUri:
+              type: string
+              nullable: true
+            promptLoginBehavior:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.promptLoginBehavior'
+              - type: object
+                nullable: true
+              description: 'Sets the preferred behavior for the sign-in prompt. The possible values are: translateToFreshPasswordAuthentication, nativeSupport, disabled, unknownFutureValue.'
+            signingCertificateUpdateStatus:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.signingCertificateUpdateStatus'
+              - type: object
+                nullable: true
+              description: Provides status and timestamp of the last update of the signing certificate.
+            signOutUri:
+              type: string
+              description: URI that clients are redirected to when they sign out of Microsoft Entra services. Corresponds to the LogOffUri property of the Set-EntraDomainFederationSettings PowerShell cmdlet.
+              nullable: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.internalDomainFederation'
+        x-ms-discriminator-value: '#microsoft.graph.internalDomainFederation'
+- path: /domains/{domain-id}/federationConfiguration/{internalDomainFederation-id}
+  path_description: Provides operations to manage the federationConfiguration property of the microsoft.graph.domain entity.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  - name: internalDomainFederation-id
+    in: path
+    description: The unique identifier of internalDomainFederation
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: internalDomainFederation
+  methods:
+  - method: GET
+    summary: Get internalDomainFederation
+    description: Read the properties and relationships of an internalDomainFederation object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update internalDomainFederation
+    description: Update the properties of an internalDomainFederation object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.samlOrWsFedProvider'
+        - title: internalDomainFederation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            activeSignInUri:
+              type: string
+              description: URL of the endpoint used by active clients when authenticating with federated domains set up for single sign-on in Microsoft Entra ID. Corresponds to the ActiveLogOnUri property of the Set-EntraDomainFederationSettings PowerShell cmdlet.
+              nullable: true
+            federatedIdpMfaBehavior:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.federatedIdpMfaBehavior'
+              - type: object
+                nullable: true
+              description: 'Determines whether Microsoft Entra ID accepts the MFA performed by the federated IdP when a federated user accesses an application that is governed by a conditional access policy that requires MFA. The possible values are: acceptIfMfaDoneByFederatedIdp, enforceMfaByFederatedIdp, rejectMfaByFederatedIdp, unknownFutureValue. For more information, see federatedIdpMfaBehavior values.'
+            isSignedAuthenticationRequestRequired:
+              type: boolean
+              description: If true, when SAML authentication requests are sent to the federated SAML IdP, Microsoft Entra ID will sign those requests using the OrgID signing key. If false (default), the SAML authentication requests sent to the federated IdP aren't signed.
+              nullable: true
+            nextSigningCertificate:
+              type: string
+              description: Fallback token signing certificate that can also be used to sign tokens, for example when the primary signing certificate expires. Formatted as Base64 encoded strings of the public portion of the federated IdP's token signing certificate. Needs to be compatible with the X509Certificate2 class. Much like the signingCertificate, the nextSigningCertificate property is used if a rollover is required outside of the auto-rollover update, a new federation service is being set up, or if the new token signing certificate isn't present in the federation properties after the federation service certificate has been updated.
+              nullable: true
+            passwordResetUri:
+              type: string
+              nullable: true
+            promptLoginBehavior:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.promptLoginBehavior'
+              - type: object
+                nullable: true
+              description: 'Sets the preferred behavior for the sign-in prompt. The possible values are: translateToFreshPasswordAuthentication, nativeSupport, disabled, unknownFutureValue.'
+            signingCertificateUpdateStatus:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.signingCertificateUpdateStatus'
+              - type: object
+                nullable: true
+              description: Provides status and timestamp of the last update of the signing certificate.
+            signOutUri:
+              type: string
+              description: URI that clients are redirected to when they sign out of Microsoft Entra services. Corresponds to the LogOffUri property of the Set-EntraDomainFederationSettings PowerShell cmdlet.
+              nullable: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.internalDomainFederation'
+        x-ms-discriminator-value: '#microsoft.graph.internalDomainFederation'
+  - method: DELETE
+    summary: Delete internalDomainFederation
+    description: Delete an internalDomainFederation object.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /domains/{domain-id}/federationConfiguration/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /domains/{domain-id}/forceDelete
+  path_description: Provides operations to call the forceDelete method.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  methods:
+  - method: POST
+    summary: Invoke action forceDelete
+    description: 'Delete a domain using an asynchronous long-running operation. Before performing this operation, you must update or remove any references to Exchange as the provisioning service. The following actions are performed as part of this operation: After the domain deletion completes, API operations for the deleted domain return an HTTP 404 status code. To verify deletion of a domain, you can perform a get domain operation.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          disableUserAccounts:
+            type: boolean
+            default: false
+            nullable: true
+- path: /domains/{domain-id}/promote
+  path_description: Provides operations to call the promote method.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  methods:
+  - method: POST
+    summary: Invoke action promote
+    description: Promote a verified subdomain to the root domain. A verified domain has its isVerified property set to true.
+    parameters: []
+    requestBody: null
+- path: /domains/{domain-id}/verify
+  path_description: Provides operations to call the verify method.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  methods:
+  - method: POST
+    summary: Invoke action verify
+    description: Validates the ownership of the domain.
+    parameters: []
+    requestBody: null
+- path: /domains/{domain-id}/rootDomain
+  path_description: Provides operations to manage the rootDomain property of the microsoft.graph.domain entity.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  methods:
+  - method: GET
+    summary: Get rootDomain
+    description: Get the root domain of a subdomain. This API returns a single object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /domains/{domain-id}/serviceConfigurationRecords
+  path_description: Provides operations to manage the serviceConfigurationRecords property of the microsoft.graph.domain entity.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  methods:
+  - method: GET
+    summary: List serviceConfigurationRecords
+    description: Retrieves a list of domainDnsRecord objects needed to enable services for the domain. Use the returned list to add records to the zone file of the domain. This can be done through the domain registrar or DNS server configuration.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to serviceConfigurationRecords for domains
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: domainDnsRecord
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            isOptional:
+              type: boolean
+              description: If false, the customer must configure this record at the DNS host for Microsoft Online Services to operate correctly with the domain.
+            label:
+              type: string
+              description: Value used when configuring the name of the DNS record at the DNS host.
+            recordType:
+              type: string
+              description: Indicates what type of DNS record this entity represents. The value can be CName, Mx, Srv, or Txt.
+              nullable: true
+            supportedService:
+              type: string
+              description: 'Microsoft Online Service or feature that has a dependency on this DNS record. Can be one of the following values: null, Email, Sharepoint, EmailInternalRelayOnly, OfficeCommunicationsOnline, SharePointDefaultDomain, FullRedelegation, SharePointPublic, OrgIdAuthentication, Yammer, Intune.'
+            ttl:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Value to use when configuring the time-to-live (ttl) property of the DNS record at the DNS host. Not nullable.
+              format: int32
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.domainDnsCnameRecord': '#/components/schemas/microsoft.graph.domainDnsCnameRecord'
+              '#microsoft.graph.domainDnsMxRecord': '#/components/schemas/microsoft.graph.domainDnsMxRecord'
+              '#microsoft.graph.domainDnsSrvRecord': '#/components/schemas/microsoft.graph.domainDnsSrvRecord'
+              '#microsoft.graph.domainDnsTxtRecord': '#/components/schemas/microsoft.graph.domainDnsTxtRecord'
+              '#microsoft.graph.domainDnsUnavailableRecord': '#/components/schemas/microsoft.graph.domainDnsUnavailableRecord'
+- path: /domains/{domain-id}/serviceConfigurationRecords/{domainDnsRecord-id}
+  path_description: Provides operations to manage the serviceConfigurationRecords property of the microsoft.graph.domain entity.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  - name: domainDnsRecord-id
+    in: path
+    description: The unique identifier of domainDnsRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domainDnsRecord
+  methods:
+  - method: GET
+    summary: Get serviceConfigurationRecords from domains
+    description: DNS records the customer adds to the DNS zone file of the domain before the domain can be used by Microsoft Online services. Read-only, Nullable. Doesn't support $expand.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property serviceConfigurationRecords in domains
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: domainDnsRecord
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            isOptional:
+              type: boolean
+              description: If false, the customer must configure this record at the DNS host for Microsoft Online Services to operate correctly with the domain.
+            label:
+              type: string
+              description: Value used when configuring the name of the DNS record at the DNS host.
+            recordType:
+              type: string
+              description: Indicates what type of DNS record this entity represents. The value can be CName, Mx, Srv, or Txt.
+              nullable: true
+            supportedService:
+              type: string
+              description: 'Microsoft Online Service or feature that has a dependency on this DNS record. Can be one of the following values: null, Email, Sharepoint, EmailInternalRelayOnly, OfficeCommunicationsOnline, SharePointDefaultDomain, FullRedelegation, SharePointPublic, OrgIdAuthentication, Yammer, Intune.'
+            ttl:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Value to use when configuring the time-to-live (ttl) property of the DNS record at the DNS host. Not nullable.
+              format: int32
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.domainDnsCnameRecord': '#/components/schemas/microsoft.graph.domainDnsCnameRecord'
+              '#microsoft.graph.domainDnsMxRecord': '#/components/schemas/microsoft.graph.domainDnsMxRecord'
+              '#microsoft.graph.domainDnsSrvRecord': '#/components/schemas/microsoft.graph.domainDnsSrvRecord'
+              '#microsoft.graph.domainDnsTxtRecord': '#/components/schemas/microsoft.graph.domainDnsTxtRecord'
+              '#microsoft.graph.domainDnsUnavailableRecord': '#/components/schemas/microsoft.graph.domainDnsUnavailableRecord'
+  - method: DELETE
+    summary: Delete navigation property serviceConfigurationRecords for domains
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /domains/{domain-id}/serviceConfigurationRecords/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /domains/{domain-id}/verificationDnsRecords
+  path_description: Provides operations to manage the verificationDnsRecords property of the microsoft.graph.domain entity.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  methods:
+  - method: GET
+    summary: List verificationDnsRecords
+    description: Retrieve a list of domainDnsRecord objects. You cannot use an associated domain with your Microsoft Entra tenant until ownership is verified. To verify the ownership of the domain, retrieve the domain verification records and add the details to the zone file of the domain. This can be done through the domain registrar or DNS server configuration. Root domains require verification. For example, contoso.com requires verification. If a root domain is verified, subdomains of the root domain are automatically verified. For example, subdomain.contoso.com is automatically be verified if contoso.com has been verified.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to verificationDnsRecords for domains
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: domainDnsRecord
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            isOptional:
+              type: boolean
+              description: If false, the customer must configure this record at the DNS host for Microsoft Online Services to operate correctly with the domain.
+            label:
+              type: string
+              description: Value used when configuring the name of the DNS record at the DNS host.
+            recordType:
+              type: string
+              description: Indicates what type of DNS record this entity represents. The value can be CName, Mx, Srv, or Txt.
+              nullable: true
+            supportedService:
+              type: string
+              description: 'Microsoft Online Service or feature that has a dependency on this DNS record. Can be one of the following values: null, Email, Sharepoint, EmailInternalRelayOnly, OfficeCommunicationsOnline, SharePointDefaultDomain, FullRedelegation, SharePointPublic, OrgIdAuthentication, Yammer, Intune.'
+            ttl:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Value to use when configuring the time-to-live (ttl) property of the DNS record at the DNS host. Not nullable.
+              format: int32
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.domainDnsCnameRecord': '#/components/schemas/microsoft.graph.domainDnsCnameRecord'
+              '#microsoft.graph.domainDnsMxRecord': '#/components/schemas/microsoft.graph.domainDnsMxRecord'
+              '#microsoft.graph.domainDnsSrvRecord': '#/components/schemas/microsoft.graph.domainDnsSrvRecord'
+              '#microsoft.graph.domainDnsTxtRecord': '#/components/schemas/microsoft.graph.domainDnsTxtRecord'
+              '#microsoft.graph.domainDnsUnavailableRecord': '#/components/schemas/microsoft.graph.domainDnsUnavailableRecord'
+- path: /domains/{domain-id}/verificationDnsRecords/{domainDnsRecord-id}
+  path_description: Provides operations to manage the verificationDnsRecords property of the microsoft.graph.domain entity.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  - name: domainDnsRecord-id
+    in: path
+    description: The unique identifier of domainDnsRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domainDnsRecord
+  methods:
+  - method: GET
+    summary: Get verificationDnsRecords from domains
+    description: DNS records that the customer adds to the DNS zone file of the domain before the customer can complete domain ownership verification with Microsoft Entra ID. Read-only, Nullable. Doesn't support $expand.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property verificationDnsRecords in domains
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: domainDnsRecord
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            isOptional:
+              type: boolean
+              description: If false, the customer must configure this record at the DNS host for Microsoft Online Services to operate correctly with the domain.
+            label:
+              type: string
+              description: Value used when configuring the name of the DNS record at the DNS host.
+            recordType:
+              type: string
+              description: Indicates what type of DNS record this entity represents. The value can be CName, Mx, Srv, or Txt.
+              nullable: true
+            supportedService:
+              type: string
+              description: 'Microsoft Online Service or feature that has a dependency on this DNS record. Can be one of the following values: null, Email, Sharepoint, EmailInternalRelayOnly, OfficeCommunicationsOnline, SharePointDefaultDomain, FullRedelegation, SharePointPublic, OrgIdAuthentication, Yammer, Intune.'
+            ttl:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Value to use when configuring the time-to-live (ttl) property of the DNS record at the DNS host. Not nullable.
+              format: int32
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.domainDnsCnameRecord': '#/components/schemas/microsoft.graph.domainDnsCnameRecord'
+              '#microsoft.graph.domainDnsMxRecord': '#/components/schemas/microsoft.graph.domainDnsMxRecord'
+              '#microsoft.graph.domainDnsSrvRecord': '#/components/schemas/microsoft.graph.domainDnsSrvRecord'
+              '#microsoft.graph.domainDnsTxtRecord': '#/components/schemas/microsoft.graph.domainDnsTxtRecord'
+              '#microsoft.graph.domainDnsUnavailableRecord': '#/components/schemas/microsoft.graph.domainDnsUnavailableRecord'
+  - method: DELETE
+    summary: Delete navigation property verificationDnsRecords for domains
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /domains/{domain-id}/verificationDnsRecords/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: domain-id
+    in: path
+    description: The unique identifier of domain
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: domain
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /domains/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

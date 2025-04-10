@@ -1,0 +1,2211 @@
+- path: /employeeExperience
+  path_description: Provides operations to manage the employeeExperience singleton.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get employeeExperience
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update employeeExperience
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: employeeExperience
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          communities:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.community'
+            description: A collection of communities in Viva Engage.
+            x-ms-navigationProperty: true
+          engagementAsyncOperations:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.engagementAsyncOperation'
+            description: A collection of long-running, asynchronous operations related to Viva Engage.
+            x-ms-navigationProperty: true
+          learningCourseActivities:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.learningCourseActivity'
+            x-ms-navigationProperty: true
+          learningProviders:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.learningProvider'
+            description: A collection of learning providers.
+            x-ms-navigationProperty: true
+          '@odata.type':
+            type: string
+        description: Represents a container that exposes navigation properties for employee experience resources.
+- path: /employeeExperience/communities
+  path_description: Provides operations to manage the communities property of the microsoft.graph.employeeExperience entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List communities
+    description: Get a list of the Viva Engage community objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create community
+    description: Create a new community in Viva Engage.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: community
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: The description of the community. The maximum length is 1,024 characters.
+            displayName:
+              type: string
+              description: The name of the community. The maximum length is 255 characters.
+            groupId:
+              type: string
+              description: The ID of the Microsoft 365 group that manages the membership of this community.
+              nullable: true
+            privacy:
+              $ref: '#/components/schemas/microsoft.graph.communityPrivacy'
+            group:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.group'
+              - type: object
+                nullable: true
+              description: The Microsoft 365 group that manages the membership of this community.
+              x-ms-navigationProperty: true
+            owners:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.user'
+              description: The admins of the community. Limited to 100 users. If this property isn't specified when you create the community, the calling user is automatically assigned as the community owner.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          description: 'Represents a community in Viva Engage that is a central place for conversations,
+
+            files, events, and updates for people sharing a common interest or goal.'
+        x-ms-discriminator-value: '#microsoft.graph.community'
+- path: /employeeExperience/communities/{community-id}
+  path_description: Provides operations to manage the communities property of the microsoft.graph.employeeExperience entity.
+  path_parameters:
+  - name: community-id
+    in: path
+    description: The unique identifier of community
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: community
+  methods:
+  - method: GET
+    summary: Get community
+    description: Read the properties and relationships of a community object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update community
+    description: Update the properties of an existing Viva Engage community.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: community
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: The description of the community. The maximum length is 1,024 characters.
+            displayName:
+              type: string
+              description: The name of the community. The maximum length is 255 characters.
+            groupId:
+              type: string
+              description: The ID of the Microsoft 365 group that manages the membership of this community.
+              nullable: true
+            privacy:
+              $ref: '#/components/schemas/microsoft.graph.communityPrivacy'
+            group:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.group'
+              - type: object
+                nullable: true
+              description: The Microsoft 365 group that manages the membership of this community.
+              x-ms-navigationProperty: true
+            owners:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.user'
+              description: The admins of the community. Limited to 100 users. If this property isn't specified when you create the community, the calling user is automatically assigned as the community owner.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          description: 'Represents a community in Viva Engage that is a central place for conversations,
+
+            files, events, and updates for people sharing a common interest or goal.'
+        x-ms-discriminator-value: '#microsoft.graph.community'
+  - method: DELETE
+    summary: Delete community
+    description: Delete a Viva Engage community along with all associated Microsoft 365 content, including the connected Microsoft 365 group, OneNote notebook, and Planner plans. For more information, see What happens if I delete a Viva Engage community connected to Microsoft 365 groups.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /employeeExperience/communities/{community-id}/group
+  path_description: Provides operations to manage the group property of the microsoft.graph.community entity.
+  path_parameters:
+  - name: community-id
+    in: path
+    description: The unique identifier of community
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: community
+  methods:
+  - method: GET
+    summary: Get group from employeeExperience
+    description: The Microsoft 365 group that manages the membership of this community.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /employeeExperience/communities/{community-id}/group/serviceProvisioningErrors
+  path_description: No description provided.
+  path_parameters:
+  - name: community-id
+    in: path
+    description: The unique identifier of community
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: community
+  methods:
+  - method: GET
+    summary: Get serviceProvisioningErrors property value
+    description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a group object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /employeeExperience/communities/{community-id}/group/serviceProvisioningErrors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: community-id
+    in: path
+    description: The unique identifier of community
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: community
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /employeeExperience/communities/{community-id}/owners
+  path_description: Provides operations to manage the owners property of the microsoft.graph.community entity.
+  path_parameters:
+  - name: community-id
+    in: path
+    description: The unique identifier of community
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: community
+  methods:
+  - method: GET
+    summary: Get owners from employeeExperience
+    description: The admins of the community. Limited to 100 users. If this property isn't specified when you create the community, the calling user is automatically assigned as the community owner.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /employeeExperience/communities/{community-id}/owners/{user-id}
+  path_description: Provides operations to manage the owners property of the microsoft.graph.community entity.
+  path_parameters:
+  - name: community-id
+    in: path
+    description: The unique identifier of community
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: community
+  - name: user-id
+    in: path
+    description: The unique identifier of user
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: user
+  methods:
+  - method: GET
+    summary: Get owners from employeeExperience
+    description: The admins of the community. Limited to 100 users. If this property isn't specified when you create the community, the calling user is automatically assigned as the community owner.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /employeeExperience/communities/{community-id}/owners/{user-id}/mailboxSettings
+  path_description: No description provided.
+  path_parameters:
+  - name: community-id
+    in: path
+    description: The unique identifier of community
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: community
+  - name: user-id
+    in: path
+    description: The unique identifier of user
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: user
+  methods:
+  - method: GET
+    summary: Get mailboxSettings property value
+    description: Settings for the primary mailbox of the signed-in user. You can get or update settings for sending automatic replies to incoming messages, locale, and time zone. Returned only on $select.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update property mailboxSettings value.
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: mailboxSettings
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          archiveFolder:
+            type: string
+            description: Folder ID of an archive folder for the user.
+            nullable: true
+          automaticRepliesSetting:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.automaticRepliesSetting'
+            - type: object
+              nullable: true
+            description: Configuration settings to automatically notify the sender of an incoming email with a message from the signed-in user.
+          dateFormat:
+            type: string
+            description: The date format for the user's mailbox.
+            nullable: true
+          delegateMeetingMessageDeliveryOptions:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.delegateMeetingMessageDeliveryOptions'
+            - type: object
+              nullable: true
+            description: 'If the user has a calendar delegate, this specifies whether the delegate, mailbox owner, or both receive meeting messages and meeting responses. Possible values are: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly.'
+          language:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.localeInfo'
+            - type: object
+              nullable: true
+            description: The locale information for the user, including the preferred language and country/region.
+          timeFormat:
+            type: string
+            description: The time format for the user's mailbox.
+            nullable: true
+          timeZone:
+            type: string
+            description: The default time zone for the user's mailbox.
+            nullable: true
+          userPurpose:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.userPurpose'
+            - type: object
+              nullable: true
+            description: 'The purpose of the mailbox. Differentiates a mailbox for a single user from a shared mailbox and equipment mailbox in Exchange Online. Possible values are: user, linked, shared, room, equipment, others, unknownFutureValue. Read-only.'
+          workingHours:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.workingHours'
+            - type: object
+              nullable: true
+            description: The days of the week and hours in a specific time zone that the user works.
+          '@odata.type':
+            type: string
+- path: /employeeExperience/communities/{community-id}/owners/{user-id}/serviceProvisioningErrors
+  path_description: No description provided.
+  path_parameters:
+  - name: community-id
+    in: path
+    description: The unique identifier of community
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: community
+  - name: user-id
+    in: path
+    description: The unique identifier of user
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: user
+  methods:
+  - method: GET
+    summary: Get serviceProvisioningErrors property value
+    description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a user object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /employeeExperience/communities/{community-id}/owners/{user-id}/serviceProvisioningErrors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: community-id
+    in: path
+    description: The unique identifier of community
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: community
+  - name: user-id
+    in: path
+    description: The unique identifier of user
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: user
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /employeeExperience/communities/{community-id}/owners(userPrincipalName='{userPrincipalName}')
+  path_description: Provides operations to manage the owners property of the microsoft.graph.community entity.
+  path_parameters:
+  - name: community-id
+    in: path
+    description: The unique identifier of community
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: community
+  - name: userPrincipalName
+    in: path
+    description: Alternate key of user
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Get owners from employeeExperience
+    description: The admins of the community. Limited to 100 users. If this property isn't specified when you create the community, the calling user is automatically assigned as the community owner.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /employeeExperience/communities/{community-id}/owners/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: community-id
+    in: path
+    description: The unique identifier of community
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: community
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /employeeExperience/communities/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /employeeExperience/engagementAsyncOperations
+  path_description: Provides operations to manage the engagementAsyncOperations property of the microsoft.graph.employeeExperience entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get engagementAsyncOperation
+    description: Get an engagementAsyncOperation to track a long-running operation request.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to engagementAsyncOperations for employeeExperience
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.longRunningOperation'
+        - title: engagementAsyncOperation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            operationType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.engagementAsyncOperationType'
+              - type: object
+                nullable: true
+              description: 'The type of the long-running operation. The possible values are: createCommunity, unknownFutureValue.'
+            resourceId:
+              type: string
+              description: The ID of the object created or modified as a result of this async operation.
+              nullable: true
+            '@odata.type':
+              type: string
+          description: 'Represents the status of a Viva Engage async operation that is an operation that transcends the
+
+            lifetime of a single API request. These operations are long-running or too expensive to complete
+
+            within the time frame of their original request.'
+        x-ms-discriminator-value: '#microsoft.graph.engagementAsyncOperation'
+- path: /employeeExperience/engagementAsyncOperations/{engagementAsyncOperation-id}
+  path_description: Provides operations to manage the engagementAsyncOperations property of the microsoft.graph.employeeExperience entity.
+  path_parameters:
+  - name: engagementAsyncOperation-id
+    in: path
+    description: The unique identifier of engagementAsyncOperation
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: engagementAsyncOperation
+  methods:
+  - method: GET
+    summary: Get engagementAsyncOperation
+    description: Get an engagementAsyncOperation to track a long-running operation request.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property engagementAsyncOperations in employeeExperience
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.longRunningOperation'
+        - title: engagementAsyncOperation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            operationType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.engagementAsyncOperationType'
+              - type: object
+                nullable: true
+              description: 'The type of the long-running operation. The possible values are: createCommunity, unknownFutureValue.'
+            resourceId:
+              type: string
+              description: The ID of the object created or modified as a result of this async operation.
+              nullable: true
+            '@odata.type':
+              type: string
+          description: 'Represents the status of a Viva Engage async operation that is an operation that transcends the
+
+            lifetime of a single API request. These operations are long-running or too expensive to complete
+
+            within the time frame of their original request.'
+        x-ms-discriminator-value: '#microsoft.graph.engagementAsyncOperation'
+  - method: DELETE
+    summary: Delete navigation property engagementAsyncOperations for employeeExperience
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /employeeExperience/engagementAsyncOperations/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /employeeExperience/learningCourseActivities
+  path_description: Provides operations to manage the learningCourseActivities property of the microsoft.graph.employeeExperience entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get learningCourseActivity
+    description: Get the specified learningCourseActivity object using either an ID or an externalCourseActivityId of the learning provider, or a courseActivityId of a user.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to learningCourseActivities for employeeExperience
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: learningCourseActivity
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            completedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the assignment was completed. Optional.
+              format: date-time
+              nullable: true
+            completionPercentage:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The percentage completion value of the course activity. Optional.
+              format: int32
+              nullable: true
+            externalcourseActivityId:
+              type: string
+              nullable: true
+            learnerUserId:
+              type: string
+              description: The user ID of the learner to whom the activity is assigned. Required.
+            learningContentId:
+              type: string
+              description: The ID of the learning content created in Viva Learning. Required.
+            learningProviderId:
+              type: string
+              description: The registration ID of the provider. Required.
+              nullable: true
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.courseStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the course activity. Possible values are: notStarted, inProgress, completed. Required.'
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.learningAssignment': '#/components/schemas/microsoft.graph.learningAssignment'
+              '#microsoft.graph.learningSelfInitiatedCourse': '#/components/schemas/microsoft.graph.learningSelfInitiatedCourse'
+- path: /employeeExperience/learningCourseActivities/{learningCourseActivity-id}
+  path_description: Provides operations to manage the learningCourseActivities property of the microsoft.graph.employeeExperience entity.
+  path_parameters:
+  - name: learningCourseActivity-id
+    in: path
+    description: The unique identifier of learningCourseActivity
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: learningCourseActivity
+  methods:
+  - method: GET
+    summary: Get learningCourseActivity
+    description: Get the specified learningCourseActivity object using either an ID or an externalCourseActivityId of the learning provider, or a courseActivityId of a user.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property learningCourseActivities in employeeExperience
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: learningCourseActivity
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            completedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the assignment was completed. Optional.
+              format: date-time
+              nullable: true
+            completionPercentage:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The percentage completion value of the course activity. Optional.
+              format: int32
+              nullable: true
+            externalcourseActivityId:
+              type: string
+              nullable: true
+            learnerUserId:
+              type: string
+              description: The user ID of the learner to whom the activity is assigned. Required.
+            learningContentId:
+              type: string
+              description: The ID of the learning content created in Viva Learning. Required.
+            learningProviderId:
+              type: string
+              description: The registration ID of the provider. Required.
+              nullable: true
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.courseStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the course activity. Possible values are: notStarted, inProgress, completed. Required.'
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.learningAssignment': '#/components/schemas/microsoft.graph.learningAssignment'
+              '#microsoft.graph.learningSelfInitiatedCourse': '#/components/schemas/microsoft.graph.learningSelfInitiatedCourse'
+  - method: DELETE
+    summary: Delete navigation property learningCourseActivities for employeeExperience
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /employeeExperience/learningCourseActivities(externalcourseActivityId='{externalcourseActivityId}')
+  path_description: Provides operations to manage the learningCourseActivities property of the microsoft.graph.employeeExperience entity.
+  path_parameters:
+  - name: externalcourseActivityId
+    in: path
+    description: Alternate key of learningCourseActivity
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Get learningCourseActivity
+    description: Get the specified learningCourseActivity object using either an ID or an externalCourseActivityId of the learning provider, or a courseActivityId of a user.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property learningCourseActivities in employeeExperience
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: learningCourseActivity
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            completedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the assignment was completed. Optional.
+              format: date-time
+              nullable: true
+            completionPercentage:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The percentage completion value of the course activity. Optional.
+              format: int32
+              nullable: true
+            externalcourseActivityId:
+              type: string
+              nullable: true
+            learnerUserId:
+              type: string
+              description: The user ID of the learner to whom the activity is assigned. Required.
+            learningContentId:
+              type: string
+              description: The ID of the learning content created in Viva Learning. Required.
+            learningProviderId:
+              type: string
+              description: The registration ID of the provider. Required.
+              nullable: true
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.courseStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the course activity. Possible values are: notStarted, inProgress, completed. Required.'
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.learningAssignment': '#/components/schemas/microsoft.graph.learningAssignment'
+              '#microsoft.graph.learningSelfInitiatedCourse': '#/components/schemas/microsoft.graph.learningSelfInitiatedCourse'
+  - method: DELETE
+    summary: Delete navigation property learningCourseActivities for employeeExperience
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /employeeExperience/learningCourseActivities/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /employeeExperience/learningProviders
+  path_description: Provides operations to manage the learningProviders property of the microsoft.graph.employeeExperience entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List learningProviders
+    description: Get a list of the learningProvider resources registered in Viva Learning for a tenant.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create learningProvider
+    description: Create a new learningProvider object and register it with Viva Learning using the specified display name and logos for different themes.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: learningProvider
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: The display name that appears in Viva Learning. Required.
+            isCourseActivitySyncEnabled:
+              type: boolean
+              description: Indicates whether a provider can ingest learning course activity records. The default value is false. Set to true to make learningCourseActivities available for this provider.
+              nullable: true
+            loginWebUrl:
+              type: string
+              description: Authentication URL to access the courses for the provider. Optional.
+              nullable: true
+            longLogoWebUrlForDarkTheme:
+              type: string
+              description: The long logo URL for the dark mode that needs to be a publicly accessible image. This image would be saved to the blob storage of Viva Learning for rendering within the Viva Learning app. Required.
+            longLogoWebUrlForLightTheme:
+              type: string
+              description: The long logo URL for the light mode that needs to be a publicly accessible image. This image would be saved to the blob storage of Viva Learning for rendering within the Viva Learning app. Required.
+            squareLogoWebUrlForDarkTheme:
+              type: string
+              description: The square logo URL for the dark mode that needs to be a publicly accessible image. This image would be saved to the blob storage of Viva Learning for rendering within the Viva Learning app. Required.
+            squareLogoWebUrlForLightTheme:
+              type: string
+              description: The square logo URL for the light mode that needs to be a publicly accessible image. This image would be saved to the blob storage of Viva Learning for rendering within the Viva Learning app. Required.
+            learningContents:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.learningContent'
+              description: Learning catalog items for the provider.
+              x-ms-navigationProperty: true
+            learningCourseActivities:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.learningCourseActivity'
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.learningProvider'
+- path: /employeeExperience/learningProviders/{learningProvider-id}
+  path_description: Provides operations to manage the learningProviders property of the microsoft.graph.employeeExperience entity.
+  path_parameters:
+  - name: learningProvider-id
+    in: path
+    description: The unique identifier of learningProvider
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: learningProvider
+  methods:
+  - method: GET
+    summary: Get learningProvider
+    description: Read the properties and relationships of a learningProvider object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update learningProvider
+    description: Update the properties of a learningProvider object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: learningProvider
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: The display name that appears in Viva Learning. Required.
+            isCourseActivitySyncEnabled:
+              type: boolean
+              description: Indicates whether a provider can ingest learning course activity records. The default value is false. Set to true to make learningCourseActivities available for this provider.
+              nullable: true
+            loginWebUrl:
+              type: string
+              description: Authentication URL to access the courses for the provider. Optional.
+              nullable: true
+            longLogoWebUrlForDarkTheme:
+              type: string
+              description: The long logo URL for the dark mode that needs to be a publicly accessible image. This image would be saved to the blob storage of Viva Learning for rendering within the Viva Learning app. Required.
+            longLogoWebUrlForLightTheme:
+              type: string
+              description: The long logo URL for the light mode that needs to be a publicly accessible image. This image would be saved to the blob storage of Viva Learning for rendering within the Viva Learning app. Required.
+            squareLogoWebUrlForDarkTheme:
+              type: string
+              description: The square logo URL for the dark mode that needs to be a publicly accessible image. This image would be saved to the blob storage of Viva Learning for rendering within the Viva Learning app. Required.
+            squareLogoWebUrlForLightTheme:
+              type: string
+              description: The square logo URL for the light mode that needs to be a publicly accessible image. This image would be saved to the blob storage of Viva Learning for rendering within the Viva Learning app. Required.
+            learningContents:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.learningContent'
+              description: Learning catalog items for the provider.
+              x-ms-navigationProperty: true
+            learningCourseActivities:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.learningCourseActivity'
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.learningProvider'
+  - method: DELETE
+    summary: Delete learningProvider
+    description: Delete a learningProvider resource and remove its registration in Viva Learning for a tenant.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /employeeExperience/learningProviders/{learningProvider-id}/learningContents
+  path_description: Provides operations to manage the learningContents property of the microsoft.graph.learningProvider entity.
+  path_parameters:
+  - name: learningProvider-id
+    in: path
+    description: The unique identifier of learningProvider
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: learningProvider
+  methods:
+  - method: GET
+    summary: List learningContents
+    description: Get a list of the learningContent resources and their properties. This list represents the metadata of the specified provider's content in Viva Learning.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to learningContents for employeeExperience
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: learningContent
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            additionalTags:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: Keywords, topics, and other tags associated with the learning content. Optional.
+            contentWebUrl:
+              type: string
+              description: The content web URL for the learning content. Required.
+            contributors:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The authors, creators, or contributors of the learning content. Optional.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the learning content was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional.
+              format: date-time
+              nullable: true
+            description:
+              type: string
+              description: The description or summary for the learning content. Optional.
+              nullable: true
+            duration:
+              pattern: ^-?P([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+([.][0-9]+)?S)?)?$
+              type: string
+              description: The duration of the learning content in seconds. The value is represented in ISO 8601 format for durations. Optional.
+              format: duration
+              nullable: true
+            externalId:
+              type: string
+              description: Unique external content ID for the learning content. Required.
+            format:
+              type: string
+              description: The format of the learning content. For example, Course, Video, Book, Book Summary, Audiobook Summary. Optional.
+              nullable: true
+            isActive:
+              type: boolean
+              description: Indicates whether the content is active or not. Inactive content doesn't show up in the UI. The default value is true. Optional.
+              nullable: true
+            isPremium:
+              type: boolean
+              description: Indicates whether the learning content requires the user to sign-in on the learning provider platform or not. The default value is false. Optional.
+              nullable: true
+            isSearchable:
+              type: boolean
+              description: Indicates whether the learning content is searchable or not. The default value is true. Optional.
+              nullable: true
+            languageTag:
+              type: string
+              description: The language of the learning content, for example, en-us or fr-fr. Required.
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the learning content was last modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional.
+              format: date-time
+              nullable: true
+            level:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.level'
+              - type: object
+                nullable: true
+              description: 'The difficulty level of the learning content. Possible values are: Beginner, Intermediate, Advanced, unknownFutureValue. Optional.'
+            numberOfPages:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The number of pages of the learning content, for example, 9. Optional.
+              format: int32
+              nullable: true
+            skillTags:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The skills tags associated with the learning content. Optional.
+            sourceName:
+              type: string
+              description: The source name of the learning content, such as LinkedIn Learning or Coursera. Optional.
+              nullable: true
+            thumbnailWebUrl:
+              type: string
+              description: The URL of learning content thumbnail image. Optional.
+              nullable: true
+            title:
+              type: string
+              description: The title of the learning content. Required.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.learningContent'
+- path: /employeeExperience/learningProviders/{learningProvider-id}/learningContents/{learningContent-id}
+  path_description: Provides operations to manage the learningContents property of the microsoft.graph.learningProvider entity.
+  path_parameters:
+  - name: learningProvider-id
+    in: path
+    description: The unique identifier of learningProvider
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: learningProvider
+  - name: learningContent-id
+    in: path
+    description: The unique identifier of learningContent
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: learningContent
+  methods:
+  - method: GET
+    summary: Get learningContent
+    description: Get the specified learningContent resource which represents the metadata of the specified provider's ingested content.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property learningContents in employeeExperience
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: learningContent
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            additionalTags:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: Keywords, topics, and other tags associated with the learning content. Optional.
+            contentWebUrl:
+              type: string
+              description: The content web URL for the learning content. Required.
+            contributors:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The authors, creators, or contributors of the learning content. Optional.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the learning content was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional.
+              format: date-time
+              nullable: true
+            description:
+              type: string
+              description: The description or summary for the learning content. Optional.
+              nullable: true
+            duration:
+              pattern: ^-?P([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+([.][0-9]+)?S)?)?$
+              type: string
+              description: The duration of the learning content in seconds. The value is represented in ISO 8601 format for durations. Optional.
+              format: duration
+              nullable: true
+            externalId:
+              type: string
+              description: Unique external content ID for the learning content. Required.
+            format:
+              type: string
+              description: The format of the learning content. For example, Course, Video, Book, Book Summary, Audiobook Summary. Optional.
+              nullable: true
+            isActive:
+              type: boolean
+              description: Indicates whether the content is active or not. Inactive content doesn't show up in the UI. The default value is true. Optional.
+              nullable: true
+            isPremium:
+              type: boolean
+              description: Indicates whether the learning content requires the user to sign-in on the learning provider platform or not. The default value is false. Optional.
+              nullable: true
+            isSearchable:
+              type: boolean
+              description: Indicates whether the learning content is searchable or not. The default value is true. Optional.
+              nullable: true
+            languageTag:
+              type: string
+              description: The language of the learning content, for example, en-us or fr-fr. Required.
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the learning content was last modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional.
+              format: date-time
+              nullable: true
+            level:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.level'
+              - type: object
+                nullable: true
+              description: 'The difficulty level of the learning content. Possible values are: Beginner, Intermediate, Advanced, unknownFutureValue. Optional.'
+            numberOfPages:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The number of pages of the learning content, for example, 9. Optional.
+              format: int32
+              nullable: true
+            skillTags:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The skills tags associated with the learning content. Optional.
+            sourceName:
+              type: string
+              description: The source name of the learning content, such as LinkedIn Learning or Coursera. Optional.
+              nullable: true
+            thumbnailWebUrl:
+              type: string
+              description: The URL of learning content thumbnail image. Optional.
+              nullable: true
+            title:
+              type: string
+              description: The title of the learning content. Required.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.learningContent'
+  - method: DELETE
+    summary: Delete learningContent
+    description: Delete the specified learningContent resource that represents the metadata of the specified provider's ingested content.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /employeeExperience/learningProviders/{learningProvider-id}/learningContents(externalId='{externalId}')
+  path_description: Provides operations to manage the learningContents property of the microsoft.graph.learningProvider entity.
+  path_parameters:
+  - name: learningProvider-id
+    in: path
+    description: The unique identifier of learningProvider
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: learningProvider
+  - name: externalId
+    in: path
+    description: Alternate key of learningContent
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Get learningContent
+    description: Get the specified learningContent resource which represents the metadata of the specified provider's ingested content.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property learningContents in employeeExperience
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: learningContent
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            additionalTags:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: Keywords, topics, and other tags associated with the learning content. Optional.
+            contentWebUrl:
+              type: string
+              description: The content web URL for the learning content. Required.
+            contributors:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The authors, creators, or contributors of the learning content. Optional.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the learning content was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional.
+              format: date-time
+              nullable: true
+            description:
+              type: string
+              description: The description or summary for the learning content. Optional.
+              nullable: true
+            duration:
+              pattern: ^-?P([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+([.][0-9]+)?S)?)?$
+              type: string
+              description: The duration of the learning content in seconds. The value is represented in ISO 8601 format for durations. Optional.
+              format: duration
+              nullable: true
+            externalId:
+              type: string
+              description: Unique external content ID for the learning content. Required.
+            format:
+              type: string
+              description: The format of the learning content. For example, Course, Video, Book, Book Summary, Audiobook Summary. Optional.
+              nullable: true
+            isActive:
+              type: boolean
+              description: Indicates whether the content is active or not. Inactive content doesn't show up in the UI. The default value is true. Optional.
+              nullable: true
+            isPremium:
+              type: boolean
+              description: Indicates whether the learning content requires the user to sign-in on the learning provider platform or not. The default value is false. Optional.
+              nullable: true
+            isSearchable:
+              type: boolean
+              description: Indicates whether the learning content is searchable or not. The default value is true. Optional.
+              nullable: true
+            languageTag:
+              type: string
+              description: The language of the learning content, for example, en-us or fr-fr. Required.
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the learning content was last modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional.
+              format: date-time
+              nullable: true
+            level:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.level'
+              - type: object
+                nullable: true
+              description: 'The difficulty level of the learning content. Possible values are: Beginner, Intermediate, Advanced, unknownFutureValue. Optional.'
+            numberOfPages:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The number of pages of the learning content, for example, 9. Optional.
+              format: int32
+              nullable: true
+            skillTags:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The skills tags associated with the learning content. Optional.
+            sourceName:
+              type: string
+              description: The source name of the learning content, such as LinkedIn Learning or Coursera. Optional.
+              nullable: true
+            thumbnailWebUrl:
+              type: string
+              description: The URL of learning content thumbnail image. Optional.
+              nullable: true
+            title:
+              type: string
+              description: The title of the learning content. Required.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.learningContent'
+  - method: DELETE
+    summary: Delete learningContent
+    description: Delete the specified learningContent resource that represents the metadata of the specified provider's ingested content.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /employeeExperience/learningProviders/{learningProvider-id}/learningContents/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: learningProvider-id
+    in: path
+    description: The unique identifier of learningProvider
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: learningProvider
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /employeeExperience/learningProviders/{learningProvider-id}/learningCourseActivities
+  path_description: Provides operations to manage the learningCourseActivities property of the microsoft.graph.learningProvider entity.
+  path_parameters:
+  - name: learningProvider-id
+    in: path
+    description: The unique identifier of learningProvider
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: learningProvider
+  methods:
+  - method: GET
+    summary: Get learningCourseActivity
+    description: Get the specified learningCourseActivity object using either an ID or an externalCourseActivityId of the learning provider, or a courseActivityId of a user.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create learningCourseActivity
+    description: "Create a new learningCourseActivity object. A learning course activity can be one of two types: \n- Assignment\n- Self-initiated Use this method to create either type of activity."
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: learningCourseActivity
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            completedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the assignment was completed. Optional.
+              format: date-time
+              nullable: true
+            completionPercentage:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The percentage completion value of the course activity. Optional.
+              format: int32
+              nullable: true
+            externalcourseActivityId:
+              type: string
+              nullable: true
+            learnerUserId:
+              type: string
+              description: The user ID of the learner to whom the activity is assigned. Required.
+            learningContentId:
+              type: string
+              description: The ID of the learning content created in Viva Learning. Required.
+            learningProviderId:
+              type: string
+              description: The registration ID of the provider. Required.
+              nullable: true
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.courseStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the course activity. Possible values are: notStarted, inProgress, completed. Required.'
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.learningAssignment': '#/components/schemas/microsoft.graph.learningAssignment'
+              '#microsoft.graph.learningSelfInitiatedCourse': '#/components/schemas/microsoft.graph.learningSelfInitiatedCourse'
+- path: /employeeExperience/learningProviders/{learningProvider-id}/learningCourseActivities/{learningCourseActivity-id}
+  path_description: Provides operations to manage the learningCourseActivities property of the microsoft.graph.learningProvider entity.
+  path_parameters:
+  - name: learningProvider-id
+    in: path
+    description: The unique identifier of learningProvider
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: learningProvider
+  - name: learningCourseActivity-id
+    in: path
+    description: The unique identifier of learningCourseActivity
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: learningCourseActivity
+  methods:
+  - method: GET
+    summary: Get learningCourseActivities from employeeExperience
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update learningCourseActivity
+    description: 'Update the properties of a learningCourseActivity object. '
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: learningCourseActivity
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            completedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the assignment was completed. Optional.
+              format: date-time
+              nullable: true
+            completionPercentage:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The percentage completion value of the course activity. Optional.
+              format: int32
+              nullable: true
+            externalcourseActivityId:
+              type: string
+              nullable: true
+            learnerUserId:
+              type: string
+              description: The user ID of the learner to whom the activity is assigned. Required.
+            learningContentId:
+              type: string
+              description: The ID of the learning content created in Viva Learning. Required.
+            learningProviderId:
+              type: string
+              description: The registration ID of the provider. Required.
+              nullable: true
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.courseStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the course activity. Possible values are: notStarted, inProgress, completed. Required.'
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.learningAssignment': '#/components/schemas/microsoft.graph.learningAssignment'
+              '#microsoft.graph.learningSelfInitiatedCourse': '#/components/schemas/microsoft.graph.learningSelfInitiatedCourse'
+  - method: DELETE
+    summary: Delete learningCourseActivity
+    description: Delete a learningCourseActivity object using the course activity ID of either an assignment or a self-initiated activity.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /employeeExperience/learningProviders/{learningProvider-id}/learningCourseActivities(externalcourseActivityId='{externalcourseActivityId}')
+  path_description: Provides operations to manage the learningCourseActivities property of the microsoft.graph.learningProvider entity.
+  path_parameters:
+  - name: learningProvider-id
+    in: path
+    description: The unique identifier of learningProvider
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: learningProvider
+  - name: externalcourseActivityId
+    in: path
+    description: Alternate key of learningCourseActivity
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Get learningCourseActivities from employeeExperience
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update learningCourseActivity
+    description: 'Update the properties of a learningCourseActivity object. '
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: learningCourseActivity
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            completedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the assignment was completed. Optional.
+              format: date-time
+              nullable: true
+            completionPercentage:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The percentage completion value of the course activity. Optional.
+              format: int32
+              nullable: true
+            externalcourseActivityId:
+              type: string
+              nullable: true
+            learnerUserId:
+              type: string
+              description: The user ID of the learner to whom the activity is assigned. Required.
+            learningContentId:
+              type: string
+              description: The ID of the learning content created in Viva Learning. Required.
+            learningProviderId:
+              type: string
+              description: The registration ID of the provider. Required.
+              nullable: true
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.courseStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the course activity. Possible values are: notStarted, inProgress, completed. Required.'
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.learningAssignment': '#/components/schemas/microsoft.graph.learningAssignment'
+              '#microsoft.graph.learningSelfInitiatedCourse': '#/components/schemas/microsoft.graph.learningSelfInitiatedCourse'
+  - method: DELETE
+    summary: Delete learningCourseActivity
+    description: Delete a learningCourseActivity object using the course activity ID of either an assignment or a self-initiated activity.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /employeeExperience/learningProviders/{learningProvider-id}/learningCourseActivities/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: learningProvider-id
+    in: path
+    description: The unique identifier of learningProvider
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: learningProvider
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /employeeExperience/learningProviders/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

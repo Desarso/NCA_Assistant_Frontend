@@ -1,0 +1,387 @@
+- path: /invitations
+  path_description: Provides operations to manage the collection of invitation entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get entities from invitations
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create invitation
+    description: 'Use this API to create a new invitation or reset the redemption status for a guest user who already redeemed their invitation. The invitation adds the external user to the organization as part of B2B collaboration. B2B collaboration is supported in both Microsoft Entra External ID in workforce and external tenants. When creating a new invitation, you have several options available:'
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: invitation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            invitedUserDisplayName:
+              type: string
+              description: The display name of the user being invited.
+              nullable: true
+            invitedUserEmailAddress:
+              type: string
+              description: The email address of the user being invited. Required. The following special characters aren't permitted in the email address:Tilde (~)Exclamation point (!)Number sign (#)Dollar sign ($)Percent (%)Circumflex (^)Ampersand (&)Asterisk (*)Parentheses (( ))Plus sign (+)Equal sign (=)Brackets ([ ])Braces ({ })Backslash (/)Slash mark (/)Pipe (/|)Semicolon (;)Colon (:)Quotation marks (')Angle brackets (< >)Question mark (?)Comma (,)However, the following exceptions apply:A period (.) or a hyphen (-) is permitted anywhere in the user name, except at the beginning or end of the name.An underscore (_) is permitted anywhere in the user name, including at the beginning or end of the name.
+            invitedUserMessageInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.invitedUserMessageInfo'
+              - type: object
+                nullable: true
+              description: Contains configuration for the message being sent to the invited user, including customizing message text, language, and cc recipient list.
+            invitedUserType:
+              type: string
+              description: The userType of the user being invited. By default, this is Guest. You can invite as Member if you're a company administrator.
+              nullable: true
+            inviteRedeemUrl:
+              type: string
+              description: The URL the user can use to redeem their invitation. Read-only.
+              nullable: true
+            inviteRedirectUrl:
+              type: string
+              description: The URL the user should be redirected to after the invitation is redeemed. Required.
+            resetRedemption:
+              type: boolean
+              description: Reset the user's redemption status and reinvite a user while retaining their user identifier, group memberships, and app assignments. This property allows you to enable a user to sign-in using a different email address from the one in the previous invitation. When true, the invitedUser/id relationship is required. For more information about using this property, see Reset redemption status for a guest user.
+              nullable: true
+            sendInvitationMessage:
+              type: boolean
+              description: Indicates whether an email should be sent to the user being invited. The default is false.
+              nullable: true
+            status:
+              type: string
+              description: 'The status of the invitation. Possible values are: PendingAcceptance, Completed, InProgress, and Error.'
+              nullable: true
+            invitedUser:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.user'
+              - type: object
+                nullable: true
+              description: The user created as part of the invitation creation. Read-only. The id property is required in the request body to reset a redemption status.
+              x-ms-navigationProperty: true
+            invitedUserSponsors:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: The users or groups who are sponsors of the invited user. Sponsors are users and groups that are responsible for guest users' privileges in the tenant and for keeping the guest users' information and access up to date.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.invitation'
+- path: /invitations/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /invitations/invitedUser
+  path_description: Provides operations to manage the invitedUser property of the microsoft.graph.invitation entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get invitedUser from invitations
+    description: The user created as part of the invitation creation. Read-only. The id property is required in the request body to reset a redemption status.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /invitations/invitedUser/mailboxSettings
+  path_description: No description provided.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get mailboxSettings property value
+    description: Settings for the primary mailbox of the signed-in user. You can get or update settings for sending automatic replies to incoming messages, locale, and time zone. Returned only on $select.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update property mailboxSettings value.
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: mailboxSettings
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          archiveFolder:
+            type: string
+            description: Folder ID of an archive folder for the user.
+            nullable: true
+          automaticRepliesSetting:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.automaticRepliesSetting'
+            - type: object
+              nullable: true
+            description: Configuration settings to automatically notify the sender of an incoming email with a message from the signed-in user.
+          dateFormat:
+            type: string
+            description: The date format for the user's mailbox.
+            nullable: true
+          delegateMeetingMessageDeliveryOptions:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.delegateMeetingMessageDeliveryOptions'
+            - type: object
+              nullable: true
+            description: 'If the user has a calendar delegate, this specifies whether the delegate, mailbox owner, or both receive meeting messages and meeting responses. Possible values are: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly.'
+          language:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.localeInfo'
+            - type: object
+              nullable: true
+            description: The locale information for the user, including the preferred language and country/region.
+          timeFormat:
+            type: string
+            description: The time format for the user's mailbox.
+            nullable: true
+          timeZone:
+            type: string
+            description: The default time zone for the user's mailbox.
+            nullable: true
+          userPurpose:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.userPurpose'
+            - type: object
+              nullable: true
+            description: 'The purpose of the mailbox. Differentiates a mailbox for a single user from a shared mailbox and equipment mailbox in Exchange Online. Possible values are: user, linked, shared, room, equipment, others, unknownFutureValue. Read-only.'
+          workingHours:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.workingHours'
+            - type: object
+              nullable: true
+            description: The days of the week and hours in a specific time zone that the user works.
+          '@odata.type':
+            type: string
+- path: /invitations/invitedUser/serviceProvisioningErrors
+  path_description: No description provided.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get serviceProvisioningErrors property value
+    description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a user object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /invitations/invitedUser/serviceProvisioningErrors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /invitations/invitedUserSponsors
+  path_description: Provides operations to manage the invitedUserSponsors property of the microsoft.graph.invitation entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get invitedUserSponsors from invitations
+    description: The users or groups who are sponsors of the invited user. Sponsors are users and groups that are responsible for guest users' privileges in the tenant and for keeping the guest users' information and access up to date.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /invitations/invitedUserSponsors/{directoryObject-id}
+  path_description: Provides operations to manage the invitedUserSponsors property of the microsoft.graph.invitation entity.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get invitedUserSponsors from invitations
+    description: The users or groups who are sponsors of the invited user. Sponsors are users and groups that are responsible for guest users' privileges in the tenant and for keeping the guest users' information and access up to date.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /invitations/invitedUserSponsors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

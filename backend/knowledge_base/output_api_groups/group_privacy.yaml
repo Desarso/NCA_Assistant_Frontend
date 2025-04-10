@@ -1,0 +1,1438 @@
+- path: /privacy
+  path_description: Provides operations to manage the privacy singleton.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get privacy
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update privacy
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: privacy
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          subjectRightsRequests:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.subjectRightsRequest'
+            x-ms-navigationProperty: true
+          '@odata.type':
+            type: string
+- path: /privacy/subjectRightsRequests
+  path_description: Provides operations to manage the subjectRightsRequests property of the microsoft.graph.privacy entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List subjectRightsRequests
+    description: Get a list of subjectRightsRequest objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create subjectRightsRequest
+    description: Create a new subjectRightsRequest object.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: subjectRightsRequest
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            assignedTo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identity'
+              - type: object
+                nullable: true
+              description: Identity that the request is assigned to.
+            closedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the request was closed. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            contentQuery:
+              type: string
+              description: KQL based content query that should be used for search. This property is defined only for APIs accessed using the /security query path and not the /privacy query path.
+              nullable: true
+            createdBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: Identity information for the entity that created the request.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the request was created. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            dataSubject:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.dataSubject'
+              - type: object
+                nullable: true
+              description: Information about the data subject.
+            dataSubjectType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.dataSubjectType'
+              - type: object
+                nullable: true
+              description: 'The type of the data subject. Possible values are: customer, currentEmployee, formerEmployee, prospectiveEmployee, student, teacher, faculty, other, unknownFutureValue.'
+            description:
+              type: string
+              description: Description for the request.
+              nullable: true
+            displayName:
+              type: string
+              description: The name of the request.
+              nullable: true
+            externalId:
+              type: string
+              description: The external ID for the request that is immutable after creation and is used for tracking the request for the external system. This property is defined only for APIs accessed using the /security query path and not the /privacy query path.
+              nullable: true
+            history:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.subjectRightsRequestHistory'
+              description: Collection of history change events.
+            includeAllVersions:
+              type: boolean
+              description: Include all versions of the documents. By default, the current copies of the documents are returned. If SharePoint sites have versioning enabled, including all versions includes the historical copies of the documents. This property is defined only for APIs accessed using the /security query path and not the /privacy query path.
+              nullable: true
+            includeAuthoredContent:
+              type: boolean
+              description: Include content authored by the data subject. This property is defined only for APIs accessed using the /security query path and not the /privacy query path.
+              nullable: true
+            insight:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.subjectRightsRequestDetail'
+              - type: object
+                nullable: true
+              description: Insight about the request.
+            internalDueDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the request is internally due. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            lastModifiedBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: Identity information for the entity that last modified the request.
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the request was last modified. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            mailboxLocations:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.subjectRightsRequestMailboxLocation'
+              - type: object
+                nullable: true
+              description: The mailbox locations that should be searched. This property is defined only for APIs accessed using the /security query path and not the /privacy query path.
+            pauseAfterEstimate:
+              type: boolean
+              description: Pause the request after estimate has finished. By default, the data estimate runs and then pauses, allowing you to preview results and then select the option to retrieve data in the UI. You can set this property to false if you want it to perform the estimate and then automatically begin with the retrieval of the content. This property is defined only for APIs accessed using the /security query path and not the /privacy query path.
+              nullable: true
+            regulations:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: List of regulations that this request fulfill.
+            siteLocations:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.subjectRightsRequestSiteLocation'
+              - type: object
+                nullable: true
+              description: The SharePoint and OneDrive site locations that should be searched. This property is defined only for APIs accessed using the /security query path and not the /privacy query path.
+            stages:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.subjectRightsRequestStageDetail'
+              description: Information about the different stages for the request.
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.subjectRightsRequestStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the request. Possible values are: active, closed, unknownFutureValue.'
+            type:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.subjectRightsRequestType'
+              - type: object
+                nullable: true
+              description: 'The type of the request. Possible values are: export, delete, access, tagForAction, unknownFutureValue.'
+            approvers:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.user'
+              description: Collection of users who can approve the request. Currently only supported for requests of type delete.
+              x-ms-navigationProperty: true
+            collaborators:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.user'
+              description: Collection of users who can collaborate on the request.
+              x-ms-navigationProperty: true
+            notes:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.authoredNote'
+              description: List of notes associated with the request.
+              x-ms-navigationProperty: true
+            team:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.team'
+              - type: object
+                nullable: true
+              description: Information about the Microsoft Teams team that was created for the request.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.subjectRightsRequest'
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}
+  path_description: Provides operations to manage the subjectRightsRequests property of the microsoft.graph.privacy entity.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  methods:
+  - method: GET
+    summary: Get subjectRightsRequest
+    description: Read the properties and relationships of a subjectRightsRequest object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update subjectRightsRequest
+    description: Update the properties of a subjectRightsRequest object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: subjectRightsRequest
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            assignedTo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identity'
+              - type: object
+                nullable: true
+              description: Identity that the request is assigned to.
+            closedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the request was closed. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            contentQuery:
+              type: string
+              description: KQL based content query that should be used for search. This property is defined only for APIs accessed using the /security query path and not the /privacy query path.
+              nullable: true
+            createdBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: Identity information for the entity that created the request.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the request was created. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            dataSubject:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.dataSubject'
+              - type: object
+                nullable: true
+              description: Information about the data subject.
+            dataSubjectType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.dataSubjectType'
+              - type: object
+                nullable: true
+              description: 'The type of the data subject. Possible values are: customer, currentEmployee, formerEmployee, prospectiveEmployee, student, teacher, faculty, other, unknownFutureValue.'
+            description:
+              type: string
+              description: Description for the request.
+              nullable: true
+            displayName:
+              type: string
+              description: The name of the request.
+              nullable: true
+            externalId:
+              type: string
+              description: The external ID for the request that is immutable after creation and is used for tracking the request for the external system. This property is defined only for APIs accessed using the /security query path and not the /privacy query path.
+              nullable: true
+            history:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.subjectRightsRequestHistory'
+              description: Collection of history change events.
+            includeAllVersions:
+              type: boolean
+              description: Include all versions of the documents. By default, the current copies of the documents are returned. If SharePoint sites have versioning enabled, including all versions includes the historical copies of the documents. This property is defined only for APIs accessed using the /security query path and not the /privacy query path.
+              nullable: true
+            includeAuthoredContent:
+              type: boolean
+              description: Include content authored by the data subject. This property is defined only for APIs accessed using the /security query path and not the /privacy query path.
+              nullable: true
+            insight:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.subjectRightsRequestDetail'
+              - type: object
+                nullable: true
+              description: Insight about the request.
+            internalDueDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the request is internally due. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            lastModifiedBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: Identity information for the entity that last modified the request.
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the request was last modified. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            mailboxLocations:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.subjectRightsRequestMailboxLocation'
+              - type: object
+                nullable: true
+              description: The mailbox locations that should be searched. This property is defined only for APIs accessed using the /security query path and not the /privacy query path.
+            pauseAfterEstimate:
+              type: boolean
+              description: Pause the request after estimate has finished. By default, the data estimate runs and then pauses, allowing you to preview results and then select the option to retrieve data in the UI. You can set this property to false if you want it to perform the estimate and then automatically begin with the retrieval of the content. This property is defined only for APIs accessed using the /security query path and not the /privacy query path.
+              nullable: true
+            regulations:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: List of regulations that this request fulfill.
+            siteLocations:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.subjectRightsRequestSiteLocation'
+              - type: object
+                nullable: true
+              description: The SharePoint and OneDrive site locations that should be searched. This property is defined only for APIs accessed using the /security query path and not the /privacy query path.
+            stages:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.subjectRightsRequestStageDetail'
+              description: Information about the different stages for the request.
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.subjectRightsRequestStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the request. Possible values are: active, closed, unknownFutureValue.'
+            type:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.subjectRightsRequestType'
+              - type: object
+                nullable: true
+              description: 'The type of the request. Possible values are: export, delete, access, tagForAction, unknownFutureValue.'
+            approvers:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.user'
+              description: Collection of users who can approve the request. Currently only supported for requests of type delete.
+              x-ms-navigationProperty: true
+            collaborators:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.user'
+              description: Collection of users who can collaborate on the request.
+              x-ms-navigationProperty: true
+            notes:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.authoredNote'
+              description: List of notes associated with the request.
+              x-ms-navigationProperty: true
+            team:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.team'
+              - type: object
+                nullable: true
+              description: Information about the Microsoft Teams team that was created for the request.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.subjectRightsRequest'
+  - method: DELETE
+    summary: Delete navigation property subjectRightsRequests for privacy
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/approvers
+  path_description: Provides operations to manage the approvers property of the microsoft.graph.subjectRightsRequest entity.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  methods:
+  - method: GET
+    summary: Get approvers from privacy
+    description: Collection of users who can approve the request. Currently only supported for requests of type delete.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/approvers/{user-id}
+  path_description: Provides operations to manage the approvers property of the microsoft.graph.subjectRightsRequest entity.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  - name: user-id
+    in: path
+    description: The unique identifier of user
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: user
+  methods:
+  - method: GET
+    summary: Get approvers from privacy
+    description: Collection of users who can approve the request. Currently only supported for requests of type delete.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/approvers/{user-id}/mailboxSettings
+  path_description: No description provided.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  - name: user-id
+    in: path
+    description: The unique identifier of user
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: user
+  methods:
+  - method: GET
+    summary: Get mailboxSettings property value
+    description: Settings for the primary mailbox of the signed-in user. You can get or update settings for sending automatic replies to incoming messages, locale, and time zone. Returned only on $select.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update property mailboxSettings value.
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: mailboxSettings
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          archiveFolder:
+            type: string
+            description: Folder ID of an archive folder for the user.
+            nullable: true
+          automaticRepliesSetting:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.automaticRepliesSetting'
+            - type: object
+              nullable: true
+            description: Configuration settings to automatically notify the sender of an incoming email with a message from the signed-in user.
+          dateFormat:
+            type: string
+            description: The date format for the user's mailbox.
+            nullable: true
+          delegateMeetingMessageDeliveryOptions:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.delegateMeetingMessageDeliveryOptions'
+            - type: object
+              nullable: true
+            description: 'If the user has a calendar delegate, this specifies whether the delegate, mailbox owner, or both receive meeting messages and meeting responses. Possible values are: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly.'
+          language:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.localeInfo'
+            - type: object
+              nullable: true
+            description: The locale information for the user, including the preferred language and country/region.
+          timeFormat:
+            type: string
+            description: The time format for the user's mailbox.
+            nullable: true
+          timeZone:
+            type: string
+            description: The default time zone for the user's mailbox.
+            nullable: true
+          userPurpose:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.userPurpose'
+            - type: object
+              nullable: true
+            description: 'The purpose of the mailbox. Differentiates a mailbox for a single user from a shared mailbox and equipment mailbox in Exchange Online. Possible values are: user, linked, shared, room, equipment, others, unknownFutureValue. Read-only.'
+          workingHours:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.workingHours'
+            - type: object
+              nullable: true
+            description: The days of the week and hours in a specific time zone that the user works.
+          '@odata.type':
+            type: string
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/approvers/{user-id}/serviceProvisioningErrors
+  path_description: No description provided.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  - name: user-id
+    in: path
+    description: The unique identifier of user
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: user
+  methods:
+  - method: GET
+    summary: Get serviceProvisioningErrors property value
+    description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a user object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/approvers/{user-id}/serviceProvisioningErrors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  - name: user-id
+    in: path
+    description: The unique identifier of user
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: user
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/approvers(userPrincipalName='{userPrincipalName}')
+  path_description: Provides operations to manage the approvers property of the microsoft.graph.subjectRightsRequest entity.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  - name: userPrincipalName
+    in: path
+    description: Alternate key of user
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Get approvers from privacy
+    description: Collection of users who can approve the request. Currently only supported for requests of type delete.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/approvers/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/collaborators
+  path_description: Provides operations to manage the collaborators property of the microsoft.graph.subjectRightsRequest entity.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  methods:
+  - method: GET
+    summary: Get collaborators from privacy
+    description: Collection of users who can collaborate on the request.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/collaborators/{user-id}
+  path_description: Provides operations to manage the collaborators property of the microsoft.graph.subjectRightsRequest entity.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  - name: user-id
+    in: path
+    description: The unique identifier of user
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: user
+  methods:
+  - method: GET
+    summary: Get collaborators from privacy
+    description: Collection of users who can collaborate on the request.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/collaborators/{user-id}/mailboxSettings
+  path_description: No description provided.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  - name: user-id
+    in: path
+    description: The unique identifier of user
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: user
+  methods:
+  - method: GET
+    summary: Get mailboxSettings property value
+    description: Settings for the primary mailbox of the signed-in user. You can get or update settings for sending automatic replies to incoming messages, locale, and time zone. Returned only on $select.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update property mailboxSettings value.
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: mailboxSettings
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          archiveFolder:
+            type: string
+            description: Folder ID of an archive folder for the user.
+            nullable: true
+          automaticRepliesSetting:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.automaticRepliesSetting'
+            - type: object
+              nullable: true
+            description: Configuration settings to automatically notify the sender of an incoming email with a message from the signed-in user.
+          dateFormat:
+            type: string
+            description: The date format for the user's mailbox.
+            nullable: true
+          delegateMeetingMessageDeliveryOptions:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.delegateMeetingMessageDeliveryOptions'
+            - type: object
+              nullable: true
+            description: 'If the user has a calendar delegate, this specifies whether the delegate, mailbox owner, or both receive meeting messages and meeting responses. Possible values are: sendToDelegateAndInformationToPrincipal, sendToDelegateAndPrincipal, sendToDelegateOnly.'
+          language:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.localeInfo'
+            - type: object
+              nullable: true
+            description: The locale information for the user, including the preferred language and country/region.
+          timeFormat:
+            type: string
+            description: The time format for the user's mailbox.
+            nullable: true
+          timeZone:
+            type: string
+            description: The default time zone for the user's mailbox.
+            nullable: true
+          userPurpose:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.userPurpose'
+            - type: object
+              nullable: true
+            description: 'The purpose of the mailbox. Differentiates a mailbox for a single user from a shared mailbox and equipment mailbox in Exchange Online. Possible values are: user, linked, shared, room, equipment, others, unknownFutureValue. Read-only.'
+          workingHours:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.workingHours'
+            - type: object
+              nullable: true
+            description: The days of the week and hours in a specific time zone that the user works.
+          '@odata.type':
+            type: string
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/collaborators/{user-id}/serviceProvisioningErrors
+  path_description: No description provided.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  - name: user-id
+    in: path
+    description: The unique identifier of user
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: user
+  methods:
+  - method: GET
+    summary: Get serviceProvisioningErrors property value
+    description: Errors published by a federated service describing a nontransient, service-specific error regarding the properties or link from a user object.  Supports $filter (eq, not, for isResolved and serviceInstance).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/collaborators/{user-id}/serviceProvisioningErrors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  - name: user-id
+    in: path
+    description: The unique identifier of user
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: user
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/collaborators(userPrincipalName='{userPrincipalName}')
+  path_description: Provides operations to manage the collaborators property of the microsoft.graph.subjectRightsRequest entity.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  - name: userPrincipalName
+    in: path
+    description: Alternate key of user
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Get collaborators from privacy
+    description: Collection of users who can collaborate on the request.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/collaborators/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/getFinalAttachment()
+  path_description: Provides operations to call the getFinalAttachment method.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  methods:
+  - method: GET
+    summary: Invoke function getFinalAttachment
+    description: Get the final attachment for a subject rights request. The attachment is a zip file that contains all the files that were included by the privacy administrator.
+    parameters: []
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/getFinalReport()
+  path_description: Provides operations to call the getFinalReport method.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  methods:
+  - method: GET
+    summary: Invoke function getFinalReport
+    description: Get the final report for a subject rights request. The report is a text file that contains information about the files that were included by the privacy administrator.
+    parameters: []
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/notes
+  path_description: Provides operations to manage the notes property of the microsoft.graph.subjectRightsRequest entity.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  methods:
+  - method: GET
+    summary: List authoredNotes
+    description: 'Get the list of authored notes assoicated with a subject rights request. '
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create authoredNote
+    description: Create a new authoredNote object.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authoredNote
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            author:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identity'
+              - type: object
+                nullable: true
+              description: Identity information about the note's author.
+            content:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.itemBody'
+              - type: object
+                nullable: true
+              description: The content of the note.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.authoredNote'
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/notes/{authoredNote-id}
+  path_description: Provides operations to manage the notes property of the microsoft.graph.subjectRightsRequest entity.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  - name: authoredNote-id
+    in: path
+    description: The unique identifier of authoredNote
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authoredNote
+  methods:
+  - method: GET
+    summary: Get notes from privacy
+    description: List of notes associated with the request.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property notes in privacy
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authoredNote
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            author:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identity'
+              - type: object
+                nullable: true
+              description: Identity information about the note's author.
+            content:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.itemBody'
+              - type: object
+                nullable: true
+              description: The content of the note.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.authoredNote'
+  - method: DELETE
+    summary: Delete navigation property notes for privacy
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/notes/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /privacy/subjectRightsRequests/{subjectRightsRequest-id}/team
+  path_description: Provides operations to manage the team property of the microsoft.graph.subjectRightsRequest entity.
+  path_parameters:
+  - name: subjectRightsRequest-id
+    in: path
+    description: The unique identifier of subjectRightsRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: subjectRightsRequest
+  methods:
+  - method: GET
+    summary: Get team from privacy
+    description: Information about the Microsoft Teams team that was created for the request.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /privacy/subjectRightsRequests/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
