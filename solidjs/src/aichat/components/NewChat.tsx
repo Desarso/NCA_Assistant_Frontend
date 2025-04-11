@@ -21,6 +21,10 @@ const predefinedPrompts: PromptButton[] = [
     label: "Read Today's Emails",
     prompt: "Using my user ID and the graph api, please fetch me emails from today and summarize them for me. Don't use delegated routes.",
   },
+  {
+    label: "Get user by name",
+    prompt: "Using the graph api, please fetch me a user by name.",
+  },
   // Add more predefined prompts here
 ];
 
@@ -30,11 +34,10 @@ interface NewChatProps {
 
 const NewChat: Component<NewChatProps> = (props) => {
   return (
-    <div class="flex flex-col items-center justify-center h-full text-center p-4">
-      <h1 class="text-2xl font-semibold mb-8">How can I help you today?</h1>
+    <div class="flex flex-col items-center">
+      <h1 class="text-2xl font-semibold mb-8 text-center">How can I help you today?</h1>
 
-      {/* Grid for prompt buttons */}
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md w-full">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mx-auto">
         <For each={predefinedPrompts}>{(item) => 
           <Button 
             variant="outline" 
