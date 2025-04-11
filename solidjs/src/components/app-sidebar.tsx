@@ -301,16 +301,16 @@ export function AppSidebar() {
                   </A>
                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center justify-end text-gray-500 dark:text-gray-400 transition-transform transform translate-x-[102%] group-hover/menu-item:translate-x-0 group-hover/menu-item:pointer-events-auto">
                       <div 
-                        class="absolute inset-y-0 right-full w-12 h-full bg-gradient-to-l from-[#e9ecef] dark:from-[#15202b] to-transparent opacity-0 group-hover/menu-item:opacity-100 group-hover/menu-item:from-white dark:group-hover/menu-item:from-gray-700 pointer-events-none" 
+                        class="absolute inset-y-0 right-full w-12 h-full " 
                       />
                       <div 
-                        class="relative z-10 flex items-center pr-1 bg-[#e9ecef] dark:bg-[#15202b] rounded-r-md group-hover/menu-item:bg-white dark:group-hover/menu-item:bg-gray-700"
+                        class="relative z-10 flex items-center pr-1 bg-transparent rounded-r-md"
                       >
                         <Show 
                           when={pinnedChatIds().includes(chat.id)}
                           fallback={
                             <button 
-                                class="rounded-md p-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50" 
+                                class="rounded-md p-1.5 bg:transparent hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50" 
                                 title="Pin chat"
                                 disabled={pinnedChatIds().length >= 10}
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); pinChat(chat.id); }}
@@ -320,7 +320,7 @@ export function AppSidebar() {
                          }
                        >
                             <button 
-                                class="rounded-md p-1.5 hover:bg-gray-200 dark:hover:bg-gray-600" 
+                                class="rounded-md p-1.5 bg:transparent hover:bg-gray-200 dark:hover:bg-gray-600" 
                                 title="Unpin chat"
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); unpinChat(chat.id); }}
                             >
@@ -328,7 +328,7 @@ export function AppSidebar() {
                             </button>
                        </Show>
                        <button 
-                          class="rounded-md p-1.5 hover:bg-gray-200 dark:hover:bg-gray-600" 
+                          class="rounded-md p-1.5 bg:transparent hover:bg-gray-200 dark:hover:bg-gray-600" 
                           title="Delete chat"
                           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setConfirmDeleteChatId(chat.id); }}
                         >
