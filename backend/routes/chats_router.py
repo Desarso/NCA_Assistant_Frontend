@@ -405,6 +405,26 @@ def read_conversation_messages(
     return {"status": "success", "messages": processed_messages}
 
 
+@chats_router.delete("/conversations/{conversation_id}")
+def delete_conversation(
+    request: Request,
+    conversation_id: str,
+    session: Session = Depends(get_session),
+):
+    
+    print("made it here")
+    current_user = request.state.user
+    conversation = session.get(Conversation, conversation_id)
+    if not conversation:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+
+    if conversation.user_id != current_user.uid:
+        raise HTTPException(status_code=403, detail="Access denied: You can only delete your own conversations")
+
+    session.delete(conversation)
+    session.commit()
+    return {"status": "success"}
+
 # Add this dictionary to track tool call IDs and their results
 tool_call_mapping: Dict[str, str] = {}
 
