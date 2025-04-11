@@ -13,7 +13,8 @@ const CURRENT_DB_VERSION = "1.0.2";
 const DB_VERSION_KEY = "indexeddb_version";
 
 //static class to access the message cache
-class DB {
+// Export the DB class
+export class DB {
   static db: IDBDatabase;
   static inited = false;
 
@@ -220,6 +221,54 @@ class DB {
     const store = DB.getStoreWrite("conversations");
     store.put({ id: "conversations", conversations });
   }
+
+  // Method to delete a specific conversation entry from IndexedDB
+  public static async deleteConversationEntry(id: string): Promise<void> {
+    if (!DB.inited) await DB.init();
+
+    try {
+      // 1. Get the current list
+      const currentConversations = await DB.getConversations();
+
+      // 2. Filter out the conversation to delete
+      const updatedConversations = currentConversations.filter(conv => conv.id !== id);
+
+      // 3. Write the updated list back
+      if (currentConversations.length !== updatedConversations.length) {
+        await DB.setConversations(updatedConversations);
+        console.log(`Removed conversation ${id} from IndexedDB conversations list.`);
+      } else {
+        console.log(`Conversation ${id} not found in IndexedDB conversations list.`);
+      }
+    } catch (error) {
+      console.error(`Error removing conversation ${id} from IndexedDB:`, error);
+      throw error; // Re-throw the error to be caught by the caller
+    }
+  }
+
+  // Method to delete specific message history from IndexedDB
+  public static async deleteMessageHistory(id: string): Promise<void> {
+    if (!DB.inited) await DB.init();
+
+    return new Promise((resolve, reject) => {
+      try {
+        const store = DB.getStoreWrite("messages");
+        const request = store.delete(id);
+
+        request.onsuccess = () => {
+          console.log(`Deleted message history for conversation ${id} from IndexedDB`);
+          resolve();
+        };
+        request.onerror = () => {
+          console.error(`Error deleting message history for conversation ${id}:`, request.error);
+          reject(request.error); // Reject on error
+        };
+      } catch (err) {
+        console.error("Exception during message history deletion:", err);
+        reject(err); // Reject on exception
+      }
+    });
+  }
 }
 
 export class MessageCache {
@@ -394,27 +443,41 @@ export class ConversationCache {
   }
 
   public static set(conversations: Conversation[]) {
-    //if empty array, don't set cache
-    if (conversations.length === 0) {
-      return;
-    }
-    
-    try {
-      sessionStorage.setItem(`conversations`, JSON.stringify(conversations));
-    } catch (error) {
-      // If we hit quota limits, clear all sessionStorage and try again
-      console.warn("Storage error encountered, clearing sessionStorage:", error);
-      sessionStorage.clear();
-      
-      // Try one more time after clearing
-      try {
-        sessionStorage.setItem(`conversations`, JSON.stringify(conversations));
-      } catch (secondError) {
-        console.error("Still failed to store in sessionStorage after clearing:", secondError);
-      }
-    }
-    
+    if (!conversations) return;
+
+    // Update session storage
+    const data = JSON.stringify(conversations);
+    sessionStorage.setItem("conversations", data);
+    sessionStorage.setItem("conversations_timestamp", Date.now().toString());
+
+    // Update IndexedDB
     DB.setConversations(conversations);
+  }
+  
+  // Method to delete a specific conversation from the cache
+  public static async delete(id: string): Promise<void> {
+    // 1. Update SessionStorage
+    try {
+      const storedData = sessionStorage.getItem("conversations");
+      if (storedData) {
+        const currentConvos = JSON.parse(storedData) as Conversation[];
+        const updatedConvos = currentConvos.filter(conv => conv.id !== id);
+        if (currentConvos.length !== updatedConvos.length) {
+           sessionStorage.setItem("conversations", JSON.stringify(updatedConvos));
+           sessionStorage.setItem("conversations_timestamp", Date.now().toString()); // Update timestamp
+           console.log(`Removed conversation ${id} from SessionStorage conversation list.`);
+        } else {
+           console.log(`Conversation ${id} not found in SessionStorage conversation list.`);
+        }
+      }
+    } catch (error) {
+      console.error(`Error removing conversation ${id} from SessionStorage:`, error);
+      // Decide if we should re-throw or just log
+      // throw error; // Optional: re-throw if critical
+    }
+
+    // 2. Update IndexedDB via DB class
+    await DB.deleteConversationEntry(id); // This already handles its own errors/logging
   }
 }
 
