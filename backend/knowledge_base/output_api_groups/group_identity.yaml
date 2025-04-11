@@ -1,0 +1,5031 @@
+- path: /identity
+  path_description: Provides operations to manage the identityContainer singleton.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get identity
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identityContainer
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            apiConnectors:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identityApiConnector'
+              description: Represents entry point for API connectors.
+              x-ms-navigationProperty: true
+            authenticationEventListeners:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.authenticationEventListener'
+              description: Represents listeners for custom authentication extension events in Azure AD for workforce and customers.
+              x-ms-navigationProperty: true
+            authenticationEventsFlows:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.authenticationEventsFlow'
+              description: Represents the entry point for self-service sign-up and sign-in user flows in both Microsoft Entra workforce and external tenants.
+              x-ms-navigationProperty: true
+            b2xUserFlows:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.b2xIdentityUserFlow'
+              description: Represents entry point for B2X/self-service sign-up identity userflows.
+              x-ms-navigationProperty: true
+            conditionalAccess:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.conditionalAccessRoot'
+              - type: object
+                nullable: true
+              description: the entry point for the Conditional Access (CA) object model.
+              x-ms-navigationProperty: true
+            customAuthenticationExtensions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.customAuthenticationExtension'
+              description: Represents custom extensions to authentication flows in Azure AD for workforce and customers.
+              x-ms-navigationProperty: true
+            identityProviders:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identityProviderBase'
+              x-ms-navigationProperty: true
+            userFlowAttributes:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identityUserFlowAttribute'
+              description: Represents entry point for identity userflow attributes.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.identityContainer'
+- path: /identity/apiConnectors
+  path_description: Provides operations to manage the apiConnectors property of the microsoft.graph.identityContainer entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List identityApiConnectors
+    description: Read the properties of an identityApiConnector object.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create identityApiConnector
+    description: Create a new identityApiConnector object.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identityApiConnector
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            authenticationConfiguration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.apiAuthenticationConfigurationBase'
+              - type: object
+                nullable: true
+              description: The object which describes the authentication configuration details for calling the API. Basic and PKCS 12 client certificate are supported.
+            displayName:
+              type: string
+              description: The name of the API connector.
+              nullable: true
+            targetUrl:
+              type: string
+              description: The URL of the API endpoint to call.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.identityApiConnector'
+- path: /identity/apiConnectors/{identityApiConnector-id}
+  path_description: Provides operations to manage the apiConnectors property of the microsoft.graph.identityContainer entity.
+  path_parameters:
+  - name: identityApiConnector-id
+    in: path
+    description: The unique identifier of identityApiConnector
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: identityApiConnector
+  methods:
+  - method: GET
+    summary: Get identityApiConnector
+    description: Read the properties of an identityApiConnector object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update identityApiConnector
+    description: Update the properties of an identityApiConnector object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identityApiConnector
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            authenticationConfiguration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.apiAuthenticationConfigurationBase'
+              - type: object
+                nullable: true
+              description: The object which describes the authentication configuration details for calling the API. Basic and PKCS 12 client certificate are supported.
+            displayName:
+              type: string
+              description: The name of the API connector.
+              nullable: true
+            targetUrl:
+              type: string
+              description: The URL of the API endpoint to call.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.identityApiConnector'
+  - method: DELETE
+    summary: Delete identityApiConnector
+    description: Delete an identityApiConnector object.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/apiConnectors/{identityApiConnector-id}/uploadClientCertificate
+  path_description: Provides operations to call the uploadClientCertificate method.
+  path_parameters:
+  - name: identityApiConnector-id
+    in: path
+    description: The unique identifier of identityApiConnector
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: identityApiConnector
+  methods:
+  - method: POST
+    summary: Invoke action uploadClientCertificate
+    description: Upload a PKCS 12 format key (.pfx) to an API connector's authentication configuration. The input is a base-64 encoded value of the PKCS 12 certificate contents. This method returns an apiConnector.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          pkcs12Value:
+            type: string
+            nullable: true
+          password:
+            type: string
+            nullable: true
+- path: /identity/apiConnectors/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/authenticationEventListeners
+  path_description: Provides operations to manage the authenticationEventListeners property of the microsoft.graph.identityContainer entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List authenticationEventListeners
+    description: 'Get a list of the authenticationEventListener objects and their properties. The following derived types are supported:'
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create authenticationEventListener
+    description: Create a new authenticationEventListener object. You can create one of the following subtypes that are derived from authenticationEventListener.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationEventListener
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            authenticationEventsFlowId:
+              type: string
+              description: Indicates the authenticationEventListener is associated with an authenticationEventsFlow. Read-only.
+              nullable: true
+            conditions:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.authenticationConditions'
+              - type: object
+                nullable: true
+              description: The conditions on which this authenticationEventListener should trigger.
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.onAttributeCollectionListener': '#/components/schemas/microsoft.graph.onAttributeCollectionListener'
+              '#microsoft.graph.onAuthenticationMethodLoadStartListener': '#/components/schemas/microsoft.graph.onAuthenticationMethodLoadStartListener'
+              '#microsoft.graph.onInteractiveAuthFlowStartListener': '#/components/schemas/microsoft.graph.onInteractiveAuthFlowStartListener'
+              '#microsoft.graph.onTokenIssuanceStartListener': '#/components/schemas/microsoft.graph.onTokenIssuanceStartListener'
+              '#microsoft.graph.onUserCreateStartListener': '#/components/schemas/microsoft.graph.onUserCreateStartListener'
+- path: /identity/authenticationEventListeners/{authenticationEventListener-id}
+  path_description: Provides operations to manage the authenticationEventListeners property of the microsoft.graph.identityContainer entity.
+  path_parameters:
+  - name: authenticationEventListener-id
+    in: path
+    description: The unique identifier of authenticationEventListener
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventListener
+  methods:
+  - method: GET
+    summary: Get authenticationEventListener
+    description: Read the properties and relationships of an authenticationEventListener object. The @odata.type property in the response object indicates the type of the authenticationEventListener object. The following derived types are currently supported.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update authenticationEventListener
+    description: Update the properties of an authenticationEventListener object. You must specify the @odata.type property and the value of the authenticationEventListener object type to update. The following derived types are currently supported.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationEventListener
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            authenticationEventsFlowId:
+              type: string
+              description: Indicates the authenticationEventListener is associated with an authenticationEventsFlow. Read-only.
+              nullable: true
+            conditions:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.authenticationConditions'
+              - type: object
+                nullable: true
+              description: The conditions on which this authenticationEventListener should trigger.
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.onAttributeCollectionListener': '#/components/schemas/microsoft.graph.onAttributeCollectionListener'
+              '#microsoft.graph.onAuthenticationMethodLoadStartListener': '#/components/schemas/microsoft.graph.onAuthenticationMethodLoadStartListener'
+              '#microsoft.graph.onInteractiveAuthFlowStartListener': '#/components/schemas/microsoft.graph.onInteractiveAuthFlowStartListener'
+              '#microsoft.graph.onTokenIssuanceStartListener': '#/components/schemas/microsoft.graph.onTokenIssuanceStartListener'
+              '#microsoft.graph.onUserCreateStartListener': '#/components/schemas/microsoft.graph.onUserCreateStartListener'
+  - method: DELETE
+    summary: Delete authenticationEventListener
+    description: Delete an authenticationEventListener object. The following derived types are currently supported.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/authenticationEventListeners/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/authenticationEventsFlows
+  path_description: Provides operations to manage the authenticationEventsFlows property of the microsoft.graph.identityContainer entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List authenticationEventsFlows
+    description: "Get a collection of authentication events policies that are derived from authenticationEventsFlow. The following derived subtypes are supported: \n- externalUsersSelfServiceSignupEventsFlow"
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create authenticationEventsFlow
+    description: 'Create a new authenticationEventsFlow object that is of the type specified in the request body. The following derived subtypes are supported:
+
+      - externalUsersSelfServiceSignupEventsFlow object type.'
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationEventsFlow
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            conditions:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.authenticationConditions'
+              - type: object
+                nullable: true
+              description: The conditions representing the context of the authentication request that's used to decide whether the events policy is invoked.  Supports $filter (eq). See support for filtering on user flows for syntax information.
+            description:
+              type: string
+              description: The description of the events policy.
+              nullable: true
+            displayName:
+              type: string
+              description: Required. The display name for the events policy.
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.externalUsersSelfServiceSignUpEventsFlow': '#/components/schemas/microsoft.graph.externalUsersSelfServiceSignUpEventsFlow'
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}
+  path_description: Provides operations to manage the authenticationEventsFlows property of the microsoft.graph.identityContainer entity.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: Get authenticationEventsFlow
+    description: 'Retrieve the properties and relationships of a specific authenticationEventsFlow object by ID. The @odata.type property in the response object indicates the type of the object, which can be one of the following derived subtypes:
+
+      - externalUsersSelfServiceSignupEventsFlow'
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update authenticationEventsFlow
+    description: 'Update the properties of an authenticationEventsFlow object by ID. You must specify the @odata.type property and the value of the authenticationEventsFlow object type to update. The following derived subtypes are supported:
+
+      - externalUsersSelfServiceSignupEventsFlow'
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationEventsFlow
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            conditions:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.authenticationConditions'
+              - type: object
+                nullable: true
+              description: The conditions representing the context of the authentication request that's used to decide whether the events policy is invoked.  Supports $filter (eq). See support for filtering on user flows for syntax information.
+            description:
+              type: string
+              description: The description of the events policy.
+              nullable: true
+            displayName:
+              type: string
+              description: Required. The display name for the events policy.
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.externalUsersSelfServiceSignUpEventsFlow': '#/components/schemas/microsoft.graph.externalUsersSelfServiceSignUpEventsFlow'
+  - method: DELETE
+    summary: Delete authenticationEventsFlow
+    description: 'Delete a specific authenticationEventsFlow resource by ID. This operation also removes or unlinks all applications from the flow, which disables the customized authentication experience defined for the application.  The following derived subtypes are supported:
+
+      - externalUsersSelfServiceSignupEventsFlow'
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/conditions
+  path_description: No description provided.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: Get conditions property value
+    description: The conditions representing the context of the authentication request that's used to decide whether the events policy is invoked.  Supports $filter (eq). See support for filtering on user flows for syntax information.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/conditions/applications/includeApplications
+  path_description: Provides operations to manage the includeApplications property of the microsoft.graph.authenticationConditionsApplications entity.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: List includeApplications (for a user flow)
+    description: 'List the applications linked to an external identities self-service sign up user flow that''s represented by an externalUsersSelfServiceSignupEventsFlow object. These are the applications for which the authentication experience that''s defined by the user flow is enabled. To find the user flow that''s linked to an application, see Example 4: List user flow associated with specific application ID.'
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add includeApplication (to a user flow)
+    description: Add or link an application to a user flow, or authenticationEventsFlow. This enables the authentication experience defined by the user flow to be enabled for the application. An application can only be linked to one user flow. The app must have an associated service principal in the tenant.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        title: authenticationConditionApplication
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          appId:
+            type: string
+            description: The identifier for an application corresponding to a condition which will trigger an authenticationEventListener.
+          '@odata.type':
+            type: string
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/conditions/applications/includeApplications/{authenticationConditionApplication-appId}
+  path_description: Provides operations to manage the includeApplications property of the microsoft.graph.authenticationConditionsApplications entity.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  - name: authenticationConditionApplication-appId
+    in: path
+    description: The unique identifier of authenticationConditionApplication
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationConditionApplication
+  methods:
+  - method: GET
+    summary: Get includeApplications from identity
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property includeApplications in identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        title: authenticationConditionApplication
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          appId:
+            type: string
+            description: The identifier for an application corresponding to a condition which will trigger an authenticationEventListener.
+          '@odata.type':
+            type: string
+  - method: DELETE
+    summary: Delete authenticationConditionApplication (from a user flow)
+    description: Remove or unlink an application from an authenticationEventsFlow object. This disables the customized authentication experience defined for the application.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/conditions/applications/includeApplications/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow
+  path_description: Casts the previous resource to externalUsersSelfServiceSignUpEventsFlow.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.authenticationEventsFlow as microsoft.graph.externalUsersSelfServiceSignUpEventsFlow
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/conditions
+  path_description: No description provided.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: Get conditions property value
+    description: The conditions representing the context of the authentication request that's used to decide whether the events policy is invoked.  Supports $filter (eq). See support for filtering on user flows for syntax information.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/conditions/applications/includeApplications
+  path_description: Provides operations to manage the includeApplications property of the microsoft.graph.authenticationConditionsApplications entity.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: Get includeApplications from identity
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to includeApplications for identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        title: authenticationConditionApplication
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          appId:
+            type: string
+            description: The identifier for an application corresponding to a condition which will trigger an authenticationEventListener.
+          '@odata.type':
+            type: string
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/conditions/applications/includeApplications/{authenticationConditionApplication-appId}
+  path_description: Provides operations to manage the includeApplications property of the microsoft.graph.authenticationConditionsApplications entity.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  - name: authenticationConditionApplication-appId
+    in: path
+    description: The unique identifier of authenticationConditionApplication
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationConditionApplication
+  methods:
+  - method: GET
+    summary: Get includeApplications from identity
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property includeApplications in identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        title: authenticationConditionApplication
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          appId:
+            type: string
+            description: The identifier for an application corresponding to a condition which will trigger an authenticationEventListener.
+          '@odata.type':
+            type: string
+  - method: DELETE
+    summary: Delete navigation property includeApplications for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/conditions/applications/includeApplications/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/onAttributeCollection
+  path_description: No description provided.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: Get onAttributeCollection property value
+    description: The configuration for what to invoke when attributes are ready to be collected from the user.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/onAttributeCollection/graph.onAttributeCollectionExternalUsersSelfServiceSignUp
+  path_description: Casts the previous resource to onAttributeCollectionExternalUsersSelfServiceSignUp.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.onAttributeCollectionHandler as microsoft.graph.onAttributeCollectionExternalUsersSelfServiceSignUp
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/onAttributeCollection/graph.onAttributeCollectionExternalUsersSelfServiceSignUp/attributes
+  path_description: Provides operations to manage the attributes property of the microsoft.graph.onAttributeCollectionExternalUsersSelfServiceSignUp entity.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: List attributes (of a user flow)
+    description: Get an identityUserFlowAttribute collection associated with an external identities self-service user flow represented by an externalUsersSelfServiceSignupEventsFlow object. These attributes are collected from the user during the authentication experience defined by the user flow.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/onAttributeCollection/graph.onAttributeCollectionExternalUsersSelfServiceSignUp/attributes/{identityUserFlowAttribute-id}/$ref
+  path_description: Provides operations to manage the collection of identityContainer entities.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  - name: identityUserFlowAttribute-id
+    in: path
+    description: The unique identifier of identityUserFlowAttribute
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: identityUserFlowAttribute
+  methods:
+  - method: DELETE
+    summary: Delete ref of navigation property attributes for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/onAttributeCollection/graph.onAttributeCollectionExternalUsersSelfServiceSignUp/attributes/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/onAttributeCollection/graph.onAttributeCollectionExternalUsersSelfServiceSignUp/attributes/$ref
+  path_description: Provides operations to manage the collection of identityContainer entities.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: List attributes (of a user flow)
+    description: Get an identityUserFlowAttribute collection associated with an external identities self-service user flow represented by an externalUsersSelfServiceSignupEventsFlow object. These attributes are collected from the user during the authentication experience defined by the user flow.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add attribute (to user flow)
+    description: Add an attribute to an external identities self-service sign up user flow that's represented by an externalUsersSelfServiceSignupEventsFlow object. You can add both custom and built-in attributes to a user flow. The attribute is added to both the attributeCollection> attributes and attributeCollection> attributeCollectionPage > views collections on the user flow. In the views collection, the attribute is assigned the default settings. You can PATCH the user flow to customize the settings of the attribute on the views object, for example, marking it as required or updating the allowed input types.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete ref of navigation property attributes for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    - name: '@id'
+      in: query
+      description: The delete Uri
+      required: true
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/onAuthenticationMethodLoadStart
+  path_description: No description provided.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: Get onAuthenticationMethodLoadStart property value
+    description: Required. The configuration for what to invoke when authentication methods are ready to be presented to the user. Must have at least one identity provider linked.  Supports $filter (eq). See support for filtering on user flows for syntax information.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/onAuthenticationMethodLoadStart/graph.onAuthenticationMethodLoadStartExternalUsersSelfServiceSignUp
+  path_description: Casts the previous resource to onAuthenticationMethodLoadStartExternalUsersSelfServiceSignUp.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.onAuthenticationMethodLoadStartHandler as microsoft.graph.onAuthenticationMethodLoadStartExternalUsersSelfServiceSignUp
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/onAuthenticationMethodLoadStart/graph.onAuthenticationMethodLoadStartExternalUsersSelfServiceSignUp/identityProviders
+  path_description: Provides operations to manage the identityProviders property of the microsoft.graph.onAuthenticationMethodLoadStartExternalUsersSelfServiceSignUp entity.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: List identityProviders (in a user flow)
+    description: Get the identity providers that are defined for an external identities self-service sign up user flow that's represented by an externalUsersSelfServiceSignupEventsFlow object type.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/onAuthenticationMethodLoadStart/graph.onAuthenticationMethodLoadStartExternalUsersSelfServiceSignUp/identityProviders/{identityProviderBase-id}/$ref
+  path_description: Provides operations to manage the collection of identityContainer entities.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  - name: identityProviderBase-id
+    in: path
+    description: The unique identifier of identityProviderBase
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: identityProviderBase
+  methods:
+  - method: DELETE
+    summary: Delete ref of navigation property identityProviders for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/onAuthenticationMethodLoadStart/graph.onAuthenticationMethodLoadStartExternalUsersSelfServiceSignUp/identityProviders/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/authenticationEventsFlows/{authenticationEventsFlow-id}/graph.externalUsersSelfServiceSignUpEventsFlow/onAuthenticationMethodLoadStart/graph.onAuthenticationMethodLoadStartExternalUsersSelfServiceSignUp/identityProviders/$ref
+  path_description: Provides operations to manage the collection of identityContainer entities.
+  path_parameters:
+  - name: authenticationEventsFlow-id
+    in: path
+    description: The unique identifier of authenticationEventsFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationEventsFlow
+  methods:
+  - method: GET
+    summary: List identityProviders (in a user flow)
+    description: Get the identity providers that are defined for an external identities self-service sign up user flow that's represented by an externalUsersSelfServiceSignupEventsFlow object type.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add identityProvider (to a user flow)
+    description: Add an identity provider to an external identities self-service user flow represented by an externalUsersSelfServiceSignupEventsFlow object type. The identity provider must first be configured in the tenant.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete ref of navigation property identityProviders for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    - name: '@id'
+      in: query
+      description: The delete Uri
+      required: true
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/authenticationEventsFlows/graph.externalUsersSelfServiceSignUpEventsFlow
+  path_description: Casts the previous resource to externalUsersSelfServiceSignUpEventsFlow.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.externalUsersSelfServiceSignUpEventsFlow in the microsoft.graph.authenticationEventsFlow collection
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/authenticationEventsFlows/graph.externalUsersSelfServiceSignUpEventsFlow/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/b2xUserFlows
+  path_description: Provides operations to manage the b2xUserFlows property of the microsoft.graph.identityContainer entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List b2xIdentityUserFlows
+    description: Retrieve a list of b2xIdentityUserFlow objects.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create b2xIdentityUserFlow
+    description: Create a new b2xIdentityUserFlow object.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.identityUserFlow'
+        - title: b2xIdentityUserFlow
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            apiConnectorConfiguration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.userFlowApiConnectorConfiguration'
+              - type: object
+                nullable: true
+              description: Configuration for enabling an API connector for use as part of the self-service sign-up user flow. You can only obtain the value of this object using Get userFlowApiConnectorConfiguration.
+            identityProviders:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identityProvider'
+              description: The identity providers included in the user flow.
+              x-ms-navigationProperty: true
+            languages:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.userFlowLanguageConfiguration'
+              description: The languages supported for customization within the user flow. Language customization is enabled by default in self-service sign-up user flow. You can't create custom languages in self-service sign-up user flows.
+              x-ms-navigationProperty: true
+            userAttributeAssignments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identityUserFlowAttributeAssignment'
+              description: The user attribute assignments included in the user flow.
+              x-ms-navigationProperty: true
+            userFlowIdentityProviders:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identityProviderBase'
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.b2xIdentityUserFlow'
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}
+  path_description: Provides operations to manage the b2xUserFlows property of the microsoft.graph.identityContainer entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: Get b2xIdentityUserFlow
+    description: Retrieve the properties and relationships of a b2xIdentityUserFlow object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property b2xUserFlows in identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.identityUserFlow'
+        - title: b2xIdentityUserFlow
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            apiConnectorConfiguration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.userFlowApiConnectorConfiguration'
+              - type: object
+                nullable: true
+              description: Configuration for enabling an API connector for use as part of the self-service sign-up user flow. You can only obtain the value of this object using Get userFlowApiConnectorConfiguration.
+            identityProviders:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identityProvider'
+              description: The identity providers included in the user flow.
+              x-ms-navigationProperty: true
+            languages:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.userFlowLanguageConfiguration'
+              description: The languages supported for customization within the user flow. Language customization is enabled by default in self-service sign-up user flow. You can't create custom languages in self-service sign-up user flows.
+              x-ms-navigationProperty: true
+            userAttributeAssignments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identityUserFlowAttributeAssignment'
+              description: The user attribute assignments included in the user flow.
+              x-ms-navigationProperty: true
+            userFlowIdentityProviders:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identityProviderBase'
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.b2xIdentityUserFlow'
+  - method: DELETE
+    summary: Delete b2xIdentityUserFlow
+    description: Delete a b2xIdentityUserFlow object.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/apiConnectorConfiguration
+  path_description: No description provided.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: Get userFlowApiConnectorConfiguration
+    description: Get the apiConnectorConfiguration property in a b2xIdentityUserFlow to detail the API connectors enabled for the user flow.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/apiConnectorConfiguration/postAttributeCollection
+  path_description: Provides operations to manage the postAttributeCollection property of the microsoft.graph.userFlowApiConnectorConfiguration entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: Get postAttributeCollection from identity
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property postAttributeCollection in identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identityApiConnector
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            authenticationConfiguration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.apiAuthenticationConfigurationBase'
+              - type: object
+                nullable: true
+              description: The object which describes the authentication configuration details for calling the API. Basic and PKCS 12 client certificate are supported.
+            displayName:
+              type: string
+              description: The name of the API connector.
+              nullable: true
+            targetUrl:
+              type: string
+              description: The URL of the API endpoint to call.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.identityApiConnector'
+  - method: DELETE
+    summary: Delete navigation property postAttributeCollection for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/apiConnectorConfiguration/postAttributeCollection/$ref
+  path_description: Provides operations to manage the collection of identityContainer entities.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: Get ref of postAttributeCollection from identity
+    description: No description provided.
+    parameters: []
+    requestBody: null
+  - method: PUT
+    summary: Update the ref of navigation property postAttributeCollection in identity
+    description: No description provided.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete ref of navigation property postAttributeCollection for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/apiConnectorConfiguration/postAttributeCollection/uploadClientCertificate
+  path_description: Provides operations to call the uploadClientCertificate method.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: POST
+    summary: Invoke action uploadClientCertificate
+    description: Upload a PKCS 12 format key (.pfx) to an API connector's authentication configuration. The input is a base-64 encoded value of the PKCS 12 certificate contents. This method returns an apiConnector.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          pkcs12Value:
+            type: string
+            nullable: true
+          password:
+            type: string
+            nullable: true
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/apiConnectorConfiguration/postFederationSignup
+  path_description: Provides operations to manage the postFederationSignup property of the microsoft.graph.userFlowApiConnectorConfiguration entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: Get postFederationSignup from identity
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property postFederationSignup in identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identityApiConnector
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            authenticationConfiguration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.apiAuthenticationConfigurationBase'
+              - type: object
+                nullable: true
+              description: The object which describes the authentication configuration details for calling the API. Basic and PKCS 12 client certificate are supported.
+            displayName:
+              type: string
+              description: The name of the API connector.
+              nullable: true
+            targetUrl:
+              type: string
+              description: The URL of the API endpoint to call.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.identityApiConnector'
+  - method: DELETE
+    summary: Delete navigation property postFederationSignup for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/apiConnectorConfiguration/postFederationSignup/$ref
+  path_description: Provides operations to manage the collection of identityContainer entities.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: Get ref of postFederationSignup from identity
+    description: No description provided.
+    parameters: []
+    requestBody: null
+  - method: PUT
+    summary: Update the ref of navigation property postFederationSignup in identity
+    description: No description provided.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete ref of navigation property postFederationSignup for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/apiConnectorConfiguration/postFederationSignup/uploadClientCertificate
+  path_description: Provides operations to call the uploadClientCertificate method.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: POST
+    summary: Invoke action uploadClientCertificate
+    description: Upload a PKCS 12 format key (.pfx) to an API connector's authentication configuration. The input is a base-64 encoded value of the PKCS 12 certificate contents. This method returns an apiConnector.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          pkcs12Value:
+            type: string
+            nullable: true
+          password:
+            type: string
+            nullable: true
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/identityProviders
+  path_description: Provides operations to manage the identityProviders property of the microsoft.graph.b2xIdentityUserFlow entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: List identityProviders
+    description: Get the identity providers in a b2xIdentityUserFlow object.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/identityProviders/{identityProvider-id}
+  path_description: Provides operations to manage the identityProviders property of the microsoft.graph.b2xIdentityUserFlow entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  - name: identityProvider-id
+    in: path
+    description: The unique identifier of identityProvider
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: identityProvider
+  methods:
+  - method: GET
+    summary: Get identityProviders from identity
+    description: The identity providers included in the user flow.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/identityProviders/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/languages
+  path_description: Provides operations to manage the languages property of the microsoft.graph.b2xIdentityUserFlow entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: List languages
+    description: Retrieve a list of languages supported for customization in a B2X user flow.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to languages for identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: userFlowLanguageConfiguration
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: The language name to display. This property is read-only.
+              nullable: true
+            isEnabled:
+              type: boolean
+              description: Indicates whether the language is enabled within the user flow.
+            defaultPages:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.userFlowLanguagePage'
+              description: Collection of pages with the default content to display in a user flow for a specified language. This collection doesn't allow any kind of modification.
+              x-ms-navigationProperty: true
+            overridesPages:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.userFlowLanguagePage'
+              description: Collection of pages with the overrides messages to display in a user flow for a specified language. This collection only allows you to modify the content of the page, any other modification isn't allowed (creation or deletion of pages).
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.userFlowLanguageConfiguration'
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/languages/{userFlowLanguageConfiguration-id}
+  path_description: Provides operations to manage the languages property of the microsoft.graph.b2xIdentityUserFlow entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  - name: userFlowLanguageConfiguration-id
+    in: path
+    description: The unique identifier of userFlowLanguageConfiguration
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: userFlowLanguageConfiguration
+  methods:
+  - method: GET
+    summary: Get userFlowLanguageConfiguration
+    description: 'Read the properties and relationships of a userFlowLanguageConfiguration object. These objects represent a language available in a user flow. Note: Language customization is enabled by default in Microsoft Entra user flows.'
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property languages in identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: userFlowLanguageConfiguration
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: The language name to display. This property is read-only.
+              nullable: true
+            isEnabled:
+              type: boolean
+              description: Indicates whether the language is enabled within the user flow.
+            defaultPages:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.userFlowLanguagePage'
+              description: Collection of pages with the default content to display in a user flow for a specified language. This collection doesn't allow any kind of modification.
+              x-ms-navigationProperty: true
+            overridesPages:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.userFlowLanguagePage'
+              description: Collection of pages with the overrides messages to display in a user flow for a specified language. This collection only allows you to modify the content of the page, any other modification isn't allowed (creation or deletion of pages).
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.userFlowLanguageConfiguration'
+  - method: DELETE
+    summary: Delete navigation property languages for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/languages/{userFlowLanguageConfiguration-id}/defaultPages
+  path_description: Provides operations to manage the defaultPages property of the microsoft.graph.userFlowLanguageConfiguration entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  - name: userFlowLanguageConfiguration-id
+    in: path
+    description: The unique identifier of userFlowLanguageConfiguration
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: userFlowLanguageConfiguration
+  methods:
+  - method: GET
+    summary: Get userFlowLanguagePage
+    description: Read the values in a userFlowLanguagePage object for a language in a user flow. These values are shown to a user during a user journey defined by a user flow.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to defaultPages for identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: userFlowLanguagePage
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.userFlowLanguagePage'
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/languages/{userFlowLanguageConfiguration-id}/defaultPages/{userFlowLanguagePage-id}
+  path_description: Provides operations to manage the defaultPages property of the microsoft.graph.userFlowLanguageConfiguration entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  - name: userFlowLanguageConfiguration-id
+    in: path
+    description: The unique identifier of userFlowLanguageConfiguration
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: userFlowLanguageConfiguration
+  - name: userFlowLanguagePage-id
+    in: path
+    description: The unique identifier of userFlowLanguagePage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: userFlowLanguagePage
+  methods:
+  - method: GET
+    summary: Get defaultPages from identity
+    description: Collection of pages with the default content to display in a user flow for a specified language. This collection doesn't allow any kind of modification.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property defaultPages in identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: userFlowLanguagePage
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.userFlowLanguagePage'
+  - method: DELETE
+    summary: Delete navigation property defaultPages for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/languages/{userFlowLanguageConfiguration-id}/defaultPages/{userFlowLanguagePage-id}/$value
+  path_description: Provides operations to manage the media for the identityContainer entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  - name: userFlowLanguageConfiguration-id
+    in: path
+    description: The unique identifier of userFlowLanguageConfiguration
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: userFlowLanguageConfiguration
+  - name: userFlowLanguagePage-id
+    in: path
+    description: The unique identifier of userFlowLanguagePage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: userFlowLanguagePage
+  methods:
+  - method: GET
+    summary: Get userFlowLanguagePage
+    description: Read the values in a userFlowLanguagePage object for a language in a user flow. These values are shown to a user during a user journey defined by a user flow.
+    parameters: []
+    requestBody: null
+  - method: PUT
+    summary: Update media content for the navigation property defaultPages in identity
+    description: The unique identifier for an entity. Read-only.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete media content for the navigation property defaultPages in identity
+    description: The unique identifier for an entity. Read-only.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/languages/{userFlowLanguageConfiguration-id}/defaultPages/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  - name: userFlowLanguageConfiguration-id
+    in: path
+    description: The unique identifier of userFlowLanguageConfiguration
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: userFlowLanguageConfiguration
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/languages/{userFlowLanguageConfiguration-id}/overridesPages
+  path_description: Provides operations to manage the overridesPages property of the microsoft.graph.userFlowLanguageConfiguration entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  - name: userFlowLanguageConfiguration-id
+    in: path
+    description: The unique identifier of userFlowLanguageConfiguration
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: userFlowLanguageConfiguration
+  methods:
+  - method: GET
+    summary: List overridesPages
+    description: Get the userFlowLanguagePage resources from the overridesPages navigation property. These pages are used to customize the values shown to the user during a user journey in a user flow.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to overridesPages for identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: userFlowLanguagePage
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.userFlowLanguagePage'
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/languages/{userFlowLanguageConfiguration-id}/overridesPages/{userFlowLanguagePage-id}
+  path_description: Provides operations to manage the overridesPages property of the microsoft.graph.userFlowLanguageConfiguration entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  - name: userFlowLanguageConfiguration-id
+    in: path
+    description: The unique identifier of userFlowLanguageConfiguration
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: userFlowLanguageConfiguration
+  - name: userFlowLanguagePage-id
+    in: path
+    description: The unique identifier of userFlowLanguagePage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: userFlowLanguagePage
+  methods:
+  - method: GET
+    summary: Get overridesPages from identity
+    description: Collection of pages with the overrides messages to display in a user flow for a specified language. This collection only allows you to modify the content of the page, any other modification isn't allowed (creation or deletion of pages).
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update userFlowLanguagePage
+    description: Update the values in an userFlowLanguagePage object. You may only update the values in an overridesPage, which is used to customize the values shown to a user during a user journey defined by a user flow.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: userFlowLanguagePage
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.userFlowLanguagePage'
+  - method: DELETE
+    summary: Delete userFlowLanguagePage
+    description: Deletes the values in an userFlowLanguagePage object. You may only delete the values in an overridesPage, which is used to customize the values shown to a user during a user journey defined by a user flow.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/languages/{userFlowLanguageConfiguration-id}/overridesPages/{userFlowLanguagePage-id}/$value
+  path_description: Provides operations to manage the media for the identityContainer entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  - name: userFlowLanguageConfiguration-id
+    in: path
+    description: The unique identifier of userFlowLanguageConfiguration
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: userFlowLanguageConfiguration
+  - name: userFlowLanguagePage-id
+    in: path
+    description: The unique identifier of userFlowLanguagePage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: userFlowLanguagePage
+  methods:
+  - method: GET
+    summary: List overridesPages
+    description: Get the userFlowLanguagePage resources from the overridesPages navigation property. These pages are used to customize the values shown to the user during a user journey in a user flow.
+    parameters: []
+    requestBody: null
+  - method: PUT
+    summary: Update userFlowLanguagePage
+    description: Update the values in an userFlowLanguagePage object. You may only update the values in an overridesPage, which is used to customize the values shown to a user during a user journey defined by a user flow.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete userFlowLanguagePage
+    description: Deletes the values in an userFlowLanguagePage object. You may only delete the values in an overridesPage, which is used to customize the values shown to a user during a user journey defined by a user flow.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/languages/{userFlowLanguageConfiguration-id}/overridesPages/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  - name: userFlowLanguageConfiguration-id
+    in: path
+    description: The unique identifier of userFlowLanguageConfiguration
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: userFlowLanguageConfiguration
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/languages/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/userAttributeAssignments
+  path_description: Provides operations to manage the userAttributeAssignments property of the microsoft.graph.b2xIdentityUserFlow entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: List userAttributeAssignments
+    description: Get the identityUserFlowAttributeAssignment resources from the userAttributeAssignments navigation property in a b2xIdentityUserFlow.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create userAttributeAssignments
+    description: Create a new identityUserFlowAttributeAssignment object in a b2xIdentityUserFlow.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identityUserFlowAttributeAssignment
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: The display name of the identityUserFlowAttribute within a user flow.
+              nullable: true
+            isOptional:
+              type: boolean
+              description: Determines whether the identityUserFlowAttribute is optional. true means the user doesn't have to provide a value. false means the user can't complete sign-up without providing a value.
+            requiresVerification:
+              type: boolean
+              description: Determines whether the identityUserFlowAttribute requires verification, and is only used for verifying the user's phone number or email address.
+            userAttributeValues:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.userAttributeValuesItem'
+              description: The input options for the user flow attribute. Only applicable when the userInputType is radioSingleSelect, dropdownSingleSelect, or checkboxMultiSelect.
+            userInputType:
+              $ref: '#/components/schemas/microsoft.graph.identityUserFlowAttributeInputType'
+            userAttribute:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identityUserFlowAttribute'
+              - type: object
+                nullable: true
+              description: The user attribute that you want to add to your user flow.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.identityUserFlowAttributeAssignment'
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/userAttributeAssignments/{identityUserFlowAttributeAssignment-id}
+  path_description: Provides operations to manage the userAttributeAssignments property of the microsoft.graph.b2xIdentityUserFlow entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  - name: identityUserFlowAttributeAssignment-id
+    in: path
+    description: The unique identifier of identityUserFlowAttributeAssignment
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: identityUserFlowAttributeAssignment
+  methods:
+  - method: GET
+    summary: Get identityUserFlowAttributeAssignment
+    description: Read the properties and relationships of an identityUserFlowAttributeAssignment object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update identityUserFlowAttributeAssignment
+    description: Update the properties of a identityUserFlowAttributeAssignment object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identityUserFlowAttributeAssignment
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: The display name of the identityUserFlowAttribute within a user flow.
+              nullable: true
+            isOptional:
+              type: boolean
+              description: Determines whether the identityUserFlowAttribute is optional. true means the user doesn't have to provide a value. false means the user can't complete sign-up without providing a value.
+            requiresVerification:
+              type: boolean
+              description: Determines whether the identityUserFlowAttribute requires verification, and is only used for verifying the user's phone number or email address.
+            userAttributeValues:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.userAttributeValuesItem'
+              description: The input options for the user flow attribute. Only applicable when the userInputType is radioSingleSelect, dropdownSingleSelect, or checkboxMultiSelect.
+            userInputType:
+              $ref: '#/components/schemas/microsoft.graph.identityUserFlowAttributeInputType'
+            userAttribute:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identityUserFlowAttribute'
+              - type: object
+                nullable: true
+              description: The user attribute that you want to add to your user flow.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.identityUserFlowAttributeAssignment'
+  - method: DELETE
+    summary: Delete userAttributeAssignment
+    description: Delete an identityUserFlowAttributeAssignment object.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/userAttributeAssignments/{identityUserFlowAttributeAssignment-id}/userAttribute
+  path_description: Provides operations to manage the userAttribute property of the microsoft.graph.identityUserFlowAttributeAssignment entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  - name: identityUserFlowAttributeAssignment-id
+    in: path
+    description: The unique identifier of identityUserFlowAttributeAssignment
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: identityUserFlowAttributeAssignment
+  methods:
+  - method: GET
+    summary: Get userAttribute from identity
+    description: The user attribute that you want to add to your user flow.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/userAttributeAssignments/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/userAttributeAssignments/getOrder()
+  path_description: Provides operations to call the getOrder method.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: Invoke function getOrder
+    description: Get the order of identityUserFlowAttributeAssignments being collected within a user flow.
+    parameters: []
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/userAttributeAssignments/setOrder
+  path_description: Provides operations to call the setOrder method.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: POST
+    summary: Invoke action setOrder
+    description: Set the order of identityUserFlowAttributeAssignments being collected within a user flow.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          newAssignmentOrder:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.assignmentOrder'
+            - type: object
+              nullable: true
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/userFlowIdentityProviders
+  path_description: Provides operations to manage the userFlowIdentityProviders property of the microsoft.graph.b2xIdentityUserFlow entity.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: Get userFlowIdentityProviders from identity
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/userFlowIdentityProviders/{identityProviderBase-id}/$ref
+  path_description: Provides operations to manage the collection of identityContainer entities.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  - name: identityProviderBase-id
+    in: path
+    description: The unique identifier of identityProviderBase
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: identityProviderBase
+  methods:
+  - method: DELETE
+    summary: Delete ref of navigation property userFlowIdentityProviders for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/userFlowIdentityProviders/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/b2xUserFlows/{b2xIdentityUserFlow-id}/userFlowIdentityProviders/$ref
+  path_description: Provides operations to manage the collection of identityContainer entities.
+  path_parameters:
+  - name: b2xIdentityUserFlow-id
+    in: path
+    description: The unique identifier of b2xIdentityUserFlow
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: b2xIdentityUserFlow
+  methods:
+  - method: GET
+    summary: Get ref of userFlowIdentityProviders from identity
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property ref to userFlowIdentityProviders for identity
+    description: No description provided.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete ref of navigation property userFlowIdentityProviders for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    - name: '@id'
+      in: query
+      description: The delete Uri
+      required: true
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/b2xUserFlows/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/conditionalAccess/authenticationContextClassReferences
+  path_description: Provides operations to manage the authenticationContextClassReferences property of the microsoft.graph.conditionalAccessRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List authenticationContextClassReferences
+    description: Retrieve a list of authenticationContextClassReference objects.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to authenticationContextClassReferences for identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationContextClassReference
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: A short explanation of the policies that are enforced by authenticationContextClassReference. This value should be used to provide secondary text to describe the authentication context class reference when building user-facing admin experiences. For example, a selection UX.
+              nullable: true
+            displayName:
+              type: string
+              description: The display name is the friendly name of the authenticationContextClassReference object. This value should be used to identify the authentication context class reference when building user-facing admin experiences. For example, a selection UX.
+              nullable: true
+            isAvailable:
+              type: boolean
+              description: Indicates whether the authenticationContextClassReference has been published by the security admin and is ready for use by apps. When it's set to false, it shouldn't be shown in authentication context selection UX, or used to protect app resources. It's shown and available for Conditional Access policy authoring. The default value is false.  Supports $filter (eq).
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.authenticationContextClassReference'
+- path: /identity/conditionalAccess/authenticationContextClassReferences/{authenticationContextClassReference-id}
+  path_description: Provides operations to manage the authenticationContextClassReferences property of the microsoft.graph.conditionalAccessRoot entity.
+  path_parameters:
+  - name: authenticationContextClassReference-id
+    in: path
+    description: The unique identifier of authenticationContextClassReference
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationContextClassReference
+  methods:
+  - method: GET
+    summary: Get authenticationContextClassReference
+    description: Retrieve the properties and relationships of a authenticationContextClassReference object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Create or Update authenticationContextClassReference
+    description: Create an authenticationContextClassReference object, if the ID has not been used. If ID has been used, this call updates the authenticationContextClassReference object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationContextClassReference
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: A short explanation of the policies that are enforced by authenticationContextClassReference. This value should be used to provide secondary text to describe the authentication context class reference when building user-facing admin experiences. For example, a selection UX.
+              nullable: true
+            displayName:
+              type: string
+              description: The display name is the friendly name of the authenticationContextClassReference object. This value should be used to identify the authentication context class reference when building user-facing admin experiences. For example, a selection UX.
+              nullable: true
+            isAvailable:
+              type: boolean
+              description: Indicates whether the authenticationContextClassReference has been published by the security admin and is ready for use by apps. When it's set to false, it shouldn't be shown in authentication context selection UX, or used to protect app resources. It's shown and available for Conditional Access policy authoring. The default value is false.  Supports $filter (eq).
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.authenticationContextClassReference'
+  - method: DELETE
+    summary: Delete authenticationContextClassReference
+    description: Delete an authenticationContextClassReference object that's not published or used by a conditional access policy.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/conditionalAccess/authenticationContextClassReferences/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/conditionalAccess/authenticationStrength
+  path_description: Provides operations to manage the authenticationStrength property of the microsoft.graph.conditionalAccessRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get authenticationStrength from identity
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property authenticationStrength in identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationStrengthRoot
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            combinations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.authenticationMethodModes'
+            authenticationMethodModes:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.authenticationMethodModeDetail'
+              description: Names and descriptions of all valid authentication method modes in the system.
+              x-ms-navigationProperty: true
+            policies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.authenticationStrengthPolicy'
+              description: A collection of authentication strength policies that exist for this tenant, including both built-in and custom policies.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.authenticationStrengthRoot'
+  - method: DELETE
+    summary: Delete navigation property authenticationStrength for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/conditionalAccess/authenticationStrength/authenticationMethodModes
+  path_description: Provides operations to manage the authenticationMethodModes property of the microsoft.graph.authenticationStrengthRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List authenticationMethodModes
+    description: Get a list of all supported authentication methods, or all supported authentication method combinations as a list of authenticationMethodModes objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to authenticationMethodModes for identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationMethodModeDetail
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            authenticationMethod:
+              $ref: '#/components/schemas/microsoft.graph.baseAuthenticationMethod'
+            displayName:
+              type: string
+              description: The display name of this mode
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.authenticationMethodModeDetail'
+- path: /identity/conditionalAccess/authenticationStrength/authenticationMethodModes/{authenticationMethodModeDetail-id}
+  path_description: Provides operations to manage the authenticationMethodModes property of the microsoft.graph.authenticationStrengthRoot entity.
+  path_parameters:
+  - name: authenticationMethodModeDetail-id
+    in: path
+    description: The unique identifier of authenticationMethodModeDetail
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationMethodModeDetail
+  methods:
+  - method: GET
+    summary: Get authenticationMethodModes from identity
+    description: Names and descriptions of all valid authentication method modes in the system.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property authenticationMethodModes in identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationMethodModeDetail
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            authenticationMethod:
+              $ref: '#/components/schemas/microsoft.graph.baseAuthenticationMethod'
+            displayName:
+              type: string
+              description: The display name of this mode
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.authenticationMethodModeDetail'
+  - method: DELETE
+    summary: Delete navigation property authenticationMethodModes for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/conditionalAccess/authenticationStrength/authenticationMethodModes/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/conditionalAccess/authenticationStrength/policies
+  path_description: Provides operations to manage the policies property of the microsoft.graph.authenticationStrengthRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get policies from identity
+    description: A collection of authentication strength policies that exist for this tenant, including both built-in and custom policies.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to policies for identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationStrengthPolicy
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            allowedCombinations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.authenticationMethodModes'
+              description: A collection of authentication method modes that are required be used to satify this authentication strength.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The datetime when this policy was created.
+              format: date-time
+            description:
+              type: string
+              description: The human-readable description of this policy.
+              nullable: true
+            displayName:
+              type: string
+              description: The human-readable display name of this policy. Supports $filter (eq, ne, not , and in).
+            modifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The datetime when this policy was last modified.
+              format: date-time
+            policyType:
+              $ref: '#/components/schemas/microsoft.graph.authenticationStrengthPolicyType'
+            requirementsSatisfied:
+              $ref: '#/components/schemas/microsoft.graph.authenticationStrengthRequirements'
+            combinationConfigurations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.authenticationCombinationConfiguration'
+              description: Settings that may be used to require specific types or instances of an authentication method to be used when authenticating with a specified combination of authentication methods.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.authenticationStrengthPolicy'
+- path: /identity/conditionalAccess/authenticationStrength/policies/{authenticationStrengthPolicy-id}
+  path_description: Provides operations to manage the policies property of the microsoft.graph.authenticationStrengthRoot entity.
+  path_parameters:
+  - name: authenticationStrengthPolicy-id
+    in: path
+    description: The unique identifier of authenticationStrengthPolicy
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationStrengthPolicy
+  methods:
+  - method: GET
+    summary: Get policies from identity
+    description: A collection of authentication strength policies that exist for this tenant, including both built-in and custom policies.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property policies in identity
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationStrengthPolicy
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            allowedCombinations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.authenticationMethodModes'
+              description: A collection of authentication method modes that are required be used to satify this authentication strength.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The datetime when this policy was created.
+              format: date-time
+            description:
+              type: string
+              description: The human-readable description of this policy.
+              nullable: true
+            displayName:
+              type: string
+              description: The human-readable display name of this policy. Supports $filter (eq, ne, not , and in).
+            modifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The datetime when this policy was last modified.
+              format: date-time
+            policyType:
+              $ref: '#/components/schemas/microsoft.graph.authenticationStrengthPolicyType'
+            requirementsSatisfied:
+              $ref: '#/components/schemas/microsoft.graph.authenticationStrengthRequirements'
+            combinationConfigurations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.authenticationCombinationConfiguration'
+              description: Settings that may be used to require specific types or instances of an authentication method to be used when authenticating with a specified combination of authentication methods.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.authenticationStrengthPolicy'
+  - method: DELETE
+    summary: Delete navigation property policies for identity
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/conditionalAccess/authenticationStrength/policies/{authenticationStrengthPolicy-id}/combinationConfigurations
+  path_description: Provides operations to manage the combinationConfigurations property of the microsoft.graph.authenticationStrengthPolicy entity.
+  path_parameters:
+  - name: authenticationStrengthPolicy-id
+    in: path
+    description: The unique identifier of authenticationStrengthPolicy
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationStrengthPolicy
+  methods:
+  - method: GET
+    summary: List combinationConfigurations
+    description: 'Get the authenticationCombinationConfiguration objects for an authentication strength policy. The objects can be of one or more of the following derived types:
+
+      * fido2combinationConfigurations
+
+      * x509certificatecombinationconfiguration authenticationCombinationConfiguration objects are supported only for custom authentication strengths.'
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create authenticationCombinationConfiguration
+    description: 'Create a new authenticationCombinationConfiguration object which can be of one of the following derived types:
+
+      * fido2combinationConfiguration
+
+      * x509certificatecombinationconfiguration'
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationCombinationConfiguration
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            appliesToCombinations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.authenticationMethodModes'
+              description: Which authentication method combinations this configuration applies to. Must be an allowedCombinations object, part of the authenticationStrengthPolicy. The only possible value for fido2combinationConfigurations is 'fido2'.
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.fido2CombinationConfiguration': '#/components/schemas/microsoft.graph.fido2CombinationConfiguration'
+              '#microsoft.graph.x509CertificateCombinationConfiguration': '#/components/schemas/microsoft.graph.x509CertificateCombinationConfiguration'
+- path: /identity/conditionalAccess/authenticationStrength/policies/{authenticationStrengthPolicy-id}/combinationConfigurations/{authenticationCombinationConfiguration-id}
+  path_description: Provides operations to manage the combinationConfigurations property of the microsoft.graph.authenticationStrengthPolicy entity.
+  path_parameters:
+  - name: authenticationStrengthPolicy-id
+    in: path
+    description: The unique identifier of authenticationStrengthPolicy
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationStrengthPolicy
+  - name: authenticationCombinationConfiguration-id
+    in: path
+    description: The unique identifier of authenticationCombinationConfiguration
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationCombinationConfiguration
+  methods:
+  - method: GET
+    summary: Get authenticationCombinationConfiguration
+    description: Read the properties and relationships of an authenticationCombinationConfiguration object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update authenticationCombinationConfiguration
+    description: "Update the properties of an authenticationCombinationConfiguration object. \nThe properties can be for one of the following derived types:\n* fido2combinationConfigurations\n* x509certificatecombinationconfiguration"
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationCombinationConfiguration
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            appliesToCombinations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.authenticationMethodModes'
+              description: Which authentication method combinations this configuration applies to. Must be an allowedCombinations object, part of the authenticationStrengthPolicy. The only possible value for fido2combinationConfigurations is 'fido2'.
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.fido2CombinationConfiguration': '#/components/schemas/microsoft.graph.fido2CombinationConfiguration'
+              '#microsoft.graph.x509CertificateCombinationConfiguration': '#/components/schemas/microsoft.graph.x509CertificateCombinationConfiguration'
+  - method: DELETE
+    summary: Delete authenticationCombinationConfiguration
+    description: Delete an authenticationCombinationConfiguration  for a custom authenticationStrengthPolicy object.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/conditionalAccess/authenticationStrength/policies/{authenticationStrengthPolicy-id}/combinationConfigurations/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: authenticationStrengthPolicy-id
+    in: path
+    description: The unique identifier of authenticationStrengthPolicy
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationStrengthPolicy
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/conditionalAccess/authenticationStrength/policies/{authenticationStrengthPolicy-id}/updateAllowedCombinations
+  path_description: Provides operations to call the updateAllowedCombinations method.
+  path_parameters:
+  - name: authenticationStrengthPolicy-id
+    in: path
+    description: The unique identifier of authenticationStrengthPolicy
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationStrengthPolicy
+  methods:
+  - method: POST
+    summary: Invoke action updateAllowedCombinations
+    description: Update the allowedCombinations property of an authenticationStrengthPolicy object. To update other properties of an authenticationStrengthPolicy object, use the Update authenticationStrengthPolicy method.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          allowedCombinations:
+            type: array
+            items:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.authenticationMethodModes'
+              - type: object
+                nullable: true
+- path: /identity/conditionalAccess/authenticationStrength/policies/{authenticationStrengthPolicy-id}/usage()
+  path_description: Provides operations to call the usage method.
+  path_parameters:
+  - name: authenticationStrengthPolicy-id
+    in: path
+    description: The unique identifier of authenticationStrengthPolicy
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationStrengthPolicy
+  methods:
+  - method: GET
+    summary: Invoke function usage
+    description: Allows the caller to see which Conditional Access policies reference a specified authentication strength policy. The policies are returned in two collections, one containing Conditional Access policies that require an MFA claim and the other containing Conditional Access policies that do not require such a claim. Policies in the former category are restricted in what kinds of changes may be made to them to prevent undermining the MFA requirement of those policies.
+    parameters: []
+    requestBody: null
+- path: /identity/conditionalAccess/authenticationStrength/policies/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/conditionalAccess/namedLocations
+  path_description: Provides operations to manage the namedLocations property of the microsoft.graph.conditionalAccessRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List namedLocations
+    description: Get a list of namedLocation objects.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create namedLocation
+    description: Create a new namedLocation object. Named locations can be either ipNamedLocation or countryNamedLocation objects.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: namedLocation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents creation date and time of the location using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+              format: date-time
+              nullable: true
+            displayName:
+              type: string
+              description: Human-readable name of the location.
+            modifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents last modified date and time of the location using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+              format: date-time
+              nullable: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.countryNamedLocation': '#/components/schemas/microsoft.graph.countryNamedLocation'
+              '#microsoft.graph.ipNamedLocation': '#/components/schemas/microsoft.graph.ipNamedLocation'
+- path: /identity/conditionalAccess/namedLocations/{namedLocation-id}
+  path_description: Provides operations to manage the namedLocations property of the microsoft.graph.conditionalAccessRoot entity.
+  path_parameters:
+  - name: namedLocation-id
+    in: path
+    description: The unique identifier of namedLocation
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: namedLocation
+  methods:
+  - method: GET
+    summary: Get namedLocation
+    description: Retrieve the properties and relationships of a namedLocation object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update ipNamedlocation
+    description: Update the properties of an ipNamedLocation object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: namedLocation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents creation date and time of the location using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+              format: date-time
+              nullable: true
+            displayName:
+              type: string
+              description: Human-readable name of the location.
+            modifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents last modified date and time of the location using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+              format: date-time
+              nullable: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.countryNamedLocation': '#/components/schemas/microsoft.graph.countryNamedLocation'
+              '#microsoft.graph.ipNamedLocation': '#/components/schemas/microsoft.graph.ipNamedLocation'
+  - method: DELETE
+    summary: Delete ipNamedLocation
+    description: Delete an ipNamedLocation object.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/conditionalAccess/namedLocations/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/conditionalAccess/policies
+  path_description: Provides operations to manage the policies property of the microsoft.graph.conditionalAccessRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List policies
+    description: Retrieve a list of conditionalAccessPolicy objects.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create conditionalAccessPolicy
+    description: Create a new conditionalAccessPolicy.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: conditionalAccessPolicy
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            conditions:
+              $ref: '#/components/schemas/microsoft.graph.conditionalAccessConditionSet'
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Readonly.
+              format: date-time
+              nullable: true
+            description:
+              type: string
+              nullable: true
+            displayName:
+              type: string
+              description: Specifies a display name for the conditionalAccessPolicy object.
+            grantControls:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.conditionalAccessGrantControls'
+              - type: object
+                nullable: true
+              description: Specifies the grant controls that must be fulfilled to pass the policy.
+            modifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Readonly.
+              format: date-time
+              nullable: true
+            sessionControls:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.conditionalAccessSessionControls'
+              - type: object
+                nullable: true
+              description: Specifies the session controls that are enforced after sign-in.
+            state:
+              $ref: '#/components/schemas/microsoft.graph.conditionalAccessPolicyState'
+            templateId:
+              type: string
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.conditionalAccessPolicy'
+- path: /identity/conditionalAccess/policies/{conditionalAccessPolicy-id}
+  path_description: Provides operations to manage the policies property of the microsoft.graph.conditionalAccessRoot entity.
+  path_parameters:
+  - name: conditionalAccessPolicy-id
+    in: path
+    description: The unique identifier of conditionalAccessPolicy
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: conditionalAccessPolicy
+  methods:
+  - method: GET
+    summary: Get conditionalAccessPolicy
+    description: Retrieve the properties and relationships of a conditionalAccessPolicy object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update conditionalaccesspolicy
+    description: Update the properties of a conditionalAccessPolicy object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: conditionalAccessPolicy
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            conditions:
+              $ref: '#/components/schemas/microsoft.graph.conditionalAccessConditionSet'
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Readonly.
+              format: date-time
+              nullable: true
+            description:
+              type: string
+              nullable: true
+            displayName:
+              type: string
+              description: Specifies a display name for the conditionalAccessPolicy object.
+            grantControls:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.conditionalAccessGrantControls'
+              - type: object
+                nullable: true
+              description: Specifies the grant controls that must be fulfilled to pass the policy.
+            modifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Readonly.
+              format: date-time
+              nullable: true
+            sessionControls:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.conditionalAccessSessionControls'
+              - type: object
+                nullable: true
+              description: Specifies the session controls that are enforced after sign-in.
+            state:
+              $ref: '#/components/schemas/microsoft.graph.conditionalAccessPolicyState'
+            templateId:
+              type: string
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.conditionalAccessPolicy'
+  - method: DELETE
+    summary: Delete conditionalAccessPolicy
+    description: Delete a conditionalAccessPolicy object.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/conditionalAccess/policies/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/conditionalAccess/templates
+  path_description: Provides operations to manage the templates property of the microsoft.graph.conditionalAccessRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List conditionalAccessTemplates
+    description: Get a list of the conditionalAccessTemplate objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/conditionalAccess/templates/{conditionalAccessTemplate-id}
+  path_description: Provides operations to manage the templates property of the microsoft.graph.conditionalAccessRoot entity.
+  path_parameters:
+  - name: conditionalAccessTemplate-id
+    in: path
+    description: The unique identifier of conditionalAccessTemplate
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: conditionalAccessTemplate
+  methods:
+  - method: GET
+    summary: Get conditionalAccessTemplate
+    description: Read the properties and relationships of a conditionalAccessTemplate object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /identity/conditionalAccess/templates/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/customAuthenticationExtensions
+  path_description: Provides operations to manage the customAuthenticationExtensions property of the microsoft.graph.identityContainer entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List customAuthenticationExtensions
+    description: Get a list of the customAuthenticationExtension objects and their properties. The following derived types are supported.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create customAuthenticationExtension
+    description: Create a new customAuthenticationExtension object. The following derived types are currently supported.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.customCalloutExtension'
+        - title: customAuthenticationExtension
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.customAuthenticationExtension'
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.onTokenIssuanceStartCustomExtension': '#/components/schemas/microsoft.graph.onTokenIssuanceStartCustomExtension'
+- path: /identity/customAuthenticationExtensions/{customAuthenticationExtension-id}
+  path_description: Provides operations to manage the customAuthenticationExtensions property of the microsoft.graph.identityContainer entity.
+  path_parameters:
+  - name: customAuthenticationExtension-id
+    in: path
+    description: The unique identifier of customAuthenticationExtension
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: customAuthenticationExtension
+  methods:
+  - method: GET
+    summary: Get customAuthenticationExtension
+    description: Read the properties and relationships of a customAuthenticationExtension object. The following derived types are currently supported.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update customAuthenticationExtension
+    description: Update the properties of a customAuthenticationExtension object. The following derived types are currently supported.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.customCalloutExtension'
+        - title: customAuthenticationExtension
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.customAuthenticationExtension'
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.onTokenIssuanceStartCustomExtension': '#/components/schemas/microsoft.graph.onTokenIssuanceStartCustomExtension'
+  - method: DELETE
+    summary: Delete customAuthenticationExtension
+    description: Delete a customAuthenticationExtension object. The following derived types are currently supported.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/customAuthenticationExtensions/{customAuthenticationExtension-id}/validateAuthenticationConfiguration
+  path_description: Provides operations to call the validateAuthenticationConfiguration method.
+  path_parameters:
+  - name: customAuthenticationExtension-id
+    in: path
+    description: The unique identifier of customAuthenticationExtension
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: customAuthenticationExtension
+  methods:
+  - method: POST
+    summary: Invoke action validateAuthenticationConfiguration
+    description: 'An API to check validity of the endpoint and and authentication configuration for a customAuthenticationExtension object, which can represent one of the following derived types:'
+    parameters: []
+    requestBody: null
+- path: /identity/customAuthenticationExtensions/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/customAuthenticationExtensions/validateAuthenticationConfiguration
+  path_description: Provides operations to call the validateAuthenticationConfiguration method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action validateAuthenticationConfiguration
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          endpointConfiguration:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.customExtensionEndpointConfiguration'
+            - type: object
+              nullable: true
+          authenticationConfiguration:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.customExtensionAuthenticationConfiguration'
+            - type: object
+              nullable: true
+- path: /identity/identityProviders
+  path_description: Provides operations to manage the identityProviders property of the microsoft.graph.identityContainer entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List identityProviders
+    description: Get a collection of identity provider resources that are configured for a tenant, and that are derived from identityProviderBase. For a Microsoft Entra tenant, the providers can be socialIdentityProviders or builtinIdentityProviders objects. For an Azure AD B2C, the providers can be socialIdentityProvider, or appleManagedIdentityProvider objects.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create identityProvider
+    description: Create an identity provider object that is of the type specified in the request body. Among the types of providers derived from identityProviderBase, you can currently create a socialIdentityProvider resource in Microsoft Entra ID. In Azure AD B2C, this operation can currently create a socialIdentityProvider, or an appleManagedIdentityProvider resource.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identityProviderBase
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: The display name of the identity provider.
+              nullable: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.appleManagedIdentityProvider': '#/components/schemas/microsoft.graph.appleManagedIdentityProvider'
+              '#microsoft.graph.builtInIdentityProvider': '#/components/schemas/microsoft.graph.builtInIdentityProvider'
+              '#microsoft.graph.samlOrWsFedProvider': '#/components/schemas/microsoft.graph.samlOrWsFedProvider'
+              '#microsoft.graph.internalDomainFederation': '#/components/schemas/microsoft.graph.internalDomainFederation'
+              '#microsoft.graph.samlOrWsFedExternalDomainFederation': '#/components/schemas/microsoft.graph.samlOrWsFedExternalDomainFederation'
+              '#microsoft.graph.socialIdentityProvider': '#/components/schemas/microsoft.graph.socialIdentityProvider'
+- path: /identity/identityProviders/{identityProviderBase-id}
+  path_description: Provides operations to manage the identityProviders property of the microsoft.graph.identityContainer entity.
+  path_parameters:
+  - name: identityProviderBase-id
+    in: path
+    description: The unique identifier of identityProviderBase
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: identityProviderBase
+  methods:
+  - method: GET
+    summary: Get identityProvider
+    description: Get the properties and relationships of the specified identity provider configured in the tenant. Among the types of providers derived from identityProviderBase, you can currently get a socialIdentityProvider or a builtinIdentityProvider resource in Microsoft Entra ID. In Azure AD B2C, this operation can currently get a socialIdentityProvider, or an appleManagedIdentityProvider resource.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update identityProvider
+    description: Update the properties of the specified identity provider configured in the tenant. Among the types of providers derived from identityProviderBase, you can currently update a socialIdentityProvider resource in Microsoft Entra ID. In Azure AD B2C, this operation can currently update a socialIdentityProvider, or an appleManagedIdentityProvider resource.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identityProviderBase
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: The display name of the identity provider.
+              nullable: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.appleManagedIdentityProvider': '#/components/schemas/microsoft.graph.appleManagedIdentityProvider'
+              '#microsoft.graph.builtInIdentityProvider': '#/components/schemas/microsoft.graph.builtInIdentityProvider'
+              '#microsoft.graph.samlOrWsFedProvider': '#/components/schemas/microsoft.graph.samlOrWsFedProvider'
+              '#microsoft.graph.internalDomainFederation': '#/components/schemas/microsoft.graph.internalDomainFederation'
+              '#microsoft.graph.samlOrWsFedExternalDomainFederation': '#/components/schemas/microsoft.graph.samlOrWsFedExternalDomainFederation'
+              '#microsoft.graph.socialIdentityProvider': '#/components/schemas/microsoft.graph.socialIdentityProvider'
+  - method: DELETE
+    summary: Delete identityProvider
+    description: Delete an identity provider resource that is of the type specified by the id in the request. Among the types of providers derived from identityProviderBase, you can currently delete a socialIdentityProvider resource in Microsoft Entra ID. In Azure AD B2C, this operation can currently delete a socialIdentityProvider, or an appleManagedIdentityProvider resource.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/identityProviders/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identity/identityProviders/availableProviderTypes()
+  path_description: Provides operations to call the availableProviderTypes method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function availableProviderTypes
+    description: Get all identity providers supported in a directory.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    requestBody: null
+- path: /identity/userFlowAttributes
+  path_description: Provides operations to manage the userFlowAttributes property of the microsoft.graph.identityContainer entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List identityUserFlowAttributes
+    description: Retrieve a list of identityUserFlowAttribute objects.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create identityUserFlowAttribute
+    description: Create a new custom identityUserFlowAttribute object.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identityUserFlowAttribute
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            dataType:
+              $ref: '#/components/schemas/microsoft.graph.identityUserFlowAttributeDataType'
+            description:
+              type: string
+              description: The description of the user flow attribute that's shown to the user at the time of sign up.
+              nullable: true
+            displayName:
+              type: string
+              description: The display name of the user flow attribute.  Supports $filter (eq, ne).
+              nullable: true
+            userFlowAttributeType:
+              $ref: '#/components/schemas/microsoft.graph.identityUserFlowAttributeType'
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.identityBuiltInUserFlowAttribute': '#/components/schemas/microsoft.graph.identityBuiltInUserFlowAttribute'
+              '#microsoft.graph.identityCustomUserFlowAttribute': '#/components/schemas/microsoft.graph.identityCustomUserFlowAttribute'
+- path: /identity/userFlowAttributes/{identityUserFlowAttribute-id}
+  path_description: Provides operations to manage the userFlowAttributes property of the microsoft.graph.identityContainer entity.
+  path_parameters:
+  - name: identityUserFlowAttribute-id
+    in: path
+    description: The unique identifier of identityUserFlowAttribute
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: identityUserFlowAttribute
+  methods:
+  - method: GET
+    summary: Get identityUserFlowAttribute
+    description: Retrieve the properties and relationships of a identityUserFlowAttribute object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update identityUserFlowAttribute
+    description: Update the properties of a custom identityUserFlowAttribute object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identityUserFlowAttribute
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            dataType:
+              $ref: '#/components/schemas/microsoft.graph.identityUserFlowAttributeDataType'
+            description:
+              type: string
+              description: The description of the user flow attribute that's shown to the user at the time of sign up.
+              nullable: true
+            displayName:
+              type: string
+              description: The display name of the user flow attribute.  Supports $filter (eq, ne).
+              nullable: true
+            userFlowAttributeType:
+              $ref: '#/components/schemas/microsoft.graph.identityUserFlowAttributeType'
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.identityBuiltInUserFlowAttribute': '#/components/schemas/microsoft.graph.identityBuiltInUserFlowAttribute'
+              '#microsoft.graph.identityCustomUserFlowAttribute': '#/components/schemas/microsoft.graph.identityCustomUserFlowAttribute'
+  - method: DELETE
+    summary: Delete identityUserFlowAttribute
+    description: Delete a custom identityUserFlowAttribute.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identity/userFlowAttributes/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

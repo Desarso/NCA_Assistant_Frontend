@@ -1,0 +1,1630 @@
+- path: /directoryRoles
+  path_description: Provides operations to manage the collection of directoryRole entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List directoryRoles
+    description: List the directory roles that are activated in the tenant. This operation only returns roles that have been activated. A role becomes activated when an admin activates the role using the Activate directoryRole API. Not all built-in roles are initially activated.  When assigning a role using the Microsoft Entra admin center, the role activation step is implicitly done on the admin's behalf. To get the full list of roles that are available in Microsoft Entra ID, use List directoryRoleTemplates.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Activate directoryRole
+    description: Activate a directory role. To read a directory role or update its members, it must first be activated in the tenant. The Company Administrators and the implicit user directory roles (User, Guest User, and Restricted Guest User roles) are activated by default. To access and assign members to other directory roles, you must first activate it with its corresponding directory role template ID.
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: directoryRole
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: The description for the directory role. Read-only. Supports $filter (eq), $search, $select.
+              nullable: true
+            displayName:
+              type: string
+              description: The display name for the directory role. Read-only. Supports $filter (eq), $search, $select.
+              nullable: true
+            roleTemplateId:
+              type: string
+              description: The id of the directoryRoleTemplate that this role is based on. The property must be specified when activating a directory role in a tenant with a POST operation. After the directory role has been activated, the property is read only. Supports $filter (eq), $select.
+              nullable: true
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: 'Users that are members of this directory role. HTTP Methods: GET, POST, DELETE. Read-only. Nullable. Supports $expand.'
+              x-ms-navigationProperty: true
+            scopedMembers:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.scopedRoleMembership'
+              description: Members of this directory role that are scoped to administrative units. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.directoryRole'
+        x-ms-discriminator-value: '#microsoft.graph.directoryRole'
+- path: /directoryRoles/{directoryRole-id}
+  path_description: Provides operations to manage the collection of directoryRole entities.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get directoryRole
+    description: Retrieve the properties of a directoryRole object. The role must be activated in tenant for a successful response. You can use both the object ID and template ID of the directoryRole with this API. The template ID of a built-in role is immutable and can be seen in the role description on the Microsoft Entra admin center. For details, see Role template IDs.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update entity in directoryRoles
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: directoryRole
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: The description for the directory role. Read-only. Supports $filter (eq), $search, $select.
+              nullable: true
+            displayName:
+              type: string
+              description: The display name for the directory role. Read-only. Supports $filter (eq), $search, $select.
+              nullable: true
+            roleTemplateId:
+              type: string
+              description: The id of the directoryRoleTemplate that this role is based on. The property must be specified when activating a directory role in a tenant with a POST operation. After the directory role has been activated, the property is read only. Supports $filter (eq), $select.
+              nullable: true
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: 'Users that are members of this directory role. HTTP Methods: GET, POST, DELETE. Read-only. Nullable. Supports $expand.'
+              x-ms-navigationProperty: true
+            scopedMembers:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.scopedRoleMembership'
+              description: Members of this directory role that are scoped to administrative units. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.directoryRole'
+        x-ms-discriminator-value: '#microsoft.graph.directoryRole'
+  - method: DELETE
+    summary: Delete entity from directoryRoles
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members
+  path_description: Provides operations to manage the members property of the microsoft.graph.directoryRole entity.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: List members of a directory role
+    description: Retrieve the list of principals that are assigned to the directory role.  You can use both the object ID and template ID of the directoryRole with this API. The template ID of a built-in role is immutable and can be seen in the role description on the Microsoft Entra admin center. For details, see Role template IDs.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/{directoryObject-id}/$ref
+  path_description: Provides operations to manage the collection of directoryRole entities.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: DELETE
+    summary: Remove directory role member
+    description: Remove a member from a directoryRole. You can use both the object ID and template ID of the directoryRole with this API. The template ID of a built-in role is immutable and can be seen in the role description on the Microsoft Entra admin center. For details, see Role template IDs.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/{directoryObject-id}/graph.application
+  path_description: Casts the previous resource to application.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.application
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/{directoryObject-id}/graph.device
+  path_description: Casts the previous resource to device.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.device
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/{directoryObject-id}/graph.group
+  path_description: Casts the previous resource to group.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.group
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/{directoryObject-id}/graph.orgContact
+  path_description: Casts the previous resource to orgContact.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.orgContact
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/{directoryObject-id}/graph.servicePrincipal
+  path_description: Casts the previous resource to servicePrincipal.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.servicePrincipal
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/{directoryObject-id}/graph.user
+  path_description: Casts the previous resource to user.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.user
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/$ref
+  path_description: Provides operations to manage the collection of directoryRole entities.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: List members of a directory role
+    description: Retrieve the list of principals that are assigned to the directory role.  You can use both the object ID and template ID of the directoryRole with this API. The template ID of a built-in role is immutable and can be seen in the role description on the Microsoft Entra admin center. For details, see Role template IDs.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add directory role member
+    description: Create a new directory role member. You can use both the object ID and template ID of the directoryRole with this API. The template ID of a built-in role is immutable and can be seen in the role description on the Microsoft Entra admin center. For details, see Role template IDs.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Remove directory role member
+    description: Remove a member from a directoryRole. You can use both the object ID and template ID of the directoryRole with this API. The template ID of a built-in role is immutable and can be seen in the role description on the Microsoft Entra admin center. For details, see Role template IDs.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    - name: '@id'
+      in: query
+      description: The delete Uri
+      required: true
+      schema:
+        type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/graph.application
+  path_description: Casts the previous resource to application.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.application in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/graph.application/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/graph.device
+  path_description: Casts the previous resource to device.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.device in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/graph.device/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/graph.group
+  path_description: Casts the previous resource to group.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.group in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/graph.group/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/graph.orgContact
+  path_description: Casts the previous resource to orgContact.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.orgContact in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/graph.orgContact/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/graph.servicePrincipal
+  path_description: Casts the previous resource to servicePrincipal.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.servicePrincipal in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/graph.servicePrincipal/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/graph.user
+  path_description: Casts the previous resource to user.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.user in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/members/graph.user/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/checkMemberGroups
+  path_description: Provides operations to call the checkMemberGroups method.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: POST
+    summary: Invoke action checkMemberGroups
+    description: 'Check for membership in a specified list of group IDs, and return from that list the IDs of groups where a specified object is a member. The specified object can be of one of the following types:
+
+      - user
+
+      - group
+
+      - service principal
+
+      - organizational contact
+
+      - device
+
+      - directory object This function is transitive. You can check up to a maximum of 20 groups per request. This function supports all groups provisioned in Microsoft Entra ID. Because Microsoft 365 groups cannot contain other groups, membership in a Microsoft 365 group is always direct.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          groupIds:
+            type: array
+            items:
+              type: string
+- path: /directoryRoles/{directoryRole-id}/checkMemberObjects
+  path_description: Provides operations to call the checkMemberObjects method.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: POST
+    summary: Invoke action checkMemberObjects
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          ids:
+            type: array
+            items:
+              type: string
+- path: /directoryRoles/{directoryRole-id}/getMemberGroups
+  path_description: Provides operations to call the getMemberGroups method.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: POST
+    summary: Invoke action getMemberGroups
+    description: Return all the group IDs for the groups that the specified user, group, service principal, organizational contact, device, or directory object is a member of. This function is transitive. This API returns up to 11,000 group IDs. If more than 11,000 results are available, it returns a 400 Bad Request error with the DirectoryResultSizeLimitExceeded error code. If you get the DirectoryResultSizeLimitExceeded error code, use the List group transitive memberOf API instead.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          securityEnabledOnly:
+            type: boolean
+            default: false
+            nullable: true
+- path: /directoryRoles/{directoryRole-id}/getMemberObjects
+  path_description: Provides operations to call the getMemberObjects method.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: POST
+    summary: Invoke action getMemberObjects
+    description: 'Return all IDs for the groups, administrative units, and directory roles that an object of one of the following types is a member of:
+
+      - user
+
+      - group
+
+      - service principal
+
+      - organizational contact
+
+      - device
+
+      - directory object This function is transitive. Only users and role-enabled groups can be members of directory roles.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          securityEnabledOnly:
+            type: boolean
+            default: false
+            nullable: true
+- path: /directoryRoles/{directoryRole-id}/restore
+  path_description: Provides operations to call the restore method.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: POST
+    summary: Invoke action restore
+    description: Restore a recently deleted application, group, servicePrincipal, administrative unit, or user object from deleted items. If an item was accidentally deleted, you can fully restore the item. However, security groups can't be restored. Also, restoring an application doesn't restore the associated service principal automatically. You must call this API to explicitly restore the deleted service principal. A recently deleted item remains available for up to 30 days. After 30 days, the item is permanently deleted.
+    parameters: []
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/scopedMembers
+  path_description: Provides operations to manage the scopedMembers property of the microsoft.graph.directoryRole entity.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: List scopedMembers for a directory role
+    description: Retrieve a list of scopedRoleMembership objects for a directory role.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to scopedMembers for directoryRoles
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: scopedRoleMembership
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            administrativeUnitId:
+              type: string
+              description: Unique identifier for the administrative unit that the directory role is scoped to
+            roleId:
+              type: string
+              description: Unique identifier for the directory role that the member is in.
+            roleMemberInfo:
+              $ref: '#/components/schemas/microsoft.graph.identity'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.scopedRoleMembership'
+- path: /directoryRoles/{directoryRole-id}/scopedMembers/{scopedRoleMembership-id}
+  path_description: Provides operations to manage the scopedMembers property of the microsoft.graph.directoryRole entity.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  - name: scopedRoleMembership-id
+    in: path
+    description: The unique identifier of scopedRoleMembership
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: scopedRoleMembership
+  methods:
+  - method: GET
+    summary: Get scopedMembers from directoryRoles
+    description: Members of this directory role that are scoped to administrative units. Read-only. Nullable.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property scopedMembers in directoryRoles
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: scopedRoleMembership
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            administrativeUnitId:
+              type: string
+              description: Unique identifier for the administrative unit that the directory role is scoped to
+            roleId:
+              type: string
+              description: Unique identifier for the directory role that the member is in.
+            roleMemberInfo:
+              $ref: '#/components/schemas/microsoft.graph.identity'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.scopedRoleMembership'
+  - method: DELETE
+    summary: Delete navigation property scopedMembers for directoryRoles
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directoryRoles/{directoryRole-id}/scopedMembers/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: directoryRole-id
+    in: path
+    description: The unique identifier of directoryRole
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryRole
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directoryRoles/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directoryRoles/delta()
+  path_description: Provides operations to call the delta method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function delta
+    description: Get newly created, updated, or deleted directory roles without having to perform a full read of the entire resource collection. For more information, see Use delta query to track changes in Microsoft Graph data for details.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directoryRoles/getAvailableExtensionProperties
+  path_description: Provides operations to call the getAvailableExtensionProperties method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action getAvailableExtensionProperties
+    description: 'Return all directory extension definitions that have been registered in a directory, including through multi-tenant apps. The following entities support extension properties:'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          isSyncedFromOnPremises:
+            type: boolean
+            default: false
+            nullable: true
+- path: /directoryRoles/getByIds
+  path_description: Provides operations to call the getByIds method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action getByIds
+    description: 'Return the directory objects specified in a list of IDs. Only a subset of user properties are returned by default in v1.0. Some common uses for this function are to:'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          ids:
+            type: array
+            items:
+              type: string
+          types:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /directoryRoles/validateProperties
+  path_description: Provides operations to call the validateProperties method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action validateProperties
+    description: 'Validate that a Microsoft 365 group''s display name or mail nickname complies with naming policies.  Clients can use this API to determine whether a display name or mail nickname is valid before trying to create a Microsoft 365 group. To validate the properties of an existing group, use the group: validateProperties function. The following policy validations are performed for the display name and mail nickname properties:
+
+      1. Validate the prefix and suffix naming policy
+
+      2. Validate the custom banned words policy
+
+      3. Validate that the mail nickname is unique This API only returns the first validation failure that is encountered. If the properties fail multiple validations, only the first validation failure is returned. However, you can validate both the mail nickname and the display name and receive a collection of validation errors if you are only validating the prefix and suffix naming policy. To learn more about configuring naming policies, see Configure naming policy.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          entityType:
+            type: string
+            nullable: true
+          displayName:
+            type: string
+            nullable: true
+          mailNickname:
+            type: string
+            nullable: true
+          onBehalfOfUserId:
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            format: uuid
+            nullable: true

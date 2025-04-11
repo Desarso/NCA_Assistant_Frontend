@@ -1,0 +1,1683 @@
+- path: /tenantRelationships
+  path_description: Provides operations to manage the tenantRelationship singleton.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get tenantRelationships
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update tenantRelationships
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: tenantRelationship
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          delegatedAdminCustomers:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.delegatedAdminCustomer'
+            description: The customer who has a delegated admin relationship with a Microsoft partner.
+            x-ms-navigationProperty: true
+          delegatedAdminRelationships:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationship'
+            description: The details of the delegated administrative privileges that a Microsoft partner has in a customer tenant.
+            x-ms-navigationProperty: true
+          multiTenantOrganization:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.multiTenantOrganization'
+            - type: object
+              nullable: true
+            description: Defines an organization with more than one instance of Microsoft Entra ID.
+            x-ms-navigationProperty: true
+          '@odata.type':
+            type: string
+- path: /tenantRelationships/delegatedAdminCustomers
+  path_description: Provides operations to manage the delegatedAdminCustomers property of the microsoft.graph.tenantRelationship entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List delegatedAdminCustomers
+    description: Get a list of the delegatedAdminCustomer objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to delegatedAdminCustomers for tenantRelationships
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: delegatedAdminCustomer
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: The Microsoft Entra ID display name of the customer tenant. Read-only. Supports $orderby.
+              nullable: true
+            tenantId:
+              type: string
+              description: The Microsoft Entra ID-assigned tenant ID of the customer. Read-only.
+            serviceManagementDetails:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.delegatedAdminServiceManagementDetail'
+              description: Contains the management details of a service in the customer tenant that's managed by delegated administration.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.delegatedAdminCustomer'
+- path: /tenantRelationships/delegatedAdminCustomers/{delegatedAdminCustomer-id}
+  path_description: Provides operations to manage the delegatedAdminCustomers property of the microsoft.graph.tenantRelationship entity.
+  path_parameters:
+  - name: delegatedAdminCustomer-id
+    in: path
+    description: The unique identifier of delegatedAdminCustomer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminCustomer
+  methods:
+  - method: GET
+    summary: Get delegatedAdminCustomer
+    description: Read the properties of a delegatedAdminCustomer object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property delegatedAdminCustomers in tenantRelationships
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: delegatedAdminCustomer
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: The Microsoft Entra ID display name of the customer tenant. Read-only. Supports $orderby.
+              nullable: true
+            tenantId:
+              type: string
+              description: The Microsoft Entra ID-assigned tenant ID of the customer. Read-only.
+            serviceManagementDetails:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.delegatedAdminServiceManagementDetail'
+              description: Contains the management details of a service in the customer tenant that's managed by delegated administration.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.delegatedAdminCustomer'
+  - method: DELETE
+    summary: Delete navigation property delegatedAdminCustomers for tenantRelationships
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /tenantRelationships/delegatedAdminCustomers/{delegatedAdminCustomer-id}/serviceManagementDetails
+  path_description: Provides operations to manage the serviceManagementDetails property of the microsoft.graph.delegatedAdminCustomer entity.
+  path_parameters:
+  - name: delegatedAdminCustomer-id
+    in: path
+    description: The unique identifier of delegatedAdminCustomer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminCustomer
+  methods:
+  - method: GET
+    summary: List serviceManagementDetails
+    description: Get a list of the delegatedAdminServiceManagementDetail objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to serviceManagementDetails for tenantRelationships
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: delegatedAdminServiceManagementDetail
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            serviceManagementUrl:
+              type: string
+              description: The URL of the management portal for the managed service. Read-only.
+            serviceName:
+              type: string
+              description: The name of a managed service. Read-only.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.delegatedAdminServiceManagementDetail'
+- path: /tenantRelationships/delegatedAdminCustomers/{delegatedAdminCustomer-id}/serviceManagementDetails/{delegatedAdminServiceManagementDetail-id}
+  path_description: Provides operations to manage the serviceManagementDetails property of the microsoft.graph.delegatedAdminCustomer entity.
+  path_parameters:
+  - name: delegatedAdminCustomer-id
+    in: path
+    description: The unique identifier of delegatedAdminCustomer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminCustomer
+  - name: delegatedAdminServiceManagementDetail-id
+    in: path
+    description: The unique identifier of delegatedAdminServiceManagementDetail
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminServiceManagementDetail
+  methods:
+  - method: GET
+    summary: Get serviceManagementDetails from tenantRelationships
+    description: Contains the management details of a service in the customer tenant that's managed by delegated administration.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property serviceManagementDetails in tenantRelationships
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: delegatedAdminServiceManagementDetail
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            serviceManagementUrl:
+              type: string
+              description: The URL of the management portal for the managed service. Read-only.
+            serviceName:
+              type: string
+              description: The name of a managed service. Read-only.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.delegatedAdminServiceManagementDetail'
+  - method: DELETE
+    summary: Delete navigation property serviceManagementDetails for tenantRelationships
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /tenantRelationships/delegatedAdminCustomers/{delegatedAdminCustomer-id}/serviceManagementDetails/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: delegatedAdminCustomer-id
+    in: path
+    description: The unique identifier of delegatedAdminCustomer
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminCustomer
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /tenantRelationships/delegatedAdminCustomers/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /tenantRelationships/delegatedAdminRelationships
+  path_description: Provides operations to manage the delegatedAdminRelationships property of the microsoft.graph.tenantRelationship entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List delegatedAdminRelationships
+    description: Get a list of the delegatedAdminRelationship objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create delegatedAdminRelationship
+    description: Create a new delegatedAdminRelationship object.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: delegatedAdminRelationship
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            accessDetails:
+              $ref: '#/components/schemas/microsoft.graph.delegatedAdminAccessDetails'
+            activatedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 format and in UTC time when the relationship became active. Read-only.
+              format: date-time
+              nullable: true
+            autoExtendDuration:
+              pattern: ^-?P([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+([.][0-9]+)?S)?)?$
+              type: string
+              description: 'The duration by which the validity of the relationship is automatically extended, denoted in ISO 8601 format. Supported values are: P0D, PT0S, P180D. The default value is PT0S. PT0S indicates that the relationship expires when the endDateTime is reached and it isn''t automatically extended.'
+              format: duration
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 format and in UTC time when the relationship was created. Read-only.
+              format: date-time
+              nullable: true
+            customer:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationshipCustomerParticipant'
+              - type: object
+                nullable: true
+              description: The display name and unique identifier of the customer of the relationship. This is configured either by the partner at the time the relationship is created or by the system after the customer approves the relationship. Can't be changed by the customer.
+            displayName:
+              type: string
+              description: The display name of the relationship used for ease of identification. Must be unique across all delegated admin relationships of the partner and is set by the partner only when the relationship is in the created status and can't be changed by the customer. Maximum length is 50 characters.
+            duration:
+              pattern: ^-?P([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+([.][0-9]+)?S)?)?$
+              type: string
+              description: The duration of the relationship in ISO 8601 format. Must be a value between P1D and P2Y inclusive. This is set by the partner only when the relationship is in the created status and can't be changed by the customer.
+              format: duration
+            endDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 format and in UTC time when the status of relationship changes to either terminated or expired. Calculated as endDateTime = activatedDateTime + duration. Read-only.
+              format: date-time
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 format and in UTC time when the relationship was last modified. Read-only.
+              format: date-time
+              nullable: true
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationshipStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the relationship. Read Only. The possible values are: activating, active, approvalPending, approved, created, expired, expiring, terminated, terminating, terminationRequested, unknownFutureValue. Supports $orderby.'
+            accessAssignments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.delegatedAdminAccessAssignment'
+              description: The access assignments associated with the delegated admin relationship.
+              x-ms-navigationProperty: true
+            operations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationshipOperation'
+              description: The long running operations associated with the delegated admin relationship.
+              x-ms-navigationProperty: true
+            requests:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationshipRequest'
+              description: The requests associated with the delegated admin relationship.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.resellerDelegatedAdminRelationship': '#/components/schemas/microsoft.graph.resellerDelegatedAdminRelationship'
+- path: /tenantRelationships/delegatedAdminRelationships/{delegatedAdminRelationship-id}
+  path_description: Provides operations to manage the delegatedAdminRelationships property of the microsoft.graph.tenantRelationship entity.
+  path_parameters:
+  - name: delegatedAdminRelationship-id
+    in: path
+    description: The unique identifier of delegatedAdminRelationship
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminRelationship
+  methods:
+  - method: GET
+    summary: Get delegatedAdminRelationship
+    description: Read the properties of a delegatedAdminRelationship object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update delegatedAdminRelationship
+    description: 'Update the properties of a delegatedAdminRelationship object.  The following restrictions apply:
+
+      - You can update this relationship when its status property is created.
+
+      - You can update the autoExtendDuration property when status is either created or active.
+
+      - You can only remove the Microsoft Entra Global Administrator role when the status property is active, which indicates a long-running operation.'
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: delegatedAdminRelationship
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            accessDetails:
+              $ref: '#/components/schemas/microsoft.graph.delegatedAdminAccessDetails'
+            activatedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 format and in UTC time when the relationship became active. Read-only.
+              format: date-time
+              nullable: true
+            autoExtendDuration:
+              pattern: ^-?P([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+([.][0-9]+)?S)?)?$
+              type: string
+              description: 'The duration by which the validity of the relationship is automatically extended, denoted in ISO 8601 format. Supported values are: P0D, PT0S, P180D. The default value is PT0S. PT0S indicates that the relationship expires when the endDateTime is reached and it isn''t automatically extended.'
+              format: duration
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 format and in UTC time when the relationship was created. Read-only.
+              format: date-time
+              nullable: true
+            customer:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationshipCustomerParticipant'
+              - type: object
+                nullable: true
+              description: The display name and unique identifier of the customer of the relationship. This is configured either by the partner at the time the relationship is created or by the system after the customer approves the relationship. Can't be changed by the customer.
+            displayName:
+              type: string
+              description: The display name of the relationship used for ease of identification. Must be unique across all delegated admin relationships of the partner and is set by the partner only when the relationship is in the created status and can't be changed by the customer. Maximum length is 50 characters.
+            duration:
+              pattern: ^-?P([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+([.][0-9]+)?S)?)?$
+              type: string
+              description: The duration of the relationship in ISO 8601 format. Must be a value between P1D and P2Y inclusive. This is set by the partner only when the relationship is in the created status and can't be changed by the customer.
+              format: duration
+            endDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 format and in UTC time when the status of relationship changes to either terminated or expired. Calculated as endDateTime = activatedDateTime + duration. Read-only.
+              format: date-time
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 format and in UTC time when the relationship was last modified. Read-only.
+              format: date-time
+              nullable: true
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationshipStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the relationship. Read Only. The possible values are: activating, active, approvalPending, approved, created, expired, expiring, terminated, terminating, terminationRequested, unknownFutureValue. Supports $orderby.'
+            accessAssignments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.delegatedAdminAccessAssignment'
+              description: The access assignments associated with the delegated admin relationship.
+              x-ms-navigationProperty: true
+            operations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationshipOperation'
+              description: The long running operations associated with the delegated admin relationship.
+              x-ms-navigationProperty: true
+            requests:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationshipRequest'
+              description: The requests associated with the delegated admin relationship.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.resellerDelegatedAdminRelationship': '#/components/schemas/microsoft.graph.resellerDelegatedAdminRelationship'
+  - method: DELETE
+    summary: Delete delegatedAdminRelationship
+    description: 'Delete a delegatedAdminRelationship object. A relationship can only be deleted if it''s in the ''created'' status. '
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /tenantRelationships/delegatedAdminRelationships/{delegatedAdminRelationship-id}/accessAssignments
+  path_description: Provides operations to manage the accessAssignments property of the microsoft.graph.delegatedAdminRelationship entity.
+  path_parameters:
+  - name: delegatedAdminRelationship-id
+    in: path
+    description: The unique identifier of delegatedAdminRelationship
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminRelationship
+  methods:
+  - method: GET
+    summary: List accessAssignments
+    description: Get a list of the delegatedAdminAccessAssignment objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create accessAssignments
+    description: Create a new delegatedAdminAccessAssignment object.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: delegatedAdminAccessAssignment
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            accessContainer:
+              $ref: '#/components/schemas/microsoft.graph.delegatedAdminAccessContainer'
+            accessDetails:
+              $ref: '#/components/schemas/microsoft.graph.delegatedAdminAccessDetails'
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 format and in UTC time when the access assignment was created. Read-only.
+              format: date-time
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 and in UTC time when this access assignment was last modified. Read-only.
+              format: date-time
+              nullable: true
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.delegatedAdminAccessAssignmentStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the access assignment. Read-only. The possible values are: pending, active, deleting, deleted, error, unknownFutureValue.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.delegatedAdminAccessAssignment'
+- path: /tenantRelationships/delegatedAdminRelationships/{delegatedAdminRelationship-id}/accessAssignments/{delegatedAdminAccessAssignment-id}
+  path_description: Provides operations to manage the accessAssignments property of the microsoft.graph.delegatedAdminRelationship entity.
+  path_parameters:
+  - name: delegatedAdminRelationship-id
+    in: path
+    description: The unique identifier of delegatedAdminRelationship
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminRelationship
+  - name: delegatedAdminAccessAssignment-id
+    in: path
+    description: The unique identifier of delegatedAdminAccessAssignment
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminAccessAssignment
+  methods:
+  - method: GET
+    summary: Get delegatedAdminAccessAssignment
+    description: Read the properties of a delegatedAdminAccessAssignment object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update delegatedAdminAccessAssignment
+    description: Update the properties of a delegatedAdminAccessAssignment object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: delegatedAdminAccessAssignment
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            accessContainer:
+              $ref: '#/components/schemas/microsoft.graph.delegatedAdminAccessContainer'
+            accessDetails:
+              $ref: '#/components/schemas/microsoft.graph.delegatedAdminAccessDetails'
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 format and in UTC time when the access assignment was created. Read-only.
+              format: date-time
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 and in UTC time when this access assignment was last modified. Read-only.
+              format: date-time
+              nullable: true
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.delegatedAdminAccessAssignmentStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the access assignment. Read-only. The possible values are: pending, active, deleting, deleted, error, unknownFutureValue.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.delegatedAdminAccessAssignment'
+  - method: DELETE
+    summary: Delete delegatedAdminAccessAssignment
+    description: Delete a delegatedAdminAccessAssignment object.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /tenantRelationships/delegatedAdminRelationships/{delegatedAdminRelationship-id}/accessAssignments/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: delegatedAdminRelationship-id
+    in: path
+    description: The unique identifier of delegatedAdminRelationship
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminRelationship
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /tenantRelationships/delegatedAdminRelationships/{delegatedAdminRelationship-id}/operations
+  path_description: Provides operations to manage the operations property of the microsoft.graph.delegatedAdminRelationship entity.
+  path_parameters:
+  - name: delegatedAdminRelationship-id
+    in: path
+    description: The unique identifier of delegatedAdminRelationship
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminRelationship
+  methods:
+  - method: GET
+    summary: List operations
+    description: Get a list of the delegatedAdminRelationshipOperation objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to operations for tenantRelationships
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: delegatedAdminRelationshipOperation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The time in ISO 8601 format and in UTC time when the long-running operation was created. Read-only.
+              format: date-time
+            data:
+              type: string
+              description: The data (payload) for the operation. Read-only.
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The time in ISO 8601 format and in UTC time when the long-running operation was last modified. Read-only.
+              format: date-time
+            operationType:
+              $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationshipOperationType'
+            status:
+              $ref: '#/components/schemas/microsoft.graph.longRunningOperationStatus'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.delegatedAdminRelationshipOperation'
+- path: /tenantRelationships/delegatedAdminRelationships/{delegatedAdminRelationship-id}/operations/{delegatedAdminRelationshipOperation-id}
+  path_description: Provides operations to manage the operations property of the microsoft.graph.delegatedAdminRelationship entity.
+  path_parameters:
+  - name: delegatedAdminRelationship-id
+    in: path
+    description: The unique identifier of delegatedAdminRelationship
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminRelationship
+  - name: delegatedAdminRelationshipOperation-id
+    in: path
+    description: The unique identifier of delegatedAdminRelationshipOperation
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminRelationshipOperation
+  methods:
+  - method: GET
+    summary: Get delegatedAdminRelationshipOperation
+    description: Read the properties of a delegatedAdminRelationshipOperation object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property operations in tenantRelationships
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: delegatedAdminRelationshipOperation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The time in ISO 8601 format and in UTC time when the long-running operation was created. Read-only.
+              format: date-time
+            data:
+              type: string
+              description: The data (payload) for the operation. Read-only.
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The time in ISO 8601 format and in UTC time when the long-running operation was last modified. Read-only.
+              format: date-time
+            operationType:
+              $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationshipOperationType'
+            status:
+              $ref: '#/components/schemas/microsoft.graph.longRunningOperationStatus'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.delegatedAdminRelationshipOperation'
+  - method: DELETE
+    summary: Delete navigation property operations for tenantRelationships
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /tenantRelationships/delegatedAdminRelationships/{delegatedAdminRelationship-id}/operations/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: delegatedAdminRelationship-id
+    in: path
+    description: The unique identifier of delegatedAdminRelationship
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminRelationship
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /tenantRelationships/delegatedAdminRelationships/{delegatedAdminRelationship-id}/requests
+  path_description: Provides operations to manage the requests property of the microsoft.graph.delegatedAdminRelationship entity.
+  path_parameters:
+  - name: delegatedAdminRelationship-id
+    in: path
+    description: The unique identifier of delegatedAdminRelationship
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminRelationship
+  methods:
+  - method: GET
+    summary: List requests
+    description: Get a list of the delegatedAdminRelationshipRequest objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create requests
+    description: Create a new delegatedAdminRelationshipRequest object.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: delegatedAdminRelationshipRequest
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            action:
+              $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationshipRequestAction'
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 format and in UTC time when the relationship request was created. Read-only.
+              format: date-time
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 format and UTC time when this relationship request was last modified. Read-only.
+              format: date-time
+              nullable: true
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationshipRequestStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the request. Read-only. The possible values are: created, pending, succeeded, failed, unknownFutureValue.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.delegatedAdminRelationshipRequest'
+- path: /tenantRelationships/delegatedAdminRelationships/{delegatedAdminRelationship-id}/requests/{delegatedAdminRelationshipRequest-id}
+  path_description: Provides operations to manage the requests property of the microsoft.graph.delegatedAdminRelationship entity.
+  path_parameters:
+  - name: delegatedAdminRelationship-id
+    in: path
+    description: The unique identifier of delegatedAdminRelationship
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminRelationship
+  - name: delegatedAdminRelationshipRequest-id
+    in: path
+    description: The unique identifier of delegatedAdminRelationshipRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminRelationshipRequest
+  methods:
+  - method: GET
+    summary: Get delegatedAdminRelationshipRequest
+    description: Read the properties and relationships of a delegatedAdminRelationshipRequest object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property requests in tenantRelationships
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: delegatedAdminRelationshipRequest
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            action:
+              $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationshipRequestAction'
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 format and in UTC time when the relationship request was created. Read-only.
+              format: date-time
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time in ISO 8601 format and UTC time when this relationship request was last modified. Read-only.
+              format: date-time
+              nullable: true
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.delegatedAdminRelationshipRequestStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the request. Read-only. The possible values are: created, pending, succeeded, failed, unknownFutureValue.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.delegatedAdminRelationshipRequest'
+  - method: DELETE
+    summary: Delete navigation property requests for tenantRelationships
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /tenantRelationships/delegatedAdminRelationships/{delegatedAdminRelationship-id}/requests/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: delegatedAdminRelationship-id
+    in: path
+    description: The unique identifier of delegatedAdminRelationship
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: delegatedAdminRelationship
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /tenantRelationships/delegatedAdminRelationships/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /tenantRelationships/findTenantInformationByDomainName(domainName='{domainName}')
+  path_description: Provides operations to call the findTenantInformationByDomainName method.
+  path_parameters:
+  - name: domainName
+    in: path
+    description: 'Usage: domainName=''{domainName}'''
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Invoke function findTenantInformationByDomainName
+    description: Given a domain name, search for a tenant and read its tenantInformation. You can use this API to validate tenant information and use the tenantId to configure cross-tenant access settings between you and the tenant.
+    parameters: []
+    requestBody: null
+- path: /tenantRelationships/findTenantInformationByTenantId(tenantId='{tenantId}')
+  path_description: Provides operations to call the findTenantInformationByTenantId method.
+  path_parameters:
+  - name: tenantId
+    in: path
+    description: 'Usage: tenantId=''{tenantId}'''
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Invoke function findTenantInformationByTenantId
+    description: Given a tenant ID, search for a tenant and read its tenantInformation. You can use this API to validate tenant information and use the tenantId to configure cross-tenant cross-tenant access settings between you and the tenant.
+    parameters: []
+    requestBody: null
+- path: /tenantRelationships/multiTenantOrganization
+  path_description: Provides operations to manage the multiTenantOrganization property of the microsoft.graph.tenantRelationship entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get multiTenantOrganization
+    description: Get properties of the multitenant organization.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update multiTenantOrganization
+    description: Update the properties of a multitenant organization.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: multiTenantOrganization
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date when multitenant organization was created. Read-only.
+              format: date-time
+              nullable: true
+            description:
+              type: string
+              description: Description of the multitenant organization.
+              nullable: true
+            displayName:
+              type: string
+              description: Display name of the multitenant organization.
+              nullable: true
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.multiTenantOrganizationState'
+              - type: object
+                nullable: true
+              description: 'State of the multitenant organization. The possible values are: active, inactive, unknownFutureValue. active indicates the multitenant organization is created. inactive indicates the multitenant organization isn''t created. Read-only.'
+            joinRequest:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.multiTenantOrganizationJoinRequestRecord'
+              - type: object
+                nullable: true
+              description: Defines the status of a tenant joining a multitenant organization.
+              x-ms-navigationProperty: true
+            tenants:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.multiTenantOrganizationMember'
+              description: Defines tenants added to a multitenant organization.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.multiTenantOrganization'
+- path: /tenantRelationships/multiTenantOrganization/joinRequest
+  path_description: Provides operations to manage the joinRequest property of the microsoft.graph.multiTenantOrganization entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get multiTenantOrganizationJoinRequestRecord
+    description: Get the status of a tenant joining a multitenant organization.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update multiTenantOrganizationJoinRequestRecord
+    description: Join a multitenant organization, after the owner of the multitenant organization has added your tenant to the multitenant organization as pending. Before a tenant added to a multitenant organization can participate in the multitenant organization, the administrator of the joining tenant must submit a join request. To allow for asynchronous processing, you must wait up to 2 hours before joining a multitenant organization is completed.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: multiTenantOrganizationJoinRequestRecord
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            addedByTenantId:
+              type: string
+              description: Tenant ID of the Microsoft Entra tenant that added a tenant to the multitenant organization. To reset a failed join request, set addedByTenantId to 00000000-0000-0000-0000-000000000000. Required.
+              nullable: true
+            memberState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.multiTenantOrganizationMemberState'
+              - type: object
+                nullable: true
+              description: 'State of the tenant in the multitenant organization. The possible values are: pending, active, removed, unknownFutureValue. Tenants in the pending state must join the multitenant organization to participate in the multitenant organization. Tenants in the active state can participate in the multitenant organization. Tenants in the removed state are in the process of being removed from the multitenant organization. Read-only.'
+            role:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.multiTenantOrganizationMemberRole'
+              - type: object
+                nullable: true
+              description: 'Role of the tenant in the multitenant organization. The possible values are: owner, member (default), unknownFutureValue. Tenants with the owner role can manage the multitenant organization. There can be multiple tenants with the owner role in a multitenant organization. Tenants with the member role can participate in a multitenant organization.'
+            transitionDetails:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.multiTenantOrganizationJoinRequestTransitionDetails'
+              - type: object
+                nullable: true
+              description: Details of the processing status for a tenant joining a multitenant organization. Read-only.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.multiTenantOrganizationJoinRequestRecord'
+- path: /tenantRelationships/multiTenantOrganization/tenants
+  path_description: Provides operations to manage the tenants property of the microsoft.graph.multiTenantOrganization entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List multiTenantOrganizationMembers
+    description: List the tenants and their properties in the multitenant organization.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add multiTenantOrganizationMember
+    description: Add a tenant to a multitenant organization. The administrator of an owner tenant has the permissions to add tenants to the multitenant organization. The added tenant is in the pending state until the administrator of the added tenant joins the multitenant organization by submitting a join request. A tenant can be part of only one multitenant organization.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: multiTenantOrganizationMember
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            addedByTenantId:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              description: Tenant ID of the tenant that added the tenant to the multitenant organization. Read-only.
+              format: uuid
+              nullable: true
+            addedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the tenant was added to the multitenant organization. Read-only.
+              format: date-time
+              nullable: true
+            displayName:
+              type: string
+              description: Display name of the tenant added to the multitenant organization.
+              nullable: true
+            joinedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the tenant joined the multitenant organization. Read-only.
+              format: date-time
+              nullable: true
+            role:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.multiTenantOrganizationMemberRole'
+              - type: object
+                nullable: true
+              description: 'Role of the tenant in the multitenant organization. The possible values are: owner, member (default), unknownFutureValue. Tenants with the owner role can manage the multitenant organization but tenants with the member role can only participate in a multitenant organization. There can be multiple tenants with the owner role in a multitenant organization.'
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.multiTenantOrganizationMemberState'
+              - type: object
+                nullable: true
+              description: 'State of the tenant in the multitenant organization. The possible values are: pending, active, removed, unknownFutureValue. Tenants in the pending state must join the multitenant organization to participate in the multitenant organization. Tenants in the active state can participate in the multitenant organization. Tenants in the removed state are in the process of being removed from the multitenant organization. Read-only.'
+            tenantId:
+              type: string
+              description: Tenant ID of the Microsoft Entra tenant added to the multitenant organization. Set at the time tenant is added.Supports $filter. Key.
+            transitionDetails:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.multiTenantOrganizationMemberTransitionDetails'
+              - type: object
+                nullable: true
+              description: Details of the processing status for a tenant in a multitenant organization. Read-only. Nullable.
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.multiTenantOrganizationMember'
+        x-ms-discriminator-value: '#microsoft.graph.multiTenantOrganizationMember'
+- path: /tenantRelationships/multiTenantOrganization/tenants/{multiTenantOrganizationMember-id}
+  path_description: Provides operations to manage the tenants property of the microsoft.graph.multiTenantOrganization entity.
+  path_parameters:
+  - name: multiTenantOrganizationMember-id
+    in: path
+    description: The unique identifier of multiTenantOrganizationMember
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: multiTenantOrganizationMember
+  methods:
+  - method: GET
+    summary: Get multiTenantOrganizationMember
+    description: Get a tenant and its properties in the multitenant organization.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property tenants in tenantRelationships
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: multiTenantOrganizationMember
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            addedByTenantId:
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+              type: string
+              description: Tenant ID of the tenant that added the tenant to the multitenant organization. Read-only.
+              format: uuid
+              nullable: true
+            addedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the tenant was added to the multitenant organization. Read-only.
+              format: date-time
+              nullable: true
+            displayName:
+              type: string
+              description: Display name of the tenant added to the multitenant organization.
+              nullable: true
+            joinedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the tenant joined the multitenant organization. Read-only.
+              format: date-time
+              nullable: true
+            role:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.multiTenantOrganizationMemberRole'
+              - type: object
+                nullable: true
+              description: 'Role of the tenant in the multitenant organization. The possible values are: owner, member (default), unknownFutureValue. Tenants with the owner role can manage the multitenant organization but tenants with the member role can only participate in a multitenant organization. There can be multiple tenants with the owner role in a multitenant organization.'
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.multiTenantOrganizationMemberState'
+              - type: object
+                nullable: true
+              description: 'State of the tenant in the multitenant organization. The possible values are: pending, active, removed, unknownFutureValue. Tenants in the pending state must join the multitenant organization to participate in the multitenant organization. Tenants in the active state can participate in the multitenant organization. Tenants in the removed state are in the process of being removed from the multitenant organization. Read-only.'
+            tenantId:
+              type: string
+              description: Tenant ID of the Microsoft Entra tenant added to the multitenant organization. Set at the time tenant is added.Supports $filter. Key.
+            transitionDetails:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.multiTenantOrganizationMemberTransitionDetails'
+              - type: object
+                nullable: true
+              description: Details of the processing status for a tenant in a multitenant organization. Read-only. Nullable.
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.multiTenantOrganizationMember'
+        x-ms-discriminator-value: '#microsoft.graph.multiTenantOrganizationMember'
+  - method: DELETE
+    summary: Remove multiTenantOrganizationMember
+    description: 'Remove a tenant from a multitenant organization. A tenant can be removed in the following scenarios:'
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /tenantRelationships/multiTenantOrganization/tenants/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

@@ -1,0 +1,163 @@
+- path: /groupSettings
+  path_description: Provides operations to manage the collection of groupSetting entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List settings
+    description: Retrieve a list of tenant-level or group-specific group settings objects.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create settings
+    description: Create a new setting based on the templates available in groupSettingTemplates. These settings can be at the tenant-level or at the group level. Group settings apply to only Microsoft 365 groups. The template named Group.Unified can be used to configure tenant-wide Microsoft 365 group settings, while the template named Group.Unified.Guest can be used to configure group-specific settings.
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: groupSetting
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: Display name of this group of settings, which comes from the associated template.
+              nullable: true
+            templateId:
+              type: string
+              description: Unique identifier for the tenant-level groupSettingTemplates object that's been customized for this group-level settings object. Read-only.
+              nullable: true
+            values:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.settingValue'
+              description: Collection of name-value pairs corresponding to the name and defaultValue properties in the referenced groupSettingTemplates object.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.groupSetting'
+- path: /groupSettings/{groupSetting-id}
+  path_description: Provides operations to manage the collection of groupSetting entities.
+  path_parameters:
+  - name: groupSetting-id
+    in: path
+    description: The unique identifier of groupSetting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: groupSetting
+  methods:
+  - method: GET
+    summary: Get groupSetting
+    description: Retrieve the properties of a specific group setting object. The setting can be a tenant-level or group-specific setting.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update groupSetting
+    description: Update the properties of a groupSetting object for tenant-wide group settings or a specific group setting.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: groupSetting
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: Display name of this group of settings, which comes from the associated template.
+              nullable: true
+            templateId:
+              type: string
+              description: Unique identifier for the tenant-level groupSettingTemplates object that's been customized for this group-level settings object. Read-only.
+              nullable: true
+            values:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.settingValue'
+              description: Collection of name-value pairs corresponding to the name and defaultValue properties in the referenced groupSettingTemplates object.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.groupSetting'
+  - method: DELETE
+    summary: Delete a group setting
+    description: Delete a tenant-level or group-specific groupSetting object.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /groupSettings/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

@@ -1,0 +1,213 @@
+- path: /groupLifecyclePolicies
+  path_description: Provides operations to manage the collection of groupLifecyclePolicy entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List groupLifecyclePolicies
+    description: List all the groupLifecyclePolicies.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create groupLifecyclePolicy
+    description: Creates a new groupLifecyclePolicy. Only one policy exists in the tenant.
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: groupLifecyclePolicy
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            alternateNotificationEmails:
+              type: string
+              description: List of email address to send notifications for groups without owners. Multiple email address can be defined by separating email address with a semicolon.
+              nullable: true
+            groupLifetimeInDays:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Number of days before a group expires and needs to be renewed. Once renewed, the group expiration is extended by the number of days defined.
+              format: int32
+              nullable: true
+            managedGroupTypes:
+              type: string
+              description: The group type for which the expiration policy applies. Possible values are All, Selected or None.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.groupLifecyclePolicy'
+- path: /groupLifecyclePolicies/{groupLifecyclePolicy-id}
+  path_description: Provides operations to manage the collection of groupLifecyclePolicy entities.
+  path_parameters:
+  - name: groupLifecyclePolicy-id
+    in: path
+    description: The unique identifier of groupLifecyclePolicy
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: groupLifecyclePolicy
+  methods:
+  - method: GET
+    summary: Get groupLifecyclePolicy
+    description: Retrieve the properties and relationships of a groupLifecyclePolicies object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update groupLifecyclePolicy
+    description: Update the properties of a groupLifecyclePolicygroupLifecyclePolicy resource type object.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: groupLifecyclePolicy
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            alternateNotificationEmails:
+              type: string
+              description: List of email address to send notifications for groups without owners. Multiple email address can be defined by separating email address with a semicolon.
+              nullable: true
+            groupLifetimeInDays:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Number of days before a group expires and needs to be renewed. Once renewed, the group expiration is extended by the number of days defined.
+              format: int32
+              nullable: true
+            managedGroupTypes:
+              type: string
+              description: The group type for which the expiration policy applies. Possible values are All, Selected or None.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.groupLifecyclePolicy'
+  - method: DELETE
+    summary: Delete groupLifecyclePolicy
+    description: Delete a groupLifecyclePolicy.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /groupLifecyclePolicies/{groupLifecyclePolicy-id}/addGroup
+  path_description: Provides operations to call the addGroup method.
+  path_parameters:
+  - name: groupLifecyclePolicy-id
+    in: path
+    description: The unique identifier of groupLifecyclePolicy
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: groupLifecyclePolicy
+  methods:
+  - method: POST
+    summary: Invoke action addGroup
+    description: Add a group to a groupLifecyclePolicy. This action is supported only if the managedGroupTypes property of the policy is set to Selected.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          groupId:
+            type: string
+- path: /groupLifecyclePolicies/{groupLifecyclePolicy-id}/removeGroup
+  path_description: Provides operations to call the removeGroup method.
+  path_parameters:
+  - name: groupLifecyclePolicy-id
+    in: path
+    description: The unique identifier of groupLifecyclePolicy
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: groupLifecyclePolicy
+  methods:
+  - method: POST
+    summary: Invoke action removeGroup
+    description: Removes a group from a lifecycle policy.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          groupId:
+            type: string
+- path: /groupLifecyclePolicies/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

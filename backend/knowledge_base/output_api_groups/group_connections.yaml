@@ -1,0 +1,1373 @@
+- path: /connections
+  path_description: Provides operations to manage the collection of externalConnection entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get entities from connections
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add new entity to connections
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: externalConnection
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            activitySettings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.activitySettings'
+              - type: object
+                nullable: true
+              description: Collects configurable settings related to activities involving connector content.
+            configuration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.configuration'
+              - type: object
+                nullable: true
+              description: Specifies additional application IDs that are allowed to manage the connection and to index content in the connection. Optional.
+            connectorId:
+              type: string
+              description: The Teams app ID. Optional.
+              nullable: true
+            description:
+              type: string
+              description: Description of the connection displayed in the Microsoft 365 admin center. Optional.
+              nullable: true
+            name:
+              type: string
+              description: The display name of the connection to be displayed in the Microsoft 365 admin center. Maximum length of 128 characters. Required.
+              nullable: true
+            searchSettings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.searchSettings'
+              - type: object
+                nullable: true
+              description: The settings configuring the search experience for content in this connection, such as the display templates for search results.
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.connectionState'
+              - type: object
+                nullable: true
+              description: 'Indicates the current state of the connection. Possible values are: draft, ready, obsolete, limitExceeded, unknownFutureValue.'
+              readOnly: true
+            groups:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.externalConnectors.externalGroup'
+              x-ms-navigationProperty: true
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.externalConnectors.externalItem'
+              x-ms-navigationProperty: true
+            operations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.externalConnectors.connectionOperation'
+              x-ms-navigationProperty: true
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.schema'
+              - type: object
+                nullable: true
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.externalConnectors.externalConnection'
+- path: /connections/{externalConnection-id}
+  path_description: Provides operations to manage the collection of externalConnection entities.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  methods:
+  - method: GET
+    summary: Get entity from connections by key
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update entity in connections
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: externalConnection
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            activitySettings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.activitySettings'
+              - type: object
+                nullable: true
+              description: Collects configurable settings related to activities involving connector content.
+            configuration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.configuration'
+              - type: object
+                nullable: true
+              description: Specifies additional application IDs that are allowed to manage the connection and to index content in the connection. Optional.
+            connectorId:
+              type: string
+              description: The Teams app ID. Optional.
+              nullable: true
+            description:
+              type: string
+              description: Description of the connection displayed in the Microsoft 365 admin center. Optional.
+              nullable: true
+            name:
+              type: string
+              description: The display name of the connection to be displayed in the Microsoft 365 admin center. Maximum length of 128 characters. Required.
+              nullable: true
+            searchSettings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.searchSettings'
+              - type: object
+                nullable: true
+              description: The settings configuring the search experience for content in this connection, such as the display templates for search results.
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.connectionState'
+              - type: object
+                nullable: true
+              description: 'Indicates the current state of the connection. Possible values are: draft, ready, obsolete, limitExceeded, unknownFutureValue.'
+              readOnly: true
+            groups:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.externalConnectors.externalGroup'
+              x-ms-navigationProperty: true
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.externalConnectors.externalItem'
+              x-ms-navigationProperty: true
+            operations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.externalConnectors.connectionOperation'
+              x-ms-navigationProperty: true
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.schema'
+              - type: object
+                nullable: true
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.externalConnectors.externalConnection'
+  - method: DELETE
+    summary: Delete entity from connections
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /connections/{externalConnection-id}/groups
+  path_description: Provides operations to manage the groups property of the microsoft.graph.externalConnectors.externalConnection entity.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  methods:
+  - method: GET
+    summary: Get groups from connections
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to groups for connections
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: externalGroup
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: The description of the external group. Optional.
+              nullable: true
+            displayName:
+              type: string
+              description: The friendly name of the external group. Optional.
+              nullable: true
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.externalConnectors.identity'
+              description: A member added to an externalGroup. You can add Microsoft Entra users, Microsoft Entra groups, or an externalGroup as members.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.externalConnectors.externalGroup'
+- path: /connections/{externalConnection-id}/groups/{externalGroup-id}
+  path_description: Provides operations to manage the groups property of the microsoft.graph.externalConnectors.externalConnection entity.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  - name: externalGroup-id
+    in: path
+    description: The unique identifier of externalGroup
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalGroup
+  methods:
+  - method: GET
+    summary: Get groups from connections
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property groups in connections
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: externalGroup
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: The description of the external group. Optional.
+              nullable: true
+            displayName:
+              type: string
+              description: The friendly name of the external group. Optional.
+              nullable: true
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.externalConnectors.identity'
+              description: A member added to an externalGroup. You can add Microsoft Entra users, Microsoft Entra groups, or an externalGroup as members.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.externalConnectors.externalGroup'
+  - method: DELETE
+    summary: Delete navigation property groups for connections
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /connections/{externalConnection-id}/groups/{externalGroup-id}/members
+  path_description: Provides operations to manage the members property of the microsoft.graph.externalConnectors.externalGroup entity.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  - name: externalGroup-id
+    in: path
+    description: The unique identifier of externalGroup
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalGroup
+  methods:
+  - method: GET
+    summary: Get members from connections
+    description: A member added to an externalGroup. You can add Microsoft Entra users, Microsoft Entra groups, or an externalGroup as members.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to members for connections
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identity
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            type:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.identityType'
+              - type: object
+                nullable: true
+              description: 'The type of identity. Possible values are: user or group for Microsoft Entra identities and externalgroup for groups in an external system.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.externalConnectors.identity'
+- path: /connections/{externalConnection-id}/groups/{externalGroup-id}/members/{identity-id}
+  path_description: Provides operations to manage the members property of the microsoft.graph.externalConnectors.externalGroup entity.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  - name: externalGroup-id
+    in: path
+    description: The unique identifier of externalGroup
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalGroup
+  - name: identity-id
+    in: path
+    description: The unique identifier of identity
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: identity
+  methods:
+  - method: GET
+    summary: Get members from connections
+    description: A member added to an externalGroup. You can add Microsoft Entra users, Microsoft Entra groups, or an externalGroup as members.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property members in connections
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identity
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            type:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.identityType'
+              - type: object
+                nullable: true
+              description: 'The type of identity. Possible values are: user or group for Microsoft Entra identities and externalgroup for groups in an external system.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.externalConnectors.identity'
+  - method: DELETE
+    summary: Delete navigation property members for connections
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /connections/{externalConnection-id}/groups/{externalGroup-id}/members/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  - name: externalGroup-id
+    in: path
+    description: The unique identifier of externalGroup
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalGroup
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /connections/{externalConnection-id}/groups/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /connections/{externalConnection-id}/items
+  path_description: Provides operations to manage the items property of the microsoft.graph.externalConnectors.externalConnection entity.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  methods:
+  - method: GET
+    summary: Get items from connections
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to items for connections
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: externalItem
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            acl:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.externalConnectors.acl'
+              description: An array of access control entries. Each entry specifies the access granted to a user or group. Required.
+            content:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.externalItemContent'
+              - type: object
+                nullable: true
+              description: A plain-text  representation of the contents of the item. The text in this property is full-text indexed. Optional.
+            properties:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.properties'
+              - type: object
+                nullable: true
+              description: A property bag with the properties of the item. The properties MUST conform to the schema defined for the externalConnection. Required.
+            activities:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.externalConnectors.externalActivity'
+              description: Returns a list of activities performed on the item. Write-only.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.externalConnectors.externalItem'
+- path: /connections/{externalConnection-id}/items/{externalItem-id}
+  path_description: Provides operations to manage the items property of the microsoft.graph.externalConnectors.externalConnection entity.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  - name: externalItem-id
+    in: path
+    description: The unique identifier of externalItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalItem
+  methods:
+  - method: GET
+    summary: Get items from connections
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PUT
+    summary: Update the navigation property items in connections
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: externalItem
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            acl:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.externalConnectors.acl'
+              description: An array of access control entries. Each entry specifies the access granted to a user or group. Required.
+            content:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.externalItemContent'
+              - type: object
+                nullable: true
+              description: A plain-text  representation of the contents of the item. The text in this property is full-text indexed. Optional.
+            properties:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.properties'
+              - type: object
+                nullable: true
+              description: A property bag with the properties of the item. The properties MUST conform to the schema defined for the externalConnection. Required.
+            activities:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.externalConnectors.externalActivity'
+              description: Returns a list of activities performed on the item. Write-only.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.externalConnectors.externalItem'
+  - method: DELETE
+    summary: Delete navigation property items for connections
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /connections/{externalConnection-id}/items/{externalItem-id}/activities
+  path_description: Provides operations to manage the activities property of the microsoft.graph.externalConnectors.externalItem entity.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  - name: externalItem-id
+    in: path
+    description: The unique identifier of externalItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalItem
+  methods:
+  - method: GET
+    summary: Get activities from connections
+    description: Returns a list of activities performed on the item. Write-only.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to activities for connections
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: externalActivity
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            startDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the particular activity occurred. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+            type:
+              $ref: '#/components/schemas/microsoft.graph.externalConnectors.externalActivityType'
+            performedBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.identity'
+              - type: object
+                nullable: true
+              description: Represents an identity used to identify who is responsible for the activity.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.externalConnectors.externalActivityResult': '#/components/schemas/microsoft.graph.externalConnectors.externalActivityResult'
+- path: /connections/{externalConnection-id}/items/{externalItem-id}/activities/{externalActivity-id}
+  path_description: Provides operations to manage the activities property of the microsoft.graph.externalConnectors.externalItem entity.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  - name: externalItem-id
+    in: path
+    description: The unique identifier of externalItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalItem
+  - name: externalActivity-id
+    in: path
+    description: The unique identifier of externalActivity
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalActivity
+  methods:
+  - method: GET
+    summary: Get activities from connections
+    description: Returns a list of activities performed on the item. Write-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property activities in connections
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: externalActivity
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            startDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the particular activity occurred. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+            type:
+              $ref: '#/components/schemas/microsoft.graph.externalConnectors.externalActivityType'
+            performedBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.identity'
+              - type: object
+                nullable: true
+              description: Represents an identity used to identify who is responsible for the activity.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.externalConnectors.externalActivityResult': '#/components/schemas/microsoft.graph.externalConnectors.externalActivityResult'
+  - method: DELETE
+    summary: Delete navigation property activities for connections
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /connections/{externalConnection-id}/items/{externalItem-id}/activities/{externalActivity-id}/performedBy
+  path_description: Provides operations to manage the performedBy property of the microsoft.graph.externalConnectors.externalActivity entity.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  - name: externalItem-id
+    in: path
+    description: The unique identifier of externalItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalItem
+  - name: externalActivity-id
+    in: path
+    description: The unique identifier of externalActivity
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalActivity
+  methods:
+  - method: GET
+    summary: Get performedBy from connections
+    description: Represents an identity used to identify who is responsible for the activity.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /connections/{externalConnection-id}/items/{externalItem-id}/activities/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  - name: externalItem-id
+    in: path
+    description: The unique identifier of externalItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalItem
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /connections/{externalConnection-id}/items/{externalItem-id}/microsoft.graph.externalConnectors.addActivities
+  path_description: Provides operations to call the addActivities method.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  - name: externalItem-id
+    in: path
+    description: The unique identifier of externalItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalItem
+  methods:
+  - method: POST
+    summary: Invoke action addActivities
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          activities:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.externalConnectors.externalActivity'
+- path: /connections/{externalConnection-id}/items/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /connections/{externalConnection-id}/operations
+  path_description: Provides operations to manage the operations property of the microsoft.graph.externalConnectors.externalConnection entity.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  methods:
+  - method: GET
+    summary: Get operations from connections
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to operations for connections
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: connectionOperation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            error:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.publicError'
+              - type: object
+                nullable: true
+              description: If status is failed, provides more information about the error that caused the failure.
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.connectionOperationStatus'
+              - type: object
+                nullable: true
+              description: 'Indicates the status of the asynchronous operation. Possible values are: unspecified, inprogress, completed, failed, unknownFutureValue.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.externalConnectors.connectionOperation'
+- path: /connections/{externalConnection-id}/operations/{connectionOperation-id}
+  path_description: Provides operations to manage the operations property of the microsoft.graph.externalConnectors.externalConnection entity.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  - name: connectionOperation-id
+    in: path
+    description: The unique identifier of connectionOperation
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: connectionOperation
+  methods:
+  - method: GET
+    summary: Get operations from connections
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property operations in connections
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: connectionOperation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            error:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.publicError'
+              - type: object
+                nullable: true
+              description: If status is failed, provides more information about the error that caused the failure.
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.externalConnectors.connectionOperationStatus'
+              - type: object
+                nullable: true
+              description: 'Indicates the status of the asynchronous operation. Possible values are: unspecified, inprogress, completed, failed, unknownFutureValue.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.externalConnectors.connectionOperation'
+  - method: DELETE
+    summary: Delete navigation property operations for connections
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /connections/{externalConnection-id}/operations/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /connections/{externalConnection-id}/schema
+  path_description: Provides operations to manage the schema property of the microsoft.graph.externalConnectors.externalConnection entity.
+  path_parameters:
+  - name: externalConnection-id
+    in: path
+    description: The unique identifier of externalConnection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: externalConnection
+  methods:
+  - method: GET
+    summary: Get schema from connections
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property schema in connections
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: schema
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            baseType:
+              type: string
+              description: Must be set to microsoft.graph.externalConnector.externalItem. Required.
+            properties:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.externalConnectors.property'
+              description: The properties defined for the items in the connection. The minimum number of properties is one, the maximum is 128.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.externalConnectors.schema'
+- path: /connections/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

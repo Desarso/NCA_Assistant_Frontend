@@ -1,0 +1,3722 @@
+- path: /reports
+  path_description: Provides operations to manage the reportRoot singleton.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get reportRoot
+    description: Read properties and relationships of the reportRoot object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update reportRoot
+    description: Update the properties of a reportRoot object.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: reportRoot
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          authenticationMethods:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.authenticationMethodsRoot'
+            - type: object
+              nullable: true
+            description: Container for navigation properties for Microsoft Entra authentication methods resources.
+            x-ms-navigationProperty: true
+          dailyPrintUsageByPrinter:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.printUsageByPrinter'
+            description: Retrieve a list of daily print usage summaries, grouped by printer.
+            x-ms-navigationProperty: true
+          dailyPrintUsageByUser:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.printUsageByUser'
+            description: Retrieve a list of daily print usage summaries, grouped by user.
+            x-ms-navigationProperty: true
+          monthlyPrintUsageByPrinter:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.printUsageByPrinter'
+            description: Retrieve a list of monthly print usage summaries, grouped by printer.
+            x-ms-navigationProperty: true
+          monthlyPrintUsageByUser:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.printUsageByUser'
+            description: Retrieve a list of monthly print usage summaries, grouped by user.
+            x-ms-navigationProperty: true
+          partners:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.partners'
+            - type: object
+              nullable: true
+            description: Represents billing details for a Microsoft direct partner.
+            x-ms-navigationProperty: true
+          security:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.securityReportsRoot'
+            - type: object
+              nullable: true
+            description: Represents an abstract type that contains resources for attack simulation and training reports.
+            x-ms-navigationProperty: true
+          '@odata.type':
+            type: string
+- path: /reports/authenticationMethods
+  path_description: Provides operations to manage the authenticationMethods property of the microsoft.graph.reportRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get authenticationMethods from reports
+    description: Container for navigation properties for Microsoft Entra authentication methods resources.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property authenticationMethods in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationMethodsRoot
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            userRegistrationDetails:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.userRegistrationDetails'
+              description: Represents the state of a user's authentication methods, including which methods are registered and which features the user is registered and capable of (such as multifactor authentication, self-service password reset, and passwordless authentication).
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.authenticationMethodsRoot'
+  - method: DELETE
+    summary: Delete navigation property authenticationMethods for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/authenticationMethods/usersRegisteredByFeature()
+  path_description: Provides operations to call the usersRegisteredByFeature method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function usersRegisteredByFeature
+    description: Get the number of users capable of multi-factor authentication, self-service password reset, and passwordless authentication.
+    parameters: []
+    requestBody: null
+- path: /reports/authenticationMethods/usersRegisteredByFeature(includedUserTypes='{includedUserTypes}',includedUserRoles='{includedUserRoles}')
+  path_description: Provides operations to call the usersRegisteredByFeature method.
+  path_parameters:
+  - name: includedUserTypes
+    in: path
+    description: 'Usage: includedUserTypes=''{includedUserTypes}'''
+    required: true
+    schema:
+      anyOf:
+      - $ref: '#/components/schemas/microsoft.graph.includedUserTypes'
+      - type: object
+        nullable: true
+  - name: includedUserRoles
+    in: path
+    description: 'Usage: includedUserRoles=''{includedUserRoles}'''
+    required: true
+    schema:
+      anyOf:
+      - $ref: '#/components/schemas/microsoft.graph.includedUserRoles'
+      - type: object
+        nullable: true
+  methods:
+  - method: GET
+    summary: Invoke function usersRegisteredByFeature
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/authenticationMethods/usersRegisteredByMethod()
+  path_description: Provides operations to call the usersRegisteredByMethod method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function usersRegisteredByMethod
+    description: Get the number of users registered for each authentication method.
+    parameters: []
+    requestBody: null
+- path: /reports/authenticationMethods/usersRegisteredByMethod(includedUserTypes='{includedUserTypes}',includedUserRoles='{includedUserRoles}')
+  path_description: Provides operations to call the usersRegisteredByMethod method.
+  path_parameters:
+  - name: includedUserTypes
+    in: path
+    description: 'Usage: includedUserTypes=''{includedUserTypes}'''
+    required: true
+    schema:
+      anyOf:
+      - $ref: '#/components/schemas/microsoft.graph.includedUserTypes'
+      - type: object
+        nullable: true
+  - name: includedUserRoles
+    in: path
+    description: 'Usage: includedUserRoles=''{includedUserRoles}'''
+    required: true
+    schema:
+      anyOf:
+      - $ref: '#/components/schemas/microsoft.graph.includedUserRoles'
+      - type: object
+        nullable: true
+  methods:
+  - method: GET
+    summary: Invoke function usersRegisteredByMethod
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/authenticationMethods/userRegistrationDetails
+  path_description: Provides operations to manage the userRegistrationDetails property of the microsoft.graph.authenticationMethodsRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List userRegistrationDetails
+    description: 'Get a list of the authentication methods registered for a user as defined in the userRegistrationDetails object. This method doesn''t work for disabled users. '
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to userRegistrationDetails for reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: userRegistrationDetails
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            isAdmin:
+              type: boolean
+              description: Indicates whether the user has an admin role in the tenant. This value can be used to check the authentication methods that privileged accounts are registered for and capable of.
+              nullable: true
+            isMfaCapable:
+              type: boolean
+              description: Indicates whether the user has registered a strong authentication method for multifactor authentication. The method must be allowed by the authentication methods policy. Supports $filter (eq).
+            isMfaRegistered:
+              type: boolean
+              description: Indicates whether the user has registered a strong authentication method for multifactor authentication. The method may not necessarily be allowed by the authentication methods policy. Supports $filter (eq).
+            isPasswordlessCapable:
+              type: boolean
+              description: Indicates whether the user has registered a passwordless strong authentication method (including FIDO2, Windows Hello for Business, and Microsoft Authenticator (Passwordless)) that is allowed by the authentication methods policy. Supports $filter (eq).
+            isSsprCapable:
+              type: boolean
+              description: Indicates whether the user has registered the required number of authentication methods for self-service password reset and the user is allowed to perform self-service password reset by policy. Supports $filter (eq).
+            isSsprEnabled:
+              type: boolean
+              description: Indicates whether the user is allowed to perform self-service password reset by policy. The user may not necessarily have registered the required number of authentication methods for self-service password reset. Supports $filter (eq).
+            isSsprRegistered:
+              type: boolean
+              description: Indicates whether the user has registered the required number of authentication methods for self-service password reset. The user may not necessarily be allowed to perform self-service password reset by policy. Supports $filter (eq).
+            isSystemPreferredAuthenticationMethodEnabled:
+              type: boolean
+              description: Indicates whether system preferred authentication method is enabled. If enabled, the system dynamically determines the most secure authentication method among the methods registered by the user. Supports $filter (eq).
+              nullable: true
+            lastUpdatedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time (UTC) when the report was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+            methodsRegistered:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: Collection of authentication methods registered, such as mobilePhone, email, passKeyDeviceBound. Supports $filter (any with eq).
+            systemPreferredAuthenticationMethods:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: 'Collection of authentication methods that the system determined to be the most secure authentication methods among the registered methods for second factor authentication. Possible values are: push, oath, voiceMobile, voiceAlternateMobile, voiceOffice, sms, none, unknownFutureValue. Supports $filter (any with eq).'
+            userDisplayName:
+              type: string
+              description: The user display name, such as Adele Vance. Supports $filter (eq, startsWith) and $orderby.
+            userPreferredMethodForSecondaryAuthentication:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.userDefaultAuthenticationMethod'
+              - type: object
+                nullable: true
+              description: 'The method the user selected as the default second-factor for performing multifactor authentication. Possible values are: push, oath, voiceMobile, voiceAlternateMobile, voiceOffice, sms, none, unknownFutureValue. This property is used as preferred MFA method when isSystemPreferredAuthenticationMethodEnabled is false. Supports $filter (any with eq).'
+            userPrincipalName:
+              type: string
+              description: The user principal name, such as AdeleV@contoso.com. Supports $filter (eq, startsWith) and $orderby.
+            userType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.signInUserType'
+              - type: object
+                nullable: true
+              description: 'Identifies whether the user is a member or guest in the tenant. The possible values are: member, guest, unknownFutureValue.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.userRegistrationDetails'
+- path: /reports/authenticationMethods/userRegistrationDetails/{userRegistrationDetails-id}
+  path_description: Provides operations to manage the userRegistrationDetails property of the microsoft.graph.authenticationMethodsRoot entity.
+  path_parameters:
+  - name: userRegistrationDetails-id
+    in: path
+    description: The unique identifier of userRegistrationDetails
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: userRegistrationDetails
+  methods:
+  - method: GET
+    summary: Get userRegistrationDetails
+    description: Read the properties and relationships of a userRegistrationDetails object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property userRegistrationDetails in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: userRegistrationDetails
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            isAdmin:
+              type: boolean
+              description: Indicates whether the user has an admin role in the tenant. This value can be used to check the authentication methods that privileged accounts are registered for and capable of.
+              nullable: true
+            isMfaCapable:
+              type: boolean
+              description: Indicates whether the user has registered a strong authentication method for multifactor authentication. The method must be allowed by the authentication methods policy. Supports $filter (eq).
+            isMfaRegistered:
+              type: boolean
+              description: Indicates whether the user has registered a strong authentication method for multifactor authentication. The method may not necessarily be allowed by the authentication methods policy. Supports $filter (eq).
+            isPasswordlessCapable:
+              type: boolean
+              description: Indicates whether the user has registered a passwordless strong authentication method (including FIDO2, Windows Hello for Business, and Microsoft Authenticator (Passwordless)) that is allowed by the authentication methods policy. Supports $filter (eq).
+            isSsprCapable:
+              type: boolean
+              description: Indicates whether the user has registered the required number of authentication methods for self-service password reset and the user is allowed to perform self-service password reset by policy. Supports $filter (eq).
+            isSsprEnabled:
+              type: boolean
+              description: Indicates whether the user is allowed to perform self-service password reset by policy. The user may not necessarily have registered the required number of authentication methods for self-service password reset. Supports $filter (eq).
+            isSsprRegistered:
+              type: boolean
+              description: Indicates whether the user has registered the required number of authentication methods for self-service password reset. The user may not necessarily be allowed to perform self-service password reset by policy. Supports $filter (eq).
+            isSystemPreferredAuthenticationMethodEnabled:
+              type: boolean
+              description: Indicates whether system preferred authentication method is enabled. If enabled, the system dynamically determines the most secure authentication method among the methods registered by the user. Supports $filter (eq).
+              nullable: true
+            lastUpdatedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time (UTC) when the report was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+            methodsRegistered:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: Collection of authentication methods registered, such as mobilePhone, email, passKeyDeviceBound. Supports $filter (any with eq).
+            systemPreferredAuthenticationMethods:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: 'Collection of authentication methods that the system determined to be the most secure authentication methods among the registered methods for second factor authentication. Possible values are: push, oath, voiceMobile, voiceAlternateMobile, voiceOffice, sms, none, unknownFutureValue. Supports $filter (any with eq).'
+            userDisplayName:
+              type: string
+              description: The user display name, such as Adele Vance. Supports $filter (eq, startsWith) and $orderby.
+            userPreferredMethodForSecondaryAuthentication:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.userDefaultAuthenticationMethod'
+              - type: object
+                nullable: true
+              description: 'The method the user selected as the default second-factor for performing multifactor authentication. Possible values are: push, oath, voiceMobile, voiceAlternateMobile, voiceOffice, sms, none, unknownFutureValue. This property is used as preferred MFA method when isSystemPreferredAuthenticationMethodEnabled is false. Supports $filter (any with eq).'
+            userPrincipalName:
+              type: string
+              description: The user principal name, such as AdeleV@contoso.com. Supports $filter (eq, startsWith) and $orderby.
+            userType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.signInUserType'
+              - type: object
+                nullable: true
+              description: 'Identifies whether the user is a member or guest in the tenant. The possible values are: member, guest, unknownFutureValue.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.userRegistrationDetails'
+  - method: DELETE
+    summary: Delete navigation property userRegistrationDetails for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/authenticationMethods/userRegistrationDetails/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /reports/dailyPrintUsageByPrinter
+  path_description: Provides operations to manage the dailyPrintUsageByPrinter property of the microsoft.graph.reportRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List dailyPrintUsageByPrinter
+    description: Retrieve a list of daily print usage summaries, grouped by printer.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to dailyPrintUsageByPrinter for reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.printUsage'
+        - title: printUsageByPrinter
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            printerId:
+              type: string
+              description: The ID of the printer represented by these statistics.
+            printerName:
+              type: string
+              description: The name of the printer represented by these statistics.
+              nullable: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.printUsageByPrinter'
+        x-ms-discriminator-value: '#microsoft.graph.printUsageByPrinter'
+- path: /reports/dailyPrintUsageByPrinter/{printUsageByPrinter-id}
+  path_description: Provides operations to manage the dailyPrintUsageByPrinter property of the microsoft.graph.reportRoot entity.
+  path_parameters:
+  - name: printUsageByPrinter-id
+    in: path
+    description: The unique identifier of printUsageByPrinter
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: printUsageByPrinter
+  methods:
+  - method: GET
+    summary: Get printUsageByPrinter
+    description: Retrieve a usage summary for a printer for a particular time period. For descriptions of each of the endpoints, see printUsageByPrinter.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property dailyPrintUsageByPrinter in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.printUsage'
+        - title: printUsageByPrinter
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            printerId:
+              type: string
+              description: The ID of the printer represented by these statistics.
+            printerName:
+              type: string
+              description: The name of the printer represented by these statistics.
+              nullable: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.printUsageByPrinter'
+        x-ms-discriminator-value: '#microsoft.graph.printUsageByPrinter'
+  - method: DELETE
+    summary: Delete navigation property dailyPrintUsageByPrinter for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/dailyPrintUsageByPrinter/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /reports/dailyPrintUsageByUser
+  path_description: Provides operations to manage the dailyPrintUsageByUser property of the microsoft.graph.reportRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List dailyPrintUsageByUser
+    description: Retrieve a list of daily print usage summaries, grouped by user.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to dailyPrintUsageByUser for reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.printUsage'
+        - title: printUsageByUser
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            userPrincipalName:
+              type: string
+              description: The UPN of the user represented by these statistics.
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.printUsageByUser'
+        x-ms-discriminator-value: '#microsoft.graph.printUsageByUser'
+- path: /reports/dailyPrintUsageByUser/{printUsageByUser-id}
+  path_description: Provides operations to manage the dailyPrintUsageByUser property of the microsoft.graph.reportRoot entity.
+  path_parameters:
+  - name: printUsageByUser-id
+    in: path
+    description: The unique identifier of printUsageByUser
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: printUsageByUser
+  methods:
+  - method: GET
+    summary: Get printUsageByUser
+    description: Retrieve a user's usage summary for a particular time period. For descriptions of each endpoint, see printUsageByUser.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property dailyPrintUsageByUser in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.printUsage'
+        - title: printUsageByUser
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            userPrincipalName:
+              type: string
+              description: The UPN of the user represented by these statistics.
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.printUsageByUser'
+        x-ms-discriminator-value: '#microsoft.graph.printUsageByUser'
+  - method: DELETE
+    summary: Delete navigation property dailyPrintUsageByUser for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/dailyPrintUsageByUser/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /reports/deviceConfigurationDeviceActivity()
+  path_description: Provides operations to call the deviceConfigurationDeviceActivity method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function deviceConfigurationDeviceActivity
+    description: Metadata for the device configuration device activity report
+    parameters: []
+    requestBody: null
+- path: /reports/deviceConfigurationUserActivity()
+  path_description: Provides operations to call the deviceConfigurationUserActivity method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function deviceConfigurationUserActivity
+    description: Metadata for the device configuration user activity report
+    parameters: []
+    requestBody: null
+- path: /reports/getEmailActivityCounts(period='{period}')
+  path_description: Provides operations to call the getEmailActivityCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getEmailActivityCounts
+    description: Enables you to understand the trends of email activity (like how many were sent, read, and received) in your organization.
+    parameters: []
+    requestBody: null
+- path: /reports/getEmailActivityUserCounts(period='{period}')
+  path_description: Provides operations to call the getEmailActivityUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getEmailActivityUserCounts
+    description: Enables you to understand trends on the number of unique users who are performing email activities like send, read, and receive.
+    parameters: []
+    requestBody: null
+- path: /reports/getEmailActivityUserDetail(date={date})
+  path_description: Provides operations to call the getEmailActivityUserDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getEmailActivityUserDetail
+    description: Get details about email activity users have performed.
+    parameters: []
+    requestBody: null
+- path: /reports/getEmailActivityUserDetail(period='{period}')
+  path_description: Provides operations to call the getEmailActivityUserDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getEmailActivityUserDetail
+    description: Get details about email activity users have performed.
+    parameters: []
+    requestBody: null
+- path: /reports/getEmailAppUsageAppsUserCounts(period='{period}')
+  path_description: Provides operations to call the getEmailAppUsageAppsUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getEmailAppUsageAppsUserCounts
+    description: Get the count of unique users per email app.
+    parameters: []
+    requestBody: null
+- path: /reports/getEmailAppUsageUserCounts(period='{period}')
+  path_description: Provides operations to call the getEmailAppUsageUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getEmailAppUsageUserCounts
+    description: Get the count of unique users that connected to Exchange Online using any email app.
+    parameters: []
+    requestBody: null
+- path: /reports/getEmailAppUsageUserDetail(date={date})
+  path_description: Provides operations to call the getEmailAppUsageUserDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getEmailAppUsageUserDetail
+    description: Get details about which activities users performed on the various email apps.
+    parameters: []
+    requestBody: null
+- path: /reports/getEmailAppUsageUserDetail(period='{period}')
+  path_description: Provides operations to call the getEmailAppUsageUserDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getEmailAppUsageUserDetail
+    description: Get details about which activities users performed on the various email apps.
+    parameters: []
+    requestBody: null
+- path: /reports/getEmailAppUsageVersionsUserCounts(period='{period}')
+  path_description: Provides operations to call the getEmailAppUsageVersionsUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getEmailAppUsageVersionsUserCounts
+    description: Get the count of unique users by Outlook desktop version.
+    parameters: []
+    requestBody: null
+- path: /reports/getGroupArchivedPrintJobs(groupId='{groupId}',startDateTime={startDateTime},endDateTime={endDateTime})
+  path_description: Provides operations to call the getGroupArchivedPrintJobs method.
+  path_parameters:
+  - name: groupId
+    in: path
+    description: 'Usage: groupId=''{groupId}'''
+    required: true
+    schema:
+      type: string
+  - name: startDateTime
+    in: path
+    description: 'Usage: startDateTime={startDateTime}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+      type: string
+      format: date-time
+      nullable: true
+  - name: endDateTime
+    in: path
+    description: 'Usage: endDateTime={endDateTime}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+      type: string
+      format: date-time
+      nullable: true
+  methods:
+  - method: GET
+    summary: Invoke function getGroupArchivedPrintJobs
+    description: Get a list of archived print jobs for a particular group.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    requestBody: null
+- path: /reports/getM365AppPlatformUserCounts(period='{period}')
+  path_description: Provides operations to call the getM365AppPlatformUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getM365AppPlatformUserCounts
+    description: Get a report that provides the trend of active users across all apps for each platform (Windows, Mac, web, and mobile) in your organization.
+    parameters: []
+    requestBody: null
+- path: /reports/getM365AppUserCounts(period='{period}')
+  path_description: Provides operations to call the getM365AppUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getM365AppUserCounts
+    description: Get a report that provides the trend in the number of active users for each app (Outlook, Word, Excel, PowerPoint, OneNote, and Teams) in your organization.
+    parameters: []
+    requestBody: null
+- path: /reports/getM365AppUserDetail(date={date})
+  path_description: Provides operations to call the getM365AppUserDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getM365AppUserDetail
+    description: Get a report that provides the details about which apps and platforms users have used.
+    parameters: []
+    requestBody: null
+- path: /reports/getM365AppUserDetail(period='{period}')
+  path_description: Provides operations to call the getM365AppUserDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getM365AppUserDetail
+    description: Get a report that provides the details about which apps and platforms users have used.
+    parameters: []
+    requestBody: null
+- path: /reports/getMailboxUsageDetail(period='{period}')
+  path_description: Provides operations to call the getMailboxUsageDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getMailboxUsageDetail
+    description: Get details about mailbox usage.
+    parameters: []
+    requestBody: null
+- path: /reports/getMailboxUsageMailboxCounts(period='{period}')
+  path_description: Provides operations to call the getMailboxUsageMailboxCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getMailboxUsageMailboxCounts
+    description: Get the total number of user mailboxes in your organization and how many are active each day of the reporting period. A mailbox is considered active if the user sent or read any email.
+    parameters: []
+    requestBody: null
+- path: /reports/getMailboxUsageQuotaStatusMailboxCounts(period='{period}')
+  path_description: Provides operations to call the getMailboxUsageQuotaStatusMailboxCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getMailboxUsageQuotaStatusMailboxCounts
+    description: Get the count of user mailboxes in each quota category.
+    parameters: []
+    requestBody: null
+- path: /reports/getMailboxUsageStorage(period='{period}')
+  path_description: Provides operations to call the getMailboxUsageStorage method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getMailboxUsageStorage
+    description: Get the amount of storage used in your organization.
+    parameters: []
+    requestBody: null
+- path: /reports/getOffice365ActivationCounts()
+  path_description: Provides operations to call the getOffice365ActivationCounts method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function getOffice365ActivationCounts
+    description: Get the count of Microsoft 365 activations on desktops and devices.
+    parameters: []
+    requestBody: null
+- path: /reports/getOffice365ActivationsUserCounts()
+  path_description: Provides operations to call the getOffice365ActivationsUserCounts method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function getOffice365ActivationsUserCounts
+    description: Get the count of users that are enabled and the ones that activated the Office subscription on desktop or devices or shared computers.
+    parameters: []
+    requestBody: null
+- path: /reports/getOffice365ActivationsUserDetail()
+  path_description: Provides operations to call the getOffice365ActivationsUserDetail method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function getOffice365ActivationsUserDetail
+    description: Get details about users who have activated Microsoft 365.
+    parameters: []
+    requestBody: null
+- path: /reports/getOffice365ActiveUserCounts(period='{period}')
+  path_description: Provides operations to call the getOffice365ActiveUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOffice365ActiveUserCounts
+    description: Get the count of daily active users in the reporting period by product.
+    parameters: []
+    requestBody: null
+- path: /reports/getOffice365ActiveUserDetail(date={date})
+  path_description: Provides operations to call the getOffice365ActiveUserDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getOffice365ActiveUserDetail
+    description: Get details about Microsoft 365 active users.
+    parameters: []
+    requestBody: null
+- path: /reports/getOffice365ActiveUserDetail(period='{period}')
+  path_description: Provides operations to call the getOffice365ActiveUserDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOffice365ActiveUserDetail
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/getOffice365GroupsActivityCounts(period='{period}')
+  path_description: Provides operations to call the getOffice365GroupsActivityCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOffice365GroupsActivityCounts
+    description: Get the number of group activities across group workloads.
+    parameters: []
+    requestBody: null
+- path: /reports/getOffice365GroupsActivityDetail(date={date})
+  path_description: Provides operations to call the getOffice365GroupsActivityDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getOffice365GroupsActivityDetail
+    description: Get details about Microsoft 365 groups activity by group.
+    parameters: []
+    requestBody: null
+- path: /reports/getOffice365GroupsActivityDetail(period='{period}')
+  path_description: Provides operations to call the getOffice365GroupsActivityDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOffice365GroupsActivityDetail
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/getOffice365GroupsActivityFileCounts(period='{period}')
+  path_description: Provides operations to call the getOffice365GroupsActivityFileCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOffice365GroupsActivityFileCounts
+    description: Get the total number of files and how many of them were active across all group sites associated with a Microsoft 365 group.
+    parameters: []
+    requestBody: null
+- path: /reports/getOffice365GroupsActivityGroupCounts(period='{period}')
+  path_description: Provides operations to call the getOffice365GroupsActivityGroupCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOffice365GroupsActivityGroupCounts
+    description: Get the daily total number of groups and how many of them were active based on email conversations, Yammer posts, and SharePoint file activities.
+    parameters: []
+    requestBody: null
+- path: /reports/getOffice365GroupsActivityStorage(period='{period}')
+  path_description: Provides operations to call the getOffice365GroupsActivityStorage method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOffice365GroupsActivityStorage
+    description: Get the total storage used across all group mailboxes and group sites.
+    parameters: []
+    requestBody: null
+- path: /reports/getOffice365ServicesUserCounts(period='{period}')
+  path_description: Provides operations to call the getOffice365ServicesUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOffice365ServicesUserCounts
+    description: Get the count of users by activity type and service.
+    parameters: []
+    requestBody: null
+- path: /reports/getOneDriveActivityFileCounts(period='{period}')
+  path_description: Provides operations to call the getOneDriveActivityFileCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOneDriveActivityFileCounts
+    description: Get the number of unique, licensed users that performed file interactions against any OneDrive account.
+    parameters: []
+    requestBody: null
+- path: /reports/getOneDriveActivityUserCounts(period='{period}')
+  path_description: Provides operations to call the getOneDriveActivityUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOneDriveActivityUserCounts
+    description: Get the trend in the number of active OneDrive users.
+    parameters: []
+    requestBody: null
+- path: /reports/getOneDriveActivityUserDetail(date={date})
+  path_description: Provides operations to call the getOneDriveActivityUserDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getOneDriveActivityUserDetail
+    description: Get details about OneDrive activity by user.
+    parameters: []
+    requestBody: null
+- path: /reports/getOneDriveActivityUserDetail(period='{period}')
+  path_description: Provides operations to call the getOneDriveActivityUserDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOneDriveActivityUserDetail
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/getOneDriveUsageAccountCounts(period='{period}')
+  path_description: Provides operations to call the getOneDriveUsageAccountCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOneDriveUsageAccountCounts
+    description: Get the trend in the number of active OneDrive for Business sites. Any site on which users viewed, modified, uploaded, downloaded, shared, or synced files is considered an active site.
+    parameters: []
+    requestBody: null
+- path: /reports/getOneDriveUsageAccountDetail(date={date})
+  path_description: Provides operations to call the getOneDriveUsageAccountDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getOneDriveUsageAccountDetail
+    description: Get details about OneDrive usage by account.
+    parameters: []
+    requestBody: null
+- path: /reports/getOneDriveUsageAccountDetail(period='{period}')
+  path_description: Provides operations to call the getOneDriveUsageAccountDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOneDriveUsageAccountDetail
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/getOneDriveUsageFileCounts(period='{period}')
+  path_description: Provides operations to call the getOneDriveUsageFileCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOneDriveUsageFileCounts
+    description: Get the total number of files across all sites and how many are active files. A file is considered active if it has been saved, synced, modified, or shared within the specified time period.
+    parameters: []
+    requestBody: null
+- path: /reports/getOneDriveUsageStorage(period='{period}')
+  path_description: Provides operations to call the getOneDriveUsageStorage method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getOneDriveUsageStorage
+    description: Get the trend on the amount of storage you're using in OneDrive for Business.
+    parameters: []
+    requestBody: null
+- path: /reports/getPrinterArchivedPrintJobs(printerId='{printerId}',startDateTime={startDateTime},endDateTime={endDateTime})
+  path_description: Provides operations to call the getPrinterArchivedPrintJobs method.
+  path_parameters:
+  - name: printerId
+    in: path
+    description: 'Usage: printerId=''{printerId}'''
+    required: true
+    schema:
+      type: string
+  - name: startDateTime
+    in: path
+    description: 'Usage: startDateTime={startDateTime}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+      type: string
+      format: date-time
+      nullable: true
+  - name: endDateTime
+    in: path
+    description: 'Usage: endDateTime={endDateTime}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+      type: string
+      format: date-time
+      nullable: true
+  methods:
+  - method: GET
+    summary: Invoke function getPrinterArchivedPrintJobs
+    description: Get a list of archived print jobs that were queued for particular printer.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    requestBody: null
+- path: /reports/getRelyingPartyDetailedSummary(period='{period}')
+  path_description: Provides operations to call the getRelyingPartyDetailedSummary method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getRelyingPartyDetailedSummary
+    description: Get a summary of AD FS relying parties information.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /reports/getSharePointActivityFileCounts(period='{period}')
+  path_description: Provides operations to call the getSharePointActivityFileCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSharePointActivityFileCounts
+    description: Get the number of unique, licensed users who interacted with files stored on SharePoint sites.
+    parameters: []
+    requestBody: null
+- path: /reports/getSharePointActivityPages(period='{period}')
+  path_description: Provides operations to call the getSharePointActivityPages method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSharePointActivityPages
+    description: Get the number of unique pages visited by users.
+    parameters: []
+    requestBody: null
+- path: /reports/getSharePointActivityUserCounts(period='{period}')
+  path_description: Provides operations to call the getSharePointActivityUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSharePointActivityUserCounts
+    description: Get the trend in the number of active users. A user is considered active if they have executed a file activity (save, sync, modify, or share) or visited a page within the specified time period.
+    parameters: []
+    requestBody: null
+- path: /reports/getSharePointActivityUserDetail(date={date})
+  path_description: Provides operations to call the getSharePointActivityUserDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getSharePointActivityUserDetail
+    description: Get details about SharePoint activity by user.
+    parameters: []
+    requestBody: null
+- path: /reports/getSharePointActivityUserDetail(period='{period}')
+  path_description: Provides operations to call the getSharePointActivityUserDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSharePointActivityUserDetail
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/getSharePointSiteUsageDetail(date={date})
+  path_description: Provides operations to call the getSharePointSiteUsageDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getSharePointSiteUsageDetail
+    description: Get details about SharePoint site usage.
+    parameters: []
+    requestBody: null
+- path: /reports/getSharePointSiteUsageDetail(period='{period}')
+  path_description: Provides operations to call the getSharePointSiteUsageDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSharePointSiteUsageDetail
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/getSharePointSiteUsageFileCounts(period='{period}')
+  path_description: Provides operations to call the getSharePointSiteUsageFileCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSharePointSiteUsageFileCounts
+    description: Get the total number of files across all sites and the number of active files. A file (user or system) is considered active if it has been saved, synced, modified, or shared within the specified time period.
+    parameters: []
+    requestBody: null
+- path: /reports/getSharePointSiteUsagePages(period='{period}')
+  path_description: Provides operations to call the getSharePointSiteUsagePages method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSharePointSiteUsagePages
+    description: Get the number of pages viewed across all sites.
+    parameters: []
+    requestBody: null
+- path: /reports/getSharePointSiteUsageSiteCounts(period='{period}')
+  path_description: Provides operations to call the getSharePointSiteUsageSiteCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSharePointSiteUsageSiteCounts
+    description: Get the trend of total and active site count during the reporting period.
+    parameters: []
+    requestBody: null
+- path: /reports/getSharePointSiteUsageStorage(period='{period}')
+  path_description: Provides operations to call the getSharePointSiteUsageStorage method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSharePointSiteUsageStorage
+    description: Get the trend of storage allocated and consumed during the reporting period.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessActivityCounts(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessActivityCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessActivityCounts
+    description: Get the trends on how many users organized and participated in conference sessions held in your organization through Skype for Business. The report also includes the number of peer-to-peer sessions.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessActivityUserCounts(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessActivityUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessActivityUserCounts
+    description: Get the trends on how many unique users organized and participated in conference sessions held in your organization through Skype for Business. The report also includes the number of peer-to-peer sessions.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessActivityUserDetail(date={date})
+  path_description: Provides operations to call the getSkypeForBusinessActivityUserDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessActivityUserDetail
+    description: Get details about Skype for Business activity by user.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessActivityUserDetail(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessActivityUserDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessActivityUserDetail
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessDeviceUsageDistributionUserCounts(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessDeviceUsageDistributionUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessDeviceUsageDistributionUserCounts
+    description: Get the number of users using unique devices in your organization. The report will show you the number of users per device including Windows, Windows phone, Android phone, iPhone, and iPad.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessDeviceUsageUserCounts(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessDeviceUsageUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessDeviceUsageUserCounts
+    description: Get the usage trends on how many users in your organization have connected using the Skype for Business app. You'll also get a breakdown by the type of device (Windows, Windows phone, Android phone, iPhone, or iPad) on which the Skype for Business client app is installed and used across your organization.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessDeviceUsageUserDetail(date={date})
+  path_description: Provides operations to call the getSkypeForBusinessDeviceUsageUserDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessDeviceUsageUserDetail
+    description: Get details about Skype for Business device usage by user.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessDeviceUsageUserDetail(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessDeviceUsageUserDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessDeviceUsageUserDetail
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessOrganizerActivityCounts(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessOrganizerActivityCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessOrganizerActivityCounts
+    description: Get usage trends on the number and type of conference sessions held and organized by users in your organization. Types of conference sessions include IM, audio/video, application sharing, web, dial-in/out - third party, and Dial-in/out Microsoft.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessOrganizerActivityMinuteCounts(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessOrganizerActivityMinuteCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessOrganizerActivityMinuteCounts
+    description: Get usage trends on the length in minutes and type of conference sessions held and organized by users in your organization. Types of conference sessions include audio/video, and dial-in and dial-out - Microsoft.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessOrganizerActivityUserCounts(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessOrganizerActivityUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessOrganizerActivityUserCounts
+    description: Get usage trends on the number of unique users and type of conference sessions held and organized by users in your organization. Types of conference sessions include IM, audio/video, application sharing, web, dial-in/out - third party, and dial-in/out Microsoft.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessParticipantActivityCounts(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessParticipantActivityCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessParticipantActivityCounts
+    description: Get usage trends on the number and type of conference sessions that users from your organization participated in. Types of conference sessions include IM, audio/video, application sharing, web, and dial-in/out - third party.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessParticipantActivityMinuteCounts(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessParticipantActivityMinuteCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessParticipantActivityMinuteCounts
+    description: Get usage trends on the length in minutes and type of conference sessions that users from your organization participated in. Types of conference sessions include audio/video.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessParticipantActivityUserCounts(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessParticipantActivityUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessParticipantActivityUserCounts
+    description: Get usage trends on the number of unique users and type of conference sessions that users from your organization participated in. Types of conference sessions include IM, audio/video, application sharing, web, and dial-in/out - third party.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessPeerToPeerActivityCounts(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessPeerToPeerActivityCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessPeerToPeerActivityCounts
+    description: Get usage trends on the number and type of sessions held in your organization. Types of sessions include IM, audio, video, application sharing, and file transfer.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessPeerToPeerActivityMinuteCounts(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessPeerToPeerActivityMinuteCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessPeerToPeerActivityMinuteCounts
+    description: Get usage trends on the length in minutes and type of peer-to-peer sessions held in your organization. Types of sessions include audio and video.
+    parameters: []
+    requestBody: null
+- path: /reports/getSkypeForBusinessPeerToPeerActivityUserCounts(period='{period}')
+  path_description: Provides operations to call the getSkypeForBusinessPeerToPeerActivityUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getSkypeForBusinessPeerToPeerActivityUserCounts
+    description: Get usage trends on the number of unique users and type of peer-to-peer sessions held in your organization. Types of sessions include IM, audio, video, application sharing, and file transfers in peer-to-peer sessions.
+    parameters: []
+    requestBody: null
+- path: /reports/getTeamsDeviceUsageDistributionUserCounts(period='{period}')
+  path_description: Provides operations to call the getTeamsDeviceUsageDistributionUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getTeamsDeviceUsageDistributionUserCounts
+    description: Get the number of Microsoft Teams unique users by device type over the selected time period.
+    parameters: []
+    requestBody: null
+- path: /reports/getTeamsDeviceUsageUserCounts(period='{period}')
+  path_description: Provides operations to call the getTeamsDeviceUsageUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getTeamsDeviceUsageUserCounts
+    description: Get the number of Microsoft Teams daily unique users by device type.
+    parameters: []
+    requestBody: null
+- path: /reports/getTeamsDeviceUsageUserDetail(date={date})
+  path_description: Provides operations to call the getTeamsDeviceUsageUserDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getTeamsDeviceUsageUserDetail
+    description: Get details about Microsoft Teams device usage by user.
+    parameters: []
+    requestBody: null
+- path: /reports/getTeamsDeviceUsageUserDetail(period='{period}')
+  path_description: Provides operations to call the getTeamsDeviceUsageUserDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getTeamsDeviceUsageUserDetail
+    description: Get details about Microsoft Teams device usage by user.
+    parameters: []
+    requestBody: null
+- path: /reports/getTeamsTeamActivityCounts(period='{period}')
+  path_description: Provides operations to call the getTeamsTeamActivityCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getTeamsTeamActivityCounts
+    description: Get the number of team activities across Microsoft Teams. The activity types are related to meetings and messages.
+    parameters: []
+    requestBody: null
+- path: /reports/getTeamsTeamActivityDetail(date={date})
+  path_description: Provides operations to call the getTeamsTeamActivityDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getTeamsTeamActivityDetail
+    description: Get details about Microsoft Teams activity by team. The numbers include activities for both licensed and nonlicensed users.
+    parameters: []
+    requestBody: null
+- path: /reports/getTeamsTeamActivityDetail(period='{period}')
+  path_description: Provides operations to call the getTeamsTeamActivityDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getTeamsTeamActivityDetail
+    description: Get details about Microsoft Teams activity by team. The numbers include activities for both licensed and nonlicensed users.
+    parameters: []
+    requestBody: null
+- path: /reports/getTeamsTeamActivityDistributionCounts(period='{period}')
+  path_description: Provides operations to call the getTeamsTeamActivityDistributionCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getTeamsTeamActivityDistributionCounts
+    description: Get the number of team activities across Microsoft Teams over a selected period.
+    parameters: []
+    requestBody: null
+- path: /reports/getTeamsTeamCounts(period='{period}')
+  path_description: Provides operations to call the getTeamsTeamCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getTeamsTeamCounts
+    description: Get the number of teams of a particular type in an instance of Microsoft Teams.
+    parameters: []
+    requestBody: null
+- path: /reports/getTeamsUserActivityCounts(period='{period}')
+  path_description: Provides operations to call the getTeamsUserActivityCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getTeamsUserActivityCounts
+    description: Get the number of Microsoft Teams activities by activity type. The activities are performed by Microsoft Teams licensed users.
+    parameters: []
+    requestBody: null
+- path: /reports/getTeamsUserActivityUserCounts(period='{period}')
+  path_description: Provides operations to call the getTeamsUserActivityUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getTeamsUserActivityUserCounts
+    description: Get the number of Microsoft Teams users by activity type. The activity types are number of teams chat messages, private chat messages, calls, or meetings.
+    parameters: []
+    requestBody: null
+- path: /reports/getTeamsUserActivityUserDetail(date={date})
+  path_description: Provides operations to call the getTeamsUserActivityUserDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getTeamsUserActivityUserDetail
+    description: Get details about Microsoft Teams user activity by user.
+    parameters: []
+    requestBody: null
+- path: /reports/getTeamsUserActivityUserDetail(period='{period}')
+  path_description: Provides operations to call the getTeamsUserActivityUserDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getTeamsUserActivityUserDetail
+    description: Get details about Microsoft Teams user activity by user.
+    parameters: []
+    requestBody: null
+- path: /reports/getUserArchivedPrintJobs(userId='{userId}',startDateTime={startDateTime},endDateTime={endDateTime})
+  path_description: Provides operations to call the getUserArchivedPrintJobs method.
+  path_parameters:
+  - name: userId
+    in: path
+    description: 'Usage: userId=''{userId}'''
+    required: true
+    schema:
+      type: string
+  - name: startDateTime
+    in: path
+    description: 'Usage: startDateTime={startDateTime}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+      type: string
+      format: date-time
+      nullable: true
+  - name: endDateTime
+    in: path
+    description: 'Usage: endDateTime={endDateTime}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+      type: string
+      format: date-time
+      nullable: true
+  methods:
+  - method: GET
+    summary: Invoke function getUserArchivedPrintJobs
+    description: Get a list of archived print jobs for a particular user.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    requestBody: null
+- path: /reports/getYammerActivityCounts(period='{period}')
+  path_description: Provides operations to call the getYammerActivityCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getYammerActivityCounts
+    description: Get the trends on the amount of Yammer activity in your organization by how many messages were posted, read, and liked.
+    parameters: []
+    requestBody: null
+- path: /reports/getYammerActivityUserCounts(period='{period}')
+  path_description: Provides operations to call the getYammerActivityUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getYammerActivityUserCounts
+    description: Get the trends on the number of unique users who posted, read, and liked Yammer messages.
+    parameters: []
+    requestBody: null
+- path: /reports/getYammerActivityUserDetail(date={date})
+  path_description: Provides operations to call the getYammerActivityUserDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getYammerActivityUserDetail
+    description: Get details about Yammer activity by user.
+    parameters: []
+    requestBody: null
+- path: /reports/getYammerActivityUserDetail(period='{period}')
+  path_description: Provides operations to call the getYammerActivityUserDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getYammerActivityUserDetail
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/getYammerDeviceUsageDistributionUserCounts(period='{period}')
+  path_description: Provides operations to call the getYammerDeviceUsageDistributionUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getYammerDeviceUsageDistributionUserCounts
+    description: Get the number of users by device type.
+    parameters: []
+    requestBody: null
+- path: /reports/getYammerDeviceUsageUserCounts(period='{period}')
+  path_description: Provides operations to call the getYammerDeviceUsageUserCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getYammerDeviceUsageUserCounts
+    description: Get the number of daily users by device type.
+    parameters: []
+    requestBody: null
+- path: /reports/getYammerDeviceUsageUserDetail(date={date})
+  path_description: Provides operations to call the getYammerDeviceUsageUserDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getYammerDeviceUsageUserDetail
+    description: Get details about Yammer device usage by user.
+    parameters: []
+    requestBody: null
+- path: /reports/getYammerDeviceUsageUserDetail(period='{period}')
+  path_description: Provides operations to call the getYammerDeviceUsageUserDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getYammerDeviceUsageUserDetail
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/getYammerGroupsActivityCounts(period='{period}')
+  path_description: Provides operations to call the getYammerGroupsActivityCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getYammerGroupsActivityCounts
+    description: Get the number of Yammer messages posted, read, and liked in groups.
+    parameters: []
+    requestBody: null
+- path: /reports/getYammerGroupsActivityDetail(date={date})
+  path_description: Provides operations to call the getYammerGroupsActivityDetail method.
+  path_parameters:
+  - name: date
+    in: path
+    description: 'Usage: date={date}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$
+      type: string
+      format: date
+  methods:
+  - method: GET
+    summary: Invoke function getYammerGroupsActivityDetail
+    description: Get details about Yammer groups activity by group.
+    parameters: []
+    requestBody: null
+- path: /reports/getYammerGroupsActivityDetail(period='{period}')
+  path_description: Provides operations to call the getYammerGroupsActivityDetail method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getYammerGroupsActivityDetail
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/getYammerGroupsActivityGroupCounts(period='{period}')
+  path_description: Provides operations to call the getYammerGroupsActivityGroupCounts method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+  methods:
+  - method: GET
+    summary: Invoke function getYammerGroupsActivityGroupCounts
+    description: Get the total number of groups that existed and how many included group conversation activities.
+    parameters: []
+    requestBody: null
+- path: /reports/managedDeviceEnrollmentFailureDetails()
+  path_description: Provides operations to call the managedDeviceEnrollmentFailureDetails method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function managedDeviceEnrollmentFailureDetails
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/managedDeviceEnrollmentFailureDetails(skip={skip},top={top},filter='{filter}',skipToken='{skipToken}')
+  path_description: Provides operations to call the managedDeviceEnrollmentFailureDetails method.
+  path_parameters:
+  - name: skip
+    in: path
+    description: 'Usage: skip={skip}'
+    required: true
+    schema:
+      maximum: 2147483647
+      minimum: -2147483648
+      type: number
+      format: int32
+      nullable: true
+  - name: top
+    in: path
+    description: 'Usage: top={top}'
+    required: true
+    schema:
+      maximum: 2147483647
+      minimum: -2147483648
+      type: number
+      format: int32
+      nullable: true
+  - name: filter
+    in: path
+    description: 'Usage: filter=''{filter}'''
+    required: true
+    schema:
+      type: string
+      nullable: true
+  - name: skipToken
+    in: path
+    description: 'Usage: skipToken=''{skipToken}'''
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Invoke function managedDeviceEnrollmentFailureDetails
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/managedDeviceEnrollmentTopFailures()
+  path_description: Provides operations to call the managedDeviceEnrollmentTopFailures method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function managedDeviceEnrollmentTopFailures
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/managedDeviceEnrollmentTopFailures(period='{period}')
+  path_description: Provides operations to call the managedDeviceEnrollmentTopFailures method.
+  path_parameters:
+  - name: period
+    in: path
+    description: 'Usage: period=''{period}'''
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Invoke function managedDeviceEnrollmentTopFailures
+    description: No description provided.
+    parameters: []
+    requestBody: null
+- path: /reports/monthlyPrintUsageByPrinter
+  path_description: Provides operations to manage the monthlyPrintUsageByPrinter property of the microsoft.graph.reportRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List monthlyPrintUsageByPrinter
+    description: Retrieve a list of monthly print usage summaries, grouped by printer.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to monthlyPrintUsageByPrinter for reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.printUsage'
+        - title: printUsageByPrinter
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            printerId:
+              type: string
+              description: The ID of the printer represented by these statistics.
+            printerName:
+              type: string
+              description: The name of the printer represented by these statistics.
+              nullable: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.printUsageByPrinter'
+        x-ms-discriminator-value: '#microsoft.graph.printUsageByPrinter'
+- path: /reports/monthlyPrintUsageByPrinter/{printUsageByPrinter-id}
+  path_description: Provides operations to manage the monthlyPrintUsageByPrinter property of the microsoft.graph.reportRoot entity.
+  path_parameters:
+  - name: printUsageByPrinter-id
+    in: path
+    description: The unique identifier of printUsageByPrinter
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: printUsageByPrinter
+  methods:
+  - method: GET
+    summary: Get monthlyPrintUsageByPrinter from reports
+    description: Retrieve a list of monthly print usage summaries, grouped by printer.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property monthlyPrintUsageByPrinter in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.printUsage'
+        - title: printUsageByPrinter
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            printerId:
+              type: string
+              description: The ID of the printer represented by these statistics.
+            printerName:
+              type: string
+              description: The name of the printer represented by these statistics.
+              nullable: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.printUsageByPrinter'
+        x-ms-discriminator-value: '#microsoft.graph.printUsageByPrinter'
+  - method: DELETE
+    summary: Delete navigation property monthlyPrintUsageByPrinter for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/monthlyPrintUsageByPrinter/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /reports/monthlyPrintUsageByUser
+  path_description: Provides operations to manage the monthlyPrintUsageByUser property of the microsoft.graph.reportRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List monthlyPrintUsageByUser
+    description: Retrieve a list of monthly print usage summaries, grouped by user.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to monthlyPrintUsageByUser for reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.printUsage'
+        - title: printUsageByUser
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            userPrincipalName:
+              type: string
+              description: The UPN of the user represented by these statistics.
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.printUsageByUser'
+        x-ms-discriminator-value: '#microsoft.graph.printUsageByUser'
+- path: /reports/monthlyPrintUsageByUser/{printUsageByUser-id}
+  path_description: Provides operations to manage the monthlyPrintUsageByUser property of the microsoft.graph.reportRoot entity.
+  path_parameters:
+  - name: printUsageByUser-id
+    in: path
+    description: The unique identifier of printUsageByUser
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: printUsageByUser
+  methods:
+  - method: GET
+    summary: Get monthlyPrintUsageByUser from reports
+    description: Retrieve a list of monthly print usage summaries, grouped by user.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property monthlyPrintUsageByUser in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.printUsage'
+        - title: printUsageByUser
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            userPrincipalName:
+              type: string
+              description: The UPN of the user represented by these statistics.
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.printUsageByUser'
+        x-ms-discriminator-value: '#microsoft.graph.printUsageByUser'
+  - method: DELETE
+    summary: Delete navigation property monthlyPrintUsageByUser for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/monthlyPrintUsageByUser/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /reports/partners
+  path_description: Provides operations to manage the partners property of the microsoft.graph.reportRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get partners from reports
+    description: Represents billing details for a Microsoft direct partner.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property partners in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: partners
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            billing:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.partners.billing.billing'
+              - type: object
+                nullable: true
+              description: Represents billing details for billed and unbilled data.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.partners'
+  - method: DELETE
+    summary: Delete navigation property partners for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/partners/billing
+  path_description: Provides operations to manage the billing property of the microsoft.graph.partners entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get billing from reports
+    description: Represents billing details for billed and unbilled data.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property billing in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: billing
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            manifests:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.partners.billing.manifest'
+              description: Represents metadata for the exported data.
+              x-ms-navigationProperty: true
+            operations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.partners.billing.operation'
+              description: Represents an operation to export the billing data of a partner.
+              x-ms-navigationProperty: true
+            reconciliation:
+              $ref: '#/components/schemas/microsoft.graph.partners.billing.billingReconciliation'
+            usage:
+              $ref: '#/components/schemas/microsoft.graph.partners.billing.azureUsage'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.partners.billing.billing'
+  - method: DELETE
+    summary: Delete navigation property billing for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/partners/billing/manifests
+  path_description: Provides operations to manage the manifests property of the microsoft.graph.partners.billing.billing entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get manifest
+    description: Read the properties and relationships of a manifest object.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to manifests for reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: manifest
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            blobCount:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The total file count for this partner tenant ID.
+              format: int32
+            blobs:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.partners.billing.blob'
+              description: A collection of blob objects that contain details of all the files for the partner tenant ID.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when a manifest resource was created. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+            dataFormat:
+              type: string
+              description: 'The billing data file format. The possible value is: compressedJSONLines. Each blob is a compressed file and data in the file is in JSON lines format. Decompress the file to access the data.'
+            eTag:
+              type: string
+              description: Version of data represented by the manifest. Any change in eTag indicates a new data version.
+            partitionType:
+              type: string
+              description: Indicates the division of data. If a given partition has more than the supported number, the data is split into multiple files, each file representing a specific partitionValue. By default, the data in the file is partitioned by the number of line items.
+            partnerTenantId:
+              type: string
+              description: The Microsoft Entra tenant ID of the partner.
+            rootDirectory:
+              type: string
+              description: The root directory that contains all the files.
+            sasToken:
+              type: string
+              description: The SAS token for accessing the directory or an individual file in the directory.
+            schemaVersion:
+              type: string
+              description: The version of the manifest schema.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.partners.billing.manifest'
+- path: /reports/partners/billing/manifests/{manifest-id}
+  path_description: Provides operations to manage the manifests property of the microsoft.graph.partners.billing.billing entity.
+  path_parameters:
+  - name: manifest-id
+    in: path
+    description: The unique identifier of manifest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: manifest
+  methods:
+  - method: GET
+    summary: Get manifest
+    description: Read the properties and relationships of a manifest object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property manifests in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: manifest
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            blobCount:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The total file count for this partner tenant ID.
+              format: int32
+            blobs:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.partners.billing.blob'
+              description: A collection of blob objects that contain details of all the files for the partner tenant ID.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when a manifest resource was created. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+            dataFormat:
+              type: string
+              description: 'The billing data file format. The possible value is: compressedJSONLines. Each blob is a compressed file and data in the file is in JSON lines format. Decompress the file to access the data.'
+            eTag:
+              type: string
+              description: Version of data represented by the manifest. Any change in eTag indicates a new data version.
+            partitionType:
+              type: string
+              description: Indicates the division of data. If a given partition has more than the supported number, the data is split into multiple files, each file representing a specific partitionValue. By default, the data in the file is partitioned by the number of line items.
+            partnerTenantId:
+              type: string
+              description: The Microsoft Entra tenant ID of the partner.
+            rootDirectory:
+              type: string
+              description: The root directory that contains all the files.
+            sasToken:
+              type: string
+              description: The SAS token for accessing the directory or an individual file in the directory.
+            schemaVersion:
+              type: string
+              description: The version of the manifest schema.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.partners.billing.manifest'
+  - method: DELETE
+    summary: Delete navigation property manifests for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/partners/billing/manifests/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /reports/partners/billing/operations
+  path_description: Provides operations to manage the operations property of the microsoft.graph.partners.billing.billing entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get operation
+    description: Read the properties and relationships of an operation object.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to operations for reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: operation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The start time of the operation. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+            lastActionDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The time of the last action of the operation. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.longRunningOperationStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the operation. Possible values are: notStarted, running, completed, failed, unknownFutureValue.'
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.partners.billing.exportSuccessOperation': '#/components/schemas/microsoft.graph.partners.billing.exportSuccessOperation'
+              '#microsoft.graph.partners.billing.failedOperation': '#/components/schemas/microsoft.graph.partners.billing.failedOperation'
+              '#microsoft.graph.partners.billing.runningOperation': '#/components/schemas/microsoft.graph.partners.billing.runningOperation'
+- path: /reports/partners/billing/operations/{operation-id}
+  path_description: Provides operations to manage the operations property of the microsoft.graph.partners.billing.billing entity.
+  path_parameters:
+  - name: operation-id
+    in: path
+    description: The unique identifier of operation
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: operation
+  methods:
+  - method: GET
+    summary: Get operation
+    description: Read the properties and relationships of an operation object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property operations in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: operation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The start time of the operation. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+            lastActionDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The time of the last action of the operation. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.longRunningOperationStatus'
+              - type: object
+                nullable: true
+              description: 'The status of the operation. Possible values are: notStarted, running, completed, failed, unknownFutureValue.'
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.partners.billing.exportSuccessOperation': '#/components/schemas/microsoft.graph.partners.billing.exportSuccessOperation'
+              '#microsoft.graph.partners.billing.failedOperation': '#/components/schemas/microsoft.graph.partners.billing.failedOperation'
+              '#microsoft.graph.partners.billing.runningOperation': '#/components/schemas/microsoft.graph.partners.billing.runningOperation'
+  - method: DELETE
+    summary: Delete navigation property operations for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/partners/billing/operations/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /reports/partners/billing/reconciliation
+  path_description: Provides operations to manage the reconciliation property of the microsoft.graph.partners.billing.billing entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get reconciliation from reports
+    description: Represents details for billed invoice reconciliation data.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property reconciliation in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: billingReconciliation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            billed:
+              $ref: '#/components/schemas/microsoft.graph.partners.billing.billedReconciliation'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.partners.billing.billingReconciliation'
+  - method: DELETE
+    summary: Delete navigation property reconciliation for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/partners/billing/reconciliation/billed
+  path_description: Provides operations to manage the billed property of the microsoft.graph.partners.billing.billingReconciliation entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get billed from reports
+    description: Represents details for billed invoice reconciliation data.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property billed in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: billedReconciliation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.partners.billing.billedReconciliation'
+  - method: DELETE
+    summary: Delete navigation property billed for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/partners/billing/reconciliation/billed/microsoft.graph.partners.billing.export
+  path_description: Provides operations to call the export method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action export
+    description: Export the billed invoice reconciliation data.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          invoiceId:
+            type: string
+            nullable: true
+          attributeSet:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.partners.billing.attributeSet'
+            - type: object
+              nullable: true
+- path: /reports/partners/billing/usage
+  path_description: Provides operations to manage the usage property of the microsoft.graph.partners.billing.billing entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get usage from reports
+    description: Represents details for billed and unbilled Azure usage data.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property usage in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: azureUsage
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            billed:
+              $ref: '#/components/schemas/microsoft.graph.partners.billing.billedUsage'
+            unbilled:
+              $ref: '#/components/schemas/microsoft.graph.partners.billing.unbilledUsage'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.partners.billing.azureUsage'
+  - method: DELETE
+    summary: Delete navigation property usage for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/partners/billing/usage/billed
+  path_description: Provides operations to manage the billed property of the microsoft.graph.partners.billing.azureUsage entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get billed from reports
+    description: Represents details for billed Azure usage data.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property billed in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: billedUsage
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.partners.billing.billedUsage'
+  - method: DELETE
+    summary: Delete navigation property billed for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/partners/billing/usage/billed/microsoft.graph.partners.billing.export
+  path_description: Provides operations to call the export method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action export
+    description: Export the billed Azure usage data.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          invoiceId:
+            type: string
+            nullable: true
+          attributeSet:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.partners.billing.attributeSet'
+            - type: object
+              nullable: true
+- path: /reports/partners/billing/usage/unbilled
+  path_description: Provides operations to manage the unbilled property of the microsoft.graph.partners.billing.azureUsage entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get unbilled from reports
+    description: Represents details for unbilled Azure usage data.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property unbilled in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: unbilledUsage
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.partners.billing.unbilledUsage'
+  - method: DELETE
+    summary: Delete navigation property unbilled for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/partners/billing/usage/unbilled/microsoft.graph.partners.billing.export
+  path_description: Provides operations to call the export method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action export
+    description: Export unbilled Azure usage data for a specific billing period and currency.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          currencyCode:
+            type: string
+            nullable: true
+          billingPeriod:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.partners.billing.billingPeriod'
+            - type: object
+              nullable: true
+          attributeSet:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.partners.billing.attributeSet'
+            - type: object
+              nullable: true
+- path: /reports/security
+  path_description: Provides operations to manage the security property of the microsoft.graph.reportRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get security from reports
+    description: Represents an abstract type that contains resources for attack simulation and training reports.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property security in reports
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: securityReportsRoot
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.securityReportsRoot'
+  - method: DELETE
+    summary: Delete navigation property security for reports
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /reports/security/getAttackSimulationRepeatOffenders()
+  path_description: Provides operations to call the getAttackSimulationRepeatOffenders method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function getAttackSimulationRepeatOffenders
+    description: List the tenant users who have yielded to attacks more than once in attack simulation and training campaigns. This function supports @odata.nextLink for pagination.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    requestBody: null
+- path: /reports/security/getAttackSimulationSimulationUserCoverage()
+  path_description: Provides operations to call the getAttackSimulationSimulationUserCoverage method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function getAttackSimulationSimulationUserCoverage
+    description: List training coverage for each tenant user in attack simulation and training campaigns. This function supports @odata.nextLink for pagination.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    requestBody: null
+- path: /reports/security/getAttackSimulationTrainingUserCoverage()
+  path_description: Provides operations to call the getAttackSimulationTrainingUserCoverage method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function getAttackSimulationTrainingUserCoverage
+    description: List training coverage for tenant users in attack simulation and training campaigns. This function supports @odata.nextLink for pagination.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    requestBody: null

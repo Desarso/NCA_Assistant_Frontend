@@ -1,0 +1,594 @@
+- path: /informationProtection
+  path_description: Provides operations to manage the informationProtection singleton.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get informationProtection
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update informationProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: informationProtection
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          bitlocker:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.bitlocker'
+            - type: object
+              nullable: true
+            x-ms-navigationProperty: true
+          threatAssessmentRequests:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.threatAssessmentRequest'
+            x-ms-navigationProperty: true
+          '@odata.type':
+            type: string
+- path: /informationProtection/bitlocker
+  path_description: Provides operations to manage the bitlocker property of the microsoft.graph.informationProtection entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get bitlocker from informationProtection
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /informationProtection/bitlocker/recoveryKeys
+  path_description: Provides operations to manage the recoveryKeys property of the microsoft.graph.bitlocker entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List recoveryKeys
+    description: Get a list of the bitlockerRecoveryKey objects and their properties.  This operation does not return the key property. For information about how to read the key property, see Get bitlockerRecoveryKey. You can use this API to programmatically iterate through the list of recovery keys in the tenant and identify devices with BitLocker enabled. For more information, see the sample PowerShell code in BitLocker recovery process.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /informationProtection/bitlocker/recoveryKeys/{bitlockerRecoveryKey-id}
+  path_description: Provides operations to manage the recoveryKeys property of the microsoft.graph.bitlocker entity.
+  path_parameters:
+  - name: bitlockerRecoveryKey-id
+    in: path
+    description: The unique identifier of bitlockerRecoveryKey
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: bitlockerRecoveryKey
+  methods:
+  - method: GET
+    summary: Get bitlockerRecoveryKey
+    description: Retrieve the properties and relationships of a bitlockerRecoveryKey object.  By default, this operation doesn't return the key property that represents the actual recovery key. To include the key property in the response, use the $select OData query parameter. Including the $select query parameter triggers a Microsoft Entra audit of the operation and generates an audit log. For more information on audit logs for bitlocker recovery keys, see the KeyManagement category filter of Microsoft Entra audit logs.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /informationProtection/bitlocker/recoveryKeys/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /informationProtection/threatAssessmentRequests
+  path_description: Provides operations to manage the threatAssessmentRequests property of the microsoft.graph.informationProtection entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List threatAssessmentRequests
+    description: 'Retrieve a list of threatAssessmentRequest objects. A threat assessment request can be one of the following types:'
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create threatAssessmentRequest
+    description: 'Create a new threat assessment request. A threat assessment request can be one of the following types:'
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: threatAssessmentRequest
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            category:
+              $ref: '#/components/schemas/microsoft.graph.threatCategory'
+            contentType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.threatAssessmentContentType'
+              - type: object
+                nullable: true
+              description: 'The content type of threat assessment. Possible values are: mail, url, file.'
+            createdBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The threat assessment request creator.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            expectedAssessment:
+              $ref: '#/components/schemas/microsoft.graph.threatExpectedAssessment'
+            requestSource:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.threatAssessmentRequestSource'
+              - type: object
+                nullable: true
+              description: 'The source of the threat assessment request. Possible values are: administrator.'
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.threatAssessmentStatus'
+              - type: object
+                nullable: true
+              description: 'The assessment process status. Possible values are: pending, completed.'
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.threatAssessmentResult'
+              description: A collection of threat assessment results. Read-only. By default, a GET /threatAssessmentRequests/{id} does not return this property unless you apply $expand on it.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.emailFileAssessmentRequest': '#/components/schemas/microsoft.graph.emailFileAssessmentRequest'
+              '#microsoft.graph.fileAssessmentRequest': '#/components/schemas/microsoft.graph.fileAssessmentRequest'
+              '#microsoft.graph.mailAssessmentRequest': '#/components/schemas/microsoft.graph.mailAssessmentRequest'
+              '#microsoft.graph.urlAssessmentRequest': '#/components/schemas/microsoft.graph.urlAssessmentRequest'
+- path: /informationProtection/threatAssessmentRequests/{threatAssessmentRequest-id}
+  path_description: Provides operations to manage the threatAssessmentRequests property of the microsoft.graph.informationProtection entity.
+  path_parameters:
+  - name: threatAssessmentRequest-id
+    in: path
+    description: The unique identifier of threatAssessmentRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: threatAssessmentRequest
+  methods:
+  - method: GET
+    summary: Get threatAssessmentRequest
+    description: 'Retrieve the properties and relationships of a specified threatAssessmentRequest object. A threat assessment request can be one of the following types:'
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property threatAssessmentRequests in informationProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: threatAssessmentRequest
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            category:
+              $ref: '#/components/schemas/microsoft.graph.threatCategory'
+            contentType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.threatAssessmentContentType'
+              - type: object
+                nullable: true
+              description: 'The content type of threat assessment. Possible values are: mail, url, file.'
+            createdBy:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The threat assessment request creator.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            expectedAssessment:
+              $ref: '#/components/schemas/microsoft.graph.threatExpectedAssessment'
+            requestSource:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.threatAssessmentRequestSource'
+              - type: object
+                nullable: true
+              description: 'The source of the threat assessment request. Possible values are: administrator.'
+            status:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.threatAssessmentStatus'
+              - type: object
+                nullable: true
+              description: 'The assessment process status. Possible values are: pending, completed.'
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.threatAssessmentResult'
+              description: A collection of threat assessment results. Read-only. By default, a GET /threatAssessmentRequests/{id} does not return this property unless you apply $expand on it.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.emailFileAssessmentRequest': '#/components/schemas/microsoft.graph.emailFileAssessmentRequest'
+              '#microsoft.graph.fileAssessmentRequest': '#/components/schemas/microsoft.graph.fileAssessmentRequest'
+              '#microsoft.graph.mailAssessmentRequest': '#/components/schemas/microsoft.graph.mailAssessmentRequest'
+              '#microsoft.graph.urlAssessmentRequest': '#/components/schemas/microsoft.graph.urlAssessmentRequest'
+  - method: DELETE
+    summary: Delete navigation property threatAssessmentRequests for informationProtection
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /informationProtection/threatAssessmentRequests/{threatAssessmentRequest-id}/results
+  path_description: Provides operations to manage the results property of the microsoft.graph.threatAssessmentRequest entity.
+  path_parameters:
+  - name: threatAssessmentRequest-id
+    in: path
+    description: The unique identifier of threatAssessmentRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: threatAssessmentRequest
+  methods:
+  - method: GET
+    summary: Get results from informationProtection
+    description: A collection of threat assessment results. Read-only. By default, a GET /threatAssessmentRequests/{id} does not return this property unless you apply $expand on it.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to results for informationProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: threatAssessmentResult
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            message:
+              type: string
+              description: The result message for each threat assessment.
+              nullable: true
+            resultType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.threatAssessmentResultType'
+              - type: object
+                nullable: true
+              description: 'The threat assessment result type. Possible values are: checkPolicy, rescan.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.threatAssessmentResult'
+- path: /informationProtection/threatAssessmentRequests/{threatAssessmentRequest-id}/results/{threatAssessmentResult-id}
+  path_description: Provides operations to manage the results property of the microsoft.graph.threatAssessmentRequest entity.
+  path_parameters:
+  - name: threatAssessmentRequest-id
+    in: path
+    description: The unique identifier of threatAssessmentRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: threatAssessmentRequest
+  - name: threatAssessmentResult-id
+    in: path
+    description: The unique identifier of threatAssessmentResult
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: threatAssessmentResult
+  methods:
+  - method: GET
+    summary: Get results from informationProtection
+    description: A collection of threat assessment results. Read-only. By default, a GET /threatAssessmentRequests/{id} does not return this property unless you apply $expand on it.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property results in informationProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: threatAssessmentResult
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            message:
+              type: string
+              description: The result message for each threat assessment.
+              nullable: true
+            resultType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.threatAssessmentResultType'
+              - type: object
+                nullable: true
+              description: 'The threat assessment result type. Possible values are: checkPolicy, rescan.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.threatAssessmentResult'
+  - method: DELETE
+    summary: Delete navigation property results for informationProtection
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /informationProtection/threatAssessmentRequests/{threatAssessmentRequest-id}/results/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: threatAssessmentRequest-id
+    in: path
+    description: The unique identifier of threatAssessmentRequest
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: threatAssessmentRequest
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /informationProtection/threatAssessmentRequests/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

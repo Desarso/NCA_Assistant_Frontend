@@ -1,0 +1,268 @@
+- path: /authenticationMethodsPolicy
+  path_description: Provides operations to manage the authenticationMethodsPolicy singleton.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get authenticationMethodsPolicy
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update authenticationMethodsPolicy
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationMethodsPolicy
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: A description of the policy. Read-only.
+              nullable: true
+            displayName:
+              type: string
+              description: The name of the policy. Read-only.
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time of the last update to the policy. Read-only.
+              format: date-time
+              nullable: true
+            policyMigrationState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.authenticationMethodsPolicyMigrationState'
+              - type: object
+                nullable: true
+              description: 'The state of migration of the authentication methods policy from the legacy multifactor authentication and self-service password reset (SSPR) policies. The possible values are: premigration - means the authentication methods policy is used for authentication only, legacy policies are respected. migrationInProgress - means the authentication methods policy is used for both authentication and SSPR, legacy policies are respected. migrationComplete - means the authentication methods policy is used for authentication and SSPR, legacy policies are ignored. unknownFutureValue - Evolvable enumeration sentinel value. Do not use.'
+            policyVersion:
+              type: string
+              description: The version of the policy in use. Read-only.
+              nullable: true
+            reconfirmationInDays:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              format: int32
+              nullable: true
+            registrationEnforcement:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.registrationEnforcement'
+              - type: object
+                nullable: true
+              description: Enforce registration at sign-in time. This property can be used to remind users to set up targeted authentication methods.
+            authenticationMethodConfigurations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.authenticationMethodConfiguration'
+              description: Represents the settings for each authentication method. Automatically expanded on GET /policies/authenticationMethodsPolicy.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.authenticationMethodsPolicy'
+- path: /authenticationMethodsPolicy/authenticationMethodConfigurations
+  path_description: Provides operations to manage the authenticationMethodConfigurations property of the microsoft.graph.authenticationMethodsPolicy entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get authenticationMethodConfigurations from authenticationMethodsPolicy
+    description: Represents the settings for each authentication method. Automatically expanded on GET /policies/authenticationMethodsPolicy.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to authenticationMethodConfigurations for authenticationMethodsPolicy
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationMethodConfiguration
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            excludeTargets:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.excludeTarget'
+              description: Groups of users that are excluded from a policy.
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.authenticationMethodState'
+              - type: object
+                nullable: true
+              description: 'The state of the policy. Possible values are: enabled, disabled.'
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.emailAuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.emailAuthenticationMethodConfiguration'
+              '#microsoft.graph.fido2AuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.fido2AuthenticationMethodConfiguration'
+              '#microsoft.graph.microsoftAuthenticatorAuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.microsoftAuthenticatorAuthenticationMethodConfiguration'
+              '#microsoft.graph.smsAuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.smsAuthenticationMethodConfiguration'
+              '#microsoft.graph.softwareOathAuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.softwareOathAuthenticationMethodConfiguration'
+              '#microsoft.graph.temporaryAccessPassAuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.temporaryAccessPassAuthenticationMethodConfiguration'
+              '#microsoft.graph.voiceAuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.voiceAuthenticationMethodConfiguration'
+              '#microsoft.graph.x509CertificateAuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.x509CertificateAuthenticationMethodConfiguration'
+- path: /authenticationMethodsPolicy/authenticationMethodConfigurations/{authenticationMethodConfiguration-id}
+  path_description: Provides operations to manage the authenticationMethodConfigurations property of the microsoft.graph.authenticationMethodsPolicy entity.
+  path_parameters:
+  - name: authenticationMethodConfiguration-id
+    in: path
+    description: The unique identifier of authenticationMethodConfiguration
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: authenticationMethodConfiguration
+  methods:
+  - method: GET
+    summary: Get authenticationMethodConfigurations from authenticationMethodsPolicy
+    description: Represents the settings for each authentication method. Automatically expanded on GET /policies/authenticationMethodsPolicy.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property authenticationMethodConfigurations in authenticationMethodsPolicy
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: authenticationMethodConfiguration
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            excludeTargets:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.excludeTarget'
+              description: Groups of users that are excluded from a policy.
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.authenticationMethodState'
+              - type: object
+                nullable: true
+              description: 'The state of the policy. Possible values are: enabled, disabled.'
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.emailAuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.emailAuthenticationMethodConfiguration'
+              '#microsoft.graph.fido2AuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.fido2AuthenticationMethodConfiguration'
+              '#microsoft.graph.microsoftAuthenticatorAuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.microsoftAuthenticatorAuthenticationMethodConfiguration'
+              '#microsoft.graph.smsAuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.smsAuthenticationMethodConfiguration'
+              '#microsoft.graph.softwareOathAuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.softwareOathAuthenticationMethodConfiguration'
+              '#microsoft.graph.temporaryAccessPassAuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.temporaryAccessPassAuthenticationMethodConfiguration'
+              '#microsoft.graph.voiceAuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.voiceAuthenticationMethodConfiguration'
+              '#microsoft.graph.x509CertificateAuthenticationMethodConfiguration': '#/components/schemas/microsoft.graph.x509CertificateAuthenticationMethodConfiguration'
+  - method: DELETE
+    summary: Delete navigation property authenticationMethodConfigurations for authenticationMethodsPolicy
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /authenticationMethodsPolicy/authenticationMethodConfigurations/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

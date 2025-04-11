@@ -1,0 +1,1656 @@
+- path: /identityProtection
+  path_description: Provides operations to manage the identityProtectionRoot singleton.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get identityProtection
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update identityProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: identityProtectionRoot
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          riskDetections:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.riskDetection'
+            description: Risk detection in Microsoft Entra ID Protection and the associated information about the detection.
+            x-ms-navigationProperty: true
+          riskyServicePrincipals:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.riskyServicePrincipal'
+            description: Microsoft Entra service principals that are at risk.
+            x-ms-navigationProperty: true
+          riskyUsers:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.riskyUser'
+            description: Users that are flagged as at-risk by Microsoft Entra ID Protection.
+            x-ms-navigationProperty: true
+          servicePrincipalRiskDetections:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.servicePrincipalRiskDetection'
+            description: Represents information about detected at-risk service principals in a Microsoft Entra tenant.
+            x-ms-navigationProperty: true
+          '@odata.type':
+            type: string
+- path: /identityProtection/riskDetections
+  path_description: Provides operations to manage the riskDetections property of the microsoft.graph.identityProtectionRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List riskDetections
+    description: Get a list of the riskDetection objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to riskDetections for identityProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: riskDetection
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            activity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.activityType'
+              - type: object
+                nullable: true
+              description: 'Indicates the activity type the detected risk is linked to. Possible values are: signin, user, unknownFutureValue.'
+            activityDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: 'Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+              format: date-time
+              nullable: true
+            additionalInfo:
+              type: string
+              description: 'Additional information associated with the risk detection in JSON format. For example, ''[{/''Key/'':/''userAgent/'',/''Value/'':/''Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36/''}]''. Possible keys in the additionalInfo JSON string are: userAgent, alertUrl, relatedEventTimeInUtc, relatedUserAgent, deviceInformation, relatedLocation, requestId, correlationId, lastActivityTimeInUtc, malwareName, clientLocation, clientIp, riskReasons. For more information about riskReasons and possible values, see riskReasons values.'
+              nullable: true
+            correlationId:
+              type: string
+              description: Correlation ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
+              nullable: true
+            detectedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: 'Date and time that the risk was detected. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like this: 2014-01-01T00:00:00Z'
+              format: date-time
+              nullable: true
+            detectionTimingType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskDetectionTimingType'
+              - type: object
+                nullable: true
+              description: 'Timing of the detected risk (real-time/offline). Possible values are: notDefined, realtime, nearRealtime, offline, unknownFutureValue.'
+            ipAddress:
+              type: string
+              description: Provides the IP address of the client from where the risk occurred.
+              nullable: true
+            lastUpdatedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: 'Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+              format: date-time
+              nullable: true
+            location:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.signInLocation'
+              - type: object
+                nullable: true
+              description: Location of the sign-in.
+            requestId:
+              type: string
+              description: Request ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
+              nullable: true
+            riskDetail:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskDetail'
+              - type: object
+                nullable: true
+              description: 'Details of the detected risk. The possible values are: none, adminGeneratedTemporaryPassword, userChangedPasswordOnPremises, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue, m365DAdminDismissedDetection. Use the Prefer: include - unknown -enum-members request header to get the following value(s) in this evolvable enum: m365DAdminDismissedDetection.'
+            riskEventType:
+              type: string
+              description: The type of risk event detected. The possible values are adminConfirmedUserCompromised, anomalousToken, anomalousUserActivity, anonymizedIPAddress, generic, impossibleTravel, investigationsThreatIntelligence, suspiciousSendingPatterns, leakedCredentials, maliciousIPAddress,malwareInfectedIPAddress, mcasSuspiciousInboxManipulationRules, newCountry, passwordSpray,riskyIPAddress, suspiciousAPITraffic, suspiciousBrowser,suspiciousInboxForwarding, suspiciousIPAddress, tokenIssuerAnomaly, unfamiliarFeatures, unlikelyTravel. If the risk detection is a premium detection, will show generic. For more information about each value, see Risk types and detection.
+              nullable: true
+            riskLevel:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskLevel'
+              - type: object
+                nullable: true
+              description: 'Level of the detected risk. Possible values are: low, medium, high, hidden, none, unknownFutureValue.'
+            riskState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskState'
+              - type: object
+                nullable: true
+              description: 'The state of a detected risky user or sign-in. Possible values are: none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, unknownFutureValue.'
+            source:
+              type: string
+              description: Source of the risk detection. For example, activeDirectory.
+              nullable: true
+            tokenIssuerType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.tokenIssuerType'
+              - type: object
+                nullable: true
+              description: 'Indicates the type of token issuer for the detected sign-in risk. Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
+            userDisplayName:
+              type: string
+              description: The user principal name (UPN) of the user.
+              nullable: true
+            userId:
+              type: string
+              description: Unique ID of the user.
+              nullable: true
+            userPrincipalName:
+              type: string
+              description: The user principal name (UPN) of the user.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.riskDetection'
+- path: /identityProtection/riskDetections/{riskDetection-id}
+  path_description: Provides operations to manage the riskDetections property of the microsoft.graph.identityProtectionRoot entity.
+  path_parameters:
+  - name: riskDetection-id
+    in: path
+    description: The unique identifier of riskDetection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: riskDetection
+  methods:
+  - method: GET
+    summary: Get riskDetection
+    description: Read the properties and relationships of a riskDetection object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property riskDetections in identityProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: riskDetection
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            activity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.activityType'
+              - type: object
+                nullable: true
+              description: 'Indicates the activity type the detected risk is linked to. Possible values are: signin, user, unknownFutureValue.'
+            activityDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: 'Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+              format: date-time
+              nullable: true
+            additionalInfo:
+              type: string
+              description: 'Additional information associated with the risk detection in JSON format. For example, ''[{/''Key/'':/''userAgent/'',/''Value/'':/''Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36/''}]''. Possible keys in the additionalInfo JSON string are: userAgent, alertUrl, relatedEventTimeInUtc, relatedUserAgent, deviceInformation, relatedLocation, requestId, correlationId, lastActivityTimeInUtc, malwareName, clientLocation, clientIp, riskReasons. For more information about riskReasons and possible values, see riskReasons values.'
+              nullable: true
+            correlationId:
+              type: string
+              description: Correlation ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
+              nullable: true
+            detectedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: 'Date and time that the risk was detected. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like this: 2014-01-01T00:00:00Z'
+              format: date-time
+              nullable: true
+            detectionTimingType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskDetectionTimingType'
+              - type: object
+                nullable: true
+              description: 'Timing of the detected risk (real-time/offline). Possible values are: notDefined, realtime, nearRealtime, offline, unknownFutureValue.'
+            ipAddress:
+              type: string
+              description: Provides the IP address of the client from where the risk occurred.
+              nullable: true
+            lastUpdatedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: 'Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+              format: date-time
+              nullable: true
+            location:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.signInLocation'
+              - type: object
+                nullable: true
+              description: Location of the sign-in.
+            requestId:
+              type: string
+              description: Request ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
+              nullable: true
+            riskDetail:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskDetail'
+              - type: object
+                nullable: true
+              description: 'Details of the detected risk. The possible values are: none, adminGeneratedTemporaryPassword, userChangedPasswordOnPremises, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue, m365DAdminDismissedDetection. Use the Prefer: include - unknown -enum-members request header to get the following value(s) in this evolvable enum: m365DAdminDismissedDetection.'
+            riskEventType:
+              type: string
+              description: The type of risk event detected. The possible values are adminConfirmedUserCompromised, anomalousToken, anomalousUserActivity, anonymizedIPAddress, generic, impossibleTravel, investigationsThreatIntelligence, suspiciousSendingPatterns, leakedCredentials, maliciousIPAddress,malwareInfectedIPAddress, mcasSuspiciousInboxManipulationRules, newCountry, passwordSpray,riskyIPAddress, suspiciousAPITraffic, suspiciousBrowser,suspiciousInboxForwarding, suspiciousIPAddress, tokenIssuerAnomaly, unfamiliarFeatures, unlikelyTravel. If the risk detection is a premium detection, will show generic. For more information about each value, see Risk types and detection.
+              nullable: true
+            riskLevel:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskLevel'
+              - type: object
+                nullable: true
+              description: 'Level of the detected risk. Possible values are: low, medium, high, hidden, none, unknownFutureValue.'
+            riskState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskState'
+              - type: object
+                nullable: true
+              description: 'The state of a detected risky user or sign-in. Possible values are: none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, unknownFutureValue.'
+            source:
+              type: string
+              description: Source of the risk detection. For example, activeDirectory.
+              nullable: true
+            tokenIssuerType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.tokenIssuerType'
+              - type: object
+                nullable: true
+              description: 'Indicates the type of token issuer for the detected sign-in risk. Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
+            userDisplayName:
+              type: string
+              description: The user principal name (UPN) of the user.
+              nullable: true
+            userId:
+              type: string
+              description: Unique ID of the user.
+              nullable: true
+            userPrincipalName:
+              type: string
+              description: The user principal name (UPN) of the user.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.riskDetection'
+  - method: DELETE
+    summary: Delete navigation property riskDetections for identityProtection
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identityProtection/riskDetections/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identityProtection/riskyServicePrincipals
+  path_description: Provides operations to manage the riskyServicePrincipals property of the microsoft.graph.identityProtectionRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List riskyServicePrincipals
+    description: Retrieve the properties and relationships of riskyServicePrincipal objects.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to riskyServicePrincipals for identityProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: riskyServicePrincipal
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            appId:
+              type: string
+              description: The globally unique identifier for the associated application (its appId property), if any.
+              nullable: true
+            displayName:
+              type: string
+              description: The display name for the service principal.
+              nullable: true
+            isEnabled:
+              type: boolean
+              description: true if the service principal account is enabled; otherwise, false.
+              nullable: true
+            isProcessing:
+              type: boolean
+              description: Indicates whether Microsoft Entra ID is currently processing the service principal's risky state.
+              nullable: true
+            riskDetail:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskDetail'
+              - type: object
+                nullable: true
+              description: 'Details of the detected risk. Note: Details for this property are only available for Workload Identities Premium customers. Events in tenants without this license will be returned hidden. The possible values are: none, hidden,  unknownFutureValue, adminConfirmedServicePrincipalCompromised, adminDismissedAllRiskForServicePrincipal. Use the Prefer: include-unknown-enum-members request header to get the following value(s) in this evolvable enum: adminConfirmedServicePrincipalCompromised , adminDismissedAllRiskForServicePrincipal.'
+            riskLastUpdatedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time that the risk state was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2021 is 2021-01-01T00:00:00Z. Supports $filter (eq).
+              format: date-time
+              nullable: true
+            riskLevel:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskLevel'
+              - type: object
+                nullable: true
+              description: 'Level of the detected risky workload identity. The possible values are: low, medium, high, hidden, none, unknownFutureValue. Supports $filter (eq).'
+            riskState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskState'
+              - type: object
+                nullable: true
+              description: 'State of the service principal''s risk. The possible values are: none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, unknownFutureValue.'
+            servicePrincipalType:
+              type: string
+              description: Identifies whether the service principal represents an Application, a ManagedIdentity, or a legacy application (socialIdp). This is set by Microsoft Entra ID internally and is inherited from servicePrincipal.
+              nullable: true
+            history:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.riskyServicePrincipalHistoryItem'
+              description: Represents the risk history of Microsoft Entra service principals.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.riskyServicePrincipalHistoryItem': '#/components/schemas/microsoft.graph.riskyServicePrincipalHistoryItem'
+- path: /identityProtection/riskyServicePrincipals/{riskyServicePrincipal-id}
+  path_description: Provides operations to manage the riskyServicePrincipals property of the microsoft.graph.identityProtectionRoot entity.
+  path_parameters:
+  - name: riskyServicePrincipal-id
+    in: path
+    description: The unique identifier of riskyServicePrincipal
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: riskyServicePrincipal
+  methods:
+  - method: GET
+    summary: Get riskyServicePrincipal
+    description: Read the properties and relationships of a riskyServicePrincipal object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property riskyServicePrincipals in identityProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: riskyServicePrincipal
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            appId:
+              type: string
+              description: The globally unique identifier for the associated application (its appId property), if any.
+              nullable: true
+            displayName:
+              type: string
+              description: The display name for the service principal.
+              nullable: true
+            isEnabled:
+              type: boolean
+              description: true if the service principal account is enabled; otherwise, false.
+              nullable: true
+            isProcessing:
+              type: boolean
+              description: Indicates whether Microsoft Entra ID is currently processing the service principal's risky state.
+              nullable: true
+            riskDetail:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskDetail'
+              - type: object
+                nullable: true
+              description: 'Details of the detected risk. Note: Details for this property are only available for Workload Identities Premium customers. Events in tenants without this license will be returned hidden. The possible values are: none, hidden,  unknownFutureValue, adminConfirmedServicePrincipalCompromised, adminDismissedAllRiskForServicePrincipal. Use the Prefer: include-unknown-enum-members request header to get the following value(s) in this evolvable enum: adminConfirmedServicePrincipalCompromised , adminDismissedAllRiskForServicePrincipal.'
+            riskLastUpdatedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time that the risk state was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2021 is 2021-01-01T00:00:00Z. Supports $filter (eq).
+              format: date-time
+              nullable: true
+            riskLevel:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskLevel'
+              - type: object
+                nullable: true
+              description: 'Level of the detected risky workload identity. The possible values are: low, medium, high, hidden, none, unknownFutureValue. Supports $filter (eq).'
+            riskState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskState'
+              - type: object
+                nullable: true
+              description: 'State of the service principal''s risk. The possible values are: none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, unknownFutureValue.'
+            servicePrincipalType:
+              type: string
+              description: Identifies whether the service principal represents an Application, a ManagedIdentity, or a legacy application (socialIdp). This is set by Microsoft Entra ID internally and is inherited from servicePrincipal.
+              nullable: true
+            history:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.riskyServicePrincipalHistoryItem'
+              description: Represents the risk history of Microsoft Entra service principals.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.riskyServicePrincipalHistoryItem': '#/components/schemas/microsoft.graph.riskyServicePrincipalHistoryItem'
+  - method: DELETE
+    summary: Delete navigation property riskyServicePrincipals for identityProtection
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identityProtection/riskyServicePrincipals/{riskyServicePrincipal-id}/history
+  path_description: Provides operations to manage the history property of the microsoft.graph.riskyServicePrincipal entity.
+  path_parameters:
+  - name: riskyServicePrincipal-id
+    in: path
+    description: The unique identifier of riskyServicePrincipal
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: riskyServicePrincipal
+  methods:
+  - method: GET
+    summary: List history (risk history of riskyServicePrincipal)
+    description: Get the risk history of a riskyServicePrincipal object.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to history for identityProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.riskyServicePrincipal'
+        - title: riskyServicePrincipalHistoryItem
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            activity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskServicePrincipalActivity'
+              - type: object
+                nullable: true
+              description: The activity related to service principal risk level change.
+            initiatedBy:
+              type: string
+              description: The identifier of the actor of the operation.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.riskyServicePrincipalHistoryItem'
+- path: /identityProtection/riskyServicePrincipals/{riskyServicePrincipal-id}/history/{riskyServicePrincipalHistoryItem-id}
+  path_description: Provides operations to manage the history property of the microsoft.graph.riskyServicePrincipal entity.
+  path_parameters:
+  - name: riskyServicePrincipal-id
+    in: path
+    description: The unique identifier of riskyServicePrincipal
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: riskyServicePrincipal
+  - name: riskyServicePrincipalHistoryItem-id
+    in: path
+    description: The unique identifier of riskyServicePrincipalHistoryItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: riskyServicePrincipalHistoryItem
+  methods:
+  - method: GET
+    summary: Get history from identityProtection
+    description: Represents the risk history of Microsoft Entra service principals.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property history in identityProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.riskyServicePrincipal'
+        - title: riskyServicePrincipalHistoryItem
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            activity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskServicePrincipalActivity'
+              - type: object
+                nullable: true
+              description: The activity related to service principal risk level change.
+            initiatedBy:
+              type: string
+              description: The identifier of the actor of the operation.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.riskyServicePrincipalHistoryItem'
+  - method: DELETE
+    summary: Delete navigation property history for identityProtection
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identityProtection/riskyServicePrincipals/{riskyServicePrincipal-id}/history/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: riskyServicePrincipal-id
+    in: path
+    description: The unique identifier of riskyServicePrincipal
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: riskyServicePrincipal
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identityProtection/riskyServicePrincipals/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identityProtection/riskyServicePrincipals/confirmCompromised
+  path_description: Provides operations to call the confirmCompromised method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action confirmCompromised
+    description: Confirm one or more riskyServicePrincipal objects as compromised. This action sets the targeted service principal account's risk level to high.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          servicePrincipalIds:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /identityProtection/riskyServicePrincipals/dismiss
+  path_description: Provides operations to call the dismiss method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action dismiss
+    description: Dismiss the risk of one or more riskyServicePrincipal objects. This action sets the targeted service principal account's risk level to none. You can dismiss up to 60 service principal accounts in one request.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          servicePrincipalIds:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /identityProtection/riskyUsers
+  path_description: Provides operations to manage the riskyUsers property of the microsoft.graph.identityProtectionRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List riskyUsers
+    description: Get a list of the riskyUser objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to riskyUsers for identityProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: riskyUser
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            isDeleted:
+              type: boolean
+              description: 'Indicates whether the user is deleted. Possible values are: true, false.'
+              nullable: true
+            isProcessing:
+              type: boolean
+              description: Indicates whether the backend is processing a user's risky state.
+              nullable: true
+            riskDetail:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskDetail'
+              - type: object
+                nullable: true
+              description: 'The possible values are none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue, adminConfirmedServicePrincipalCompromised, adminDismissedAllRiskForServicePrincipal, m365DAdminDismissedDetection, userChangedPasswordOnPremises, adminDismissedRiskForSignIn, adminConfirmedAccountSafe. Use the Prefer: include-unknown-enum-members request header to get the following value or values in this evolvable enum: adminConfirmedServicePrincipalCompromised, adminDismissedAllRiskForServicePrincipal, m365DAdminDismissedDetection, userChangedPasswordOnPremises, adminDismissedRiskForSignIn, adminConfirmedAccountSafe.'
+            riskLastUpdatedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            riskLevel:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskLevel'
+              - type: object
+                nullable: true
+              description: 'Level of the detected risky user. Possible values are: low, medium, high, hidden, none, unknownFutureValue.'
+            riskState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskState'
+              - type: object
+                nullable: true
+              description: 'State of the user''s risk. Possible values are: none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, unknownFutureValue.'
+            userDisplayName:
+              type: string
+              description: Risky user display name.
+              nullable: true
+            userPrincipalName:
+              type: string
+              description: Risky user principal name.
+              nullable: true
+            history:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.riskyUserHistoryItem'
+              description: The activity related to user risk level change
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.riskyUserHistoryItem': '#/components/schemas/microsoft.graph.riskyUserHistoryItem'
+- path: /identityProtection/riskyUsers/{riskyUser-id}
+  path_description: Provides operations to manage the riskyUsers property of the microsoft.graph.identityProtectionRoot entity.
+  path_parameters:
+  - name: riskyUser-id
+    in: path
+    description: The unique identifier of riskyUser
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: riskyUser
+  methods:
+  - method: GET
+    summary: Get riskyUser
+    description: Read the properties and relationships of a riskyUser object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property riskyUsers in identityProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: riskyUser
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            isDeleted:
+              type: boolean
+              description: 'Indicates whether the user is deleted. Possible values are: true, false.'
+              nullable: true
+            isProcessing:
+              type: boolean
+              description: Indicates whether the backend is processing a user's risky state.
+              nullable: true
+            riskDetail:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskDetail'
+              - type: object
+                nullable: true
+              description: 'The possible values are none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue, adminConfirmedServicePrincipalCompromised, adminDismissedAllRiskForServicePrincipal, m365DAdminDismissedDetection, userChangedPasswordOnPremises, adminDismissedRiskForSignIn, adminConfirmedAccountSafe. Use the Prefer: include-unknown-enum-members request header to get the following value or values in this evolvable enum: adminConfirmedServicePrincipalCompromised, adminDismissedAllRiskForServicePrincipal, m365DAdminDismissedDetection, userChangedPasswordOnPremises, adminDismissedRiskForSignIn, adminConfirmedAccountSafe.'
+            riskLastUpdatedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            riskLevel:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskLevel'
+              - type: object
+                nullable: true
+              description: 'Level of the detected risky user. Possible values are: low, medium, high, hidden, none, unknownFutureValue.'
+            riskState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskState'
+              - type: object
+                nullable: true
+              description: 'State of the user''s risk. Possible values are: none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, unknownFutureValue.'
+            userDisplayName:
+              type: string
+              description: Risky user display name.
+              nullable: true
+            userPrincipalName:
+              type: string
+              description: Risky user principal name.
+              nullable: true
+            history:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.riskyUserHistoryItem'
+              description: The activity related to user risk level change
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.riskyUserHistoryItem': '#/components/schemas/microsoft.graph.riskyUserHistoryItem'
+  - method: DELETE
+    summary: Delete navigation property riskyUsers for identityProtection
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identityProtection/riskyUsers/{riskyUser-id}/history
+  path_description: Provides operations to manage the history property of the microsoft.graph.riskyUser entity.
+  path_parameters:
+  - name: riskyUser-id
+    in: path
+    description: The unique identifier of riskyUser
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: riskyUser
+  methods:
+  - method: GET
+    summary: List history of riskyUser
+    description: Get the riskyUserHistoryItems from the history navigation property.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to history for identityProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.riskyUser'
+        - title: riskyUserHistoryItem
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            activity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskUserActivity'
+              - type: object
+                nullable: true
+              description: The activity related to user risk level change.
+            initiatedBy:
+              type: string
+              description: The ID of actor that does the operation.
+              nullable: true
+            userId:
+              type: string
+              description: The ID of the user.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.riskyUserHistoryItem'
+- path: /identityProtection/riskyUsers/{riskyUser-id}/history/{riskyUserHistoryItem-id}
+  path_description: Provides operations to manage the history property of the microsoft.graph.riskyUser entity.
+  path_parameters:
+  - name: riskyUser-id
+    in: path
+    description: The unique identifier of riskyUser
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: riskyUser
+  - name: riskyUserHistoryItem-id
+    in: path
+    description: The unique identifier of riskyUserHistoryItem
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: riskyUserHistoryItem
+  methods:
+  - method: GET
+    summary: Get history from identityProtection
+    description: The activity related to user risk level change
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property history in identityProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.riskyUser'
+        - title: riskyUserHistoryItem
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            activity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskUserActivity'
+              - type: object
+                nullable: true
+              description: The activity related to user risk level change.
+            initiatedBy:
+              type: string
+              description: The ID of actor that does the operation.
+              nullable: true
+            userId:
+              type: string
+              description: The ID of the user.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.riskyUserHistoryItem'
+  - method: DELETE
+    summary: Delete navigation property history for identityProtection
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identityProtection/riskyUsers/{riskyUser-id}/history/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: riskyUser-id
+    in: path
+    description: The unique identifier of riskyUser
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: riskyUser
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identityProtection/riskyUsers/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /identityProtection/riskyUsers/confirmCompromised
+  path_description: Provides operations to call the confirmCompromised method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action confirmCompromised
+    description: Confirm one or more riskyUser objects as compromised. This action sets the targeted user's risk level to high.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          userIds:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /identityProtection/riskyUsers/dismiss
+  path_description: Provides operations to call the dismiss method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action dismiss
+    description: Dismiss the risk of one or more riskyUser objects. This action sets the targeted user's risk level to none.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          userIds:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /identityProtection/servicePrincipalRiskDetections
+  path_description: Provides operations to manage the servicePrincipalRiskDetections property of the microsoft.graph.identityProtectionRoot entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List servicePrincipalRiskDetections
+    description: Retrieve the properties of a collection of servicePrincipalRiskDetection objects.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to servicePrincipalRiskDetections for identityProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: servicePrincipalRiskDetection
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            activity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.activityType'
+              - type: object
+                nullable: true
+              description: 'Indicates the activity type the detected risk is linked to.  The possible values are: signin, servicePrincipal. Use the Prefer: include-unknown-enum-members request header to get the following value(s) in this evolvable enum: servicePrincipal.'
+            activityDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the risky activity occurred. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
+              format: date-time
+              nullable: true
+            additionalInfo:
+              type: string
+              description: Additional information associated with the risk detection. This string value is represented as a JSON object with the quotations escaped.
+              nullable: true
+            appId:
+              type: string
+              description: The unique identifier for the associated application.
+              nullable: true
+            correlationId:
+              type: string
+              description: Correlation ID of the sign-in activity associated with the risk detection. This property is null if the risk detection is not associated with a sign-in activity.
+              nullable: true
+            detectedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the risk was detected. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            detectionTimingType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskDetectionTimingType'
+              - type: object
+                nullable: true
+              description: 'Timing of the detected risk , whether real-time or offline. The possible values are: notDefined, realtime, nearRealtime, offline, unknownFutureValue.'
+            ipAddress:
+              type: string
+              description: Provides the IP address of the client from where the risk occurred.
+              nullable: true
+            keyIds:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The unique identifier for the key credential associated with the risk detection.
+            lastUpdatedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the risk detection was last updated.
+              format: date-time
+              nullable: true
+            location:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.signInLocation'
+              - type: object
+                nullable: true
+              description: Location from where the sign-in was initiated.
+            requestId:
+              type: string
+              description: Request identifier of the sign-in activity associated with the risk detection. This property is null if the risk detection is not associated with a sign-in activity. Supports $filter (eq).
+              nullable: true
+            riskDetail:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskDetail'
+              - type: object
+                nullable: true
+              description: 'Details of the detected risk. Note: Details for this property are only available for Workload Identities Premium customers. Events in tenants without this license will be returned hidden. The possible values are: none, hidden, adminConfirmedServicePrincipalCompromised, adminDismissedAllRiskForServicePrincipal. Use the Prefer: include-unknown-enum-members request header to get the following value(s) in this evolvable enum: adminConfirmedServicePrincipalCompromised , adminDismissedAllRiskForServicePrincipal.'
+            riskEventType:
+              type: string
+              description: 'The type of risk event detected. The possible values are: investigationsThreatIntelligence, generic, adminConfirmedServicePrincipalCompromised, suspiciousSignins, leakedCredentials, anomalousServicePrincipalActivity, maliciousApplication, suspiciousApplication.'
+              nullable: true
+            riskLevel:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskLevel'
+              - type: object
+                nullable: true
+              description: 'Level of the detected risk. Note: Details for this property are only available for Workload Identities Premium customers. Events in tenants without this license will be returned hidden. The possible values are: low, medium, high, hidden, none.'
+            riskState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskState'
+              - type: object
+                nullable: true
+              description: 'The state of a detected risky service principal or sign-in activity. The possible values are: none, dismissed, atRisk, confirmedCompromised.'
+            servicePrincipalDisplayName:
+              type: string
+              description: The display name for the service principal.
+              nullable: true
+            servicePrincipalId:
+              type: string
+              description: The unique identifier for the service principal. Supports $filter (eq).
+              nullable: true
+            source:
+              type: string
+              description: Source of the risk detection. For example, identityProtection.
+              nullable: true
+            tokenIssuerType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.tokenIssuerType'
+              - type: object
+                nullable: true
+              description: 'Indicates the type of token issuer for the detected sign-in risk. The possible values are: AzureAD.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.servicePrincipalRiskDetection'
+- path: /identityProtection/servicePrincipalRiskDetections/{servicePrincipalRiskDetection-id}
+  path_description: Provides operations to manage the servicePrincipalRiskDetections property of the microsoft.graph.identityProtectionRoot entity.
+  path_parameters:
+  - name: servicePrincipalRiskDetection-id
+    in: path
+    description: The unique identifier of servicePrincipalRiskDetection
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: servicePrincipalRiskDetection
+  methods:
+  - method: GET
+    summary: Get servicePrincipalRiskDetection
+    description: Read the properties and relationships of a servicePrincipalRiskDetection object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property servicePrincipalRiskDetections in identityProtection
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: servicePrincipalRiskDetection
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            activity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.activityType'
+              - type: object
+                nullable: true
+              description: 'Indicates the activity type the detected risk is linked to.  The possible values are: signin, servicePrincipal. Use the Prefer: include-unknown-enum-members request header to get the following value(s) in this evolvable enum: servicePrincipal.'
+            activityDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the risky activity occurred. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
+              format: date-time
+              nullable: true
+            additionalInfo:
+              type: string
+              description: Additional information associated with the risk detection. This string value is represented as a JSON object with the quotations escaped.
+              nullable: true
+            appId:
+              type: string
+              description: The unique identifier for the associated application.
+              nullable: true
+            correlationId:
+              type: string
+              description: Correlation ID of the sign-in activity associated with the risk detection. This property is null if the risk detection is not associated with a sign-in activity.
+              nullable: true
+            detectedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the risk was detected. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            detectionTimingType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskDetectionTimingType'
+              - type: object
+                nullable: true
+              description: 'Timing of the detected risk , whether real-time or offline. The possible values are: notDefined, realtime, nearRealtime, offline, unknownFutureValue.'
+            ipAddress:
+              type: string
+              description: Provides the IP address of the client from where the risk occurred.
+              nullable: true
+            keyIds:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The unique identifier for the key credential associated with the risk detection.
+            lastUpdatedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when the risk detection was last updated.
+              format: date-time
+              nullable: true
+            location:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.signInLocation'
+              - type: object
+                nullable: true
+              description: Location from where the sign-in was initiated.
+            requestId:
+              type: string
+              description: Request identifier of the sign-in activity associated with the risk detection. This property is null if the risk detection is not associated with a sign-in activity. Supports $filter (eq).
+              nullable: true
+            riskDetail:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskDetail'
+              - type: object
+                nullable: true
+              description: 'Details of the detected risk. Note: Details for this property are only available for Workload Identities Premium customers. Events in tenants without this license will be returned hidden. The possible values are: none, hidden, adminConfirmedServicePrincipalCompromised, adminDismissedAllRiskForServicePrincipal. Use the Prefer: include-unknown-enum-members request header to get the following value(s) in this evolvable enum: adminConfirmedServicePrincipalCompromised , adminDismissedAllRiskForServicePrincipal.'
+            riskEventType:
+              type: string
+              description: 'The type of risk event detected. The possible values are: investigationsThreatIntelligence, generic, adminConfirmedServicePrincipalCompromised, suspiciousSignins, leakedCredentials, anomalousServicePrincipalActivity, maliciousApplication, suspiciousApplication.'
+              nullable: true
+            riskLevel:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskLevel'
+              - type: object
+                nullable: true
+              description: 'Level of the detected risk. Note: Details for this property are only available for Workload Identities Premium customers. Events in tenants without this license will be returned hidden. The possible values are: low, medium, high, hidden, none.'
+            riskState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.riskState'
+              - type: object
+                nullable: true
+              description: 'The state of a detected risky service principal or sign-in activity. The possible values are: none, dismissed, atRisk, confirmedCompromised.'
+            servicePrincipalDisplayName:
+              type: string
+              description: The display name for the service principal.
+              nullable: true
+            servicePrincipalId:
+              type: string
+              description: The unique identifier for the service principal. Supports $filter (eq).
+              nullable: true
+            source:
+              type: string
+              description: Source of the risk detection. For example, identityProtection.
+              nullable: true
+            tokenIssuerType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.tokenIssuerType'
+              - type: object
+                nullable: true
+              description: 'Indicates the type of token issuer for the detected sign-in risk. The possible values are: AzureAD.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.servicePrincipalRiskDetection'
+  - method: DELETE
+    summary: Delete navigation property servicePrincipalRiskDetections for identityProtection
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /identityProtection/servicePrincipalRiskDetections/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

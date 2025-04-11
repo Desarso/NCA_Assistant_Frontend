@@ -1,0 +1,4033 @@
+- path: /directory
+  path_description: Provides operations to manage the directory singleton.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get directory
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update directory
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: directory
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            administrativeUnits:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.administrativeUnit'
+              description: Conceptual container for user and group directory objects.
+              x-ms-navigationProperty: true
+            attributeSets:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.attributeSet'
+              description: Group of related custom security attribute definitions.
+              x-ms-navigationProperty: true
+            customSecurityAttributeDefinitions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.customSecurityAttributeDefinition'
+              description: Schema of a custom security attributes (key-value pairs).
+              x-ms-navigationProperty: true
+            deletedItems:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Recently deleted items. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            deviceLocalCredentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.deviceLocalCredentialInfo'
+              description: The credentials of the device's local administrator account backed up to Microsoft Entra ID.
+              x-ms-navigationProperty: true
+            federationConfigurations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identityProviderBase'
+              description: Configure domain federation with organizations whose identity provider (IdP) supports either the SAML or WS-Fed protocol.
+              x-ms-navigationProperty: true
+            onPremisesSynchronization:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.onPremisesDirectorySynchronization'
+              description: A container for on-premises directory synchronization functionalities that are available for the organization.
+              x-ms-navigationProperty: true
+            subscriptions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.companySubscription'
+              description: List of commercial subscriptions that an organization acquired.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.directory'
+- path: /directory/administrativeUnits
+  path_description: Provides operations to manage the administrativeUnits property of the microsoft.graph.directory entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List administrativeUnits
+    description: Retrieve a list of administrativeUnit objects.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create administrativeUnit
+    description: Create a new administrativeUnit.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: administrativeUnit
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: An optional description for the administrative unit. Supports $filter (eq, ne, in, startsWith), $search.
+              nullable: true
+            displayName:
+              type: string
+              description: Display name for the administrative unit. Maximum length is 256 characters. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values), $search, and $orderby.
+              nullable: true
+            isMemberManagementRestricted:
+              type: boolean
+              nullable: true
+            membershipRule:
+              type: string
+              description: The dynamic membership rule for the administrative unit. For more information about the rules you can use for dynamic administrative units and dynamic groups, see Manage rules for dynamic membership groups in Microsoft Entra ID.
+              nullable: true
+            membershipRuleProcessingState:
+              type: string
+              description: Controls whether the dynamic membership rule is actively processed. Set to On to activate the dynamic membership rule, or Paused to stop updating membership dynamically.
+              nullable: true
+            membershipType:
+              type: string
+              description: 'Indicates the membership type for the administrative unit. The possible values are: dynamic, assigned. If not set, the default value is null and the default behavior is assigned.'
+              nullable: true
+            visibility:
+              type: string
+              description: Controls whether the administrative unit and its members are hidden or public. Can be set to HiddenMembership. If not set, the default value is null and the default behavior is public. When set to HiddenMembership, only members of the administrative unit can list other members of the administrative unit.
+              nullable: true
+            extensions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.extension'
+              description: The collection of open extensions defined for this administrative unit. Nullable.
+              x-ms-navigationProperty: true
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Users and groups that are members of this administrative unit. Supports $expand.
+              x-ms-navigationProperty: true
+            scopedRoleMembers:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.scopedRoleMembership'
+              description: Scoped-role members of this administrative unit.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.administrativeUnit'
+        x-ms-discriminator-value: '#microsoft.graph.administrativeUnit'
+- path: /directory/administrativeUnits/{administrativeUnit-id}
+  path_description: Provides operations to manage the administrativeUnits property of the microsoft.graph.directory entity.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get administrativeUnit
+    description: Retrieve the properties and relationships of an administrativeUnit object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update administrativeUnit
+    description: Update the properties of an administrativeUnit object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: administrativeUnit
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: An optional description for the administrative unit. Supports $filter (eq, ne, in, startsWith), $search.
+              nullable: true
+            displayName:
+              type: string
+              description: Display name for the administrative unit. Maximum length is 256 characters. Supports $filter (eq, ne, not, ge, le, in, startsWith, and eq on null values), $search, and $orderby.
+              nullable: true
+            isMemberManagementRestricted:
+              type: boolean
+              nullable: true
+            membershipRule:
+              type: string
+              description: The dynamic membership rule for the administrative unit. For more information about the rules you can use for dynamic administrative units and dynamic groups, see Manage rules for dynamic membership groups in Microsoft Entra ID.
+              nullable: true
+            membershipRuleProcessingState:
+              type: string
+              description: Controls whether the dynamic membership rule is actively processed. Set to On to activate the dynamic membership rule, or Paused to stop updating membership dynamically.
+              nullable: true
+            membershipType:
+              type: string
+              description: 'Indicates the membership type for the administrative unit. The possible values are: dynamic, assigned. If not set, the default value is null and the default behavior is assigned.'
+              nullable: true
+            visibility:
+              type: string
+              description: Controls whether the administrative unit and its members are hidden or public. Can be set to HiddenMembership. If not set, the default value is null and the default behavior is public. When set to HiddenMembership, only members of the administrative unit can list other members of the administrative unit.
+              nullable: true
+            extensions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.extension'
+              description: The collection of open extensions defined for this administrative unit. Nullable.
+              x-ms-navigationProperty: true
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.directoryObject'
+              description: Users and groups that are members of this administrative unit. Supports $expand.
+              x-ms-navigationProperty: true
+            scopedRoleMembers:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.scopedRoleMembership'
+              description: Scoped-role members of this administrative unit.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.administrativeUnit'
+        x-ms-discriminator-value: '#microsoft.graph.administrativeUnit'
+  - method: DELETE
+    summary: Delete administrativeUnit
+    description: Delete an administrativeUnit.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/extensions
+  path_description: Provides operations to manage the extensions property of the microsoft.graph.administrativeUnit entity.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get extensions from directory
+    description: The collection of open extensions defined for this administrative unit. Nullable.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to extensions for directory
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: extension
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.openTypeExtension': '#/components/schemas/microsoft.graph.openTypeExtension'
+- path: /directory/administrativeUnits/{administrativeUnit-id}/extensions/{extension-id}
+  path_description: Provides operations to manage the extensions property of the microsoft.graph.administrativeUnit entity.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  - name: extension-id
+    in: path
+    description: The unique identifier of extension
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: extension
+  methods:
+  - method: GET
+    summary: Get extensions from directory
+    description: The collection of open extensions defined for this administrative unit. Nullable.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property extensions in directory
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: extension
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.openTypeExtension': '#/components/schemas/microsoft.graph.openTypeExtension'
+  - method: DELETE
+    summary: Delete navigation property extensions for directory
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/extensions/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members
+  path_description: Provides operations to manage the members property of the microsoft.graph.administrativeUnit entity.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: List members
+    description: Use this API to get the members list (users, groups, or devices) in an administrative unit.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add a member
+    description: Use this API to add a member (user, group, or device) to an administrative unit. Currently it's only possible to add one member at a time to an administrative unit.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: directoryObject
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time when this object was deleted. Always null when the object hasn't been deleted.
+              format: date-time
+              nullable: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.administrativeUnit': '#/components/schemas/microsoft.graph.administrativeUnit'
+              '#microsoft.graph.application': '#/components/schemas/microsoft.graph.application'
+              '#microsoft.graph.appRoleAssignment': '#/components/schemas/microsoft.graph.appRoleAssignment'
+              '#microsoft.graph.contract': '#/components/schemas/microsoft.graph.contract'
+              '#microsoft.graph.device': '#/components/schemas/microsoft.graph.device'
+              '#microsoft.graph.directoryObjectPartnerReference': '#/components/schemas/microsoft.graph.directoryObjectPartnerReference'
+              '#microsoft.graph.directoryRole': '#/components/schemas/microsoft.graph.directoryRole'
+              '#microsoft.graph.directoryRoleTemplate': '#/components/schemas/microsoft.graph.directoryRoleTemplate'
+              '#microsoft.graph.endpoint': '#/components/schemas/microsoft.graph.endpoint'
+              '#microsoft.graph.extensionProperty': '#/components/schemas/microsoft.graph.extensionProperty'
+              '#microsoft.graph.group': '#/components/schemas/microsoft.graph.group'
+              '#microsoft.graph.groupSettingTemplate': '#/components/schemas/microsoft.graph.groupSettingTemplate'
+              '#microsoft.graph.multiTenantOrganizationMember': '#/components/schemas/microsoft.graph.multiTenantOrganizationMember'
+              '#microsoft.graph.organization': '#/components/schemas/microsoft.graph.organization'
+              '#microsoft.graph.orgContact': '#/components/schemas/microsoft.graph.orgContact'
+              '#microsoft.graph.policyBase': '#/components/schemas/microsoft.graph.policyBase'
+              '#microsoft.graph.appManagementPolicy': '#/components/schemas/microsoft.graph.appManagementPolicy'
+              '#microsoft.graph.authorizationPolicy': '#/components/schemas/microsoft.graph.authorizationPolicy'
+              '#microsoft.graph.crossTenantAccessPolicy': '#/components/schemas/microsoft.graph.crossTenantAccessPolicy'
+              '#microsoft.graph.identitySecurityDefaultsEnforcementPolicy': '#/components/schemas/microsoft.graph.identitySecurityDefaultsEnforcementPolicy'
+              '#microsoft.graph.permissionGrantPolicy': '#/components/schemas/microsoft.graph.permissionGrantPolicy'
+              '#microsoft.graph.stsPolicy': '#/components/schemas/microsoft.graph.stsPolicy'
+              '#microsoft.graph.activityBasedTimeoutPolicy': '#/components/schemas/microsoft.graph.activityBasedTimeoutPolicy'
+              '#microsoft.graph.claimsMappingPolicy': '#/components/schemas/microsoft.graph.claimsMappingPolicy'
+              '#microsoft.graph.homeRealmDiscoveryPolicy': '#/components/schemas/microsoft.graph.homeRealmDiscoveryPolicy'
+              '#microsoft.graph.tokenIssuancePolicy': '#/components/schemas/microsoft.graph.tokenIssuancePolicy'
+              '#microsoft.graph.tokenLifetimePolicy': '#/components/schemas/microsoft.graph.tokenLifetimePolicy'
+              '#microsoft.graph.tenantAppManagementPolicy': '#/components/schemas/microsoft.graph.tenantAppManagementPolicy'
+              '#microsoft.graph.resourceSpecificPermissionGrant': '#/components/schemas/microsoft.graph.resourceSpecificPermissionGrant'
+              '#microsoft.graph.servicePrincipal': '#/components/schemas/microsoft.graph.servicePrincipal'
+              '#microsoft.graph.user': '#/components/schemas/microsoft.graph.user'
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/{directoryObject-id}/$ref
+  path_description: Provides operations to manage the collection of directory entities.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: DELETE
+    summary: Remove a member
+    description: Use this API to remove a member (user, group, or device) from an administrative unit.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/{directoryObject-id}/graph.application
+  path_description: Casts the previous resource to application.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.application
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/{directoryObject-id}/graph.device
+  path_description: Casts the previous resource to device.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.device
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/{directoryObject-id}/graph.group
+  path_description: Casts the previous resource to group.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.group
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/{directoryObject-id}/graph.orgContact
+  path_description: Casts the previous resource to orgContact.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.orgContact
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/{directoryObject-id}/graph.servicePrincipal
+  path_description: Casts the previous resource to servicePrincipal.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.servicePrincipal
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/{directoryObject-id}/graph.user
+  path_description: Casts the previous resource to user.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.user
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/$ref
+  path_description: Provides operations to manage the collection of directory entities.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: List members
+    description: Use this API to get the members list (users, groups, or devices) in an administrative unit.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add a member
+    description: Use this API to add a member (user, group, or device) to an administrative unit. Currently it's only possible to add one member at a time to an administrative unit.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Remove a member
+    description: Use this API to remove a member (user, group, or device) from an administrative unit.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    - name: '@id'
+      in: query
+      description: The delete Uri
+      required: true
+      schema:
+        type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/graph.application
+  path_description: Casts the previous resource to application.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.application in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/graph.application/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/graph.device
+  path_description: Casts the previous resource to device.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.device in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/graph.device/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/graph.group
+  path_description: Casts the previous resource to group.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.group in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/graph.group/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/graph.orgContact
+  path_description: Casts the previous resource to orgContact.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.orgContact in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/graph.orgContact/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/graph.servicePrincipal
+  path_description: Casts the previous resource to servicePrincipal.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.servicePrincipal in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/graph.servicePrincipal/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/graph.user
+  path_description: Casts the previous resource to user.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.user in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/members/graph.user/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - name: ConsistencyLevel
+      in: header
+      description: 'Indicates the requested consistency level. Documentation URL: https://docs.microsoft.com/graph/aad-advanced-queries'
+      schema:
+        type: string
+      examples:
+        example-1:
+          description: $search and $count queries require the client to set the ConsistencyLevel HTTP header to 'eventual'.
+          value: eventual
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/scopedRoleMembers
+  path_description: Provides operations to manage the scopedRoleMembers property of the microsoft.graph.administrativeUnit entity.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: List scopedRoleMembers
+    description: List Microsoft Entra role assignments with administrative unit scope.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add a scopedRoleMember
+    description: Assign a Microsoft Entra role with administrative unit scope. For a list of roles that can be assigned with administrative unit scope, see Assign Microsoft Entra roles with administrative unit scope.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: scopedRoleMembership
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            administrativeUnitId:
+              type: string
+              description: Unique identifier for the administrative unit that the directory role is scoped to
+            roleId:
+              type: string
+              description: Unique identifier for the directory role that the member is in.
+            roleMemberInfo:
+              $ref: '#/components/schemas/microsoft.graph.identity'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.scopedRoleMembership'
+- path: /directory/administrativeUnits/{administrativeUnit-id}/scopedRoleMembers/{scopedRoleMembership-id}
+  path_description: Provides operations to manage the scopedRoleMembers property of the microsoft.graph.administrativeUnit entity.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  - name: scopedRoleMembership-id
+    in: path
+    description: The unique identifier of scopedRoleMembership
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: scopedRoleMembership
+  methods:
+  - method: GET
+    summary: Get a scopedRoleMember
+    description: Get a Microsoft Entra role assignment with administrative unit scope.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property scopedRoleMembers in directory
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: scopedRoleMembership
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            administrativeUnitId:
+              type: string
+              description: Unique identifier for the administrative unit that the directory role is scoped to
+            roleId:
+              type: string
+              description: Unique identifier for the directory role that the member is in.
+            roleMemberInfo:
+              $ref: '#/components/schemas/microsoft.graph.identity'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.scopedRoleMembership'
+  - method: DELETE
+    summary: Remove a scopedRoleMember
+    description: Remove a Microsoft Entra role assignment with administrative unit scope.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directory/administrativeUnits/{administrativeUnit-id}/scopedRoleMembers/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: administrativeUnit-id
+    in: path
+    description: The unique identifier of administrativeUnit
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: administrativeUnit
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/administrativeUnits/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/administrativeUnits/delta()
+  path_description: Provides operations to call the delta method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function delta
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/attributeSets
+  path_description: Provides operations to manage the attributeSets property of the microsoft.graph.directory entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List attributeSets
+    description: Get a list of the attributeSet objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create attributeSet
+    description: Create a new attributeSet object.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: attributeSet
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: Description of the attribute set. Can be up to 128 characters long and include Unicode characters. Can be changed later.
+              nullable: true
+            maxAttributesPerSet:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Maximum number of custom security attributes that can be defined in this attribute set. Default value is null. If not specified, the administrator can add up to the maximum of 500 active attributes per tenant. Can be changed later.
+              format: int32
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.attributeSet'
+- path: /directory/attributeSets/{attributeSet-id}
+  path_description: Provides operations to manage the attributeSets property of the microsoft.graph.directory entity.
+  path_parameters:
+  - name: attributeSet-id
+    in: path
+    description: The unique identifier of attributeSet
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: attributeSet
+  methods:
+  - method: GET
+    summary: Get attributeSet
+    description: Read the properties and relationships of an attributeSet object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update attributeSet
+    description: Update the properties of an attributeSet object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: attributeSet
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            description:
+              type: string
+              description: Description of the attribute set. Can be up to 128 characters long and include Unicode characters. Can be changed later.
+              nullable: true
+            maxAttributesPerSet:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Maximum number of custom security attributes that can be defined in this attribute set. Default value is null. If not specified, the administrator can add up to the maximum of 500 active attributes per tenant. Can be changed later.
+              format: int32
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.attributeSet'
+  - method: DELETE
+    summary: Delete navigation property attributeSets for directory
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directory/attributeSets/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/customSecurityAttributeDefinitions
+  path_description: Provides operations to manage the customSecurityAttributeDefinitions property of the microsoft.graph.directory entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List customSecurityAttributeDefinitions
+    description: Get a list of the customSecurityAttributeDefinition objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create customSecurityAttributeDefinition
+    description: Create a new customSecurityAttributeDefinition object.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: customSecurityAttributeDefinition
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            attributeSet:
+              type: string
+              description: Name of the attribute set. Case insensitive.
+            description:
+              type: string
+              description: Description of the custom security attribute. Can be up to 128 characters long and include Unicode characters. Can be changed later.
+              nullable: true
+            isCollection:
+              type: boolean
+              description: Indicates whether multiple values can be assigned to the custom security attribute. Cannot be changed later. If type is set to Boolean, isCollection cannot be set to true.
+            isSearchable:
+              type: boolean
+              description: Indicates whether custom security attribute values are indexed for searching on objects that are assigned attribute values. Cannot be changed later.
+              nullable: true
+            name:
+              type: string
+              description: Name of the custom security attribute. Must be unique within an attribute set. Can be up to 32 characters long and include Unicode characters. Cannot contain spaces or special characters. Cannot be changed later. Case insensitive.
+            status:
+              type: string
+              description: 'Specifies whether the custom security attribute is active or deactivated. Acceptable values are: Available and Deprecated. Can be changed later.'
+            type:
+              type: string
+              description: 'Data type for the custom security attribute values. Supported types are: Boolean, Integer, and String. Cannot be changed later.'
+            usePreDefinedValuesOnly:
+              type: boolean
+              description: Indicates whether only predefined values can be assigned to the custom security attribute. If set to false, free-form values are allowed. Can later be changed from true to false, but cannot be changed from false to true. If type is set to Boolean, usePreDefinedValuesOnly cannot be set to true.
+              nullable: true
+            allowedValues:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.allowedValue'
+              description: Values that are predefined for this custom security attribute. This navigation property is not returned by default and must be specified in an $expand query. For example, /directory/customSecurityAttributeDefinitions?$expand=allowedValues.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.customSecurityAttributeDefinition'
+- path: /directory/customSecurityAttributeDefinitions/{customSecurityAttributeDefinition-id}
+  path_description: Provides operations to manage the customSecurityAttributeDefinitions property of the microsoft.graph.directory entity.
+  path_parameters:
+  - name: customSecurityAttributeDefinition-id
+    in: path
+    description: The unique identifier of customSecurityAttributeDefinition
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: customSecurityAttributeDefinition
+  methods:
+  - method: GET
+    summary: Get customSecurityAttributeDefinition
+    description: Read the properties and relationships of a customSecurityAttributeDefinition object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update customSecurityAttributeDefinition
+    description: Update the properties of a customSecurityAttributeDefinition object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: customSecurityAttributeDefinition
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            attributeSet:
+              type: string
+              description: Name of the attribute set. Case insensitive.
+            description:
+              type: string
+              description: Description of the custom security attribute. Can be up to 128 characters long and include Unicode characters. Can be changed later.
+              nullable: true
+            isCollection:
+              type: boolean
+              description: Indicates whether multiple values can be assigned to the custom security attribute. Cannot be changed later. If type is set to Boolean, isCollection cannot be set to true.
+            isSearchable:
+              type: boolean
+              description: Indicates whether custom security attribute values are indexed for searching on objects that are assigned attribute values. Cannot be changed later.
+              nullable: true
+            name:
+              type: string
+              description: Name of the custom security attribute. Must be unique within an attribute set. Can be up to 32 characters long and include Unicode characters. Cannot contain spaces or special characters. Cannot be changed later. Case insensitive.
+            status:
+              type: string
+              description: 'Specifies whether the custom security attribute is active or deactivated. Acceptable values are: Available and Deprecated. Can be changed later.'
+            type:
+              type: string
+              description: 'Data type for the custom security attribute values. Supported types are: Boolean, Integer, and String. Cannot be changed later.'
+            usePreDefinedValuesOnly:
+              type: boolean
+              description: Indicates whether only predefined values can be assigned to the custom security attribute. If set to false, free-form values are allowed. Can later be changed from true to false, but cannot be changed from false to true. If type is set to Boolean, usePreDefinedValuesOnly cannot be set to true.
+              nullable: true
+            allowedValues:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.allowedValue'
+              description: Values that are predefined for this custom security attribute. This navigation property is not returned by default and must be specified in an $expand query. For example, /directory/customSecurityAttributeDefinitions?$expand=allowedValues.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.customSecurityAttributeDefinition'
+  - method: DELETE
+    summary: Delete navigation property customSecurityAttributeDefinitions for directory
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directory/customSecurityAttributeDefinitions/{customSecurityAttributeDefinition-id}/allowedValues
+  path_description: Provides operations to manage the allowedValues property of the microsoft.graph.customSecurityAttributeDefinition entity.
+  path_parameters:
+  - name: customSecurityAttributeDefinition-id
+    in: path
+    description: The unique identifier of customSecurityAttributeDefinition
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: customSecurityAttributeDefinition
+  methods:
+  - method: GET
+    summary: List allowedValues
+    description: Get a list of the allowedValue objects and their properties.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create allowedValue
+    description: Create a new allowedValue object.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: allowedValue
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            isActive:
+              type: boolean
+              description: Indicates whether the predefined value is active or deactivated. If set to false, this predefined value can't be assigned to any other supported directory objects.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.allowedValue'
+- path: /directory/customSecurityAttributeDefinitions/{customSecurityAttributeDefinition-id}/allowedValues/{allowedValue-id}
+  path_description: Provides operations to manage the allowedValues property of the microsoft.graph.customSecurityAttributeDefinition entity.
+  path_parameters:
+  - name: customSecurityAttributeDefinition-id
+    in: path
+    description: The unique identifier of customSecurityAttributeDefinition
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: customSecurityAttributeDefinition
+  - name: allowedValue-id
+    in: path
+    description: The unique identifier of allowedValue
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: allowedValue
+  methods:
+  - method: GET
+    summary: Get allowedValue
+    description: Read the properties and relationships of an allowedValue object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update allowedValue
+    description: Update the properties of an allowedValue object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: allowedValue
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            isActive:
+              type: boolean
+              description: Indicates whether the predefined value is active or deactivated. If set to false, this predefined value can't be assigned to any other supported directory objects.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.allowedValue'
+  - method: DELETE
+    summary: Delete navigation property allowedValues for directory
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directory/customSecurityAttributeDefinitions/{customSecurityAttributeDefinition-id}/allowedValues/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: customSecurityAttributeDefinition-id
+    in: path
+    description: The unique identifier of customSecurityAttributeDefinition
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: customSecurityAttributeDefinition
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/customSecurityAttributeDefinitions/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/deletedItems
+  path_description: Provides operations to manage the deletedItems property of the microsoft.graph.directory entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get deleted item (directory object)
+    description: Retrieve the properties of a recently deleted application, group, servicePrincipal, administrative unit, or user object from deleted items.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/deletedItems/{directoryObject-id}
+  path_description: Provides operations to manage the deletedItems property of the microsoft.graph.directory entity.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get deleted item (directory object)
+    description: Retrieve the properties of a recently deleted application, group, servicePrincipal, administrative unit, or user object from deleted items.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: DELETE
+    summary: Permanently delete an item (directory object)
+    description: Permanently delete a recently deleted application, group, servicePrincipal, or user object from deleted items. After an item is permanently deleted, it cannot be restored. Administrative units cannot be permanently deleted by using the deletedItems API. Soft-deleted administrative units will be permanently deleted 30 days after initial deletion unless they are restored.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directory/deletedItems/{directoryObject-id}/graph.administrativeUnit
+  path_description: Casts the previous resource to administrativeUnit.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.administrativeUnit
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/deletedItems/{directoryObject-id}/graph.application
+  path_description: Casts the previous resource to application.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.application
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/deletedItems/{directoryObject-id}/checkMemberGroups
+  path_description: Provides operations to call the checkMemberGroups method.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: POST
+    summary: Invoke action checkMemberGroups
+    description: 'Check for membership in a specified list of group IDs, and return from that list the IDs of groups where a specified object is a member. The specified object can be of one of the following types:
+
+      - user
+
+      - group
+
+      - service principal
+
+      - organizational contact
+
+      - device
+
+      - directory object This function is transitive. You can check up to a maximum of 20 groups per request. This function supports all groups provisioned in Microsoft Entra ID. Because Microsoft 365 groups cannot contain other groups, membership in a Microsoft 365 group is always direct.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          groupIds:
+            type: array
+            items:
+              type: string
+- path: /directory/deletedItems/{directoryObject-id}/checkMemberObjects
+  path_description: Provides operations to call the checkMemberObjects method.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: POST
+    summary: Invoke action checkMemberObjects
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          ids:
+            type: array
+            items:
+              type: string
+- path: /directory/deletedItems/{directoryObject-id}/graph.device
+  path_description: Casts the previous resource to device.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.device
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/deletedItems/{directoryObject-id}/getMemberGroups
+  path_description: Provides operations to call the getMemberGroups method.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: POST
+    summary: Invoke action getMemberGroups
+    description: Return all the group IDs for the groups that the specified user, group, service principal, organizational contact, device, or directory object is a member of. This function is transitive. This API returns up to 11,000 group IDs. If more than 11,000 results are available, it returns a 400 Bad Request error with the DirectoryResultSizeLimitExceeded error code. If you get the DirectoryResultSizeLimitExceeded error code, use the List group transitive memberOf API instead.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          securityEnabledOnly:
+            type: boolean
+            default: false
+            nullable: true
+- path: /directory/deletedItems/{directoryObject-id}/getMemberObjects
+  path_description: Provides operations to call the getMemberObjects method.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: POST
+    summary: Invoke action getMemberObjects
+    description: 'Return all IDs for the groups, administrative units, and directory roles that an object of one of the following types is a member of:
+
+      - user
+
+      - group
+
+      - service principal
+
+      - organizational contact
+
+      - device
+
+      - directory object This function is transitive. Only users and role-enabled groups can be members of directory roles.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          securityEnabledOnly:
+            type: boolean
+            default: false
+            nullable: true
+- path: /directory/deletedItems/{directoryObject-id}/graph.group
+  path_description: Casts the previous resource to group.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: List deletedItems (directory objects)
+    description: Retrieve a list of recently deleted directory objects. Currently, deleted items functionality is only supported for the application, servicePrincipal, group, administrative unit, and user resources.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/deletedItems/{directoryObject-id}/restore
+  path_description: Provides operations to call the restore method.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: POST
+    summary: Invoke action restore
+    description: Restore a recently deleted application, group, servicePrincipal, administrative unit, or user object from deleted items. If an item was accidentally deleted, you can fully restore the item. However, security groups can't be restored. Also, restoring an application doesn't restore the associated service principal automatically. You must call this API to explicitly restore the deleted service principal. A recently deleted item remains available for up to 30 days. After 30 days, the item is permanently deleted.
+    parameters: []
+    requestBody: null
+- path: /directory/deletedItems/{directoryObject-id}/graph.servicePrincipal
+  path_description: Casts the previous resource to servicePrincipal.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.servicePrincipal
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/deletedItems/{directoryObject-id}/graph.user
+  path_description: Casts the previous resource to user.
+  path_parameters:
+  - name: directoryObject-id
+    in: path
+    description: The unique identifier of directoryObject
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: directoryObject
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.directoryObject as microsoft.graph.user
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/deletedItems/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/deletedItems/graph.administrativeUnit
+  path_description: Casts the previous resource to administrativeUnit.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.administrativeUnit in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/deletedItems/graph.administrativeUnit/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/deletedItems/graph.application
+  path_description: Casts the previous resource to application.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.application in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/deletedItems/graph.application/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/deletedItems/graph.device
+  path_description: Casts the previous resource to device.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.device in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/deletedItems/graph.device/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/deletedItems/getAvailableExtensionProperties
+  path_description: Provides operations to call the getAvailableExtensionProperties method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action getAvailableExtensionProperties
+    description: 'Return all directory extension definitions that have been registered in a directory, including through multi-tenant apps. The following entities support extension properties:'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          isSyncedFromOnPremises:
+            type: boolean
+            default: false
+            nullable: true
+- path: /directory/deletedItems/getByIds
+  path_description: Provides operations to call the getByIds method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action getByIds
+    description: 'Return the directory objects specified in a list of IDs. Only a subset of user properties are returned by default in v1.0. Some common uses for this function are to:'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          ids:
+            type: array
+            items:
+              type: string
+          types:
+            type: array
+            items:
+              type: string
+              nullable: true
+- path: /directory/deletedItems/graph.group
+  path_description: Casts the previous resource to group.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List deletedItems (directory objects)
+    description: Retrieve a list of recently deleted directory objects. Currently, deleted items functionality is only supported for the application, servicePrincipal, group, administrative unit, and user resources.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/deletedItems/graph.group/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/deletedItems/graph.servicePrincipal
+  path_description: Casts the previous resource to servicePrincipal.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.servicePrincipal in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/deletedItems/graph.servicePrincipal/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/deletedItems/graph.user
+  path_description: Casts the previous resource to user.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.user in the microsoft.graph.directoryObject collection
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /directory/deletedItems/graph.user/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/deletedItems/validateProperties
+  path_description: Provides operations to call the validateProperties method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action validateProperties
+    description: 'Validate that a Microsoft 365 group''s display name or mail nickname complies with naming policies.  Clients can use this API to determine whether a display name or mail nickname is valid before trying to create a Microsoft 365 group. To validate the properties of an existing group, use the group: validateProperties function. The following policy validations are performed for the display name and mail nickname properties:
+
+      1. Validate the prefix and suffix naming policy
+
+      2. Validate the custom banned words policy
+
+      3. Validate that the mail nickname is unique This API only returns the first validation failure that is encountered. If the properties fail multiple validations, only the first validation failure is returned. However, you can validate both the mail nickname and the display name and receive a collection of validation errors if you are only validating the prefix and suffix naming policy. To learn more about configuring naming policies, see Configure naming policy.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          entityType:
+            type: string
+            nullable: true
+          displayName:
+            type: string
+            nullable: true
+          mailNickname:
+            type: string
+            nullable: true
+          onBehalfOfUserId:
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            type: string
+            format: uuid
+            nullable: true
+- path: /directory/deviceLocalCredentials
+  path_description: Provides operations to manage the deviceLocalCredentials property of the microsoft.graph.directory entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List deviceLocalCredentialInfo
+    description: 'Get a list of the deviceLocalCredentialInfo objects and their properties, excluding the credentials property. '
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to deviceLocalCredentials for directory
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: deviceLocalCredentialInfo
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            credentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.deviceLocalCredential'
+              description: The credentials of the device's local administrator account backed up to Azure Active Directory.
+            deviceName:
+              type: string
+              description: Display name of the device that the local credentials are associated with.
+            lastBackupDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: When the local administrator account credential was backed up to Azure Active Directory.
+              format: date-time
+            refreshDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: When the local administrator account credential will be refreshed and backed up to Azure Active Directory.
+              format: date-time
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.deviceLocalCredentialInfo'
+- path: /directory/deviceLocalCredentials/{deviceLocalCredentialInfo-id}
+  path_description: Provides operations to manage the deviceLocalCredentials property of the microsoft.graph.directory entity.
+  path_parameters:
+  - name: deviceLocalCredentialInfo-id
+    in: path
+    description: The unique identifier of deviceLocalCredentialInfo
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: deviceLocalCredentialInfo
+  methods:
+  - method: GET
+    summary: Get deviceLocalCredentialInfo
+    description: 'Retrieve the properties of a deviceLocalCredentialInfo for a specified device object. '
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property deviceLocalCredentials in directory
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: deviceLocalCredentialInfo
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            credentials:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.deviceLocalCredential'
+              description: The credentials of the device's local administrator account backed up to Azure Active Directory.
+            deviceName:
+              type: string
+              description: Display name of the device that the local credentials are associated with.
+            lastBackupDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: When the local administrator account credential was backed up to Azure Active Directory.
+              format: date-time
+            refreshDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: When the local administrator account credential will be refreshed and backed up to Azure Active Directory.
+              format: date-time
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.deviceLocalCredentialInfo'
+  - method: DELETE
+    summary: Delete navigation property deviceLocalCredentials for directory
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directory/deviceLocalCredentials/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/federationConfigurations
+  path_description: Provides operations to manage the federationConfigurations property of the microsoft.graph.directory entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get federationConfigurations from directory
+    description: Configure domain federation with organizations whose identity provider (IdP) supports either the SAML or WS-Fed protocol.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to federationConfigurations for directory
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identityProviderBase
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: The display name of the identity provider.
+              nullable: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.appleManagedIdentityProvider': '#/components/schemas/microsoft.graph.appleManagedIdentityProvider'
+              '#microsoft.graph.builtInIdentityProvider': '#/components/schemas/microsoft.graph.builtInIdentityProvider'
+              '#microsoft.graph.samlOrWsFedProvider': '#/components/schemas/microsoft.graph.samlOrWsFedProvider'
+              '#microsoft.graph.internalDomainFederation': '#/components/schemas/microsoft.graph.internalDomainFederation'
+              '#microsoft.graph.samlOrWsFedExternalDomainFederation': '#/components/schemas/microsoft.graph.samlOrWsFedExternalDomainFederation'
+              '#microsoft.graph.socialIdentityProvider': '#/components/schemas/microsoft.graph.socialIdentityProvider'
+- path: /directory/federationConfigurations/{identityProviderBase-id}
+  path_description: Provides operations to manage the federationConfigurations property of the microsoft.graph.directory entity.
+  path_parameters:
+  - name: identityProviderBase-id
+    in: path
+    description: The unique identifier of identityProviderBase
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: identityProviderBase
+  methods:
+  - method: GET
+    summary: Get federationConfigurations from directory
+    description: Configure domain federation with organizations whose identity provider (IdP) supports either the SAML or WS-Fed protocol.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property federationConfigurations in directory
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: identityProviderBase
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: The display name of the identity provider.
+              nullable: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.appleManagedIdentityProvider': '#/components/schemas/microsoft.graph.appleManagedIdentityProvider'
+              '#microsoft.graph.builtInIdentityProvider': '#/components/schemas/microsoft.graph.builtInIdentityProvider'
+              '#microsoft.graph.samlOrWsFedProvider': '#/components/schemas/microsoft.graph.samlOrWsFedProvider'
+              '#microsoft.graph.internalDomainFederation': '#/components/schemas/microsoft.graph.internalDomainFederation'
+              '#microsoft.graph.samlOrWsFedExternalDomainFederation': '#/components/schemas/microsoft.graph.samlOrWsFedExternalDomainFederation'
+              '#microsoft.graph.socialIdentityProvider': '#/components/schemas/microsoft.graph.socialIdentityProvider'
+  - method: DELETE
+    summary: Delete samlOrWsFedExternalDomainFederation
+    description: Delete a samlOrWsFedExternalDomainFederation object.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directory/federationConfigurations/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/federationConfigurations/availableProviderTypes()
+  path_description: Provides operations to call the availableProviderTypes method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function availableProviderTypes
+    description: Get all identity providers supported in a directory.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    requestBody: null
+- path: /directory/onPremisesSynchronization
+  path_description: Provides operations to manage the onPremisesSynchronization property of the microsoft.graph.directory entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get onPremisesDirectorySynchronization
+    description: Read the properties and relationships of an onPremisesDirectorySynchronization object.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to onPremisesSynchronization for directory
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: onPremisesDirectorySynchronization
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            configuration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.onPremisesDirectorySynchronizationConfiguration'
+              - type: object
+                nullable: true
+              description: Consists of configurations that can be fine-tuned and impact the on-premises directory synchronization process for a tenant. Nullable.
+            features:
+              $ref: '#/components/schemas/microsoft.graph.onPremisesDirectorySynchronizationFeature'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.onPremisesDirectorySynchronization'
+- path: /directory/onPremisesSynchronization/{onPremisesDirectorySynchronization-id}
+  path_description: Provides operations to manage the onPremisesSynchronization property of the microsoft.graph.directory entity.
+  path_parameters:
+  - name: onPremisesDirectorySynchronization-id
+    in: path
+    description: The unique identifier of onPremisesDirectorySynchronization
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onPremisesDirectorySynchronization
+  methods:
+  - method: GET
+    summary: Get onPremisesDirectorySynchronization
+    description: Read the properties and relationships of an onPremisesDirectorySynchronization object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update onPremisesDirectorySynchronization
+    description: Update the properties of an onPremisesDirectorySynchronization object.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: onPremisesDirectorySynchronization
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            configuration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.onPremisesDirectorySynchronizationConfiguration'
+              - type: object
+                nullable: true
+              description: Consists of configurations that can be fine-tuned and impact the on-premises directory synchronization process for a tenant. Nullable.
+            features:
+              $ref: '#/components/schemas/microsoft.graph.onPremisesDirectorySynchronizationFeature'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.onPremisesDirectorySynchronization'
+  - method: DELETE
+    summary: Delete navigation property onPremisesSynchronization for directory
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directory/onPremisesSynchronization/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /directory/subscriptions
+  path_description: Provides operations to manage the subscriptions property of the microsoft.graph.directory entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List subscriptions
+    description: Get the list of commercial subscriptions that an organization acquired.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to subscriptions for directory
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: companySubscription
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            commerceSubscriptionId:
+              type: string
+              description: The ID of this subscription in the commerce system. Alternate key.
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when this subscription was created. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            isTrial:
+              type: boolean
+              description: Whether the subscription is a free trial or purchased.
+              nullable: true
+            nextLifecycleDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the subscription will move to the next state (as defined by the status property) if not renewed by the tenant. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            ownerId:
+              type: string
+              description: The object ID of the account admin.
+              nullable: true
+            ownerTenantId:
+              type: string
+              description: The unique identifier for the Microsoft partner tenant that created the subscription on a customer tenant.
+              nullable: true
+            ownerType:
+              type: string
+              description: Indicates the entity that ownerId belongs to, for example, 'User'.
+              nullable: true
+            serviceStatus:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.servicePlanInfo'
+              description: The provisioning status of each service included in this subscription.
+            skuId:
+              type: string
+              description: The object ID of the SKU associated with this subscription.
+              nullable: true
+            skuPartNumber:
+              type: string
+              description: The SKU associated with this subscription.
+              nullable: true
+            status:
+              type: string
+              description: 'The status of this subscription. Possible values are: Enabled, Deleted, Suspended, Warning, LockedOut.'
+              nullable: true
+            totalLicenses:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The number of licenses included in this subscription.
+              format: int32
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.companySubscription'
+- path: /directory/subscriptions/{companySubscription-id}
+  path_description: Provides operations to manage the subscriptions property of the microsoft.graph.directory entity.
+  path_parameters:
+  - name: companySubscription-id
+    in: path
+    description: The unique identifier of companySubscription
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: companySubscription
+  methods:
+  - method: GET
+    summary: Get companySubscription
+    description: Get a specific commercial subscription that an organization acquired.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property subscriptions in directory
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: companySubscription
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            commerceSubscriptionId:
+              type: string
+              description: The ID of this subscription in the commerce system. Alternate key.
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when this subscription was created. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            isTrial:
+              type: boolean
+              description: Whether the subscription is a free trial or purchased.
+              nullable: true
+            nextLifecycleDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the subscription will move to the next state (as defined by the status property) if not renewed by the tenant. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            ownerId:
+              type: string
+              description: The object ID of the account admin.
+              nullable: true
+            ownerTenantId:
+              type: string
+              description: The unique identifier for the Microsoft partner tenant that created the subscription on a customer tenant.
+              nullable: true
+            ownerType:
+              type: string
+              description: Indicates the entity that ownerId belongs to, for example, 'User'.
+              nullable: true
+            serviceStatus:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.servicePlanInfo'
+              description: The provisioning status of each service included in this subscription.
+            skuId:
+              type: string
+              description: The object ID of the SKU associated with this subscription.
+              nullable: true
+            skuPartNumber:
+              type: string
+              description: The SKU associated with this subscription.
+              nullable: true
+            status:
+              type: string
+              description: 'The status of this subscription. Possible values are: Enabled, Deleted, Suspended, Warning, LockedOut.'
+              nullable: true
+            totalLicenses:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The number of licenses included in this subscription.
+              format: int32
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.companySubscription'
+  - method: DELETE
+    summary: Delete navigation property subscriptions for directory
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directory/subscriptions(commerceSubscriptionId='{commerceSubscriptionId}')
+  path_description: Provides operations to manage the subscriptions property of the microsoft.graph.directory entity.
+  path_parameters:
+  - name: commerceSubscriptionId
+    in: path
+    description: Alternate key of companySubscription
+    required: true
+    schema:
+      type: string
+      nullable: true
+  methods:
+  - method: GET
+    summary: Get companySubscription
+    description: Get a specific commercial subscription that an organization acquired.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property subscriptions in directory
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: companySubscription
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            commerceSubscriptionId:
+              type: string
+              description: The ID of this subscription in the commerce system. Alternate key.
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when this subscription was created. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            isTrial:
+              type: boolean
+              description: Whether the subscription is a free trial or purchased.
+              nullable: true
+            nextLifecycleDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The date and time when the subscription will move to the next state (as defined by the status property) if not renewed by the tenant. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            ownerId:
+              type: string
+              description: The object ID of the account admin.
+              nullable: true
+            ownerTenantId:
+              type: string
+              description: The unique identifier for the Microsoft partner tenant that created the subscription on a customer tenant.
+              nullable: true
+            ownerType:
+              type: string
+              description: Indicates the entity that ownerId belongs to, for example, 'User'.
+              nullable: true
+            serviceStatus:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.servicePlanInfo'
+              description: The provisioning status of each service included in this subscription.
+            skuId:
+              type: string
+              description: The object ID of the SKU associated with this subscription.
+              nullable: true
+            skuPartNumber:
+              type: string
+              description: The SKU associated with this subscription.
+              nullable: true
+            status:
+              type: string
+              description: 'The status of this subscription. Possible values are: Enabled, Deleted, Suspended, Warning, LockedOut.'
+              nullable: true
+            totalLicenses:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: The number of licenses included in this subscription.
+              format: int32
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.companySubscription'
+  - method: DELETE
+    summary: Delete navigation property subscriptions for directory
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /directory/subscriptions/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

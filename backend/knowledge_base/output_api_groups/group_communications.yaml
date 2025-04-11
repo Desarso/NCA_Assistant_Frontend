@@ -1,0 +1,4851 @@
+- path: /communications
+  path_description: Provides operations to manage the cloudCommunications singleton.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get communications
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        title: cloudCommunications
+        required:
+        - '@odata.type'
+        type: object
+        properties:
+          callRecords:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.callRecords.callRecord'
+            x-ms-navigationProperty: true
+          calls:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.call'
+            x-ms-navigationProperty: true
+          onlineMeetings:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.onlineMeeting'
+            x-ms-navigationProperty: true
+          presences:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.presence'
+            x-ms-navigationProperty: true
+          '@odata.type':
+            type: string
+- path: /communications/callRecords
+  path_description: Provides operations to manage the callRecords property of the microsoft.graph.cloudCommunications entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List callRecords
+    description: Get the list of callRecord objects and their properties. The results can be optionally filtered using the $filter query parameter on the startDateTime and participant id properties. Note that the listed call records don't include expandable relationships such as sessions and participants_v2. You can expand these relationships using Get callRecord for a specific record.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to callRecords for communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: callRecord
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            endDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the last user left the call. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
+              format: date-time
+            joinWebUrl:
+              type: string
+              description: Meeting URL associated to the call. May not be available for a peerToPeer call record type.
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the call record was created. The DatetimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
+              format: date-time
+            modalities:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRecords.modality'
+              description: 'List of all the modalities used in the call. Possible values are: unknown, audio, video, videoBasedScreenSharing, data, screenSharing, unknownFutureValue.'
+            organizer:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The organizing party's identity. The organizer property is deprecated and will stop returning data on June 30, 2026. Going forward, use the organizer_v2 relationship.
+            participants:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identitySet'
+              description: List of distinct identities involved in the call. Limited to 130 entries. The participants property is deprecated and will stop returning data on June 30, 2026. Going forward, use the participants_v2 relationship.
+            startDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the first user joined the call. The DatetimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+            type:
+              $ref: '#/components/schemas/microsoft.graph.callRecords.callType'
+            version:
+              type: number
+              description: Monotonically increasing version of the call record. Higher version call records with the same id includes additional data compared to the lower version.
+              format: int64
+            organizer_v2:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callRecords.organizer'
+              - type: object
+                nullable: true
+              description: Identity of the organizer of the call. This relationship is expanded by default in callRecord methods.
+              x-ms-navigationProperty: true
+            participants_v2:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRecords.participant'
+              description: List of distinct participants in the call.
+              x-ms-navigationProperty: true
+            sessions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRecords.session'
+              description: List of sessions involved in the call. Peer-to-peer calls typically only have one session, whereas group calls typically have at least one session per participant. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.callRecords.callRecord'
+- path: /communications/callRecords/{callRecord-id}
+  path_description: Provides operations to manage the callRecords property of the microsoft.graph.cloudCommunications entity.
+  path_parameters:
+  - name: callRecord-id
+    in: path
+    description: The unique identifier of callRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callRecord
+  methods:
+  - method: GET
+    summary: Get callRecord
+    description: 'Retrieve the properties and relationships of a callRecord object. You can get the id of a callRecord in two ways:
+
+      * Subscribe to change notifications to the /communications/callRecords endpoint.
+
+      * Use the callChainId property of a call. The call record is available only after the associated call is completed.'
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property callRecords in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: callRecord
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            endDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the last user left the call. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
+              format: date-time
+            joinWebUrl:
+              type: string
+              description: Meeting URL associated to the call. May not be available for a peerToPeer call record type.
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the call record was created. The DatetimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
+              format: date-time
+            modalities:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRecords.modality'
+              description: 'List of all the modalities used in the call. Possible values are: unknown, audio, video, videoBasedScreenSharing, data, screenSharing, unknownFutureValue.'
+            organizer:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The organizing party's identity. The organizer property is deprecated and will stop returning data on June 30, 2026. Going forward, use the organizer_v2 relationship.
+            participants:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.identitySet'
+              description: List of distinct identities involved in the call. Limited to 130 entries. The participants property is deprecated and will stop returning data on June 30, 2026. Going forward, use the participants_v2 relationship.
+            startDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the first user joined the call. The DatetimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+            type:
+              $ref: '#/components/schemas/microsoft.graph.callRecords.callType'
+            version:
+              type: number
+              description: Monotonically increasing version of the call record. Higher version call records with the same id includes additional data compared to the lower version.
+              format: int64
+            organizer_v2:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callRecords.organizer'
+              - type: object
+                nullable: true
+              description: Identity of the organizer of the call. This relationship is expanded by default in callRecord methods.
+              x-ms-navigationProperty: true
+            participants_v2:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRecords.participant'
+              description: List of distinct participants in the call.
+              x-ms-navigationProperty: true
+            sessions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRecords.session'
+              description: List of sessions involved in the call. Peer-to-peer calls typically only have one session, whereas group calls typically have at least one session per participant. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.callRecords.callRecord'
+  - method: DELETE
+    summary: Delete navigation property callRecords for communications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/callRecords/{callRecord-id}/organizer_v2
+  path_description: Provides operations to manage the organizer_v2 property of the microsoft.graph.callRecords.callRecord entity.
+  path_parameters:
+  - name: callRecord-id
+    in: path
+    description: The unique identifier of callRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callRecord
+  methods:
+  - method: GET
+    summary: Get organizer_v2 from communications
+    description: Identity of the organizer of the call. This relationship is expanded by default in callRecord methods.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property organizer_v2 in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.callRecords.participantBase'
+        - title: organizer
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.callRecords.organizer'
+        x-ms-discriminator-value: '#microsoft.graph.callRecords.organizer'
+  - method: DELETE
+    summary: Delete navigation property organizer_v2 for communications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/callRecords/{callRecord-id}/participants_v2
+  path_description: Provides operations to manage the participants_v2 property of the microsoft.graph.callRecords.callRecord entity.
+  path_parameters:
+  - name: callRecord-id
+    in: path
+    description: The unique identifier of callRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callRecord
+  methods:
+  - method: GET
+    summary: List participants_v2
+    description: Get the list of participant objects associated with a callRecord.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to participants_v2 for communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.callRecords.participantBase'
+        - title: participant
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.callRecords.participant'
+        x-ms-discriminator-value: '#microsoft.graph.callRecords.participant'
+- path: /communications/callRecords/{callRecord-id}/participants_v2/{participant-id}
+  path_description: Provides operations to manage the participants_v2 property of the microsoft.graph.callRecords.callRecord entity.
+  path_parameters:
+  - name: callRecord-id
+    in: path
+    description: The unique identifier of callRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callRecord
+  - name: participant-id
+    in: path
+    description: The unique identifier of participant
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: participant
+  methods:
+  - method: GET
+    summary: Get participants_v2 from communications
+    description: List of distinct participants in the call.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property participants_v2 in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.callRecords.participantBase'
+        - title: participant
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.callRecords.participant'
+        x-ms-discriminator-value: '#microsoft.graph.callRecords.participant'
+  - method: DELETE
+    summary: Delete navigation property participants_v2 for communications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/callRecords/{callRecord-id}/participants_v2/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: callRecord-id
+    in: path
+    description: The unique identifier of callRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callRecord
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /communications/callRecords/{callRecord-id}/sessions
+  path_description: Provides operations to manage the sessions property of the microsoft.graph.callRecords.callRecord entity.
+  path_parameters:
+  - name: callRecord-id
+    in: path
+    description: The unique identifier of callRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callRecord
+  methods:
+  - method: GET
+    summary: List sessions
+    description: Retrieve the list of sessions associated with a callRecord object. If the sessions list is truncated, a sessions@odata.nextLink value will be provided to retrieve the next page of sessions. The maximum page size for sessions is 60 entries.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to sessions for communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: session
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            callee:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callRecords.endpoint'
+              - type: object
+                nullable: true
+              description: Endpoint that answered the session.
+            caller:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callRecords.endpoint'
+              - type: object
+                nullable: true
+              description: Endpoint that initiated the session.
+            endDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the last user left the session. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
+              format: date-time
+            failureInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callRecords.failureInfo'
+              - type: object
+                nullable: true
+              description: Failure information associated with the session if the session failed.
+            isTest:
+              type: boolean
+              description: Specifies whether the session is a test.
+              nullable: true
+            modalities:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRecords.modality'
+              description: 'List of modalities present in the session. Possible values are: unknown, audio, video, videoBasedScreenSharing, data, screenSharing, unknownFutureValue.'
+            startDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the first user joined the session. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
+              format: date-time
+            segments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRecords.segment'
+              description: The list of segments involved in the session. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.callRecords.session'
+- path: /communications/callRecords/{callRecord-id}/sessions/{session-id}
+  path_description: Provides operations to manage the sessions property of the microsoft.graph.callRecords.callRecord entity.
+  path_parameters:
+  - name: callRecord-id
+    in: path
+    description: The unique identifier of callRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callRecord
+  - name: session-id
+    in: path
+    description: The unique identifier of session
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: session
+  methods:
+  - method: GET
+    summary: Get sessions from communications
+    description: List of sessions involved in the call. Peer-to-peer calls typically only have one session, whereas group calls typically have at least one session per participant. Read-only. Nullable.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property sessions in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: session
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            callee:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callRecords.endpoint'
+              - type: object
+                nullable: true
+              description: Endpoint that answered the session.
+            caller:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callRecords.endpoint'
+              - type: object
+                nullable: true
+              description: Endpoint that initiated the session.
+            endDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the last user left the session. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
+              format: date-time
+            failureInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callRecords.failureInfo'
+              - type: object
+                nullable: true
+              description: Failure information associated with the session if the session failed.
+            isTest:
+              type: boolean
+              description: Specifies whether the session is a test.
+              nullable: true
+            modalities:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRecords.modality'
+              description: 'List of modalities present in the session. Possible values are: unknown, audio, video, videoBasedScreenSharing, data, screenSharing, unknownFutureValue.'
+            startDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the first user joined the session. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
+              format: date-time
+            segments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRecords.segment'
+              description: The list of segments involved in the session. Read-only. Nullable.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.callRecords.session'
+  - method: DELETE
+    summary: Delete navigation property sessions for communications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/callRecords/{callRecord-id}/sessions/{session-id}/segments
+  path_description: Provides operations to manage the segments property of the microsoft.graph.callRecords.session entity.
+  path_parameters:
+  - name: callRecord-id
+    in: path
+    description: The unique identifier of callRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callRecord
+  - name: session-id
+    in: path
+    description: The unique identifier of session
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: session
+  methods:
+  - method: GET
+    summary: Get segments from communications
+    description: The list of segments involved in the session. Read-only. Nullable.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to segments for communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: segment
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            callee:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callRecords.endpoint'
+              - type: object
+                nullable: true
+              description: Endpoint that answered this segment.
+            caller:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callRecords.endpoint'
+              - type: object
+                nullable: true
+              description: Endpoint that initiated this segment.
+            endDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the segment ended. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
+              format: date-time
+            failureInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callRecords.failureInfo'
+              - type: object
+                nullable: true
+              description: Failure information associated with the segment if it failed.
+            media:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRecords.media'
+              description: Media associated with this segment.
+            startDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the segment started. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
+              format: date-time
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.callRecords.segment'
+- path: /communications/callRecords/{callRecord-id}/sessions/{session-id}/segments/{segment-id}
+  path_description: Provides operations to manage the segments property of the microsoft.graph.callRecords.session entity.
+  path_parameters:
+  - name: callRecord-id
+    in: path
+    description: The unique identifier of callRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callRecord
+  - name: session-id
+    in: path
+    description: The unique identifier of session
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: session
+  - name: segment-id
+    in: path
+    description: The unique identifier of segment
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: segment
+  methods:
+  - method: GET
+    summary: Get segments from communications
+    description: The list of segments involved in the session. Read-only. Nullable.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property segments in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: segment
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            callee:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callRecords.endpoint'
+              - type: object
+                nullable: true
+              description: Endpoint that answered this segment.
+            caller:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callRecords.endpoint'
+              - type: object
+                nullable: true
+              description: Endpoint that initiated this segment.
+            endDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the segment ended. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
+              format: date-time
+            failureInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callRecords.failureInfo'
+              - type: object
+                nullable: true
+              description: Failure information associated with the segment if it failed.
+            media:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRecords.media'
+              description: Media associated with this segment.
+            startDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the segment started. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z
+              format: date-time
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.callRecords.segment'
+  - method: DELETE
+    summary: Delete navigation property segments for communications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/callRecords/{callRecord-id}/sessions/{session-id}/segments/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: callRecord-id
+    in: path
+    description: The unique identifier of callRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callRecord
+  - name: session-id
+    in: path
+    description: The unique identifier of session
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: session
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /communications/callRecords/{callRecord-id}/sessions/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: callRecord-id
+    in: path
+    description: The unique identifier of callRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callRecord
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /communications/callRecords/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /communications/callRecords/microsoft.graph.callRecords.getDirectRoutingCalls(fromDateTime={fromDateTime},toDateTime={toDateTime})
+  path_description: Provides operations to call the getDirectRoutingCalls method.
+  path_parameters:
+  - name: fromDateTime
+    in: path
+    description: 'Usage: fromDateTime={fromDateTime}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+      type: string
+      format: date-time
+      nullable: true
+  - name: toDateTime
+    in: path
+    description: 'Usage: toDateTime={toDateTime}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+      type: string
+      format: date-time
+      nullable: true
+  methods:
+  - method: GET
+    summary: Invoke function getDirectRoutingCalls
+    description: Get a log of direct routing calls as a collection of directRoutingLogRow entries.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    requestBody: null
+- path: /communications/callRecords/microsoft.graph.callRecords.getPstnCalls(fromDateTime={fromDateTime},toDateTime={toDateTime})
+  path_description: Provides operations to call the getPstnCalls method.
+  path_parameters:
+  - name: fromDateTime
+    in: path
+    description: 'Usage: fromDateTime={fromDateTime}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+      type: string
+      format: date-time
+      nullable: true
+  - name: toDateTime
+    in: path
+    description: 'Usage: toDateTime={toDateTime}'
+    required: true
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+      type: string
+      format: date-time
+      nullable: true
+  methods:
+  - method: GET
+    summary: Invoke function getPstnCalls
+    description: Get a log of PSTN calls as a collection of pstnCallLogRow entries.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    requestBody: null
+- path: /communications/calls
+  path_description: Provides operations to manage the calls property of the microsoft.graph.cloudCommunications entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get call
+    description: Retrieve the properties and relationships of a call object.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create call
+    description: 'Create call enables your bot to create a new outgoing peer-to-peer or group call, or join an existing meeting. You need to register the calling bot and go through the list of permissions needed. This API supports the following PSTN scenarios:'
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: call
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            callbackUri:
+              type: string
+              description: The callback URL on which callbacks are delivered. Must be an HTTPS URL.
+            callChainId:
+              type: string
+              description: A unique identifier for all the participant calls in a conference or a unique identifier for two participant calls in a P2P call.  This identifier must be copied over from Microsoft.Graph.Call.CallChainId.
+              nullable: true
+            callOptions:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callOptions'
+              - type: object
+                nullable: true
+              description: Contains the optional features for the call.
+            callRoutes:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRoute'
+              description: The routing information on how the call was retargeted. Read-only.
+            chatInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatInfo'
+              - type: object
+                nullable: true
+              description: The chat information. Required information for joining a meeting.
+            direction:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callDirection'
+              - type: object
+                nullable: true
+              description: The direction of the call. The possible values are incoming or outgoing. Read-only.
+            incomingContext:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.incomingContext'
+              - type: object
+                nullable: true
+              description: Call context associated with an incoming call.
+            mediaConfig:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.mediaConfig'
+              - type: object
+                nullable: true
+              description: The media configuration. Required.
+            mediaState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callMediaState'
+              - type: object
+                nullable: true
+              description: Read-only. The call media state.
+            meetingInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.meetingInfo'
+              - type: object
+                nullable: true
+              description: The meeting information. Required information for meeting scenarios.
+            myParticipantId:
+              type: string
+              nullable: true
+            requestedModalities:
+              type: array
+              items:
+                anyOf:
+                - $ref: '#/components/schemas/microsoft.graph.modality'
+                - type: object
+                  nullable: true
+              description: 'The list of requested modalities. Possible values are: unknown, audio, video, videoBasedScreenSharing, data.'
+            resultInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.resultInfo'
+              - type: object
+                nullable: true
+              description: The result information. For example, the result can hold termination reason. Read-only.
+            source:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.participantInfo'
+              - type: object
+                nullable: true
+              description: The originator of the call.
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callState'
+              - type: object
+                nullable: true
+              description: 'The call state. Possible values are: incoming, establishing, ringing, established, hold, transferring, transferAccepted, redirecting, terminating, terminated. Read-only.'
+            subject:
+              type: string
+              description: The subject of the conversation.
+              nullable: true
+            targets:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.invitationParticipantInfo'
+              description: The targets of the call. Required information for creating peer to peer call.
+            tenantId:
+              type: string
+              nullable: true
+            toneInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.toneInfo'
+              - type: object
+                nullable: true
+            transcription:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callTranscriptionInfo'
+              - type: object
+                nullable: true
+              description: The transcription information for the call. Read-only.
+            audioRoutingGroups:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.audioRoutingGroup'
+              x-ms-navigationProperty: true
+            contentSharingSessions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.contentSharingSession'
+              x-ms-navigationProperty: true
+            operations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.commsOperation'
+              x-ms-navigationProperty: true
+            participants:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.participant'
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.call'
+- path: /communications/calls/{call-id}
+  path_description: Provides operations to manage the calls property of the microsoft.graph.cloudCommunications entity.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: GET
+    summary: Get call
+    description: Retrieve the properties and relationships of a call object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property calls in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: call
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            callbackUri:
+              type: string
+              description: The callback URL on which callbacks are delivered. Must be an HTTPS URL.
+            callChainId:
+              type: string
+              description: A unique identifier for all the participant calls in a conference or a unique identifier for two participant calls in a P2P call.  This identifier must be copied over from Microsoft.Graph.Call.CallChainId.
+              nullable: true
+            callOptions:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callOptions'
+              - type: object
+                nullable: true
+              description: Contains the optional features for the call.
+            callRoutes:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRoute'
+              description: The routing information on how the call was retargeted. Read-only.
+            chatInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatInfo'
+              - type: object
+                nullable: true
+              description: The chat information. Required information for joining a meeting.
+            direction:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callDirection'
+              - type: object
+                nullable: true
+              description: The direction of the call. The possible values are incoming or outgoing. Read-only.
+            incomingContext:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.incomingContext'
+              - type: object
+                nullable: true
+              description: Call context associated with an incoming call.
+            mediaConfig:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.mediaConfig'
+              - type: object
+                nullable: true
+              description: The media configuration. Required.
+            mediaState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callMediaState'
+              - type: object
+                nullable: true
+              description: Read-only. The call media state.
+            meetingInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.meetingInfo'
+              - type: object
+                nullable: true
+              description: The meeting information. Required information for meeting scenarios.
+            myParticipantId:
+              type: string
+              nullable: true
+            requestedModalities:
+              type: array
+              items:
+                anyOf:
+                - $ref: '#/components/schemas/microsoft.graph.modality'
+                - type: object
+                  nullable: true
+              description: 'The list of requested modalities. Possible values are: unknown, audio, video, videoBasedScreenSharing, data.'
+            resultInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.resultInfo'
+              - type: object
+                nullable: true
+              description: The result information. For example, the result can hold termination reason. Read-only.
+            source:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.participantInfo'
+              - type: object
+                nullable: true
+              description: The originator of the call.
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callState'
+              - type: object
+                nullable: true
+              description: 'The call state. Possible values are: incoming, establishing, ringing, established, hold, transferring, transferAccepted, redirecting, terminating, terminated. Read-only.'
+            subject:
+              type: string
+              description: The subject of the conversation.
+              nullable: true
+            targets:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.invitationParticipantInfo'
+              description: The targets of the call. Required information for creating peer to peer call.
+            tenantId:
+              type: string
+              nullable: true
+            toneInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.toneInfo'
+              - type: object
+                nullable: true
+            transcription:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.callTranscriptionInfo'
+              - type: object
+                nullable: true
+              description: The transcription information for the call. Read-only.
+            audioRoutingGroups:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.audioRoutingGroup'
+              x-ms-navigationProperty: true
+            contentSharingSessions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.contentSharingSession'
+              x-ms-navigationProperty: true
+            operations:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.commsOperation'
+              x-ms-navigationProperty: true
+            participants:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.participant'
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.call'
+  - method: DELETE
+    summary: Delete call
+    description: Delete or hang up an active call. For group calls, this will only delete your call leg and the underlying group call will still continue.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/calls/{call-id}/audioRoutingGroups
+  path_description: Provides operations to manage the audioRoutingGroups property of the microsoft.graph.call entity.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: GET
+    summary: List audioRoutingGroups
+    description: Retrieve a list of audioRoutingGroup objects.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create audioRoutingGroup
+    description: Create a new audioRoutingGroup.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: audioRoutingGroup
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            receivers:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: List of receiving participant ids.
+            routingMode:
+              $ref: '#/components/schemas/microsoft.graph.routingMode'
+            sources:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: List of source participant ids.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.audioRoutingGroup'
+- path: /communications/calls/{call-id}/audioRoutingGroups/{audioRoutingGroup-id}
+  path_description: Provides operations to manage the audioRoutingGroups property of the microsoft.graph.call entity.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  - name: audioRoutingGroup-id
+    in: path
+    description: The unique identifier of audioRoutingGroup
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: audioRoutingGroup
+  methods:
+  - method: GET
+    summary: Get audioRoutingGroup
+    description: Retrieve the properties and relationships of an audioRoutingGroup object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update audioRoutingGroup
+    description: Modify sources and receivers of an audioRoutingGroup.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: audioRoutingGroup
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            receivers:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: List of receiving participant ids.
+            routingMode:
+              $ref: '#/components/schemas/microsoft.graph.routingMode'
+            sources:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: List of source participant ids.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.audioRoutingGroup'
+  - method: DELETE
+    summary: Delete audioRoutingGroup
+    description: Delete the specified audioRoutingGroup.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/calls/{call-id}/audioRoutingGroups/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /communications/calls/{call-id}/contentSharingSessions
+  path_description: Provides operations to manage the contentSharingSessions property of the microsoft.graph.call entity.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: GET
+    summary: List contentSharingSessions
+    description: Retrieve a list of contentSharingSession objects in a call.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to contentSharingSessions for communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: contentSharingSession
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.contentSharingSession'
+- path: /communications/calls/{call-id}/contentSharingSessions/{contentSharingSession-id}
+  path_description: Provides operations to manage the contentSharingSessions property of the microsoft.graph.call entity.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  - name: contentSharingSession-id
+    in: path
+    description: The unique identifier of contentSharingSession
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: contentSharingSession
+  methods:
+  - method: GET
+    summary: Get contentSharingSession
+    description: Retrieve the properties of a contentSharingSession object in a call.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property contentSharingSessions in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: contentSharingSession
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.contentSharingSession'
+  - method: DELETE
+    summary: Delete navigation property contentSharingSessions for communications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/calls/{call-id}/contentSharingSessions/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /communications/calls/{call-id}/addLargeGalleryView
+  path_description: Provides operations to call the addLargeGalleryView method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action addLargeGalleryView
+    description: Add the large gallery view to a call.  For details about how to identify a large gallery view participant in a roster so that you can retrieve the relevant data to subscribe to the video feed, see Identify large gallery view participants in a roster.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          clientContext:
+            type: string
+            nullable: true
+- path: /communications/calls/{call-id}/answer
+  path_description: Provides operations to call the answer method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action answer
+    description: 'Enable a bot to answer an incoming call. The incoming call request can be an invitation from a participant in a group call or a peer-to-peer call. If an invitation to a group call is received, the notification contains the chatInfo and meetingInfo parameters. The bot is expected to answer, reject, or redirect the call before the call times out. The current timeout value is 15 seconds for regular scenarios and 5 seconds for policy-based recording scenarios. This API supports the following PSTN scenarios:'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          callbackUri:
+            type: string
+          mediaConfig:
+            $ref: '#/components/schemas/microsoft.graph.mediaConfig'
+          acceptedModalities:
+            type: array
+            items:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.modality'
+              - type: object
+                nullable: true
+          participantCapacity:
+            maximum: 2147483647
+            minimum: -2147483648
+            type: number
+            format: int32
+            nullable: true
+          callOptions:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.incomingCallOptions'
+            - type: object
+              nullable: true
+- path: /communications/calls/{call-id}/cancelMediaProcessing
+  path_description: Provides operations to call the cancelMediaProcessing method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action cancelMediaProcessing
+    description: Cancels processing for any in-progress media operations. Media operations refer to the IVR operations playPrompt and recordResponse, which are by default queued to process in order. The cancelMediaProcessing method cancels any operation that is in-process as well as operations that are queued. For example, this method can be used to clean up the IVR operation queue for a new media operation. However, it will not cancel a subscribeToTone operation because it operates independent of any operation queue.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          clientContext:
+            type: string
+            nullable: true
+- path: /communications/calls/{call-id}/changeScreenSharingRole
+  path_description: Provides operations to call the changeScreenSharingRole method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action changeScreenSharingRole
+    description: Allow applications to share screen content with the participants of a group call.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          role:
+            $ref: '#/components/schemas/microsoft.graph.screenSharingRole'
+- path: /communications/calls/{call-id}/keepAlive
+  path_description: Provides operations to call the keepAlive method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action keepAlive
+    description: Make a request to this API every 15 to 45 minutes to ensure that an ongoing call remains active. A call that does not receive this request within 45 minutes is considered inactive and will subsequently end. At least one successful request must be made within 45 minutes of the previous request, or the start of the call. We recommend that you send a request in shorter time intervals (every 15 minutes). Make sure that these requests are successful to prevent the call from timing out and ending. Attempting to send a request to a call that has already ended will result in a 404 Not-Found error. The resources related to the call should be cleaned up on the application side.
+    parameters: []
+    requestBody: null
+- path: /communications/calls/{call-id}/mute
+  path_description: Provides operations to call the mute method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action mute
+    description: Allows the application to mute itself. This is a server mute, meaning that the server will drop all audio packets for this participant, even if the participant continues to stream audio. For more details about how to handle mute operations, see muteParticipantOperation
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          clientContext:
+            type: string
+            nullable: true
+- path: /communications/calls/{call-id}/playPrompt
+  path_description: Provides operations to call the playPrompt method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action playPrompt
+    description: Play a prompt in the call. For more information about how to handle operations, see commsOperation
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          prompts:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.prompt'
+          clientContext:
+            type: string
+            nullable: true
+- path: /communications/calls/{call-id}/recordResponse
+  path_description: Provides operations to call the recordResponse method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action recordResponse
+    description: 'Records a short audio response from the caller.
+
+      A bot can utilize this to capture a voice response from a caller after they are prompted for a response. For further information on how to handle operations, please review commsOperation This action is not intended to record the entire call. The maximum length of recording is 2 minutes. The recording is not saved permanently by the Cloud Communications Platform and is discarded shortly after the call ends. The bot must download the recording promptly after the recording operation finishes by using the recordingLocation value that''s given in the completed notification.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          prompts:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.prompt'
+          bargeInAllowed:
+            type: boolean
+            default: false
+            nullable: true
+          initialSilenceTimeoutInSeconds:
+            maximum: 2147483647
+            minimum: -2147483648
+            type: number
+            format: int32
+            nullable: true
+          maxSilenceTimeoutInSeconds:
+            maximum: 2147483647
+            minimum: -2147483648
+            type: number
+            format: int32
+            nullable: true
+          maxRecordDurationInSeconds:
+            maximum: 2147483647
+            minimum: -2147483648
+            type: number
+            format: int32
+            nullable: true
+          playBeep:
+            type: boolean
+            default: false
+            nullable: true
+          stopTones:
+            type: array
+            items:
+              type: string
+              nullable: true
+          clientContext:
+            type: string
+            nullable: true
+- path: /communications/calls/{call-id}/redirect
+  path_description: Provides operations to call the redirect method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action redirect
+    description: Redirect an incoming call that hasn't been answered or rejected yet. The terms 'redirecting' and 'forwarding' a call are used interchangeably. The bot is expected to redirect the call before the call times out. The current timeout value is 15 seconds.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          targets:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.invitationParticipantInfo'
+          timeout:
+            maximum: 2147483647
+            minimum: -2147483648
+            type: number
+            format: int32
+            nullable: true
+          callbackUri:
+            type: string
+            nullable: true
+- path: /communications/calls/{call-id}/reject
+  path_description: Provides operations to call the reject method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action reject
+    description: Enable a bot to reject an incoming call. The incoming call request can be an invite from a participant in a group call or a peer-to-peer call. If an invite to a group call is received, the notification will contain the chatInfo and meetingInfo parameters. The bot is expected to answer or reject the call before the call times out. The current timeout value is 15 seconds. This API does not end existing calls that have already been answered. Use delete call to end a call.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          reason:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.rejectReason'
+            - type: object
+              nullable: true
+          callbackUri:
+            type: string
+            nullable: true
+- path: /communications/calls/{call-id}/sendDtmfTones
+  path_description: Provides operations to call the sendDtmfTones method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action sendDtmfTones
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          tones:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.tone'
+          delayBetweenTonesMs:
+            maximum: 2147483647
+            minimum: -2147483648
+            type: number
+            format: int32
+            nullable: true
+          clientContext:
+            type: string
+            nullable: true
+- path: /communications/calls/{call-id}/subscribeToTone
+  path_description: Provides operations to call the subscribeToTone method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action subscribeToTone
+    description: Subscribe to DTMF (dual-tone multi-frequency signaling) which allows you to be notified when the user presses keys on a 'dialpad'.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          clientContext:
+            type: string
+            nullable: true
+- path: /communications/calls/{call-id}/transfer
+  path_description: Provides operations to call the transfer method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action transfer
+    description: Transfer an active peer-to-peer call or group call. A consultative transfer means that the transferor can inform the person they want to transfer the call to (the transferee), before the transfer is made. This is opposed to transfering the call directly.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          transferTarget:
+            $ref: '#/components/schemas/microsoft.graph.invitationParticipantInfo'
+          transferee:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.participantInfo'
+            - type: object
+              nullable: true
+- path: /communications/calls/{call-id}/unmute
+  path_description: Provides operations to call the unmute method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action unmute
+    description: Allow the application to unmute itself. This is a server unmute, meaning that the server will start sending audio packets for this participant to other participants again. For more information about how to handle unmute operations, see unmuteParticipantOperation.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          clientContext:
+            type: string
+            nullable: true
+- path: /communications/calls/{call-id}/updateRecordingStatus
+  path_description: Provides operations to call the updateRecordingStatus method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action updateRecordingStatus
+    description: Update the application's recording status associated with a call. This requires the use of the Teams policy-based recording solution.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          status:
+            $ref: '#/components/schemas/microsoft.graph.recordingStatus'
+          clientContext:
+            type: string
+            nullable: true
+- path: /communications/calls/{call-id}/operations
+  path_description: Provides operations to manage the operations property of the microsoft.graph.call entity.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: GET
+    summary: Get addLargeGalleryViewOperation
+    description: Get the status of an operation that adds the large gallery view to a call.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to operations for communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: commsOperation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            clientContext:
+              type: string
+              description: Unique Client Context string. Max limit is 256 chars.
+              nullable: true
+            resultInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.resultInfo'
+              - type: object
+                nullable: true
+              description: The result information. Read-only.
+            status:
+              $ref: '#/components/schemas/microsoft.graph.operationStatus'
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.addLargeGalleryViewOperation': '#/components/schemas/microsoft.graph.addLargeGalleryViewOperation'
+              '#microsoft.graph.cancelMediaProcessingOperation': '#/components/schemas/microsoft.graph.cancelMediaProcessingOperation'
+              '#microsoft.graph.inviteParticipantsOperation': '#/components/schemas/microsoft.graph.inviteParticipantsOperation'
+              '#microsoft.graph.muteParticipantOperation': '#/components/schemas/microsoft.graph.muteParticipantOperation'
+              '#microsoft.graph.playPromptOperation': '#/components/schemas/microsoft.graph.playPromptOperation'
+              '#microsoft.graph.recordOperation': '#/components/schemas/microsoft.graph.recordOperation'
+              '#microsoft.graph.sendDtmfTonesOperation': '#/components/schemas/microsoft.graph.sendDtmfTonesOperation'
+              '#microsoft.graph.startHoldMusicOperation': '#/components/schemas/microsoft.graph.startHoldMusicOperation'
+              '#microsoft.graph.stopHoldMusicOperation': '#/components/schemas/microsoft.graph.stopHoldMusicOperation'
+              '#microsoft.graph.subscribeToToneOperation': '#/components/schemas/microsoft.graph.subscribeToToneOperation'
+              '#microsoft.graph.unmuteParticipantOperation': '#/components/schemas/microsoft.graph.unmuteParticipantOperation'
+              '#microsoft.graph.updateRecordingStatusOperation': '#/components/schemas/microsoft.graph.updateRecordingStatusOperation'
+- path: /communications/calls/{call-id}/operations/{commsOperation-id}
+  path_description: Provides operations to manage the operations property of the microsoft.graph.call entity.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  - name: commsOperation-id
+    in: path
+    description: The unique identifier of commsOperation
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: commsOperation
+  methods:
+  - method: GET
+    summary: Get addLargeGalleryViewOperation
+    description: Get the status of an operation that adds the large gallery view to a call.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property operations in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: commsOperation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            clientContext:
+              type: string
+              description: Unique Client Context string. Max limit is 256 chars.
+              nullable: true
+            resultInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.resultInfo'
+              - type: object
+                nullable: true
+              description: The result information. Read-only.
+            status:
+              $ref: '#/components/schemas/microsoft.graph.operationStatus'
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.addLargeGalleryViewOperation': '#/components/schemas/microsoft.graph.addLargeGalleryViewOperation'
+              '#microsoft.graph.cancelMediaProcessingOperation': '#/components/schemas/microsoft.graph.cancelMediaProcessingOperation'
+              '#microsoft.graph.inviteParticipantsOperation': '#/components/schemas/microsoft.graph.inviteParticipantsOperation'
+              '#microsoft.graph.muteParticipantOperation': '#/components/schemas/microsoft.graph.muteParticipantOperation'
+              '#microsoft.graph.playPromptOperation': '#/components/schemas/microsoft.graph.playPromptOperation'
+              '#microsoft.graph.recordOperation': '#/components/schemas/microsoft.graph.recordOperation'
+              '#microsoft.graph.sendDtmfTonesOperation': '#/components/schemas/microsoft.graph.sendDtmfTonesOperation'
+              '#microsoft.graph.startHoldMusicOperation': '#/components/schemas/microsoft.graph.startHoldMusicOperation'
+              '#microsoft.graph.stopHoldMusicOperation': '#/components/schemas/microsoft.graph.stopHoldMusicOperation'
+              '#microsoft.graph.subscribeToToneOperation': '#/components/schemas/microsoft.graph.subscribeToToneOperation'
+              '#microsoft.graph.unmuteParticipantOperation': '#/components/schemas/microsoft.graph.unmuteParticipantOperation'
+              '#microsoft.graph.updateRecordingStatusOperation': '#/components/schemas/microsoft.graph.updateRecordingStatusOperation'
+  - method: DELETE
+    summary: Delete navigation property operations for communications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/calls/{call-id}/operations/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /communications/calls/{call-id}/participants
+  path_description: Provides operations to manage the participants property of the microsoft.graph.call entity.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: GET
+    summary: List participants
+    description: Retrieve a list of participant objects in the call.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to participants for communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: participant
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            info:
+              $ref: '#/components/schemas/microsoft.graph.participantInfo'
+            isInLobby:
+              type: boolean
+              description: true if the participant is in lobby.
+            isMuted:
+              type: boolean
+              description: true if the participant is muted (client or server muted).
+            mediaStreams:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.mediaStream'
+              description: The list of media streams.
+            metadata:
+              type: string
+              description: A blob of data provided by the participant in the roster.
+              nullable: true
+            recordingInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.recordingInfo'
+              - type: object
+                nullable: true
+              description: Information about whether the participant has recording capability.
+            removedState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.removedState'
+              - type: object
+                nullable: true
+              description: Indicates the reason why the participant was removed from the roster.
+            restrictedExperience:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.onlineMeetingRestricted'
+              - type: object
+                nullable: true
+              description: Indicates the reason or reasons media content from this participant is restricted.
+            rosterSequenceNumber:
+              type: number
+              description: Indicates the roster sequence number in which the participant was last updated.
+              format: int64
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.participant'
+- path: /communications/calls/{call-id}/participants/{participant-id}
+  path_description: Provides operations to manage the participants property of the microsoft.graph.call entity.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  - name: participant-id
+    in: path
+    description: The unique identifier of participant
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: participant
+  methods:
+  - method: GET
+    summary: Get participant
+    description: Retrieve the properties and relationships of a participant object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property participants in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: participant
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            info:
+              $ref: '#/components/schemas/microsoft.graph.participantInfo'
+            isInLobby:
+              type: boolean
+              description: true if the participant is in lobby.
+            isMuted:
+              type: boolean
+              description: true if the participant is muted (client or server muted).
+            mediaStreams:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.mediaStream'
+              description: The list of media streams.
+            metadata:
+              type: string
+              description: A blob of data provided by the participant in the roster.
+              nullable: true
+            recordingInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.recordingInfo'
+              - type: object
+                nullable: true
+              description: Information about whether the participant has recording capability.
+            removedState:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.removedState'
+              - type: object
+                nullable: true
+              description: Indicates the reason why the participant was removed from the roster.
+            restrictedExperience:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.onlineMeetingRestricted'
+              - type: object
+                nullable: true
+              description: Indicates the reason or reasons media content from this participant is restricted.
+            rosterSequenceNumber:
+              type: number
+              description: Indicates the roster sequence number in which the participant was last updated.
+              format: int64
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.participant'
+  - method: DELETE
+    summary: Delete participant
+    description: 'Delete a specific participant in a call. In some situations, it is appropriate for an application to remove a participant from an active call. This action can be done before or after the participant answers the call. When an active caller is removed, they are immediately dropped from the call with no pre- or post-removal notification. When an invited participant is removed, any outstanding add participant request is canceled. '
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/calls/{call-id}/participants/{participant-id}/mute
+  path_description: Provides operations to call the mute method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  - name: participant-id
+    in: path
+    description: The unique identifier of participant
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: participant
+  methods:
+  - method: POST
+    summary: Invoke action mute
+    description: Mute a specific participant in the call. This is a server mute, meaning that the server will drop all audio packets for this participant, even if the participant continues to stream audio. For more information about how to handle mute operations, see muteParticipantOperation.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          clientContext:
+            type: string
+            nullable: true
+- path: /communications/calls/{call-id}/participants/{participant-id}/startHoldMusic
+  path_description: Provides operations to call the startHoldMusic method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  - name: participant-id
+    in: path
+    description: The unique identifier of participant
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: participant
+  methods:
+  - method: POST
+    summary: Invoke action startHoldMusic
+    description: Put a participant on hold and play music in the background.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          customPrompt:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.prompt'
+            - type: object
+              nullable: true
+          clientContext:
+            type: string
+            nullable: true
+- path: /communications/calls/{call-id}/participants/{participant-id}/stopHoldMusic
+  path_description: Provides operations to call the stopHoldMusic method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  - name: participant-id
+    in: path
+    description: The unique identifier of participant
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: participant
+  methods:
+  - method: POST
+    summary: Invoke action stopHoldMusic
+    description: Reincorporate a participant previously put on hold to the call.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          clientContext:
+            type: string
+            nullable: true
+- path: /communications/calls/{call-id}/participants/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /communications/calls/{call-id}/participants/invite
+  path_description: Provides operations to call the invite method.
+  path_parameters:
+  - name: call-id
+    in: path
+    description: The unique identifier of call
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: call
+  methods:
+  - method: POST
+    summary: Invoke action invite
+    description: Invite participants to the active call. For more information about how to handle operations, see commsOperation.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          participants:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.invitationParticipantInfo'
+          clientContext:
+            type: string
+            nullable: true
+- path: /communications/calls/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /communications/calls/logTeleconferenceDeviceQuality
+  path_description: Provides operations to call the logTeleconferenceDeviceQuality method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action logTeleconferenceDeviceQuality
+    description: Log video teleconferencing device quality data. The Cloud Video Interop (CVI) bot represents video teleconferencing (VTC) devices and acts as a back-to-back agent for a VTC device in a conference call. Because a CVI bot is in the middle of the VTC and Microsoft Teams infrastructure as a VTC proxy, it has two media legs. One media leg is between the CVI bot and Teams infrastructure, such as Teams conference server or a Teams client. The other media leg is between the CVI bot and the VTC device.  The third-party partners own the VTC media leg and the Teams infrastructure cannot access the quality data of the third-party call leg.  This method is only for the CVI partners to provide their media quality data.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          quality:
+            $ref: '#/components/schemas/microsoft.graph.teleconferenceDeviceQuality'
+- path: /communications/getPresencesByUserId
+  path_description: Provides operations to call the getPresencesByUserId method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action getPresencesByUserId
+    description: Get the presence information for multiple users.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          ids:
+            type: array
+            items:
+              type: string
+- path: /communications/onlineMeetings
+  path_description: Provides operations to manage the onlineMeetings property of the microsoft.graph.cloudCommunications entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get onlineMeeting
+    description: 'Retrieve the properties and relationships of an onlineMeeting object. For example, you can: Teams live event attendee report (deprecated) and Teams live event recordings (deprecated) are online meeting artifacts. For more information, see Online meeting artifacts and permissions.'
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to onlineMeetings for communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.onlineMeetingBase'
+        - title: onlineMeeting
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            attendeeReport:
+              type: string
+              description: The content stream of the attendee report of a Microsoft Teams live event. Read-only.
+              format: base64url
+              nullable: true
+            broadcastSettings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.broadcastMeetingSettings'
+              - type: object
+                nullable: true
+              description: Settings related to a live event.
+            creationDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The meeting creation time in UTC. Read-only.
+              format: date-time
+              nullable: true
+            endDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The meeting end time in UTC. Required when you create an online meeting.
+              format: date-time
+              nullable: true
+            externalId:
+              type: string
+              nullable: true
+            isBroadcast:
+              type: boolean
+              description: Indicates whether this meeting is a Teams live event.
+              nullable: true
+            meetingTemplateId:
+              type: string
+              description: The ID of the meeting template.
+              nullable: true
+            participants:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.meetingParticipants'
+              - type: object
+                nullable: true
+              description: The participants associated with the online meeting, including the organizer and the attendees.
+            startDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The meeting start time in UTC.
+              format: date-time
+              nullable: true
+            recordings:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRecording'
+              description: The recordings of an online meeting. Read-only.
+              x-ms-navigationProperty: true
+            transcripts:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callTranscript'
+              description: The transcripts of an online meeting. Read-only.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.onlineMeeting'
+        x-ms-discriminator-value: '#microsoft.graph.onlineMeeting'
+- path: /communications/onlineMeetings/{onlineMeeting-id}
+  path_description: Provides operations to manage the onlineMeetings property of the microsoft.graph.cloudCommunications entity.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  methods:
+  - method: GET
+    summary: Get onlineMeetings from communications
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property onlineMeetings in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.onlineMeetingBase'
+        - title: onlineMeeting
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            attendeeReport:
+              type: string
+              description: The content stream of the attendee report of a Microsoft Teams live event. Read-only.
+              format: base64url
+              nullable: true
+            broadcastSettings:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.broadcastMeetingSettings'
+              - type: object
+                nullable: true
+              description: Settings related to a live event.
+            creationDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The meeting creation time in UTC. Read-only.
+              format: date-time
+              nullable: true
+            endDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The meeting end time in UTC. Required when you create an online meeting.
+              format: date-time
+              nullable: true
+            externalId:
+              type: string
+              nullable: true
+            isBroadcast:
+              type: boolean
+              description: Indicates whether this meeting is a Teams live event.
+              nullable: true
+            meetingTemplateId:
+              type: string
+              description: The ID of the meeting template.
+              nullable: true
+            participants:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.meetingParticipants'
+              - type: object
+                nullable: true
+              description: The participants associated with the online meeting, including the organizer and the attendees.
+            startDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The meeting start time in UTC.
+              format: date-time
+              nullable: true
+            recordings:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callRecording'
+              description: The recordings of an online meeting. Read-only.
+              x-ms-navigationProperty: true
+            transcripts:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.callTranscript'
+              description: The transcripts of an online meeting. Read-only.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.onlineMeeting'
+        x-ms-discriminator-value: '#microsoft.graph.onlineMeeting'
+  - method: DELETE
+    summary: Delete navigation property onlineMeetings for communications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/attendanceReports
+  path_description: Provides operations to manage the attendanceReports property of the microsoft.graph.onlineMeetingBase entity.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  methods:
+  - method: GET
+    summary: Get attendanceReports from communications
+    description: The attendance reports of an online meeting. Read-only.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to attendanceReports for communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: meetingAttendanceReport
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            meetingEndDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the meeting ended. Read-only.
+              format: date-time
+              nullable: true
+            meetingStartDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the meeting started. Read-only.
+              format: date-time
+              nullable: true
+            totalParticipantCount:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Total number of participants. Read-only.
+              format: int32
+              nullable: true
+            attendanceRecords:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.attendanceRecord'
+              description: List of attendance records of an attendance report. Read-only.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.meetingAttendanceReport'
+- path: /communications/onlineMeetings/{onlineMeeting-id}/attendanceReports/{meetingAttendanceReport-id}
+  path_description: Provides operations to manage the attendanceReports property of the microsoft.graph.onlineMeetingBase entity.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  - name: meetingAttendanceReport-id
+    in: path
+    description: The unique identifier of meetingAttendanceReport
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: meetingAttendanceReport
+  methods:
+  - method: GET
+    summary: Get attendanceReports from communications
+    description: The attendance reports of an online meeting. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property attendanceReports in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: meetingAttendanceReport
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            meetingEndDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the meeting ended. Read-only.
+              format: date-time
+              nullable: true
+            meetingStartDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: UTC time when the meeting started. Read-only.
+              format: date-time
+              nullable: true
+            totalParticipantCount:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Total number of participants. Read-only.
+              format: int32
+              nullable: true
+            attendanceRecords:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.attendanceRecord'
+              description: List of attendance records of an attendance report. Read-only.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.meetingAttendanceReport'
+  - method: DELETE
+    summary: Delete navigation property attendanceReports for communications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/attendanceReports/{meetingAttendanceReport-id}/attendanceRecords
+  path_description: Provides operations to manage the attendanceRecords property of the microsoft.graph.meetingAttendanceReport entity.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  - name: meetingAttendanceReport-id
+    in: path
+    description: The unique identifier of meetingAttendanceReport
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: meetingAttendanceReport
+  methods:
+  - method: GET
+    summary: Get attendanceRecords from communications
+    description: List of attendance records of an attendance report. Read-only.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to attendanceRecords for communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: attendanceRecord
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            attendanceIntervals:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.attendanceInterval'
+              description: List of time periods between joining and leaving a meeting.
+            emailAddress:
+              type: string
+              description: Email address of the user associated with this attendance record.
+              nullable: true
+            identity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identity'
+              - type: object
+                nullable: true
+              description: Identity of the user associated with this attendance record.
+            role:
+              type: string
+              description: 'Role of the attendee. Possible values are: None, Attendee, Presenter, and Organizer.'
+              nullable: true
+            totalAttendanceInSeconds:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Total duration of the attendances in seconds.
+              format: int32
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.attendanceRecord'
+- path: /communications/onlineMeetings/{onlineMeeting-id}/attendanceReports/{meetingAttendanceReport-id}/attendanceRecords/{attendanceRecord-id}
+  path_description: Provides operations to manage the attendanceRecords property of the microsoft.graph.meetingAttendanceReport entity.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  - name: meetingAttendanceReport-id
+    in: path
+    description: The unique identifier of meetingAttendanceReport
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: meetingAttendanceReport
+  - name: attendanceRecord-id
+    in: path
+    description: The unique identifier of attendanceRecord
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: attendanceRecord
+  methods:
+  - method: GET
+    summary: Get attendanceRecords from communications
+    description: List of attendance records of an attendance report. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property attendanceRecords in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: attendanceRecord
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            attendanceIntervals:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.attendanceInterval'
+              description: List of time periods between joining and leaving a meeting.
+            emailAddress:
+              type: string
+              description: Email address of the user associated with this attendance record.
+              nullable: true
+            identity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identity'
+              - type: object
+                nullable: true
+              description: Identity of the user associated with this attendance record.
+            role:
+              type: string
+              description: 'Role of the attendee. Possible values are: None, Attendee, Presenter, and Organizer.'
+              nullable: true
+            totalAttendanceInSeconds:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Total duration of the attendances in seconds.
+              format: int32
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.attendanceRecord'
+  - method: DELETE
+    summary: Delete navigation property attendanceRecords for communications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/attendanceReports/{meetingAttendanceReport-id}/attendanceRecords/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  - name: meetingAttendanceReport-id
+    in: path
+    description: The unique identifier of meetingAttendanceReport
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: meetingAttendanceReport
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/attendanceReports/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/attendeeReport
+  path_description: Provides operations to manage the media for the cloudCommunications entity.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  methods:
+  - method: GET
+    summary: Get attendeeReport for the navigation property onlineMeetings from communications
+    description: The content stream of the attendee report of a Microsoft Teams live event. Read-only.
+    parameters: []
+    requestBody: null
+  - method: PUT
+    summary: Update attendeeReport for the navigation property onlineMeetings in communications
+    description: The content stream of the attendee report of a Microsoft Teams live event. Read-only.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete attendeeReport for the navigation property onlineMeetings in communications
+    description: The content stream of the attendee report of a Microsoft Teams live event. Read-only.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/getVirtualAppointmentJoinWebUrl()
+  path_description: Provides operations to call the getVirtualAppointmentJoinWebUrl method.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  methods:
+  - method: GET
+    summary: Invoke function getVirtualAppointmentJoinWebUrl
+    description: Get a join web URL for a Microsoft Virtual Appointment. This web URL includes enhanced business-to-customer experiences such as mobile browser join and virtual lobby rooms. With Teams Premium, you can configure a custom lobby room experience for attendees by adding your company logo and access the Virtual Appointments usage report for organizational analytics.
+    parameters: []
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/sendVirtualAppointmentReminderSms
+  path_description: Provides operations to call the sendVirtualAppointmentReminderSms method.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  methods:
+  - method: POST
+    summary: Invoke action sendVirtualAppointmentReminderSms
+    description: Send an SMS reminder to external attendees for a Teams virtual appointment. This feature requires Teams premium and attendees must have a valid United States phone number to receive SMS notifications.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          remindBeforeTimeInMinutesType:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.remindBeforeTimeInMinutesType'
+            - type: object
+              nullable: true
+          attendees:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.attendeeNotificationInfo'
+- path: /communications/onlineMeetings/{onlineMeeting-id}/sendVirtualAppointmentSms
+  path_description: Provides operations to call the sendVirtualAppointmentSms method.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  methods:
+  - method: POST
+    summary: Invoke action sendVirtualAppointmentSms
+    description: Send an SMS notification to external attendees when a Teams virtual appointment is confirmed, rescheduled, or canceled. This feature requires Teams premium. Attendees must have a valid United States phone number to receive these SMS notifications.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          messageType:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.virtualAppointmentMessageType'
+            - type: object
+              nullable: true
+          attendees:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.attendeeNotificationInfo'
+- path: /communications/onlineMeetings/{onlineMeeting-id}/recordings
+  path_description: Provides operations to manage the recordings property of the microsoft.graph.onlineMeeting entity.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  methods:
+  - method: GET
+    summary: Get recordings from communications
+    description: The recordings of an online meeting. Read-only.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to recordings for communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: callRecording
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            callId:
+              type: string
+              description: The unique identifier for the call that is related to this recording. Read-only.
+              nullable: true
+            content:
+              type: string
+              description: The content of the recording. Read-only.
+              format: base64url
+              nullable: true
+            contentCorrelationId:
+              type: string
+              description: The unique identifier that links the transcript with its corresponding recording. Read-only.
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time at which the recording was created. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+              format: date-time
+              nullable: true
+            endDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time at which the recording ends. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+              format: date-time
+              nullable: true
+            meetingId:
+              type: string
+              description: The unique identifier of the onlineMeeting related to this recording. Read-only.
+              nullable: true
+            meetingOrganizer:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The identity information of the organizer of the onlineMeeting related to this recording. Read-only.
+            recordingContentUrl:
+              type: string
+              description: The URL that can be used to access the content of the recording. Read-only.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.callRecording'
+- path: /communications/onlineMeetings/{onlineMeeting-id}/recordings/{callRecording-id}
+  path_description: Provides operations to manage the recordings property of the microsoft.graph.onlineMeeting entity.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  - name: callRecording-id
+    in: path
+    description: The unique identifier of callRecording
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callRecording
+  methods:
+  - method: GET
+    summary: Get recordings from communications
+    description: The recordings of an online meeting. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property recordings in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: callRecording
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            callId:
+              type: string
+              description: The unique identifier for the call that is related to this recording. Read-only.
+              nullable: true
+            content:
+              type: string
+              description: The content of the recording. Read-only.
+              format: base64url
+              nullable: true
+            contentCorrelationId:
+              type: string
+              description: The unique identifier that links the transcript with its corresponding recording. Read-only.
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time at which the recording was created. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+              format: date-time
+              nullable: true
+            endDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time at which the recording ends. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+              format: date-time
+              nullable: true
+            meetingId:
+              type: string
+              description: The unique identifier of the onlineMeeting related to this recording. Read-only.
+              nullable: true
+            meetingOrganizer:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The identity information of the organizer of the onlineMeeting related to this recording. Read-only.
+            recordingContentUrl:
+              type: string
+              description: The URL that can be used to access the content of the recording. Read-only.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.callRecording'
+  - method: DELETE
+    summary: Delete navigation property recordings for communications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/recordings/{callRecording-id}/content
+  path_description: Provides operations to manage the media for the cloudCommunications entity.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  - name: callRecording-id
+    in: path
+    description: The unique identifier of callRecording
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callRecording
+  methods:
+  - method: GET
+    summary: Get content for the navigation property recordings from communications
+    description: The content of the recording. Read-only.
+    parameters: []
+    requestBody: null
+  - method: PUT
+    summary: Update content for the navigation property recordings in communications
+    description: The content of the recording. Read-only.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete content for the navigation property recordings in communications
+    description: The content of the recording. Read-only.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/recordings/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/recordings/delta()
+  path_description: Provides operations to call the delta method.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  methods:
+  - method: GET
+    summary: Invoke function delta
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/transcripts
+  path_description: Provides operations to manage the transcripts property of the microsoft.graph.onlineMeeting entity.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  methods:
+  - method: GET
+    summary: Get transcripts from communications
+    description: The transcripts of an online meeting. Read-only.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to transcripts for communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: callTranscript
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            callId:
+              type: string
+              description: The unique identifier for the call that is related to this transcript. Read-only.
+              nullable: true
+            content:
+              type: string
+              description: The content of the transcript. Read-only.
+              format: base64url
+              nullable: true
+            contentCorrelationId:
+              type: string
+              description: The unique identifier that links the transcript with its corresponding recording. Read-only.
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time at which the transcript was created. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+              format: date-time
+              nullable: true
+            endDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time at which the transcription ends. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+              format: date-time
+              nullable: true
+            meetingId:
+              type: string
+              description: The unique identifier of the online meeting related to this transcript. Read-only.
+              nullable: true
+            meetingOrganizer:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The identity information of the organizer of the onlineMeeting related to this transcript. Read-only.
+            metadataContent:
+              type: string
+              description: The time-aligned metadata of the utterances in the transcript. Read-only.
+              format: base64url
+              nullable: true
+            transcriptContentUrl:
+              type: string
+              description: The URL that can be used to access the content of the transcript. Read-only.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.callTranscript'
+- path: /communications/onlineMeetings/{onlineMeeting-id}/transcripts/{callTranscript-id}
+  path_description: Provides operations to manage the transcripts property of the microsoft.graph.onlineMeeting entity.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  - name: callTranscript-id
+    in: path
+    description: The unique identifier of callTranscript
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callTranscript
+  methods:
+  - method: GET
+    summary: Get transcripts from communications
+    description: The transcripts of an online meeting. Read-only.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property transcripts in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: callTranscript
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            callId:
+              type: string
+              description: The unique identifier for the call that is related to this transcript. Read-only.
+              nullable: true
+            content:
+              type: string
+              description: The content of the transcript. Read-only.
+              format: base64url
+              nullable: true
+            contentCorrelationId:
+              type: string
+              description: The unique identifier that links the transcript with its corresponding recording. Read-only.
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time at which the transcript was created. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+              format: date-time
+              nullable: true
+            endDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time at which the transcription ends. The timestamp type represents date and time information using ISO 8601 format and is always in UTC. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Read-only.
+              format: date-time
+              nullable: true
+            meetingId:
+              type: string
+              description: The unique identifier of the online meeting related to this transcript. Read-only.
+              nullable: true
+            meetingOrganizer:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.identitySet'
+              - type: object
+                nullable: true
+              description: The identity information of the organizer of the onlineMeeting related to this transcript. Read-only.
+            metadataContent:
+              type: string
+              description: The time-aligned metadata of the utterances in the transcript. Read-only.
+              format: base64url
+              nullable: true
+            transcriptContentUrl:
+              type: string
+              description: The URL that can be used to access the content of the transcript. Read-only.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.callTranscript'
+  - method: DELETE
+    summary: Delete navigation property transcripts for communications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/transcripts/{callTranscript-id}/content
+  path_description: Provides operations to manage the media for the cloudCommunications entity.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  - name: callTranscript-id
+    in: path
+    description: The unique identifier of callTranscript
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callTranscript
+  methods:
+  - method: GET
+    summary: Get content for the navigation property transcripts from communications
+    description: The content of the transcript. Read-only.
+    parameters: []
+    requestBody: null
+  - method: PUT
+    summary: Update content for the navigation property transcripts in communications
+    description: The content of the transcript. Read-only.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete content for the navigation property transcripts in communications
+    description: The content of the transcript. Read-only.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/transcripts/{callTranscript-id}/metadataContent
+  path_description: Provides operations to manage the media for the cloudCommunications entity.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  - name: callTranscript-id
+    in: path
+    description: The unique identifier of callTranscript
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: callTranscript
+  methods:
+  - method: GET
+    summary: Get metadataContent for the navigation property transcripts from communications
+    description: The time-aligned metadata of the utterances in the transcript. Read-only.
+    parameters: []
+    requestBody: null
+  - method: PUT
+    summary: Update metadataContent for the navigation property transcripts in communications
+    description: The time-aligned metadata of the utterances in the transcript. Read-only.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete metadataContent for the navigation property transcripts in communications
+    description: The time-aligned metadata of the utterances in the transcript. Read-only.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/transcripts/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /communications/onlineMeetings/{onlineMeeting-id}/transcripts/delta()
+  path_description: Provides operations to call the delta method.
+  path_parameters:
+  - name: onlineMeeting-id
+    in: path
+    description: The unique identifier of onlineMeeting
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: onlineMeeting
+  methods:
+  - method: GET
+    summary: Invoke function delta
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /communications/onlineMeetings/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /communications/onlineMeetings/createOrGet
+  path_description: Provides operations to call the createOrGet method.
+  path_parameters: []
+  methods:
+  - method: POST
+    summary: Invoke action createOrGet
+    description: 'Create an onlineMeeting object with a custom specified external ID. If the external ID already exists, this API will return the onlineMeeting object with that external ID. '
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          chatInfo:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.chatInfo'
+            - type: object
+              nullable: true
+          endDateTime:
+            pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+            type: string
+            format: date-time
+            nullable: true
+          externalId:
+            type: string
+          participants:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.meetingParticipants'
+            - type: object
+              nullable: true
+          startDateTime:
+            pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+            type: string
+            format: date-time
+            nullable: true
+          subject:
+            type: string
+            nullable: true
+- path: /communications/onlineMeetings/getAllRecordings(meetingOrganizerUserId='@meetingOrganizerUserId',startDateTime=@startDateTime,endDateTime=@endDateTime)
+  path_description: Provides operations to call the getAllRecordings method.
+  path_parameters:
+  - name: meetingOrganizerUserId
+    in: query
+    description: 'Usage: meetingOrganizerUserId=''@meetingOrganizerUserId'''
+    schema:
+      type: string
+      nullable: true
+  - name: startDateTime
+    in: query
+    description: 'Usage: startDateTime=@startDateTime'
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+      type: string
+      format: date-time
+      nullable: true
+  - name: endDateTime
+    in: query
+    description: 'Usage: endDateTime=@endDateTime'
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+      type: string
+      format: date-time
+      nullable: true
+  methods:
+  - method: GET
+    summary: Invoke function getAllRecordings
+    description: 'Get all recordings from scheduled onlineMeeting instances for which the specified user is the organizer. This API currently doesn''t support getting call recordings from channel meetings. You can apply the delta function on getAllRecordings to synchronize and get callRecording resources as they''re added for onlineMeeting instances organized by the specified user. The delta query supports both full synchronization and incremental synchronization. Full synchronization gets all the recordings for online meetings organized by the user. Incremental synchronization gets recordings that are added since the last synchronization. Typically, you perform an initial full synchronization, and then get incremental changes to that recording view periodically. Find more information in the delta query documentation. For more examples, see callRecording: delta. To learn more about using the Microsoft Teams export APIs to export content, see Export content with the Microsoft Teams export
+      APIs.'
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /communications/onlineMeetings/getAllTranscripts(meetingOrganizerUserId='@meetingOrganizerUserId',startDateTime=@startDateTime,endDateTime=@endDateTime)
+  path_description: Provides operations to call the getAllTranscripts method.
+  path_parameters:
+  - name: meetingOrganizerUserId
+    in: query
+    description: 'Usage: meetingOrganizerUserId=''@meetingOrganizerUserId'''
+    schema:
+      type: string
+      nullable: true
+  - name: startDateTime
+    in: query
+    description: 'Usage: startDateTime=@startDateTime'
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+      type: string
+      format: date-time
+      nullable: true
+  - name: endDateTime
+    in: query
+    description: 'Usage: endDateTime=@endDateTime'
+    schema:
+      pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+      type: string
+      format: date-time
+      nullable: true
+  methods:
+  - method: GET
+    summary: Invoke function getAllTranscripts
+    description: 'Get all transcripts from scheduled onlineMeeting instances for which the specified user is the organizer. This API currently doesn''t support getting call transcripts from channel meetings. You can apply the delta function on getAllTranscripts to synchronize and get callTranscript resources as they''re added for onlineMeeting instances organized by the specified user. Delta query supports both full synchronization and incremental synchronization. Full synchronization gets all the transcripts for online meetings organized by the user. Incremental synchronization gets transcripts that are added since the last synchronization. Typically, you perform an initial full synchronization, and then get incremental changes to that recording view periodically. For more information, see delta query. For more examples, see callTranscript: delta. To learn more about using the Microsoft Teams export APIs to export content, see Export content with the Microsoft Teams export APIs.'
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /communications/presences
+  path_description: Provides operations to manage the presences property of the microsoft.graph.cloudCommunications entity.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get presence
+    description: Get a user's presence information.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to presences for communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: presence
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            activity:
+              type: string
+              description: The supplemental information to a user's availability. Possible values are Available, Away, BeRightBack, Busy, DoNotDisturb, InACall, InAConferenceCall, Inactive, InAMeeting, Offline, OffWork, OutOfOffice, PresenceUnknown, Presenting, UrgentInterruptionsOnly.
+              nullable: true
+            availability:
+              type: string
+              description: The base presence information for a user. Possible values are Available, AvailableIdle,  Away, BeRightBack, Busy, BusyIdle, DoNotDisturb, Offline, PresenceUnknown
+              nullable: true
+            statusMessage:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.presenceStatusMessage'
+              - type: object
+                nullable: true
+              description: The presence status message of a user.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.presence'
+- path: /communications/presences/{presence-id}
+  path_description: Provides operations to manage the presences property of the microsoft.graph.cloudCommunications entity.
+  path_parameters:
+  - name: presence-id
+    in: path
+    description: The unique identifier of presence
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: presence
+  methods:
+  - method: GET
+    summary: Get presence
+    description: Get a user's presence information.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property presences in communications
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: presence
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            activity:
+              type: string
+              description: The supplemental information to a user's availability. Possible values are Available, Away, BeRightBack, Busy, DoNotDisturb, InACall, InAConferenceCall, Inactive, InAMeeting, Offline, OffWork, OutOfOffice, PresenceUnknown, Presenting, UrgentInterruptionsOnly.
+              nullable: true
+            availability:
+              type: string
+              description: The base presence information for a user. Possible values are Available, AvailableIdle,  Away, BeRightBack, Busy, BusyIdle, DoNotDisturb, Offline, PresenceUnknown
+              nullable: true
+            statusMessage:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.presenceStatusMessage'
+              - type: object
+                nullable: true
+              description: The presence status message of a user.
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.presence'
+  - method: DELETE
+    summary: Delete navigation property presences for communications
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /communications/presences/{presence-id}/clearPresence
+  path_description: Provides operations to call the clearPresence method.
+  path_parameters:
+  - name: presence-id
+    in: path
+    description: The unique identifier of presence
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: presence
+  methods:
+  - method: POST
+    summary: Invoke action clearPresence
+    description: 'Clear the application''s presence session for a user. If it is the user''s only presence session, the user''s presence will change to Offline/Offline. For details about presences sessions, see presence: setPresence.'
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          sessionId:
+            type: string
+            nullable: true
+- path: /communications/presences/{presence-id}/clearUserPreferredPresence
+  path_description: Provides operations to call the clearUserPreferredPresence method.
+  path_parameters:
+  - name: presence-id
+    in: path
+    description: The unique identifier of presence
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: presence
+  methods:
+  - method: POST
+    summary: Invoke action clearUserPreferredPresence
+    description: Clear the preferred availability and activity status for a user.
+    parameters: []
+    requestBody: null
+- path: /communications/presences/{presence-id}/setPresence
+  path_description: Provides operations to call the setPresence method.
+  path_parameters:
+  - name: presence-id
+    in: path
+    description: The unique identifier of presence
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: presence
+  methods:
+  - method: POST
+    summary: Invoke action setPresence
+    description: Set the state of a user's presence session as an application.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          sessionId:
+            type: string
+            nullable: true
+          availability:
+            type: string
+          activity:
+            type: string
+          expirationDuration:
+            pattern: ^-?P([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+([.][0-9]+)?S)?)?$
+            type: string
+            format: duration
+            nullable: true
+- path: /communications/presences/{presence-id}/setStatusMessage
+  path_description: Provides operations to call the setStatusMessage method.
+  path_parameters:
+  - name: presence-id
+    in: path
+    description: The unique identifier of presence
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: presence
+  methods:
+  - method: POST
+    summary: Invoke action setStatusMessage
+    description: Set a presence status message for a user. An optional expiration date and time can be supplied.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          statusMessage:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.presenceStatusMessage'
+            - type: object
+              nullable: true
+- path: /communications/presences/{presence-id}/setUserPreferredPresence
+  path_description: Provides operations to call the setUserPreferredPresence method.
+  path_parameters:
+  - name: presence-id
+    in: path
+    description: The unique identifier of presence
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: presence
+  methods:
+  - method: POST
+    summary: Invoke action setUserPreferredPresence
+    description: Set the preferred availability and activity status for a user. If the preferred presence of a user is set, the user's presence shows as the preferred status. Preferred presence takes effect only when at least one presence session exists for the user. Otherwise, the user's presence shows as Offline. A presence session is created as a result of a successful setPresence operation, or if the user is signed in on a Microsoft Teams client. For more details, see presence sessions and time-out and expiration.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          availability:
+            type: string
+          activity:
+            type: string
+          expirationDuration:
+            pattern: ^-?P([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+([.][0-9]+)?S)?)?$
+            type: string
+            format: duration
+            nullable: true
+- path: /communications/presences/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

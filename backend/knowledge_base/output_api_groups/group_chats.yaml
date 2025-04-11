@@ -1,0 +1,3508 @@
+- path: /chats
+  path_description: Provides operations to manage the collection of chat entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List chats
+    description: Retrieve the list of chats that the user is part of. This method supports federation. When a user ID is provided, the calling application must belong to the same tenant that the user belongs to.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create chat
+    description: Create a new chat object.
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: chat
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            chatType:
+              $ref: '#/components/schemas/microsoft.graph.chatType'
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time at which the chat was created. Read-only.
+              format: date-time
+              nullable: true
+            isHiddenForAllMembers:
+              type: boolean
+              description: Indicates whether the chat is hidden for all its members. Read-only.
+              nullable: true
+            lastUpdatedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time at which the chat was renamed or the list of members was last changed. Read-only.
+              format: date-time
+              nullable: true
+            onlineMeetingInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.teamworkOnlineMeetingInfo'
+              - type: object
+                nullable: true
+              description: Represents details about an online meeting. If the chat isn't associated with an online meeting, the property is empty. Read-only.
+            tenantId:
+              type: string
+              description: The identifier of the tenant in which the chat was created. Read-only.
+              nullable: true
+            topic:
+              type: string
+              description: (Optional) Subject or topic for the chat. Only available for group chats.
+              nullable: true
+            viewpoint:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatViewpoint'
+              - type: object
+                nullable: true
+              description: Represents caller-specific information about the chat, such as the last message read date and time. This property is populated only when the request is made in a delegated context.
+            webUrl:
+              type: string
+              description: The URL for the chat in Microsoft Teams. The URL should be treated as an opaque blob, and not parsed. Read-only.
+              nullable: true
+            installedApps:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.teamsAppInstallation'
+              description: A collection of all the apps in the chat. Nullable.
+              x-ms-navigationProperty: true
+            lastMessagePreview:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatMessageInfo'
+              - type: object
+                nullable: true
+              description: Preview of the last message sent in the chat. Null if no messages were sent in the chat. Currently, only the list chats operation supports this property.
+              x-ms-navigationProperty: true
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.conversationMember'
+              description: A collection of all the members in the chat. Nullable.
+              x-ms-navigationProperty: true
+            messages:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessage'
+              description: A collection of all the messages in the chat. Nullable.
+              x-ms-navigationProperty: true
+            permissionGrants:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.resourceSpecificPermissionGrant'
+              description: A collection of permissions granted to apps for the chat.
+              x-ms-navigationProperty: true
+            pinnedMessages:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.pinnedChatMessageInfo'
+              description: A collection of all the pinned messages in the chat. Nullable.
+              x-ms-navigationProperty: true
+            tabs:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.teamsTab'
+              description: A collection of all the tabs in the chat. Nullable.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.chat'
+- path: /chats/{chat-id}
+  path_description: Provides operations to manage the collection of chat entities.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: Get chat
+    description: Retrieve a single chat (without its messages). This method supports federation. To access a chat, at least one chat member must belong to the tenant the request initiated from.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update chat
+    description: Update the properties of a chat object.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: chat
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            chatType:
+              $ref: '#/components/schemas/microsoft.graph.chatType'
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time at which the chat was created. Read-only.
+              format: date-time
+              nullable: true
+            isHiddenForAllMembers:
+              type: boolean
+              description: Indicates whether the chat is hidden for all its members. Read-only.
+              nullable: true
+            lastUpdatedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date and time at which the chat was renamed or the list of members was last changed. Read-only.
+              format: date-time
+              nullable: true
+            onlineMeetingInfo:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.teamworkOnlineMeetingInfo'
+              - type: object
+                nullable: true
+              description: Represents details about an online meeting. If the chat isn't associated with an online meeting, the property is empty. Read-only.
+            tenantId:
+              type: string
+              description: The identifier of the tenant in which the chat was created. Read-only.
+              nullable: true
+            topic:
+              type: string
+              description: (Optional) Subject or topic for the chat. Only available for group chats.
+              nullable: true
+            viewpoint:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatViewpoint'
+              - type: object
+                nullable: true
+              description: Represents caller-specific information about the chat, such as the last message read date and time. This property is populated only when the request is made in a delegated context.
+            webUrl:
+              type: string
+              description: The URL for the chat in Microsoft Teams. The URL should be treated as an opaque blob, and not parsed. Read-only.
+              nullable: true
+            installedApps:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.teamsAppInstallation'
+              description: A collection of all the apps in the chat. Nullable.
+              x-ms-navigationProperty: true
+            lastMessagePreview:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatMessageInfo'
+              - type: object
+                nullable: true
+              description: Preview of the last message sent in the chat. Null if no messages were sent in the chat. Currently, only the list chats operation supports this property.
+              x-ms-navigationProperty: true
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.conversationMember'
+              description: A collection of all the members in the chat. Nullable.
+              x-ms-navigationProperty: true
+            messages:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessage'
+              description: A collection of all the messages in the chat. Nullable.
+              x-ms-navigationProperty: true
+            permissionGrants:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.resourceSpecificPermissionGrant'
+              description: A collection of permissions granted to apps for the chat.
+              x-ms-navigationProperty: true
+            pinnedMessages:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.pinnedChatMessageInfo'
+              description: A collection of all the pinned messages in the chat. Nullable.
+              x-ms-navigationProperty: true
+            tabs:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.teamsTab'
+              description: A collection of all the tabs in the chat. Nullable.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.chat'
+  - method: DELETE
+    summary: Delete chat
+    description: Soft-delete a chat. When invoked with delegated permissions, this operation only works for tenant admins and Teams service admins.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /chats/{chat-id}/installedApps
+  path_description: Provides operations to manage the installedApps property of the microsoft.graph.chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: List apps in chat
+    description: List all app installations within a chat.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add app to chat
+    description: Install a teamsApp to the specified chat.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: teamsAppInstallation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            consentedPermissionSet:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.teamsAppPermissionSet'
+              - type: object
+                nullable: true
+              description: The set of resource-specific permissions consented to while installing or upgrading the teamsApp.
+            teamsApp:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.teamsApp'
+              - type: object
+                nullable: true
+              description: The app that is installed.
+              x-ms-navigationProperty: true
+            teamsAppDefinition:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.teamsAppDefinition'
+              - type: object
+                nullable: true
+              description: The details of this version of the app.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.userScopeTeamsAppInstallation': '#/components/schemas/microsoft.graph.userScopeTeamsAppInstallation'
+- path: /chats/{chat-id}/installedApps/{teamsAppInstallation-id}
+  path_description: Provides operations to manage the installedApps property of the microsoft.graph.chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: teamsAppInstallation-id
+    in: path
+    description: The unique identifier of teamsAppInstallation
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: teamsAppInstallation
+  methods:
+  - method: GET
+    summary: Get installed app in chat
+    description: Get an app installed in a chat.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property installedApps in chats
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: teamsAppInstallation
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            consentedPermissionSet:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.teamsAppPermissionSet'
+              - type: object
+                nullable: true
+              description: The set of resource-specific permissions consented to while installing or upgrading the teamsApp.
+            teamsApp:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.teamsApp'
+              - type: object
+                nullable: true
+              description: The app that is installed.
+              x-ms-navigationProperty: true
+            teamsAppDefinition:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.teamsAppDefinition'
+              - type: object
+                nullable: true
+              description: The details of this version of the app.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.userScopeTeamsAppInstallation': '#/components/schemas/microsoft.graph.userScopeTeamsAppInstallation'
+  - method: DELETE
+    summary: Uninstall app in a chat
+    description: Uninstall an app installed within a chat.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /chats/{chat-id}/installedApps/{teamsAppInstallation-id}/upgrade
+  path_description: Provides operations to call the upgrade method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: teamsAppInstallation-id
+    in: path
+    description: The unique identifier of teamsAppInstallation
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: teamsAppInstallation
+  methods:
+  - method: POST
+    summary: Invoke action upgrade
+    description: Upgrade an app installation within a chat.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          consentedPermissionSet:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.teamsAppPermissionSet'
+            - type: object
+              nullable: true
+- path: /chats/{chat-id}/installedApps/{teamsAppInstallation-id}/teamsApp
+  path_description: Provides operations to manage the teamsApp property of the microsoft.graph.teamsAppInstallation entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: teamsAppInstallation-id
+    in: path
+    description: The unique identifier of teamsAppInstallation
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: teamsAppInstallation
+  methods:
+  - method: GET
+    summary: Get teamsApp from chats
+    description: The app that is installed.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /chats/{chat-id}/installedApps/{teamsAppInstallation-id}/teamsAppDefinition
+  path_description: Provides operations to manage the teamsAppDefinition property of the microsoft.graph.teamsAppInstallation entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: teamsAppInstallation-id
+    in: path
+    description: The unique identifier of teamsAppInstallation
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: teamsAppInstallation
+  methods:
+  - method: GET
+    summary: Get teamsAppDefinition from chats
+    description: The details of this version of the app.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /chats/{chat-id}/installedApps/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /chats/{chat-id}/lastMessagePreview
+  path_description: Provides operations to manage the lastMessagePreview property of the microsoft.graph.chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: Get lastMessagePreview from chats
+    description: Preview of the last message sent in the chat. Null if no messages were sent in the chat. Currently, only the list chats operation supports this property.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property lastMessagePreview in chats
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: chatMessageInfo
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            body:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.itemBody'
+              - type: object
+                nullable: true
+              description: Body of the chatMessage. This will still contain markers for @mentions and attachments even though the object doesn't return @mentions and attachments.
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Date time object representing the time at which message was created.
+              format: date-time
+              nullable: true
+            eventDetail:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.eventMessageDetail'
+              - type: object
+                nullable: true
+              description: Read-only.  If present, represents details of an event that happened in a chat, a channel, or a team, for example, members were added, and so on. For event messages, the messageType property is set to systemEventMessage.
+            from:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatMessageFromIdentitySet'
+              - type: object
+                nullable: true
+              description: Information about the sender of the message.
+            isDeleted:
+              type: boolean
+              description: If set to true, the original message has been deleted.
+              nullable: true
+            messageType:
+              $ref: '#/components/schemas/microsoft.graph.chatMessageType'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.chatMessageInfo'
+  - method: DELETE
+    summary: Delete navigation property lastMessagePreview for chats
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /chats/{chat-id}/members
+  path_description: Provides operations to manage the members property of the microsoft.graph.chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: List conversationMembers
+    description: List all conversation members in a chat or channel.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add member to a chat
+    description: Add a conversationMember to a chat.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: conversationMember
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: The display name of the user.
+              nullable: true
+            roles:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The roles for that user. This property contains more qualifiers only when relevant - for example, if the member has owner privileges, the roles property contains owner as one of the values. Similarly, if the member is an in-tenant guest, the roles property contains guest as one of the values. A basic member shouldn't have any values specified in the roles property. An Out-of-tenant external member is assigned the owner role.
+            visibleHistoryStartDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The timestamp denoting how far back a conversation's history is shared with the conversation member. This property is settable only for members of a chat.
+              format: date-time
+              nullable: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.aadUserConversationMember': '#/components/schemas/microsoft.graph.aadUserConversationMember'
+              '#microsoft.graph.anonymousGuestConversationMember': '#/components/schemas/microsoft.graph.anonymousGuestConversationMember'
+              '#microsoft.graph.azureCommunicationServicesUserConversationMember': '#/components/schemas/microsoft.graph.azureCommunicationServicesUserConversationMember'
+              '#microsoft.graph.microsoftAccountUserConversationMember': '#/components/schemas/microsoft.graph.microsoftAccountUserConversationMember'
+              '#microsoft.graph.skypeForBusinessUserConversationMember': '#/components/schemas/microsoft.graph.skypeForBusinessUserConversationMember'
+              '#microsoft.graph.skypeUserConversationMember': '#/components/schemas/microsoft.graph.skypeUserConversationMember'
+- path: /chats/{chat-id}/members/{conversationMember-id}
+  path_description: Provides operations to manage the members property of the microsoft.graph.chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: conversationMember-id
+    in: path
+    description: The unique identifier of conversationMember
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: conversationMember
+  methods:
+  - method: GET
+    summary: Get conversationMember
+    description: Retrieve a conversationMember from a chat or channel.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property members in chats
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: conversationMember
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            displayName:
+              type: string
+              description: The display name of the user.
+              nullable: true
+            roles:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: The roles for that user. This property contains more qualifiers only when relevant - for example, if the member has owner privileges, the roles property contains owner as one of the values. Similarly, if the member is an in-tenant guest, the roles property contains guest as one of the values. A basic member shouldn't have any values specified in the roles property. An Out-of-tenant external member is assigned the owner role.
+            visibleHistoryStartDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The timestamp denoting how far back a conversation's history is shared with the conversation member. This property is settable only for members of a chat.
+              format: date-time
+              nullable: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.aadUserConversationMember': '#/components/schemas/microsoft.graph.aadUserConversationMember'
+              '#microsoft.graph.anonymousGuestConversationMember': '#/components/schemas/microsoft.graph.anonymousGuestConversationMember'
+              '#microsoft.graph.azureCommunicationServicesUserConversationMember': '#/components/schemas/microsoft.graph.azureCommunicationServicesUserConversationMember'
+              '#microsoft.graph.microsoftAccountUserConversationMember': '#/components/schemas/microsoft.graph.microsoftAccountUserConversationMember'
+              '#microsoft.graph.skypeForBusinessUserConversationMember': '#/components/schemas/microsoft.graph.skypeForBusinessUserConversationMember'
+              '#microsoft.graph.skypeUserConversationMember': '#/components/schemas/microsoft.graph.skypeUserConversationMember'
+  - method: DELETE
+    summary: Remove member from chat
+    description: Remove a conversationMember from a chat.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /chats/{chat-id}/members/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /chats/{chat-id}/members/add
+  path_description: Provides operations to call the add method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: POST
+    summary: Invoke action add
+    description: Add multiple members in a single request to a team. The response provides details about which memberships could and couldn't be created.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          values:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.conversationMember'
+- path: /chats/{chat-id}/members/remove
+  path_description: Provides operations to call the remove method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: POST
+    summary: Invoke action remove
+    description: Remove multiple members from a team in a single request. The response provides details about which memberships could and couldn't be removed.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          values:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.conversationMember'
+- path: /chats/{chat-id}/messages
+  path_description: Provides operations to manage the messages property of the microsoft.graph.chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: List messages in a chat
+    description: Retrieve the list of messages in a chat. This method supports federation. To list chat messages in application context, the request must be made from the tenant that the channel owner belongs to (represented by the tenantId property on the channel).
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Send chatMessage in a channel or a chat
+    description: Send a new chatMessage in the specified channel or a chat.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: chatMessage
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            attachments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageAttachment'
+              description: References to attached objects like files, tabs, meetings etc.
+            body:
+              $ref: '#/components/schemas/microsoft.graph.itemBody'
+            channelIdentity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.channelIdentity'
+              - type: object
+                nullable: true
+              description: If the message was sent in a channel, represents identity of the channel.
+            chatId:
+              type: string
+              description: If the message was sent in a chat, represents the identity of the chat.
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Timestamp of when the chat message was created.
+              format: date-time
+              nullable: true
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Read only. Timestamp at which the chat message was deleted, or null if not deleted.
+              format: date-time
+              nullable: true
+            etag:
+              type: string
+              description: Read-only. Version number of the chat message.
+              nullable: true
+            eventDetail:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.eventMessageDetail'
+              - type: object
+                nullable: true
+              description: Read-only. If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members. For event messages, the messageType property will be set to systemEventMessage.
+            from:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatMessageFromIdentitySet'
+              - type: object
+                nullable: true
+              description: Details of the sender of the chat message. Can only be set during migration.
+            importance:
+              $ref: '#/components/schemas/microsoft.graph.chatMessageImportance'
+            lastEditedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Read only. Timestamp when edits to the chat message were made. Triggers an 'Edited' flag in the Teams UI. If no edits are made the value is null.
+              format: date-time
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Read only. Timestamp when the chat message is created (initial setting) or modified, including when a reaction is added or removed.
+              format: date-time
+              nullable: true
+            locale:
+              type: string
+              description: Locale of the chat message set by the client. Always set to en-us.
+            mentions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageMention'
+              description: 'List of entities mentioned in the chat message. Supported entities are: user, bot, team, channel, chat, and tag.'
+            messageHistory:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageHistoryItem'
+              description: List of activity history of a message item, including modification time and actions, such as reactionAdded, reactionRemoved, or reaction changes, on the message.
+            messageType:
+              $ref: '#/components/schemas/microsoft.graph.chatMessageType'
+            policyViolation:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatMessagePolicyViolation'
+              - type: object
+                nullable: true
+              description: Defines the properties of a policy violation set by a data loss prevention (DLP) application.
+            reactions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageReaction'
+              description: Reactions for this chat message (for example, Like).
+            replyToId:
+              type: string
+              description: Read-only. ID of the parent chat message or root chat message of the thread. (Only applies to chat messages in channels, not chats.)
+              nullable: true
+            subject:
+              type: string
+              description: The subject of the chat message, in plaintext.
+              nullable: true
+            summary:
+              type: string
+              description: Summary text of the chat message that could be used for push notifications and summary views or fall back views. Only applies to channel chat messages, not chat messages in a chat.
+              nullable: true
+            webUrl:
+              type: string
+              description: Read-only. Link to the message in Microsoft Teams.
+              nullable: true
+            hostedContents:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageHostedContent'
+              description: Content in a message hosted by Microsoft Teams - for example, images or code snippets.
+              x-ms-navigationProperty: true
+            replies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessage'
+              description: Replies for a specified message. Supports $expand for channel messages.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.chatMessage'
+- path: /chats/{chat-id}/messages/{chatMessage-id}
+  path_description: Provides operations to manage the messages property of the microsoft.graph.chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: GET
+    summary: Get chatMessage in a channel or chat
+    description: Retrieve a single message or a message reply in a channel or a chat.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property messages in chats
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: chatMessage
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            attachments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageAttachment'
+              description: References to attached objects like files, tabs, meetings etc.
+            body:
+              $ref: '#/components/schemas/microsoft.graph.itemBody'
+            channelIdentity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.channelIdentity'
+              - type: object
+                nullable: true
+              description: If the message was sent in a channel, represents identity of the channel.
+            chatId:
+              type: string
+              description: If the message was sent in a chat, represents the identity of the chat.
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Timestamp of when the chat message was created.
+              format: date-time
+              nullable: true
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Read only. Timestamp at which the chat message was deleted, or null if not deleted.
+              format: date-time
+              nullable: true
+            etag:
+              type: string
+              description: Read-only. Version number of the chat message.
+              nullable: true
+            eventDetail:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.eventMessageDetail'
+              - type: object
+                nullable: true
+              description: Read-only. If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members. For event messages, the messageType property will be set to systemEventMessage.
+            from:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatMessageFromIdentitySet'
+              - type: object
+                nullable: true
+              description: Details of the sender of the chat message. Can only be set during migration.
+            importance:
+              $ref: '#/components/schemas/microsoft.graph.chatMessageImportance'
+            lastEditedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Read only. Timestamp when edits to the chat message were made. Triggers an 'Edited' flag in the Teams UI. If no edits are made the value is null.
+              format: date-time
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Read only. Timestamp when the chat message is created (initial setting) or modified, including when a reaction is added or removed.
+              format: date-time
+              nullable: true
+            locale:
+              type: string
+              description: Locale of the chat message set by the client. Always set to en-us.
+            mentions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageMention'
+              description: 'List of entities mentioned in the chat message. Supported entities are: user, bot, team, channel, chat, and tag.'
+            messageHistory:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageHistoryItem'
+              description: List of activity history of a message item, including modification time and actions, such as reactionAdded, reactionRemoved, or reaction changes, on the message.
+            messageType:
+              $ref: '#/components/schemas/microsoft.graph.chatMessageType'
+            policyViolation:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatMessagePolicyViolation'
+              - type: object
+                nullable: true
+              description: Defines the properties of a policy violation set by a data loss prevention (DLP) application.
+            reactions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageReaction'
+              description: Reactions for this chat message (for example, Like).
+            replyToId:
+              type: string
+              description: Read-only. ID of the parent chat message or root chat message of the thread. (Only applies to chat messages in channels, not chats.)
+              nullable: true
+            subject:
+              type: string
+              description: The subject of the chat message, in plaintext.
+              nullable: true
+            summary:
+              type: string
+              description: Summary text of the chat message that could be used for push notifications and summary views or fall back views. Only applies to channel chat messages, not chat messages in a chat.
+              nullable: true
+            webUrl:
+              type: string
+              description: Read-only. Link to the message in Microsoft Teams.
+              nullable: true
+            hostedContents:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageHostedContent'
+              description: Content in a message hosted by Microsoft Teams - for example, images or code snippets.
+              x-ms-navigationProperty: true
+            replies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessage'
+              description: Replies for a specified message. Supports $expand for channel messages.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.chatMessage'
+  - method: DELETE
+    summary: Delete navigation property messages for chats
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /chats/{chat-id}/messages/{chatMessage-id}/hostedContents
+  path_description: Provides operations to manage the hostedContents property of the microsoft.graph.chatMessage entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: GET
+    summary: List hostedContents
+    description: Retrieve the list of chatMessageHostedContent objects from a message. This API only lists the hosted content objects. To get the content bytes, see get chatmessage hosted content.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to hostedContents for chats
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.teamworkHostedContent'
+        - title: chatMessageHostedContent
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.chatMessageHostedContent'
+- path: /chats/{chat-id}/messages/{chatMessage-id}/hostedContents/{chatMessageHostedContent-id}
+  path_description: Provides operations to manage the hostedContents property of the microsoft.graph.chatMessage entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  - name: chatMessageHostedContent-id
+    in: path
+    description: The unique identifier of chatMessageHostedContent
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessageHostedContent
+  methods:
+  - method: GET
+    summary: Get chatMessageHostedContent
+    description: Retrieve the properties and relationships of chatMessageHostedContent object.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property hostedContents in chats
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.teamworkHostedContent'
+        - title: chatMessageHostedContent
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.chatMessageHostedContent'
+  - method: DELETE
+    summary: Delete navigation property hostedContents for chats
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /chats/{chat-id}/messages/{chatMessage-id}/hostedContents/{chatMessageHostedContent-id}/$value
+  path_description: Provides operations to manage the media for the chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  - name: chatMessageHostedContent-id
+    in: path
+    description: The unique identifier of chatMessageHostedContent
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessageHostedContent
+  methods:
+  - method: GET
+    summary: List hostedContents
+    description: Retrieve the list of chatMessageHostedContent objects from a message. This API only lists the hosted content objects. To get the content bytes, see get chatmessage hosted content.
+    parameters: []
+    requestBody: null
+  - method: PUT
+    summary: Update media content for the navigation property hostedContents in chats
+    description: The unique identifier for an entity. Read-only.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete media content for the navigation property hostedContents in chats
+    description: The unique identifier for an entity. Read-only.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /chats/{chat-id}/messages/{chatMessage-id}/hostedContents/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /chats/{chat-id}/messages/{chatMessage-id}/setReaction
+  path_description: Provides operations to call the setReaction method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: POST
+    summary: Invoke action setReaction
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          reactionType:
+            type: string
+            nullable: true
+- path: /chats/{chat-id}/messages/{chatMessage-id}/softDelete
+  path_description: Provides operations to call the softDelete method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: POST
+    summary: Invoke action softDelete
+    description: Delete a single chatMessage or a chat message reply in a channel or a chat.
+    parameters: []
+    requestBody: null
+- path: /chats/{chat-id}/messages/{chatMessage-id}/undoSoftDelete
+  path_description: Provides operations to call the undoSoftDelete method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: POST
+    summary: Invoke action undoSoftDelete
+    description: Undo soft deletion of a single chatMessage or a chat message reply in a channel or a chat.
+    parameters: []
+    requestBody: null
+- path: /chats/{chat-id}/messages/{chatMessage-id}/unsetReaction
+  path_description: Provides operations to call the unsetReaction method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: POST
+    summary: Invoke action unsetReaction
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          reactionType:
+            type: string
+            nullable: true
+- path: /chats/{chat-id}/messages/{chatMessage-id}/replies
+  path_description: Provides operations to manage the replies property of the microsoft.graph.chatMessage entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: GET
+    summary: Get replies from chats
+    description: Replies for a specified message. Supports $expand for channel messages.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to replies for chats
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: chatMessage
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            attachments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageAttachment'
+              description: References to attached objects like files, tabs, meetings etc.
+            body:
+              $ref: '#/components/schemas/microsoft.graph.itemBody'
+            channelIdentity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.channelIdentity'
+              - type: object
+                nullable: true
+              description: If the message was sent in a channel, represents identity of the channel.
+            chatId:
+              type: string
+              description: If the message was sent in a chat, represents the identity of the chat.
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Timestamp of when the chat message was created.
+              format: date-time
+              nullable: true
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Read only. Timestamp at which the chat message was deleted, or null if not deleted.
+              format: date-time
+              nullable: true
+            etag:
+              type: string
+              description: Read-only. Version number of the chat message.
+              nullable: true
+            eventDetail:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.eventMessageDetail'
+              - type: object
+                nullable: true
+              description: Read-only. If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members. For event messages, the messageType property will be set to systemEventMessage.
+            from:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatMessageFromIdentitySet'
+              - type: object
+                nullable: true
+              description: Details of the sender of the chat message. Can only be set during migration.
+            importance:
+              $ref: '#/components/schemas/microsoft.graph.chatMessageImportance'
+            lastEditedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Read only. Timestamp when edits to the chat message were made. Triggers an 'Edited' flag in the Teams UI. If no edits are made the value is null.
+              format: date-time
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Read only. Timestamp when the chat message is created (initial setting) or modified, including when a reaction is added or removed.
+              format: date-time
+              nullable: true
+            locale:
+              type: string
+              description: Locale of the chat message set by the client. Always set to en-us.
+            mentions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageMention'
+              description: 'List of entities mentioned in the chat message. Supported entities are: user, bot, team, channel, chat, and tag.'
+            messageHistory:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageHistoryItem'
+              description: List of activity history of a message item, including modification time and actions, such as reactionAdded, reactionRemoved, or reaction changes, on the message.
+            messageType:
+              $ref: '#/components/schemas/microsoft.graph.chatMessageType'
+            policyViolation:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatMessagePolicyViolation'
+              - type: object
+                nullable: true
+              description: Defines the properties of a policy violation set by a data loss prevention (DLP) application.
+            reactions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageReaction'
+              description: Reactions for this chat message (for example, Like).
+            replyToId:
+              type: string
+              description: Read-only. ID of the parent chat message or root chat message of the thread. (Only applies to chat messages in channels, not chats.)
+              nullable: true
+            subject:
+              type: string
+              description: The subject of the chat message, in plaintext.
+              nullable: true
+            summary:
+              type: string
+              description: Summary text of the chat message that could be used for push notifications and summary views or fall back views. Only applies to channel chat messages, not chat messages in a chat.
+              nullable: true
+            webUrl:
+              type: string
+              description: Read-only. Link to the message in Microsoft Teams.
+              nullable: true
+            hostedContents:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageHostedContent'
+              description: Content in a message hosted by Microsoft Teams - for example, images or code snippets.
+              x-ms-navigationProperty: true
+            replies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessage'
+              description: Replies for a specified message. Supports $expand for channel messages.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.chatMessage'
+- path: /chats/{chat-id}/messages/{chatMessage-id}/replies/{chatMessage-id1}
+  path_description: Provides operations to manage the replies property of the microsoft.graph.chatMessage entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  - name: chatMessage-id1
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: GET
+    summary: Get replies from chats
+    description: Replies for a specified message. Supports $expand for channel messages.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property replies in chats
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: chatMessage
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            attachments:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageAttachment'
+              description: References to attached objects like files, tabs, meetings etc.
+            body:
+              $ref: '#/components/schemas/microsoft.graph.itemBody'
+            channelIdentity:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.channelIdentity'
+              - type: object
+                nullable: true
+              description: If the message was sent in a channel, represents identity of the channel.
+            chatId:
+              type: string
+              description: If the message was sent in a chat, represents the identity of the chat.
+              nullable: true
+            createdDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Timestamp of when the chat message was created.
+              format: date-time
+              nullable: true
+            deletedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Read only. Timestamp at which the chat message was deleted, or null if not deleted.
+              format: date-time
+              nullable: true
+            etag:
+              type: string
+              description: Read-only. Version number of the chat message.
+              nullable: true
+            eventDetail:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.eventMessageDetail'
+              - type: object
+                nullable: true
+              description: Read-only. If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members. For event messages, the messageType property will be set to systemEventMessage.
+            from:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatMessageFromIdentitySet'
+              - type: object
+                nullable: true
+              description: Details of the sender of the chat message. Can only be set during migration.
+            importance:
+              $ref: '#/components/schemas/microsoft.graph.chatMessageImportance'
+            lastEditedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Read only. Timestamp when edits to the chat message were made. Triggers an 'Edited' flag in the Teams UI. If no edits are made the value is null.
+              format: date-time
+              nullable: true
+            lastModifiedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: Read only. Timestamp when the chat message is created (initial setting) or modified, including when a reaction is added or removed.
+              format: date-time
+              nullable: true
+            locale:
+              type: string
+              description: Locale of the chat message set by the client. Always set to en-us.
+            mentions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageMention'
+              description: 'List of entities mentioned in the chat message. Supported entities are: user, bot, team, channel, chat, and tag.'
+            messageHistory:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageHistoryItem'
+              description: List of activity history of a message item, including modification time and actions, such as reactionAdded, reactionRemoved, or reaction changes, on the message.
+            messageType:
+              $ref: '#/components/schemas/microsoft.graph.chatMessageType'
+            policyViolation:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatMessagePolicyViolation'
+              - type: object
+                nullable: true
+              description: Defines the properties of a policy violation set by a data loss prevention (DLP) application.
+            reactions:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageReaction'
+              description: Reactions for this chat message (for example, Like).
+            replyToId:
+              type: string
+              description: Read-only. ID of the parent chat message or root chat message of the thread. (Only applies to chat messages in channels, not chats.)
+              nullable: true
+            subject:
+              type: string
+              description: The subject of the chat message, in plaintext.
+              nullable: true
+            summary:
+              type: string
+              description: Summary text of the chat message that could be used for push notifications and summary views or fall back views. Only applies to channel chat messages, not chat messages in a chat.
+              nullable: true
+            webUrl:
+              type: string
+              description: Read-only. Link to the message in Microsoft Teams.
+              nullable: true
+            hostedContents:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessageHostedContent'
+              description: Content in a message hosted by Microsoft Teams - for example, images or code snippets.
+              x-ms-navigationProperty: true
+            replies:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.chatMessage'
+              description: Replies for a specified message. Supports $expand for channel messages.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.chatMessage'
+  - method: DELETE
+    summary: Delete navigation property replies for chats
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /chats/{chat-id}/messages/{chatMessage-id}/replies/{chatMessage-id1}/hostedContents
+  path_description: Provides operations to manage the hostedContents property of the microsoft.graph.chatMessage entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  - name: chatMessage-id1
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: GET
+    summary: Get hostedContents from chats
+    description: Content in a message hosted by Microsoft Teams - for example, images or code snippets.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to hostedContents for chats
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.teamworkHostedContent'
+        - title: chatMessageHostedContent
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.chatMessageHostedContent'
+- path: /chats/{chat-id}/messages/{chatMessage-id}/replies/{chatMessage-id1}/hostedContents/{chatMessageHostedContent-id}
+  path_description: Provides operations to manage the hostedContents property of the microsoft.graph.chatMessage entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  - name: chatMessage-id1
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  - name: chatMessageHostedContent-id
+    in: path
+    description: The unique identifier of chatMessageHostedContent
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessageHostedContent
+  methods:
+  - method: GET
+    summary: Get hostedContents from chats
+    description: Content in a message hosted by Microsoft Teams - for example, images or code snippets.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property hostedContents in chats
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.teamworkHostedContent'
+        - title: chatMessageHostedContent
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.chatMessageHostedContent'
+  - method: DELETE
+    summary: Delete navigation property hostedContents for chats
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /chats/{chat-id}/messages/{chatMessage-id}/replies/{chatMessage-id1}/hostedContents/{chatMessageHostedContent-id}/$value
+  path_description: Provides operations to manage the media for the chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  - name: chatMessage-id1
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  - name: chatMessageHostedContent-id
+    in: path
+    description: The unique identifier of chatMessageHostedContent
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessageHostedContent
+  methods:
+  - method: GET
+    summary: Get media content for the navigation property hostedContents from chats
+    description: The unique identifier for an entity. Read-only.
+    parameters: []
+    requestBody: null
+  - method: PUT
+    summary: Update media content for the navigation property hostedContents in chats
+    description: The unique identifier for an entity. Read-only.
+    parameters: []
+    requestBody: null
+  - method: DELETE
+    summary: Delete media content for the navigation property hostedContents in chats
+    description: The unique identifier for an entity. Read-only.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /chats/{chat-id}/messages/{chatMessage-id}/replies/{chatMessage-id1}/hostedContents/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  - name: chatMessage-id1
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /chats/{chat-id}/messages/{chatMessage-id}/replies/{chatMessage-id1}/setReaction
+  path_description: Provides operations to call the setReaction method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  - name: chatMessage-id1
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: POST
+    summary: Invoke action setReaction
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          reactionType:
+            type: string
+            nullable: true
+- path: /chats/{chat-id}/messages/{chatMessage-id}/replies/{chatMessage-id1}/softDelete
+  path_description: Provides operations to call the softDelete method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  - name: chatMessage-id1
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: POST
+    summary: Invoke action softDelete
+    description: Delete a single chatMessage or a chat message reply in a channel or a chat.
+    parameters: []
+    requestBody: null
+- path: /chats/{chat-id}/messages/{chatMessage-id}/replies/{chatMessage-id1}/undoSoftDelete
+  path_description: Provides operations to call the undoSoftDelete method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  - name: chatMessage-id1
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: POST
+    summary: Invoke action undoSoftDelete
+    description: Undo soft deletion of a single chatMessage or a chat message reply in a channel or a chat.
+    parameters: []
+    requestBody: null
+- path: /chats/{chat-id}/messages/{chatMessage-id}/replies/{chatMessage-id1}/unsetReaction
+  path_description: Provides operations to call the unsetReaction method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  - name: chatMessage-id1
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: POST
+    summary: Invoke action unsetReaction
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          reactionType:
+            type: string
+            nullable: true
+- path: /chats/{chat-id}/messages/{chatMessage-id}/replies/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /chats/{chat-id}/messages/{chatMessage-id}/replies/delta()
+  path_description: Provides operations to call the delta method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: chatMessage-id
+    in: path
+    description: The unique identifier of chatMessage
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chatMessage
+  methods:
+  - method: GET
+    summary: Invoke function delta
+    description: 'Get the list of messages from all chats in which a user is a participant, including one-on-one chats, group chats, and meeting chats. When you use delta query, you can get new or updated messages. To get the replies for a message, use the list message replies or the get message reply operations. A GET request with the delta function returns one of the following: State tokens are opaque to the client. To proceed with a round of change tracking, copy and apply the @odata.nextLink or @odata.deltaLink URL returned from the last GET request to the next delta function call. An @odata.deltaLink returned in a response signifies that the current round of change tracking is complete. You can save and use the @odata.deltaLink URL when you begin to retrieve more changes (messages changed or posted after you acquire @odata.deltaLink). For more information, see the delta query documentation.'
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /chats/{chat-id}/messages/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /chats/{chat-id}/messages/delta()
+  path_description: Provides operations to call the delta method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: Invoke function delta
+    description: 'Get the list of messages from all chats in which a user is a participant, including one-on-one chats, group chats, and meeting chats. When you use delta query, you can get new or updated messages. To get the replies for a message, use the list message replies or the get message reply operations. A GET request with the delta function returns one of the following: State tokens are opaque to the client. To proceed with a round of change tracking, copy and apply the @odata.nextLink or @odata.deltaLink URL returned from the last GET request to the next delta function call. An @odata.deltaLink returned in a response signifies that the current round of change tracking is complete. You can save and use the @odata.deltaLink URL when you begin to retrieve more changes (messages changed or posted after you acquire @odata.deltaLink). For more information, see the delta query documentation.'
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /chats/{chat-id}/hideForUser
+  path_description: Provides operations to call the hideForUser method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: POST
+    summary: Invoke action hideForUser
+    description: Hide a chat for a user.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          user:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.teamworkUserIdentity'
+            - type: object
+              nullable: true
+- path: /chats/{chat-id}/markChatReadForUser
+  path_description: Provides operations to call the markChatReadForUser method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: POST
+    summary: Invoke action markChatReadForUser
+    description: Mark a chat as read for a user.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          user:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.teamworkUserIdentity'
+            - type: object
+              nullable: true
+- path: /chats/{chat-id}/markChatUnreadForUser
+  path_description: Provides operations to call the markChatUnreadForUser method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: POST
+    summary: Invoke action markChatUnreadForUser
+    description: Mark a chat as unread for a user.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          user:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.teamworkUserIdentity'
+            - type: object
+              nullable: true
+          lastMessageReadDateTime:
+            pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+            type: string
+            format: date-time
+            nullable: true
+- path: /chats/{chat-id}/sendActivityNotification
+  path_description: Provides operations to call the sendActivityNotification method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: POST
+    summary: Invoke action sendActivityNotification
+    description: Send an activity feed notification in scope of a chat. For more information about sending notifications and the requirements for doing so, see sending Teams activity notifications.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          topic:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.teamworkActivityTopic'
+            - type: object
+              nullable: true
+          activityType:
+            type: string
+            nullable: true
+          chainId:
+            type: number
+            format: int64
+            nullable: true
+          previewText:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.itemBody'
+            - type: object
+              nullable: true
+          teamsAppId:
+            type: string
+            nullable: true
+          templateParameters:
+            type: array
+            items:
+              $ref: '#/components/schemas/microsoft.graph.keyValuePair'
+          recipient:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.teamworkNotificationRecipient'
+            - type: object
+              nullable: true
+- path: /chats/{chat-id}/unhideForUser
+  path_description: Provides operations to call the unhideForUser method.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: POST
+    summary: Invoke action unhideForUser
+    description: Unhide a chat for a user.
+    parameters: []
+    requestBody:
+      description: Action parameters
+      required: true
+      schema:
+        type: object
+        properties:
+          user:
+            anyOf:
+            - $ref: '#/components/schemas/microsoft.graph.teamworkUserIdentity'
+            - type: object
+              nullable: true
+- path: /chats/{chat-id}/permissionGrants
+  path_description: Provides operations to manage the permissionGrants property of the microsoft.graph.chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: List permissionGrants of a chat
+    description: List all resource-specific permission grants on the chat. This list specifies the Microsoft Entra apps that have access to the chat, along with the corresponding resource-specific access that each app has.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to permissionGrants for chats
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: resourceSpecificPermissionGrant
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            clientAppId:
+              type: string
+              description: ID of the service principal of the Microsoft Entra app that has been granted access. Read-only.
+              nullable: true
+            clientId:
+              type: string
+              description: ID of the Microsoft Entra app that has been granted access. Read-only.
+              nullable: true
+            permission:
+              type: string
+              description: The name of the resource-specific permission. Read-only.
+              nullable: true
+            permissionType:
+              type: string
+              description: 'The type of permission. Possible values are: Application, Delegated. Read-only.'
+              nullable: true
+            resourceAppId:
+              type: string
+              description: ID of the Microsoft Entra app that is hosting the resource. Read-only.
+              nullable: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.resourceSpecificPermissionGrant'
+        x-ms-discriminator-value: '#microsoft.graph.resourceSpecificPermissionGrant'
+- path: /chats/{chat-id}/permissionGrants/{resourceSpecificPermissionGrant-id}
+  path_description: Provides operations to manage the permissionGrants property of the microsoft.graph.chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: resourceSpecificPermissionGrant-id
+    in: path
+    description: The unique identifier of resourceSpecificPermissionGrant
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: resourceSpecificPermissionGrant
+  methods:
+  - method: GET
+    summary: Get permissionGrants from chats
+    description: A collection of permissions granted to apps for the chat.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property permissionGrants in chats
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.directoryObject'
+        - title: resourceSpecificPermissionGrant
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            clientAppId:
+              type: string
+              description: ID of the service principal of the Microsoft Entra app that has been granted access. Read-only.
+              nullable: true
+            clientId:
+              type: string
+              description: ID of the Microsoft Entra app that has been granted access. Read-only.
+              nullable: true
+            permission:
+              type: string
+              description: The name of the resource-specific permission. Read-only.
+              nullable: true
+            permissionType:
+              type: string
+              description: 'The type of permission. Possible values are: Application, Delegated. Read-only.'
+              nullable: true
+            resourceAppId:
+              type: string
+              description: ID of the Microsoft Entra app that is hosting the resource. Read-only.
+              nullable: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.resourceSpecificPermissionGrant'
+        x-ms-discriminator-value: '#microsoft.graph.resourceSpecificPermissionGrant'
+  - method: DELETE
+    summary: Delete navigation property permissionGrants for chats
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /chats/{chat-id}/permissionGrants/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /chats/{chat-id}/pinnedMessages
+  path_description: Provides operations to manage the pinnedMessages property of the microsoft.graph.chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: List pinnedChatMessages in a chat
+    description: Get a list of pinnedChatMessages in a chat.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Pin a message in a chat
+    description: Pin a chat message in the specified chat. This API cannot create a new chat; you must use the list chats method to retrieve the ID of an existing chat before you can pin a chat message.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: pinnedChatMessageInfo
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            message:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatMessage'
+              - type: object
+                nullable: true
+              description: Represents details about the chat message that is pinned.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.pinnedChatMessageInfo'
+- path: /chats/{chat-id}/pinnedMessages/{pinnedChatMessageInfo-id}
+  path_description: Provides operations to manage the pinnedMessages property of the microsoft.graph.chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: pinnedChatMessageInfo-id
+    in: path
+    description: The unique identifier of pinnedChatMessageInfo
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: pinnedChatMessageInfo
+  methods:
+  - method: GET
+    summary: Get pinnedMessages from chats
+    description: A collection of all the pinned messages in the chat. Nullable.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property pinnedMessages in chats
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: pinnedChatMessageInfo
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            message:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.chatMessage'
+              - type: object
+                nullable: true
+              description: Represents details about the chat message that is pinned.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.pinnedChatMessageInfo'
+  - method: DELETE
+    summary: Unpin a message from a chat
+    description: Unpin a message from a chat.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /chats/{chat-id}/pinnedMessages/{pinnedChatMessageInfo-id}/message
+  path_description: Provides operations to manage the message property of the microsoft.graph.pinnedChatMessageInfo entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: pinnedChatMessageInfo-id
+    in: path
+    description: The unique identifier of pinnedChatMessageInfo
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: pinnedChatMessageInfo
+  methods:
+  - method: GET
+    summary: Get message from chats
+    description: Represents details about the chat message that is pinned.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /chats/{chat-id}/pinnedMessages/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /chats/{chat-id}/tabs
+  path_description: Provides operations to manage the tabs property of the microsoft.graph.chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: List tabs in chat
+    description: Retrieve the list of tabs in the specified chat.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add tab to chat
+    description: "Add (pin) a tab to the specified chat. \nThe corresponding app must already be installed in the chat."
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: teamsTab
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            configuration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.teamsTabConfiguration'
+              - type: object
+                nullable: true
+              description: Container for custom settings applied to a tab. The tab is considered configured only once this property is set.
+            displayName:
+              type: string
+              description: Name of the tab.
+              nullable: true
+            webUrl:
+              type: string
+              description: Deep link URL of the tab instance. Read only.
+              nullable: true
+            teamsApp:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.teamsApp'
+              - type: object
+                nullable: true
+              description: The application that is linked to the tab. This can't be changed after tab creation.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.teamsTab'
+- path: /chats/{chat-id}/tabs/{teamsTab-id}
+  path_description: Provides operations to manage the tabs property of the microsoft.graph.chat entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: teamsTab-id
+    in: path
+    description: The unique identifier of teamsTab
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: teamsTab
+  methods:
+  - method: GET
+    summary: Get tab in chat
+    description: 'Retrieve the properties and relationships of the specified tab in a chat. '
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update tab in chat
+    description: "Update the properties of the specified tab in a chat. \nThis can be used to configure the content of the tab."
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: teamsTab
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            configuration:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.teamsTabConfiguration'
+              - type: object
+                nullable: true
+              description: Container for custom settings applied to a tab. The tab is considered configured only once this property is set.
+            displayName:
+              type: string
+              description: Name of the tab.
+              nullable: true
+            webUrl:
+              type: string
+              description: Deep link URL of the tab instance. Read only.
+              nullable: true
+            teamsApp:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.teamsApp'
+              - type: object
+                nullable: true
+              description: The application that is linked to the tab. This can't be changed after tab creation.
+              x-ms-navigationProperty: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.teamsTab'
+  - method: DELETE
+    summary: Delete tab from chat
+    description: 'Remove (unpin) a tab from the specified chat. '
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /chats/{chat-id}/tabs/{teamsTab-id}/teamsApp
+  path_description: Provides operations to manage the teamsApp property of the microsoft.graph.teamsTab entity.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  - name: teamsTab-id
+    in: path
+    description: The unique identifier of teamsTab
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: teamsTab
+  methods:
+  - method: GET
+    summary: Get teamsApp from chats
+    description: The application that is linked to the tab. This can't be changed after tab creation.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /chats/{chat-id}/tabs/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: chat-id
+    in: path
+    description: The unique identifier of chat
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: chat
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /chats/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /chats/getAllMessages()
+  path_description: Provides operations to call the getAllMessages method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function getAllMessages
+    description: Get all messages from all chats that a user is a participant in, including one-on-one chats, group chats, and meeting chats.
+    parameters:
+    - name: model
+      in: query
+      description: The payment model for the API
+      schema:
+        type: string
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /chats/getAllRetainedMessages()
+  path_description: Provides operations to call the getAllRetainedMessages method.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Invoke function getAllRetainedMessages
+    description: Get all retained messages from all chats that a user is a participant in, including one-on-one chats, group chats, and meeting chats. To learn more about how to use the Microsoft Teams export APIs to export content, see Export content with the Microsoft Teams export APIs.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null

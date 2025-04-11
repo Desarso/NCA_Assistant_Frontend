@@ -1,0 +1,153 @@
+- path: /scopedRoleMemberships
+  path_description: Provides operations to manage the collection of scopedRoleMembership entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get entities from scopedRoleMemberships
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add new entity to scopedRoleMemberships
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: scopedRoleMembership
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            administrativeUnitId:
+              type: string
+              description: Unique identifier for the administrative unit that the directory role is scoped to
+            roleId:
+              type: string
+              description: Unique identifier for the directory role that the member is in.
+            roleMemberInfo:
+              $ref: '#/components/schemas/microsoft.graph.identity'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.scopedRoleMembership'
+- path: /scopedRoleMemberships/{scopedRoleMembership-id}
+  path_description: Provides operations to manage the collection of scopedRoleMembership entities.
+  path_parameters:
+  - name: scopedRoleMembership-id
+    in: path
+    description: The unique identifier of scopedRoleMembership
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: scopedRoleMembership
+  methods:
+  - method: GET
+    summary: Get entity from scopedRoleMemberships by key
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update entity in scopedRoleMemberships
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: scopedRoleMembership
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            administrativeUnitId:
+              type: string
+              description: Unique identifier for the administrative unit that the directory role is scoped to
+            roleId:
+              type: string
+              description: Unique identifier for the directory role that the member is in.
+            roleMemberInfo:
+              $ref: '#/components/schemas/microsoft.graph.identity'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.scopedRoleMembership'
+  - method: DELETE
+    summary: Delete entity from scopedRoleMemberships
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /scopedRoleMemberships/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

@@ -1,0 +1,155 @@
+- path: /filterOperators
+  path_description: Provides operations to manage the collection of filterOperatorSchema entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get entities from filterOperators
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add new entity to filterOperators
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: filterOperatorSchema
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            arity:
+              $ref: '#/components/schemas/microsoft.graph.scopeOperatorType'
+            multivaluedComparisonType:
+              $ref: '#/components/schemas/microsoft.graph.scopeOperatorMultiValuedComparisonType'
+            supportedAttributeTypes:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.attributeType'
+              description: 'Attribute types supported by the operator. Possible values are: Boolean, Binary, Reference, Integer, String.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.filterOperatorSchema'
+- path: /filterOperators/{filterOperatorSchema-id}
+  path_description: Provides operations to manage the collection of filterOperatorSchema entities.
+  path_parameters:
+  - name: filterOperatorSchema-id
+    in: path
+    description: The unique identifier of filterOperatorSchema
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: filterOperatorSchema
+  methods:
+  - method: GET
+    summary: Get entity from filterOperators by key
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update entity in filterOperators
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: filterOperatorSchema
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            arity:
+              $ref: '#/components/schemas/microsoft.graph.scopeOperatorType'
+            multivaluedComparisonType:
+              $ref: '#/components/schemas/microsoft.graph.scopeOperatorMultiValuedComparisonType'
+            supportedAttributeTypes:
+              type: array
+              items:
+                $ref: '#/components/schemas/microsoft.graph.attributeType'
+              description: 'Attribute types supported by the operator. Possible values are: Boolean, Binary, Reference, Integer, String.'
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.filterOperatorSchema'
+  - method: DELETE
+    summary: Delete entity from filterOperators
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /filterOperators/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

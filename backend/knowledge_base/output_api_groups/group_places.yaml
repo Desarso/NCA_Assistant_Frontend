@@ -1,0 +1,537 @@
+- path: /places/{place-id}
+  path_description: Provides operations to manage the collection of place entities.
+  path_parameters:
+  - name: place-id
+    in: path
+    description: The unique identifier of place
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: place
+  methods:
+  - method: PATCH
+    summary: Update place
+    description: Update the properties of place object, which can be a room or roomList. You can identify the room or roomList by specifying the id or emailAddress property.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: place
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            address:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.physicalAddress'
+              - type: object
+                nullable: true
+              description: The street address of the place.
+            displayName:
+              type: string
+              description: The name associated with the place.
+            geoCoordinates:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.outlookGeoCoordinates'
+              - type: object
+                nullable: true
+              description: Specifies the place location in latitude, longitude, and (optionally) altitude coordinates.
+            phone:
+              type: string
+              description: The phone number of the place.
+              nullable: true
+            '@odata.type':
+              type: string
+          discriminator:
+            propertyName: '@odata.type'
+            mapping:
+              '#microsoft.graph.room': '#/components/schemas/microsoft.graph.room'
+              '#microsoft.graph.roomList': '#/components/schemas/microsoft.graph.roomList'
+  - method: DELETE
+    summary: Delete entity from places
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /places/{place-id}/graph.room
+  path_description: Casts the previous resource to room.
+  path_parameters:
+  - name: place-id
+    in: path
+    description: The unique identifier of place
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: place
+  methods:
+  - method: GET
+    summary: List places
+    description: 'Get a collection of the specified type of place objects defined in the tenant. For example, you can get all the rooms, all the room lists, or the rooms in a specific room list in the tenant. A place object can be one of the following types: Both room and roomList are derived from the place object. By default, this operation returns 100 places per page. Compared with the findRooms and findRoomLists functions, this operation returns a richer payload for rooms and room lists. See details for how they compare.'
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /places/{place-id}/graph.roomList
+  path_description: Casts the previous resource to roomList.
+  path_parameters:
+  - name: place-id
+    in: path
+    description: The unique identifier of place
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: place
+  methods:
+  - method: GET
+    summary: Get the item of type microsoft.graph.place as microsoft.graph.roomList
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /places/{place-id}/graph.roomList/rooms
+  path_description: Provides operations to manage the rooms property of the microsoft.graph.roomList entity.
+  path_parameters:
+  - name: place-id
+    in: path
+    description: The unique identifier of place
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: place
+  methods:
+  - method: GET
+    summary: Get rooms from places
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Create new navigation property to rooms for places
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.place'
+        - title: room
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            audioDeviceName:
+              type: string
+              description: Specifies the name of the audio device in the room.
+              nullable: true
+            bookingType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.bookingType'
+              - type: object
+                nullable: true
+              description: Type of room. Possible values are standard, and reserved.
+            building:
+              type: string
+              description: Specifies the building name or building number that the room is in.
+              nullable: true
+            capacity:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Specifies the capacity of the room.
+              format: int32
+              nullable: true
+            displayDeviceName:
+              type: string
+              description: Specifies the name of the display device in the room.
+              nullable: true
+            emailAddress:
+              type: string
+              description: Email address of the room.
+              nullable: true
+            floorLabel:
+              type: string
+              description: Specifies a descriptive label for the floor, for example, P.
+              nullable: true
+            floorNumber:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Specifies the floor number that the room is on.
+              format: int32
+              nullable: true
+            isWheelChairAccessible:
+              type: boolean
+              description: Specifies whether the room is wheelchair accessible.
+              nullable: true
+            label:
+              type: string
+              description: Specifies a descriptive label for the room, for example, a number or name.
+              nullable: true
+            nickname:
+              type: string
+              description: Specifies a nickname for the room, for example, 'conf room'.
+            tags:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: Specifies other features of the room, for example, details like the type of view or furniture type.
+            videoDeviceName:
+              type: string
+              description: Specifies the name of the video device in the room.
+              nullable: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.room'
+        x-ms-discriminator-value: '#microsoft.graph.room'
+- path: /places/{place-id}/graph.roomList/rooms/{room-id}
+  path_description: Provides operations to manage the rooms property of the microsoft.graph.roomList entity.
+  path_parameters:
+  - name: place-id
+    in: path
+    description: The unique identifier of place
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: place
+  - name: room-id
+    in: path
+    description: The unique identifier of room
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: room
+  methods:
+  - method: GET
+    summary: Get rooms from places
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update the navigation property rooms in places
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New navigation property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.place'
+        - title: room
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            audioDeviceName:
+              type: string
+              description: Specifies the name of the audio device in the room.
+              nullable: true
+            bookingType:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.bookingType'
+              - type: object
+                nullable: true
+              description: Type of room. Possible values are standard, and reserved.
+            building:
+              type: string
+              description: Specifies the building name or building number that the room is in.
+              nullable: true
+            capacity:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Specifies the capacity of the room.
+              format: int32
+              nullable: true
+            displayDeviceName:
+              type: string
+              description: Specifies the name of the display device in the room.
+              nullable: true
+            emailAddress:
+              type: string
+              description: Email address of the room.
+              nullable: true
+            floorLabel:
+              type: string
+              description: Specifies a descriptive label for the floor, for example, P.
+              nullable: true
+            floorNumber:
+              maximum: 2147483647
+              minimum: -2147483648
+              type: number
+              description: Specifies the floor number that the room is on.
+              format: int32
+              nullable: true
+            isWheelChairAccessible:
+              type: boolean
+              description: Specifies whether the room is wheelchair accessible.
+              nullable: true
+            label:
+              type: string
+              description: Specifies a descriptive label for the room, for example, a number or name.
+              nullable: true
+            nickname:
+              type: string
+              description: Specifies a nickname for the room, for example, 'conf room'.
+            tags:
+              type: array
+              items:
+                type: string
+                nullable: true
+              description: Specifies other features of the room, for example, details like the type of view or furniture type.
+            videoDeviceName:
+              type: string
+              description: Specifies the name of the video device in the room.
+              nullable: true
+            '@odata.type':
+              type: string
+              default: '#microsoft.graph.room'
+        x-ms-discriminator-value: '#microsoft.graph.room'
+  - method: DELETE
+    summary: Delete navigation property rooms for places
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
+- path: /places/{place-id}/graph.roomList/rooms/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters:
+  - name: place-id
+    in: path
+    description: The unique identifier of place
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: place
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /places/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /places/graph.room
+  path_description: Casts the previous resource to room.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: List places
+    description: 'Get a collection of the specified type of place objects defined in the tenant. For example, you can get all the rooms, all the room lists, or the rooms in a specific room list in the tenant. A place object can be one of the following types: Both room and roomList are derived from the place object. By default, this operation returns 100 places per page. Compared with the findRooms and findRoomLists functions, this operation returns a richer payload for rooms and room lists. See details for how they compare.'
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /places/graph.room/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null
+- path: /places/graph.roomList
+  path_description: Casts the previous resource to roomList.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the items of type microsoft.graph.roomList in the microsoft.graph.place collection
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+- path: /places/graph.roomList/$count
+  path_description: Provides operations to count the resources in the collection.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get the number of the resource
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    requestBody: null

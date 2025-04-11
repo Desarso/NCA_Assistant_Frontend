@@ -1,0 +1,232 @@
+- path: /agreementAcceptances
+  path_description: Provides operations to manage the collection of agreementAcceptance entities.
+  path_parameters: []
+  methods:
+  - method: GET
+    summary: Get entities from agreementAcceptances
+    description: No description provided.
+    parameters:
+    - $ref: '#/components/parameters/top'
+    - $ref: '#/components/parameters/skip'
+    - $ref: '#/components/parameters/search'
+    - $ref: '#/components/parameters/filter'
+    - $ref: '#/components/parameters/count'
+    - name: $orderby
+      in: query
+      description: Order items by property values
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    - name: $expand
+      in: query
+      description: Expand related entities
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: POST
+    summary: Add new entity to agreementAcceptances
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New entity
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: agreementAcceptance
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            agreementFileId:
+              type: string
+              description: The identifier of the agreement file accepted by the user.
+              nullable: true
+            agreementId:
+              type: string
+              description: The identifier of the agreement.
+              nullable: true
+            deviceDisplayName:
+              type: string
+              description: The display name of the device used for accepting the agreement.
+              nullable: true
+            deviceId:
+              type: string
+              description: The unique identifier of the device used for accepting the agreement. Supports $filter (eq) and eq for null values.
+              nullable: true
+            deviceOSType:
+              type: string
+              description: The operating system used to accept the agreement.
+              nullable: true
+            deviceOSVersion:
+              type: string
+              description: The operating system version of the device used to accept the agreement.
+              nullable: true
+            expirationDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The expiration date time of the acceptance. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Supports $filter (eq, ge, le) and eq for null values.
+              format: date-time
+              nullable: true
+            recordedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.agreementAcceptanceState'
+              - type: object
+                nullable: true
+              description: 'The state of the agreement acceptance. Possible values are: accepted, declined. Supports $filter (eq).'
+            userDisplayName:
+              type: string
+              description: Display name of the user when the acceptance was recorded.
+              nullable: true
+            userEmail:
+              type: string
+              description: Email of the user when the acceptance was recorded.
+              nullable: true
+            userId:
+              type: string
+              description: The identifier of the user who accepted the agreement. Supports $filter (eq).
+              nullable: true
+            userPrincipalName:
+              type: string
+              description: UPN of the user when the acceptance was recorded.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreementAcceptance'
+- path: /agreementAcceptances/{agreementAcceptance-id}
+  path_description: Provides operations to manage the collection of agreementAcceptance entities.
+  path_parameters:
+  - name: agreementAcceptance-id
+    in: path
+    description: The unique identifier of agreementAcceptance
+    required: true
+    schema:
+      type: string
+    x-ms-docs-key-type: agreementAcceptance
+  methods:
+  - method: GET
+    summary: Get entity from agreementAcceptances by key
+    description: No description provided.
+    parameters:
+    - name: $select
+      in: query
+      description: Select properties to be returned
+      style: form
+      explode: false
+      schema:
+        uniqueItems: true
+        type: array
+        items:
+          type: string
+    requestBody: null
+  - method: PATCH
+    summary: Update entity in agreementAcceptances
+    description: No description provided.
+    parameters: []
+    requestBody:
+      description: New property values
+      required: true
+      schema:
+        allOf:
+        - $ref: '#/components/schemas/microsoft.graph.entity'
+        - title: agreementAcceptance
+          required:
+          - '@odata.type'
+          type: object
+          properties:
+            agreementFileId:
+              type: string
+              description: The identifier of the agreement file accepted by the user.
+              nullable: true
+            agreementId:
+              type: string
+              description: The identifier of the agreement.
+              nullable: true
+            deviceDisplayName:
+              type: string
+              description: The display name of the device used for accepting the agreement.
+              nullable: true
+            deviceId:
+              type: string
+              description: The unique identifier of the device used for accepting the agreement. Supports $filter (eq) and eq for null values.
+              nullable: true
+            deviceOSType:
+              type: string
+              description: The operating system used to accept the agreement.
+              nullable: true
+            deviceOSVersion:
+              type: string
+              description: The operating system version of the device used to accept the agreement.
+              nullable: true
+            expirationDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The expiration date time of the acceptance. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Supports $filter (eq, ge, le) and eq for null values.
+              format: date-time
+              nullable: true
+            recordedDateTime:
+              pattern: ^[0-9]{4,}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,12})?(Z|[+-][0-9][0-9]:[0-9][0-9])$
+              type: string
+              description: The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
+              format: date-time
+              nullable: true
+            state:
+              anyOf:
+              - $ref: '#/components/schemas/microsoft.graph.agreementAcceptanceState'
+              - type: object
+                nullable: true
+              description: 'The state of the agreement acceptance. Possible values are: accepted, declined. Supports $filter (eq).'
+            userDisplayName:
+              type: string
+              description: Display name of the user when the acceptance was recorded.
+              nullable: true
+            userEmail:
+              type: string
+              description: Email of the user when the acceptance was recorded.
+              nullable: true
+            userId:
+              type: string
+              description: The identifier of the user who accepted the agreement. Supports $filter (eq).
+              nullable: true
+            userPrincipalName:
+              type: string
+              description: UPN of the user when the acceptance was recorded.
+              nullable: true
+            '@odata.type':
+              type: string
+        x-ms-discriminator-value: '#microsoft.graph.agreementAcceptance'
+  - method: DELETE
+    summary: Delete entity from agreementAcceptances
+    description: No description provided.
+    parameters:
+    - name: If-Match
+      in: header
+      description: ETag
+      schema:
+        type: string
+    requestBody: null
