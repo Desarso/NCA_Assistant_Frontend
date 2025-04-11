@@ -502,10 +502,14 @@ function ChatWindow() {
     <div class="flex w-full h-full flex-col justify-between z-5 bg-background dark:bg-background mt-3.5 rounded-lg ">
       {/* Main Content Area: Takes full width, allows vertical flex. NO CENTERING HERE. */}
       <div class="flex-1 w-full overflow-hidden flex flex-col">
-        {/* Show existing chat content OR Mic visualizer, but NOT NewChat here anymore */}
+        {/* Show existing chat content OR NewChat component in fallback */}
         <Show
           when={id()} // Only show existing chat history/loading/mic if ID exists
-          // Fallback is removed here, NewChat is handled below near the input
+          fallback={ // Render NewChat centered using flexbox and margins
+            <div class="flex-1 flex flex-col w-full md:max-w-[900px] mx-auto justify-center">
+                <NewChat onPromptClick={handleSubmit} />
+            </div>
+          }
         >
           {/* Container for Existing Chat UI (Loading/Messages/Mic): Takes full width/height */} 
           <div class="w-full h-full flex flex-col flex-1">
@@ -598,31 +602,18 @@ function ChatWindow() {
         </Show>
       </div>
 
-      {/* Container for Input and Absolutely Positioned NewChat Prompts */}
-      {/* Added relative positioning context, centered block */}
-      <div class="relative w-full md:max-w-[900px] mx-auto">
-          {/* Conditionally render NewChat prompts absolutely positioned above the input */}
-          {/* Only show if !id() (new chat) AND !isListening() */}
-          <Show when={!id() && !isListening()}>
-              <div class="absolute bottom-full left-1/2 -translate-x-1/2 w-full mb-50 px-4">
-                  {/* Added px-4 to prevent content touching edges */}
-                  <NewChat onPromptClick={handleSubmit} />
-              </div>
-          </Show>
-
-          {/* Chat Input Area: Conditionally rendered at the bottom */}
-          {/* Still uses Show, but NewChat is handled separately above */}
-          <Show when={!isListening()}>
-              <div class="border-t md:border md:rounded-lg md:shadow-md border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 w-full mb-3.5">
-                  <ChatInput
-                      onSubmit={handleSubmit}
-                      gettingResponse={gettingResponse()}
-                      setIsListening={setIsListening}
-                      handleStopRequest={handleStopRequest}
-                  />
-              </div>
-          </Show>
-      </div>
+      {/* Chat Input Area: Rendered below the main content area */}
+      {/* Remove the relative container */}
+      <Show when={!isListening()}>
+          <div class="border-t md:border md:rounded-lg md:shadow-md border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 w-full md:max-w-[900px] mx-auto mb-3.5">
+              <ChatInput
+                  onSubmit={handleSubmit}
+                  gettingResponse={gettingResponse()}
+                  setIsListening={setIsListening}
+                  handleStopRequest={handleStopRequest}
+              />
+          </div>
+      </Show>
     </div>
   );
 }
