@@ -43,7 +43,7 @@ http_client = cached_async_http_client(timeout=300, connect=5)
 # Define available models
 models = {
     "gemini": GeminiModel(
-        "gemini-2.5-pro-preview-03-25",
+        "gemini-2.0-flash",
         provider=GoogleGLAProvider(
             api_key=os.getenv("GEMINI_API_KEY"), http_client=http_client
         ),
@@ -320,7 +320,7 @@ async def create_agent(user_object: FirebaseUser, memory: str) -> Agent:
     )  # Fallback to default if model not found
 
     return Agent(
-        model=selected_model,
+        model=models["gemini"],
         system_prompt=get_system_prompt(user_object, memory),
         deps_type=MyDeps,
         # mcp_servers=mcp_servers,
