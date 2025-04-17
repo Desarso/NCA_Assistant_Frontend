@@ -69,6 +69,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         os.getenv("FRONTEND_URL"),
+        "http://localhost:3000",
         "http://localhost:4173",
         "https://nca-assistant.gabrielmalek.com",
         "https://nca-assistant.development.gabrielmalek.com",
