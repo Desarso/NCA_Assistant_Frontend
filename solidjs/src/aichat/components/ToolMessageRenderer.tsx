@@ -18,6 +18,9 @@ import JsonSyntaxHighlighter from "./JsonSyntaxHighlighter";
 import { useTheme } from "@/lib/theme-provider";
 import { pythonReprStringToJsObject } from "../utils/utils";
 
+// Define a character limit for rendering large JSON content
+const MAX_RENDER_CHARS = 20000;
+
 interface ToolResult {
   content: string;
   name: string;
@@ -243,6 +246,82 @@ function ToolMessageRenderer({
           const info = toolCallInfo();
           if (!info) return null;
 
+          // Helper function to check content size, potentially truncate, and provide full string
+          const checkContentSize = (content: any): { 
+              isTooLarge: boolean, 
+              charCount: number, 
+              displayedContent: any, 
+              fullStringifiedContent: string 
+            } => {
+            let stringified = "";
+            let count = 0;
+            let originalContent = content; // Keep original for non-truncated display
+
+            if (content === null || content === undefined) {
+              return { isTooLarge: false, charCount: 0, displayedContent: content, fullStringifiedContent: "" };
+            }
+
+            try {
+              stringified = JSON.stringify(content, null, 2);
+              count = stringified.length;
+            } catch (e) {
+              console.error("Error stringifying content for size check:", e);
+              // Use basic string conversion as fallback
+              stringified = String(content);
+              count = stringified.length;
+              originalContent = stringified; // Use the string representation for display
+            }
+            
+            const tooLarge = count > MAX_RENDER_CHARS;
+            let displayed = originalContent; // Default to original
+
+            if (tooLarge) {
+              let truncatedString = stringified.substring(0, MAX_RENDER_CHARS);
+              // Try to parse truncated string back to object/array for potentially better highlighting
+              // This is imperfect but might work for simple cases.
+              try {
+                 // Attempt to parse, if fails, use the raw truncated string
+                 displayed = JSON.parse(truncatedString + (content[0] === '[' ? ']' : '}')); // Basic attempt to close
+              } catch {
+                 try {
+                    displayed = JSON.parse(truncatedString);
+                 } catch {
+                    displayed = truncatedString; // Fallback to raw truncated string
+                 }
+              }
+            }
+
+            return {
+              isTooLarge: tooLarge,
+              charCount: count,
+              displayedContent: displayed,
+              fullStringifiedContent: stringified
+            };
+          };
+
+          const callDetailsSizeInfo = createMemo(() => checkContentSize(info.message?.content));
+          const resultSizeInfo = createMemo(() => checkContentSize(parsedToolResultContent()));
+
+          // Signals for copy state
+          const [copiedCall, setCopiedCall] = createSignal(false);
+          const [copiedResult, setCopiedResult] = createSignal(false);
+
+          const handleCopy = async (contentToCopy: string, type: 'call' | 'result') => {
+            try {
+              await navigator.clipboard.writeText(contentToCopy);
+              if (type === 'call') {
+                setCopiedCall(true);
+                setTimeout(() => setCopiedCall(false), 2000);
+              } else {
+                setCopiedResult(true);
+                setTimeout(() => setCopiedResult(false), 2000);
+              }
+            } catch (err) {
+              console.error('Failed to copy text: ', err);
+              // Optionally: show an error message to the user
+            }
+          };
+
           return (
             <div
               class={`transition-opacity duration-500 ease-in-out ${
@@ -310,63 +389,135 @@ function ToolMessageRenderer({
                     "border-top": "none",
                   }}
                 >
-                  <div class="p-3 space-y-2">
-                    <div>
-                      <h4 class="text-xs font-medium text-primary/80 mb-1">
-                        Call Details:
-                      </h4>
-                      <JsonSyntaxHighlighter content={info.message?.content} />
-                    </div>
-                    <div>
-                      <h4 class="text-xs font-medium text-primary/80 mb-1">
-                        Result:
-                      </h4>
-                      <JsonSyntaxHighlighter content={parsedToolResultContent()} />
-                    </div>
-                    {(() => {
-                      const result = parsedToolResultContent();
-                      // Use the ID from toolCallInfo if available, otherwise fallback to result
-                      const info = toolCallInfo();
-                      const toolCallId = info?.id || result?.tool_call_id;
-                      
-                      if (toolCallId && toolCallId.startsWith('pyd_ai_')) {
-                        return (
-                          <div class="mt-2 pt-2 border-t border-primary/10">
-                            <div class="flex items-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-primary/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <Show when={isOpen()}>
+                    <div class="p-3 space-y-2">
+                      <Show when={info.message?.content}>
+                        <div class="relative group">
+                          <h4 class="text-xs font-medium text-primary/80 mb-1">
+                            Call Details:
+                          </h4>
+                          <button
+                            onClick={() => handleCopy(callDetailsSizeInfo().fullStringifiedContent, 'call')}
+                            class="absolute top-0 right-0 p-1 text-primary/40 hover:text-primary hover:bg-primary/10 rounded opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity z-10"
+                            aria-label="Copy call details"
+                          >
+                            <Show 
+                              when={!copiedCall()} 
+                              fallback={
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M20 6L9 17l-5-5"/>
+                                </svg>
+                              }
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
                               </svg>
-                              <h4 class="text-xs font-medium text-primary/80">
-                                Tool Call ID:
-                              </h4>
-                            </div>
-                            <div class="ml-5 mt-1 p-2 bg-primary/5 rounded text-xs font-mono overflow-x-auto">
-                              {toolCallId}
-                            </div>
-                            <div class="ml-5 mt-1 flex items-center text-xs text-primary/70">
-                              <span class="mr-1">Link method:</span>
-                              <span class={`px-1.5 py-0.5 rounded ${(info?.usingId ?? false) ? 'bg-blue-500/20' : 'bg-yellow-500/20'}`}>
-                                {(info?.usingId ?? false) ? 'ID-based' : 'Sequential (legacy)'}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      } else if (info?.usingId === false) {
-                        // For legacy messages with no ID, show a simple indicator
-                        return (
-                          <div class="mt-2 pt-2 border-t border-primary/10">
-                            <div class="flex items-center text-xs text-primary/70">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-yellow-500/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M9 18l6-6-6-6"/>
+                            </Show>
+                          </button>
+                          <Show
+                            when={!callDetailsSizeInfo().isTooLarge}
+                            fallback={
+                              <div class="relative">
+                                <JsonSyntaxHighlighter content={callDetailsSizeInfo().displayedContent} />
+                                <div class="absolute bottom-0 left-0 right-0 p-1 bg-gradient-to-t from-background to-transparent text-center">
+                                   <span class="text-xs px-2 py-0.5 rounded bg-warning/20 text-warning-foreground">
+                                     Content truncated ({callDetailsSizeInfo().charCount.toLocaleString()} characters total).
+                                   </span>
+                                 </div>
+                              </div>
+                            }
+                          >
+                            <JsonSyntaxHighlighter content={callDetailsSizeInfo().displayedContent} />
+                          </Show>
+                        </div>
+                      </Show>
+                      <Show when={parsedToolResultContent() !== null && parsedToolResultContent() !== undefined}>
+                        <div class="relative group">
+                          <h4 class="text-xs font-medium text-primary/80 mb-1">
+                            Result:
+                          </h4>
+                           <button
+                            onClick={() => handleCopy(resultSizeInfo().fullStringifiedContent, 'result')}
+                            class="absolute top-0 right-0 p-1 text-primary/40 hover:text-primary hover:bg-primary/10 rounded opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity z-10"
+                            aria-label="Copy result"
+                          >
+                            <Show 
+                              when={!copiedResult()} 
+                              fallback={
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M20 6L9 17l-5-5"/>
+                                </svg>
+                              }
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
                               </svg>
-                              <span>Legacy connection (sequential messages)</span>
+                            </Show>
+                          </button>
+                          <Show
+                            when={!resultSizeInfo().isTooLarge}
+                            fallback={
+                               <div class="relative">
+                                <JsonSyntaxHighlighter content={resultSizeInfo().displayedContent} />
+                                <div class="absolute bottom-0 left-0 right-0 p-1 bg-gradient-to-t from-background to-transparent text-center">
+                                   <span class="text-xs px-2 py-0.5 rounded bg-warning/20 text-warning-foreground">
+                                     Content truncated ({resultSizeInfo().charCount.toLocaleString()} characters total).
+                                   </span>
+                                 </div>
+                              </div>
+                            }
+                          >
+                             <JsonSyntaxHighlighter content={resultSizeInfo().displayedContent} />
+                          </Show>
+                        </div>
+                      </Show>
+                      {(() => {
+                        const result = parsedToolResultContent();
+                        // Use the ID from toolCallInfo if available, otherwise fallback to result
+                        const info = toolCallInfo();
+                        const toolCallId = info?.id || result?.tool_call_id;
+                        
+                        if (toolCallId && toolCallId.startsWith('pyd_ai_')) {
+                          return (
+                            <div class="mt-2 pt-2 border-t border-primary/10">
+                              <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-primary/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                                <h4 class="text-xs font-medium text-primary/80">
+                                  Tool Call ID:
+                                </h4>
+                              </div>
+                              <div class="ml-5 mt-1 p-2 bg-primary/5 rounded text-xs font-mono overflow-x-auto">
+                                {toolCallId}
+                              </div>
+                              <div class="ml-5 mt-1 flex items-center text-xs text-primary/70">
+                                <span class="mr-1">Link method:</span>
+                                <span class={`px-1.5 py-0.5 rounded ${(info?.usingId ?? false) ? 'bg-blue-500/20' : 'bg-yellow-500/20'}`}>
+                                  {(info?.usingId ?? false) ? 'ID-based' : 'Sequential (legacy)'}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        );
-                      }
-                      return null;
-                    })()}
-                  </div>
+                          );
+                        } else if (info?.usingId === false) {
+                          // For legacy messages with no ID, show a simple indicator
+                          return (
+                            <div class="mt-2 pt-2 border-t border-primary/10">
+                              <div class="flex items-center text-xs text-primary/70">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-yellow-500/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                                <span>Legacy connection (sequential messages)</span>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+                    </div>
+                  </Show>
                 </div>
               </div>
             </div>
