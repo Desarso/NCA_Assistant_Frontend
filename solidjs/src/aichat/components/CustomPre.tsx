@@ -14,7 +14,10 @@ interface CustomPreProps {
 const CustomPre: Component<CustomPreProps> = (props) => {
   const [copied, setCopied] = createSignal(false);
   const [detectedLanguage, setDetectedLanguage] = createSignal("");
+  const [preElement, setPreElement] = createSignal<HTMLPreElement | null>(null);
+
   const preRef = (el: HTMLPreElement) => {
+    setPreElement(el);
     // Set up mutation observer to detect class changes
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
@@ -36,7 +39,6 @@ const CustomPre: Component<CustomPreProps> = (props) => {
     observer.observe(el, { attributes: true, subtree: true, attributeFilter: ["class"] });
   };
   
-  const codeContent = () => props.children?.props?.children?.toString() || "";
   const language = () => props.children?.props?.className?.replace("language-", "") || "";
 
   onMount(() => {
@@ -55,7 +57,9 @@ const CustomPre: Component<CustomPreProps> = (props) => {
   });
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(codeContent());
+    const codeElement = preElement()?.querySelector("code");
+    const textToCopy = codeElement?.textContent || "";
+    navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

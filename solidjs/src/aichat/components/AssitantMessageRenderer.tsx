@@ -21,6 +21,7 @@ import type { Root, Element, Text } from "hast";
 import { ContentItem } from "../models/models";
 import morphdom from "morphdom";
 import Prism from "prismjs";
+
 interface AssistantMessageProps {
   fullContent: Accessor<string | ContentItem[] | { name: string }>;
   gettingResponse: boolean;
@@ -109,6 +110,73 @@ const rehypeWrapWordsInSpans: Plugin<[], Root> = () => {
   };
 };
 
+// New Rehype Plugin to wrap tables and add a copy button
+const rehypeWrapTablesWithCopyButton: Plugin<[], Root> = () => {
+  return (tree: Root) => {
+    visit(tree, "element", (node: Element, index, parent) => {
+      if (node.tagName === "table") {
+        // Basic validation
+        if (typeof index !== "number" || !parent || !("children" in parent)) {
+          return;
+        }
+
+        // 1. Create the copy button element (adjusted position)
+        const copyButton: Element = {
+          type: "element",
+          tagName: "button",
+          properties: {
+            className: [
+              "copy-table-button",
+              "absolute", // Relative to Top-Level Wrapper
+              "bottom-2", "right-2", // Position slightly off the corner (adjust if needed)
+              "z-10", // Ensure it's above the scrollbar
+              "p-1",
+              "bg-gray-200", "dark:bg-gray-700",
+              "text-gray-700", "dark:text-gray-300",
+              "rounded", "text-xs", "opacity-0",
+              "group-hover:opacity-100", // Show on Top-Level Wrapper hover
+              "transition-opacity", "duration-200",
+              "focus:outline-none", "focus:ring-2", "focus:ring-blue-500",
+              "hover:bg-gray-300", "dark:hover:bg-gray-600",
+            ],
+            "aria-label": "Copy table content",
+             type: "button",
+          },
+          children: [{ type: "text", value: "Copy" }],
+        };
+
+        // 2. Create the *scrollable* wrapper div (contains the table)
+        const scrollableWrapperDiv: Element = {
+           type: "element",
+           tagName: "div",
+           properties: {
+               className: ["markdown-table-scroll-wrapper", "overflow-x-auto", "scrollbar"]
+           },
+           // Contains only the table now
+           children: [structuredClone(node)]
+        };
+
+        // 3. Create the *top-level* wrapper (relative, group)
+        const topLevelWrapperDiv: Element = {
+            type: "element",
+            tagName: "div",
+            properties: {
+                 className: ["markdown-table-container", "relative", "group", "max-w-full"] // Parent still constrains width
+            },
+            // Contains the scrollable div AND the button as siblings
+            children: [scrollableWrapperDiv, copyButton]
+        };
+
+        // 4. Replace the original table node with the *top-level* wrapper div
+        parent.children.splice(index, 1, topLevelWrapperDiv);
+
+        // Skip processing children of the new top-level wrapper
+        return SKIP;
+      }
+    });
+  };
+};
+
 // Helper function to check if content is ContentItem array
 function isContentItemArray(
   content: string | ContentItem[] | { name: string }
@@ -141,7 +209,7 @@ const renderMarkdownToHTML = async (
           }}
           children={markdownContent}
           remarkPlugins={[remarkGfm, remarkBreaks, supersub]}
-          rehypePlugins={[rehypeWrapWordsInSpans]}
+          rehypePlugins={[rehypeWrapWordsInSpans, rehypeWrapTablesWithCopyButton]}
         />
       ),
       tempDiv
@@ -327,11 +395,67 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
 
   // Check for streaming pauses
   let pauseCheckInterval: number | undefined;
+  // Event listener handle for cleanup
+  let copyClickHandler: ((event: MouseEvent) => Promise<void>) | undefined;
 
   onMount(() => {
+    // Add event listener for copy buttons
+    copyClickHandler = async (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      const button = target.closest('.copy-table-button'); // Check if the click was on or inside the button
+
+      if (button instanceof HTMLButtonElement && containerRef) { // Check if it's an actual button element
+        // Find the top-level container that groups the button and scrollable div
+        const topLevelContainer = button.closest('.markdown-table-container'); // Use the new top-level class
+
+        if (topLevelContainer) {
+          // Find the table within this container
+          const table = topLevelContainer.querySelector('table'); // Find the table descendant
+
+          if (table) {
+            try {
+              await navigator.clipboard.writeText(table.innerText);
+              const originalText = button.textContent;
+              button.textContent = 'Copied!';
+              button.classList.add('bg-green-200', 'dark:bg-green-700'); // Feedback style
+              // Revert text and style after a short delay
+              setTimeout(() => {
+                if (button) {
+                   button.textContent = originalText;
+                   button.classList.remove('bg-green-200', 'dark:bg-green-700');
+                }
+              }, 1500);
+            } catch (err) {
+              console.error('Failed to copy table content:', err);
+              const originalText = button.textContent;
+              button.textContent = 'Error!';
+              button.classList.add('bg-red-200', 'dark:bg-red-700'); // Error style
+              // Revert text and style after a short delay
+              setTimeout(() => {
+                 if (button) {
+                   button.textContent = originalText;
+                   button.classList.remove('bg-red-200', 'dark:bg-red-700');
+                 }
+              }, 1500);
+            }
+          } else {
+            console.error("Could not find table element within the container.");
+          }
+        } else {
+          console.error("Could not find the top-level table container.");
+        }
+      }
+    };
+
+    containerRef?.addEventListener('click', copyClickHandler);
+
     return () => {
       if (pauseCheckInterval) {
         clearInterval(pauseCheckInterval);
+      }
+      // Remove event listener on cleanup
+      if (containerRef && copyClickHandler) {
+        containerRef.removeEventListener('click', copyClickHandler);
       }
     };
   });
@@ -360,6 +484,10 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
   onCleanup(() => {
     if (pauseCheckInterval) {
       clearInterval(pauseCheckInterval);
+    }
+    // Remove event listener on cleanup
+    if (containerRef && copyClickHandler) {
+      containerRef.removeEventListener('click', copyClickHandler);
     }
 
     // Also clear any static content timer
@@ -469,6 +597,7 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
               }}
               children={String(content())}
               remarkPlugins={[remarkGfm, remarkBreaks, supersub]}
+              rehypePlugins={[rehypeWrapTablesWithCopyButton]}
             />
           </div>
         </Show>
