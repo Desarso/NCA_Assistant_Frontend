@@ -370,6 +370,7 @@ class GeminiStreamedResponse(StreamedResponse):
     async def _get_event_iterator(self) -> AsyncIterator[ModelResponseStreamEvent]:
         async for gemini_response in self._get_gemini_responses():
             candidate = gemini_response['candidates'][0]
+            print("Candidate:", candidate)
             if 'content' not in candidate:
                 raise UnexpectedModelBehavior('Streamed response has no content field')
             gemini_part: _GeminiPartUnion
