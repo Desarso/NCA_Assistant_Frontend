@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "solid-js";
-import { Router, Route } from "@solidjs/router";
+import { Router, Route, useNavigate, Navigate } from "@solidjs/router";
 import "./index.css";
 import Layout from "./layout";
 import PrivateRoute from "./components/PrivateRoute";
@@ -14,21 +14,12 @@ const Animation = lazy(() => import("./pages/Animation"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 
 function AppRoutes() {
-  // const { setBiometricVerified } = useAuth();
+    // const { setBiometricVerified } = useAuth();
   return (
     <Suspense fallback={<div class="loading">Loading...</div>}>
       <Route path="/login" component={Login} />
       <Route path="/request-whitelist" component={RequestWhitelist} />
-      <Route
-        path="/"
-        component={() => (
-          <PrivateRoute>
-            <Layout>
-              <ChatWindow />
-            </Layout>
-          </PrivateRoute>
-        )}
-      />
+     <Route path="/" component={() => <Navigate href="/chat" />} />
       <Route
         path="/chat/:id?"
         component={() => (

@@ -111,15 +111,16 @@ function ChatWindow() {
   }
 
   onMount(async () => {
+    // Original onMount logic (as inferred from initial attempts)
     if (id()) {
       setConversationId(id());
-      //set loading to true
       setLoading(true);
       await fetchMessageHistory(id());
       setLoading(false);
       instantScrollToBottom();
       Prism.highlightAll();
     } else {
+      console.log("onMount: On new chat route (/chat)");
       setMessages([]);
       setConversationId(crypto.randomUUID().toString());
     }
@@ -134,17 +135,18 @@ function ChatWindow() {
   //if ID changes normally from navigating to old conversation
   createEffect(async () => {
     const currentId = id();
+    // Original effect logic (as inferred from initial attempts)
     if (currentId && currentId !== conversationId()) {
         setMessages([]);
         setConversationId(currentId);
-        const startTime = performance.now(); // Get the starting time in milliseconds
+        const startTime = performance.now(); 
 
         setLoading(true);
-        await fetchMessageHistory(currentId);
+        await fetchMessageHistory(currentId); 
         setLoading(false);
 
-        const endTime = performance.now(); // Get the ending time in milliseconds
-        const executionTime = endTime - startTime; // Calculate the execution time in milliseconds
+        const endTime = performance.now(); 
+        const executionTime = endTime - startTime; 
 
         console.log(
           `fetchMessageHistory execution time: ${executionTime} milliseconds`
@@ -170,10 +172,13 @@ function ChatWindow() {
 
     // If it's the first message in a new chat, update the URL and sidebar
     const isNewChat = !id();
-    let currentConversationId = conversationId(); // Use local variable
+    const currentConversationId = conversationId();
 
     if (isNewChat) {
-      navigate(`/chat/${currentConversationId}`, { replace: true });
+      console.log("isNewChat", currentConversationId);
+      console.log("currentConversationId", currentConversationId);
+      console.log("id", id());
+      navigate(`/chat/${currentConversationId}`, { replace: true }); 
       const newChats = [...chats()];
       newChats.unshift({
         id: currentConversationId,
@@ -198,6 +203,7 @@ function ChatWindow() {
 
     const url = new URL(`${HOST}/api/v1/chats/chat`);
 
+    // --- Start of moved-back logic ---
     // Map the internal ContentItem[] or string to the BackendChatContent[] structure
     let mappedContentForBackend: {
       content: string | { url: string; media_type: string; kind: string };
@@ -206,9 +212,10 @@ function ChatWindow() {
     if (typeof content === "string") {
       mappedContentForBackend = [{ content: content }];
     } else {
-      // Import the type guards if not already available in this scope
+      // Type guard for ImageData
       const isImageData = (c: any): c is ImageData =>
         typeof c === "object" && c !== null && c.kind === "image-url";
+      // Type guard for PdfData
       const isPdfData = (c: any): c is PdfData =>
         typeof c === "object" && c !== null && c.kind === "pdf-file";
 
@@ -217,46 +224,35 @@ function ChatWindow() {
           if (typeof item.content === "string") {
             return { content: item.content };
           } else if (isImageData(item.content) && item.content.serverUrl) {
-            // Map ImageData to backend ImageUrlContent structure
             return {
               content: {
                 url: item.content.serverUrl,
                 media_type: item.content.media_type,
-                kind: "image-url", // Matches backend expectation
+                kind: "image-url",
               },
             };
           } else if (isPdfData(item.content) && item.content.serverUrl) {
-            // Map PdfData to backend DocumentUrlContent structure
             return {
               content: {
                 url: item.content.serverUrl,
-                media_type: item.content.media_type, // Should be "application/pdf"
-                kind: "document-url", // Matches backend expectation
+                media_type: item.content.media_type,
+                kind: "document-url",
               },
             };
           } else {
-            // This should not happen if ChatInput filters correctly, but handle defensively
-            console.error(
-              "Encountered incomplete or unexpected content item:",
-              item
-            );
-            // Option 1: Throw an error
-            // throw new Error("Incomplete or unexpected content data.");
-            // Option 2: Filter it out later (more robust)
+            console.error("Encountered incomplete or unexpected content item:", item);
             return null;
           }
         })
         .filter((item) => item !== null) as {
         content: string | { url: string; media_type: string; kind: string };
-      }[]; // Filter out nulls and assert type
+      }[];
     }
 
-    // Ensure we have content to send after mapping
     if (mappedContentForBackend.length === 0) {
       console.error("No valid content to send after mapping.");
-      setGettingResponse(false); // Reset loading state
-      // Optionally remove the user message placeholder if needed
-      // setMessages(currentMessages); // Revert messages if user message was added optimistically
+      setGettingResponse(false);
+      // Maybe remove optimistic message? setMessages(currentMessages);
       return;
     }
 
@@ -264,12 +260,10 @@ function ChatWindow() {
       content: mappedContentForBackend,
     };
     url.searchParams.append("conversation_id", currentConversationId);
+    // --- End of moved-back logic ---
 
     try {
-      // Reset abort flag at start of new request
       abortControllerRef.current = false;
-
-      // Import authFetch to add auth token to the request
       const { authFetch } = await import("@/lib/utils");
 
       const response = await authFetch(url.toString(), {
@@ -282,9 +276,10 @@ function ChatWindow() {
       });
 
       if (!response.ok) {
-        setMessages(messages().slice(0, -1));
-        alert(`Error sending message: ${response.statusText}`);
-        throw new Error(`HTTP error! status: ${response.status}`);
+        setMessages(messages().slice(0, -1)); // Revert optimistic user message
+        const errorText = await response.text();
+        alert(`Error sending message: ${response.statusText} - ${errorText}`);
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
 
       if (!response.body) {
@@ -293,14 +288,10 @@ function ChatWindow() {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-
       let buffer = "";
-
-      // Initialize the assistant message to avoid repeated creations
       let assistantMessageCreated = false;
 
       while (true) {
-        // Check if request was aborted
         if (abortControllerRef.current) {
           reader.cancel();
           break;
@@ -310,121 +301,77 @@ function ChatWindow() {
         if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
-
-        // Process complete SSE messages from buffer
         const lines = buffer.split("\n\n");
-        buffer = lines.pop() || ""; // Keep the last incomplete chunk in the buffer
+        buffer = lines.pop() || "";
 
-        // Get current messages only once per processing cycle
         let currentMessageState = [...messages()];
 
-        // Process each line in the stream
         for (const line of lines) {
           if (!line.startsWith("data: ")) continue;
 
           try {
             const jsonString = line.slice(6);
             const data = JSON.parse(jsonString);
+            let messagesChanged = false;
 
-            // Check if we need to create a new assistant message
-            if (
-              !assistantMessageCreated &&
-              (data.type === "part_start" || data.type === "part_delta")
-            ) {
-              // Create the assistant message if it doesn't exist or we're starting a new response
-              const newAssistantMessage = {
-                role: "assistant",
-                content: "",
-                reasoning: "",
-              };
-
-              // Make a copy to avoid directly modifying the current state
-              // Ensure we're using the most up-to-date messages array that includes the user message
-              const updatedMessages = [
-                ...currentMessageState,
-                newAssistantMessage,
-              ];
-              currentMessageState = updatedMessages;
+            if (!assistantMessageCreated && (data.type === "part_start" || data.type === "part_delta")) {
+              const newAssistantMessage: Message = { role: "assistant", content: "", reasoning: "" };
+              currentMessageState = [...currentMessageState, newAssistantMessage];
               assistantMessageCreated = true;
+              messagesChanged = true;
             }
 
-            // Always work with the last message for updates
-            const lastMessage =
-              currentMessageState[currentMessageState.length - 1];
+            const lastMessage = currentMessageState[currentMessageState.length - 1];
 
-            // Process different message types
-            if (data.type === "part_start") {
-              if (
-                data.data?.part?.part_kind === "text" &&
-                lastMessage?.role === "assistant"
-              ) {
-                if (typeof lastMessage.content === "string") {
-                  lastMessage.content += data.data.part.content || "";
-                }
-              } else if (
-                data.data?.part?.part_kind === "reasoning" &&
-                lastMessage?.role === "assistant"
-              ) {
-                if (typeof lastMessage.reasoning === "string") {
-                  lastMessage.reasoning += data.data.part.reasoning || "";
-                }
+            if (data.type === "part_start" || data.type === "part_delta") {
+              const part = data.data?.part || data.data?.delta;
+              if (part && lastMessage?.role === "assistant") {
+                 if (part.part_kind === "text" && typeof lastMessage.content === "string") {
+                     lastMessage.content += part.content || "";
+                     messagesChanged = true;
+                 } else if (part.part_kind === "reasoning" && typeof lastMessage.reasoning === "string") {
+                     lastMessage.reasoning += part.reasoning || "";
+                     messagesChanged = true;
+                 }
               }
-            } else if (data.type === "part_delta") {
-              if (
-                data.data?.delta?.part_kind === "text" &&
-                lastMessage?.role === "assistant"
-              ) {
-                if (typeof lastMessage.content === "string") {
-                  lastMessage.content += data.data.delta.content || "";
-                }
-              } else if (
-                data.data?.delta?.part_kind === "reasoning" &&
-                lastMessage?.role === "assistant"
-              ) {
-                if (typeof lastMessage.reasoning === "string") {
-                  lastMessage.reasoning += data.data.delta.reasoning || "";
-                }
-              }
-            } else if (data.type === "tool_call") {
-              if (data.data?.tool_call) {
-                const newToolCallMessage = {
-                  role: "tool_call",
-                  content: data.data.tool_call,
-                };
-                currentMessageState.push(newToolCallMessage);
-                assistantMessageCreated = false; // Reset to allow future assistant messages
-              }
-            } else if (data.type === "tool_result") {
-              if (data.data?.tool_result) {
-                const newToolResultMessage = {
-                  role: "tool_result",
-                  content: data.data.tool_result,
-                };
-                currentMessageState.push(newToolResultMessage);
-              }
+            } else if (data.type === "tool_call" && data.data?.tool_call) {
+               const newToolCallMessage: Message = { role: "tool_call", content: data.data.tool_call };
+               currentMessageState.push(newToolCallMessage);
+               assistantMessageCreated = false;
+               messagesChanged = true;
+            } else if (data.type === "tool_result" && data.data?.tool_result) {
+              const newToolResultMessage: Message = { role: "tool_result", content: data.data.tool_result };
+              currentMessageState.push(newToolResultMessage);
+              messagesChanged = true;
             }
 
-            // Update the messages state with new messages using a new array to ensure reactivity
-            // Only update when necessary
-            setMessages([...currentMessageState]);
-            MessageCache.set(currentConversationId, [...currentMessageState]);
+            if (messagesChanged) {
+               setMessages([...currentMessageState]);
+               MessageCache.set(currentConversationId, [...currentMessageState]);
+            }
 
-            // Scroll to bottom with a small delay to allow rendering
           } catch (e) {
-            console.error("Error parsing JSON:", e);
+            console.error("Error parsing JSON:", e, "Raw line:", line);
           }
         }
       }
-
-      // Update URL and fetch conversations for new conversations
     } catch (error) {
       console.error("Error sending message:", error);
-      setMessages(messages().slice(0, -1));
-      alert(`Error sending message: ${error}`);
+      // Revert optimistic user message if it's still the last one
+      setMessages(prev => {
+          if (prev.length > 0 && prev[prev.length - 1] === newMessage) {
+              return prev.slice(0, -1);
+          }
+          return prev;
+      });
+       if (!(error instanceof DOMException && error.name === 'AbortError') && !abortControllerRef.current) {
+            alert(`Error sending message: ${error instanceof Error ? error.message : String(error)}`);
+       }
     } finally {
-      setGettingResponse(false);
-      // Delay scroll slightly to ensure DOM update after response finishes
-      queueMicrotask(scrollToBottom);
+      if (!abortControllerRef.current) {
+          setGettingResponse(false);
+      }
+      queueMicrotask(scrollToBottom); // Scroll after completion/error
     }
   };
 
