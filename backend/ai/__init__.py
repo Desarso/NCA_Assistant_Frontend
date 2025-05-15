@@ -1,0 +1,3 @@
+"""
+AI assistant functions package
+""" 
