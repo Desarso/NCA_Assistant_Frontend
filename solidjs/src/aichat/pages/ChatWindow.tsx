@@ -195,8 +195,8 @@ function ChatWindow() {
     };
     // Get current messages and add the new user message
     const currentMessages = untrack(() => messages());
-    const updatedMessages = [...currentMessages, newMessage];
-
+    // Add both user message and placeholder assistant message
+    const updatedMessages = [...currentMessages, newMessage, { role: "assistant", content: "", reasoning: "" }];
     setMessages(updatedMessages);
     // Delay scroll slightly to ensure DOM update
     queueMicrotask(scrollToBottom);
@@ -315,10 +315,7 @@ function ChatWindow() {
             let messagesChanged = false;
 
             if (!assistantMessageCreated && (data.type === "part_start" || data.type === "part_delta")) {
-              const newAssistantMessage: Message = { role: "assistant", content: "", reasoning: "" };
-              currentMessageState = [...currentMessageState, newAssistantMessage];
               assistantMessageCreated = true;
-              messagesChanged = true;
             }
 
             const lastMessage = currentMessageState[currentMessageState.length - 1];

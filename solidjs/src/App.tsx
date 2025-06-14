@@ -19,7 +19,7 @@ function AppRoutes() {
     <Suspense fallback={<div class="loading">Loading...</div>}>
       <Route path="/login" component={Login} />
       <Route path="/request-whitelist" component={RequestWhitelist} />
-     <Route path="/" component={() => <Navigate href="/chat" />} />
+     <Route path="/" component={() => <Navigate href="/chat/" />} />
       <Route
         path="/chat/:id?"
         component={() => (

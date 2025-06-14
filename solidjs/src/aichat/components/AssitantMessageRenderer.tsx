@@ -252,6 +252,13 @@ const AssistantMessageRenderer: Component<AssistantMessageProps> = (props) => {
     timerId: number | undefined;
   } | null>(null);
 
+  // Add effect to set lastUpdateTime when streaming starts
+  createEffect(() => {
+    if (props.gettingResponse) {
+      setLastUpdateTime(Date.now());
+    }
+  });
+
   // Create proper memoization for content and reasoning
   const content = createMemo(() => props.fullContent());
   const reasoning = createMemo(() =>

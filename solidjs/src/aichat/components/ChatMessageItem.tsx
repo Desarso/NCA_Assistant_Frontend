@@ -50,7 +50,7 @@ const MessageItem: Component<{
       if (content.length === 0) {
         return "";
       }
-      
+
       const elements = content.map((item) => {
         if (typeof item === "object" && item !== null) {
           if (typeof item.content === "string") {
@@ -61,8 +61,8 @@ const MessageItem: Component<{
               const imageContent = item.content as CustomImageData;
               return (
                 <div class="my-2 w-full flex justify-end">
-                  <img 
-                    src={imageContent.serverUrl || imageContent.url} 
+                  <img
+                    src={imageContent.serverUrl || imageContent.url}
                     alt="User uploaded image"
                     class="max-w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-shadow"
                   />
@@ -89,7 +89,7 @@ const MessageItem: Component<{
         // Fallback for non-object items in the array (shouldn't happen with current structure)
         return "";
       });
-      
+
       return <div class="flex flex-col w-full">{elements}</div>;
     } else if (content && typeof content === "object") {
       if ("name" in content) {
@@ -108,31 +108,43 @@ const MessageItem: Component<{
 
   return (
     <div
-      class={`md:max-w-[900px] w-full flex message pt-3 pl-3 pr-3 ${
-        isUser()
+      class={`md:max-w-[900px] w-full flex message pt-3 pl-3 pr-3 ${isUser()
           ? " user justify-end items-start pt-4"
           : " assistant justify-start items-start"
-      } ${isLast() ? "" : ""}`}
+        } ${isLast() ? "" : ""}`}
       id={isLast() ? "last-message" : ""}
     >
       <div
-        class={`message-content ${
-          isUser() ? "max-w-[85%] flex items-end self-start" : "w-full"
-        } rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-[6px] pl-2 pr-2 ${
-          isUser()
+        class={`message-content ${isUser() ? "max-w-[85%] flex items-end self-start" : "w-full"
+          } rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-[6px] pl-2 pr-2 ${isUser()
             ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             : "bg-transparent"
-        } break-words overflow-hidden`}
+          } break-words overflow-hidden`}
       >
         <Show
           when={isUser()}
           fallback={
-            <AssistantMessageRenderer
-              fullContent={messageContent}
-              gettingResponse={props.gettingResponse && isLast()}
-              isLast={isLast}
-              reasoning={messageReasoning}
-            />
+            <>
+              <Show
+                when={props.gettingResponse && isLast() && !messageContent()}
+                fallback={
+                  <AssistantMessageRenderer
+                    fullContent={messageContent}
+                    gettingResponse={props.gettingResponse && isLast()}
+                    isLast={isLast}
+                    reasoning={messageReasoning}
+                  />
+                }
+              >
+                <div class="streaming-content markdown-content min-h-[24px]">
+                  <span class="loading-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </span>
+                </div>
+              </Show>
+            </>
           }
         >
           <div class="text-sm md:text-base flex flex-col gap-8 w-full items-end">
