@@ -9,7 +9,6 @@ import {
   Component,
   Accessor,
   createResource,
-  onCleanup,
 } from "solid-js";
 import Prism from "prismjs";
 import "../styles/index.css";
@@ -112,24 +111,6 @@ function ChatWindow() {
   }
 
   onMount(async () => {
-    // Set up cache invalidation listener
-    const cleanup = MessageCache.addInvalidationListener((invalidatedConversationId) => {
-      const currentId = conversationId();
-      if (currentId === invalidatedConversationId) {
-        console.log(`Cache invalidated for current conversation ${currentId}, refetching messages`);
-        // Refetch messages for the current conversation
-        fetchMessageHistory(currentId);
-      }
-    });
-
-    // Store cleanup function for later use
-    const cleanupRef = { cleanup };
-    
-    // Clean up listener when component unmounts
-    onCleanup(() => {
-      cleanupRef.cleanup();
-    });
-
     // Original onMount logic (as inferred from initial attempts)
     if (id()) {
       setConversationId(id());
@@ -214,8 +195,8 @@ function ChatWindow() {
     };
     // Get current messages and add the new user message
     const currentMessages = untrack(() => messages());
-    // Add both user message and placeholder assistant message
-    const updatedMessages = [...currentMessages, newMessage, { role: "assistant", content: "", reasoning: "" }];
+    const updatedMessages = [...currentMessages, newMessage];
+
     setMessages(updatedMessages);
     // Delay scroll slightly to ensure DOM update
     queueMicrotask(scrollToBottom);
@@ -281,6 +262,9 @@ function ChatWindow() {
     url.searchParams.append("conversation_id", currentConversationId);
     // --- End of moved-back logic ---
 
+    let seenPartStart = false;
+    let seenPartDelta = false;
+
     try {
       abortControllerRef.current = false;
       const { authFetch } = await import("@/lib/utils");
@@ -309,9 +293,9 @@ function ChatWindow() {
       const decoder = new TextDecoder();
       let buffer = "";
       let assistantMessageCreated = false;
-      let currentMessageState = [...messages()];
 
       while (true) {
+        console.log("one loop");
         if (abortControllerRef.current) {
           reader.cancel();
           break;
@@ -324,6 +308,8 @@ function ChatWindow() {
         const lines = buffer.split("\n\n");
         buffer = lines.pop() || "";
 
+        let currentMessageState = [...messages()];
+
         for (const line of lines) {
           if (!line.startsWith("data: ")) continue;
 
@@ -332,37 +318,30 @@ function ChatWindow() {
             const data = JSON.parse(jsonString);
             let messagesChanged = false;
 
+            if (!assistantMessageCreated && (data.type === "part_start" || data.type === "part_delta")) {
+              const newAssistantMessage: Message = { role: "assistant", content: "", reasoning: "" };
+              currentMessageState = [...currentMessageState, newAssistantMessage];
+              assistantMessageCreated = true;
+              messagesChanged = true;
+            }
+
             const lastMessage = currentMessageState[currentMessageState.length - 1];
 
             if (data.type === "part_start" || data.type === "part_delta") {
+              if (data.type === "part_start") seenPartStart = true;
+              if (data.type === "part_delta") seenPartDelta = true;
+              console.log("here");
               const part = data.data?.part || data.data?.delta;
+              console.log("part", part);
+              console.log("lastMessage role", lastMessage?.role);
               if (part && lastMessage?.role === "assistant") {
                  if (part.part_kind === "text" && typeof lastMessage.content === "string") {
                      lastMessage.content += part.content || "";
                      messagesChanged = true;
-                     assistantMessageCreated = true;
                  } else if (part.part_kind === "reasoning" && typeof lastMessage.reasoning === "string") {
                      lastMessage.reasoning += part.reasoning || "";
                      messagesChanged = true;
-                     assistantMessageCreated = true;
                  }
-              } else if (part && lastMessage?.role !== "assistant") {
-                // Create new assistant message when receiving content after tool calls
-                const newAssistantMessage: Message = { 
-                  role: "assistant", 
-                  content: "", 
-                  reasoning: "" 
-                };
-                
-                if (part.part_kind === "text") {
-                  newAssistantMessage.content = part.content || "";
-                } else if (part.part_kind === "reasoning") {
-                  newAssistantMessage.reasoning = part.reasoning || "";
-                }
-                
-                currentMessageState.push(newAssistantMessage);
-                assistantMessageCreated = true;
-                messagesChanged = true;
               }
             } else if (data.type === "tool_call" && data.data?.tool_call) {
                const newToolCallMessage: Message = { role: "tool_call", content: data.data.tool_call };
@@ -375,7 +354,10 @@ function ChatWindow() {
               messagesChanged = true;
             }
 
+
+            //update message state
             if (messagesChanged) {
+              console.log("setting messages", currentMessageState);
                setMessages([...currentMessageState]);
                MessageCache.set(currentConversationId, [...currentMessageState]);
             }
@@ -385,6 +367,8 @@ function ChatWindow() {
           }
         }
       }
+
+      
     } catch (error) {
       console.error("Error sending message:", error);
       // Revert optimistic user message if it's still the last one
@@ -399,7 +383,15 @@ function ChatWindow() {
        }
     } finally {
       if (!abortControllerRef.current) {
+        if (seenPartStart && !seenPartDelta) {
+          let currentMessageState = [...messages()];
+          const lastMessage = currentMessageState[currentMessageState.length - 1];
+          lastMessage.content += " ";
+          setMessages([...currentMessageState]);
+          setTimeout(() => setGettingResponse(false), 200);
+        } else {
           setGettingResponse(false);
+        }
       }
       queueMicrotask(scrollToBottom); // Scroll after completion/error
     }
@@ -567,6 +559,15 @@ function ChatWindow() {
                               index() === memoizedMessages().length - 1
                             }
                           />
+                          <Show when={index() === memoizedMessages().length - 1 && message.role === "user" && gettingResponse()}>
+                            <div class="p-4 pl-5">
+                              <span class="loading-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                              </span>
+                            </div>
+                          </Show>
                         </Show>
                       )}
                     </For>

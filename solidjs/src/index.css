@@ -15,6 +15,10 @@
   --fa-font-solid: normal 900 1em / 1 "Font Awesome 6 Free";
 }
 
+.negative-last-message {
+  margin-top: calc(-100vh + 200px);
+}
+
 
 
 .scrollbar {

@@ -6,7 +6,12 @@ import {
   createSignal,
   Show,
 } from "solid-js";
-import { Message, ContentItem, ImageData as CustomImageData, PdfData } from "../models/models"; // Import PdfData
+import {
+  Message,
+  ContentItem,
+  ImageData as CustomImageData,
+  PdfData,
+} from "../models/models"; // Import PdfData
 import AssistantMessageRenderer from "./AssitantMessageRenderer";
 
 // Component for rendering a chat message item
@@ -57,7 +62,10 @@ const MessageItem: Component<{
             return <span class="mr-1">{item.content}</span>;
           } else if (item.content && typeof item.content === "object") {
             // Handle image content
-            if (item.type === "ImageUrl" || (item.content as any).kind === "image-url") {
+            if (
+              item.type === "ImageUrl" ||
+              (item.content as any).kind === "image-url"
+            ) {
               const imageContent = item.content as CustomImageData;
               return (
                 <div class="my-2 w-full flex justify-end">
@@ -68,15 +76,28 @@ const MessageItem: Component<{
                   />
                 </div>
               );
-            } else if (item.content && typeof item.content === "object" && (item.content as any).kind === "pdf-file") {
+            } else if (
+              item.content &&
+              typeof item.content === "object" &&
+              (item.content as any).kind === "pdf-file"
+            ) {
               // Handle PDF content
               const pdfContent = item.content as PdfData;
               // Display placeholder text for PDF, maybe add an icon later
               return (
                 <div class="my-1 p-2 bg-gray-200 dark:bg-gray-600 rounded text-sm flex items-center gap-2">
                   {/* Placeholder for a PDF icon */}
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 11-2 0V4H6v12a3 3 0 106 0V4a.5.5 0 01.5-.5h.5a.5.5 0 01.5.5v12a5 5 0 11-10 0V4z" clip-rule="evenodd" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-red-600"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 11-2 0V4H6v12a3 3 0 106 0V4a.5.5 0 01.5-.5h.5a.5.5 0 01.5.5v12a5 5 0 11-10 0V4z"
+                      clip-rule="evenodd"
+                    />
                   </svg>
                   <span>{pdfContent.filename || "PDF File"}</span>
                 </div>
@@ -108,43 +129,31 @@ const MessageItem: Component<{
 
   return (
     <div
-      class={`md:max-w-[900px] w-full flex message pt-3 pl-3 pr-3 ${isUser()
+      class={`md:max-w-[900px] w-full flex message pt-3 pl-3 pr-3 ${
+        isUser()
           ? " user justify-end items-start pt-4"
           : " assistant justify-start items-start"
-        } ${isLast() ? "" : ""}`}
-      id={isLast() ? "last-message" : ""}
+      } ${isLast() ? "" : ""}`}
+      // id={isLast() ? "last-message" : ""}
     >
       <div
-        class={`message-content ${isUser() ? "max-w-[85%] flex items-end self-start" : "w-full"
-          } rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-[6px] pl-2 pr-2 ${isUser()
+        class={`message-content ${
+          isUser() ? "max-w-[85%] flex items-end self-start" : "w-full"
+        } rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-[6px] pl-2 pr-2 ${
+          isUser()
             ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             : "bg-transparent"
-          } break-words overflow-hidden`}
+        } break-words overflow-hidden`}
       >
         <Show
           when={isUser()}
           fallback={
-            <>
-              <Show
-                when={props.gettingResponse && isLast() && !messageContent()}
-                fallback={
-                  <AssistantMessageRenderer
-                    fullContent={messageContent}
-                    gettingResponse={props.gettingResponse && isLast()}
-                    isLast={isLast}
-                    reasoning={messageReasoning}
-                  />
-                }
-              >
-                <div class="streaming-content markdown-content min-h-[24px]">
-                  <span class="loading-dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                  </span>
-                </div>
-              </Show>
-            </>
+            <AssistantMessageRenderer
+              fullContent={messageContent}
+              gettingResponse={props.gettingResponse && isLast()}
+              isLast={isLast}
+              reasoning={messageReasoning}
+            />
           }
         >
           <div class="text-sm md:text-base flex flex-col gap-8 w-full items-end">
