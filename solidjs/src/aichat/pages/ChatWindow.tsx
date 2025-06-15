@@ -9,6 +9,7 @@ import {
   Component,
   Accessor,
   createResource,
+  onCleanup,
 } from "solid-js";
 import Prism from "prismjs";
 import "../styles/index.css";
@@ -111,6 +112,26 @@ function ChatWindow() {
   }
 
   onMount(async () => {
+
+     // Set up cache invalidation listenerAdd commentMore actions
+     const cleanup = MessageCache.addInvalidationListener((invalidatedConversationId) => {
+      const currentId = conversationId();
+      if (currentId === invalidatedConversationId) {
+        console.log(`Cache invalidated for current conversation ${currentId}, refetching messages`);
+        // Refetch messages for the current conversation
+        fetchMessageHistory(currentId);
+      }
+    });
+
+    // Store cleanup function for later use
+    const cleanupRef = { cleanup };
+    
+    // Clean up listener when component unmounts
+    onCleanup(() => {
+      cleanupRef.cleanup();
+    });
+
+
     // Original onMount logic (as inferred from initial attempts)
     if (id()) {
       setConversationId(id());
