@@ -199,6 +199,10 @@ async def chat(
                             conversation_id=conversation_id,
                         )
                         session.add(db_message_request)
+                        # Update conversation timestamp - fetch conversation first
+                        conversation_obj = session.get(Conversation, conversation_id)
+                        if conversation_obj:
+                            conversation_obj.updated_at = datetime.now()
                         session.commit()
 
                         # Stream the response generation
@@ -238,6 +242,10 @@ async def chat(
                         print("db_message", db_message)
                         print("saving tool response")
                         session.add(db_message)
+                        # Update conversation timestamp - fetch conversation first
+                        conversation_obj = session.get(Conversation, conversation_id)
+                        if conversation_obj:
+                            conversation_obj.updated_at = datetime.now()
                         session.commit()
     return StreamingResponse(
         generate_chunks(),
@@ -361,6 +369,8 @@ def create_message(
         conversation_id=message.conversation_id,
     )
     session.add(db_message)
+    # Update conversation timestamp
+    conversation.updated_at = datetime.now()
     session.commit()
     session.refresh(db_message)
     return {"status": "success", "message": db_message}
