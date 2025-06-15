@@ -9,6 +9,7 @@ import {
   Component,
   Accessor,
   createResource,
+  onCleanup,
 } from "solid-js";
 import Prism from "prismjs";
 import "../styles/index.css";
@@ -111,6 +112,24 @@ function ChatWindow() {
   }
 
   onMount(async () => {
+    // Set up cache invalidation listener
+    const cleanup = MessageCache.addInvalidationListener((invalidatedConversationId) => {
+      const currentId = conversationId();
+      if (currentId === invalidatedConversationId) {
+        console.log(`Cache invalidated for current conversation ${currentId}, refetching messages`);
+        // Refetch messages for the current conversation
+        fetchMessageHistory(currentId);
+      }
+    });
+
+    // Store cleanup function for later use
+    const cleanupRef = { cleanup };
+    
+    // Clean up listener when component unmounts
+    onCleanup(() => {
+      cleanupRef.cleanup();
+    });
+
     // Original onMount logic (as inferred from initial attempts)
     if (id()) {
       setConversationId(id());
@@ -290,6 +309,7 @@ function ChatWindow() {
       const decoder = new TextDecoder();
       let buffer = "";
       let assistantMessageCreated = false;
+      let currentMessageState = [...messages()];
 
       while (true) {
         if (abortControllerRef.current) {
@@ -304,8 +324,6 @@ function ChatWindow() {
         const lines = buffer.split("\n\n");
         buffer = lines.pop() || "";
 
-        let currentMessageState = [...messages()];
-
         for (const line of lines) {
           if (!line.startsWith("data: ")) continue;
 
@@ -313,10 +331,6 @@ function ChatWindow() {
             const jsonString = line.slice(6);
             const data = JSON.parse(jsonString);
             let messagesChanged = false;
-
-            if (!assistantMessageCreated && (data.type === "part_start" || data.type === "part_delta")) {
-              assistantMessageCreated = true;
-            }
 
             const lastMessage = currentMessageState[currentMessageState.length - 1];
 
@@ -326,10 +340,29 @@ function ChatWindow() {
                  if (part.part_kind === "text" && typeof lastMessage.content === "string") {
                      lastMessage.content += part.content || "";
                      messagesChanged = true;
+                     assistantMessageCreated = true;
                  } else if (part.part_kind === "reasoning" && typeof lastMessage.reasoning === "string") {
                      lastMessage.reasoning += part.reasoning || "";
                      messagesChanged = true;
+                     assistantMessageCreated = true;
                  }
+              } else if (part && lastMessage?.role !== "assistant") {
+                // Create new assistant message when receiving content after tool calls
+                const newAssistantMessage: Message = { 
+                  role: "assistant", 
+                  content: "", 
+                  reasoning: "" 
+                };
+                
+                if (part.part_kind === "text") {
+                  newAssistantMessage.content = part.content || "";
+                } else if (part.part_kind === "reasoning") {
+                  newAssistantMessage.reasoning = part.reasoning || "";
+                }
+                
+                currentMessageState.push(newAssistantMessage);
+                assistantMessageCreated = true;
+                messagesChanged = true;
               }
             } else if (data.type === "tool_call" && data.data?.tool_call) {
                const newToolCallMessage: Message = { role: "tool_call", content: data.data.tool_call };

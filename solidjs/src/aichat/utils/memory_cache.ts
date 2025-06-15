@@ -272,6 +272,42 @@ export class DB {
 }
 
 export class MessageCache {
+  // Cache invalidation listeners
+  private static invalidationListeners = new Set<(conversationId: string) => void>();
+
+  // Method to add a listener for cache invalidation events
+  public static addInvalidationListener(callback: (conversationId: string) => void) {
+    MessageCache.invalidationListeners.add(callback);
+    return () => MessageCache.invalidationListeners.delete(callback); // Return cleanup function
+  }
+
+  // Method to notify listeners when a conversation's cache is invalidated
+  private static notifyInvalidation(conversationId: string) {
+    MessageCache.invalidationListeners.forEach(callback => {
+      try {
+        callback(conversationId);
+      } catch (error) {
+        console.error('Error in cache invalidation listener:', error);
+      }
+    });
+  }
+
+  // Method to manually invalidate a conversation's cache (called from sync logic)
+  public static invalidate(conversationId: string) {
+    // Remove from sessionStorage
+    sessionStorage.removeItem(`messages-${conversationId}`);
+    
+    // Remove from IndexedDB
+    DB.deleteMessageHistory(conversationId).catch(error => {
+      console.error(`Error deleting message history for ${conversationId}:`, error);
+    });
+    
+    // Notify listeners
+    MessageCache.notifyInvalidation(conversationId);
+    
+    console.log(`Invalidated cached messages for conversation ${conversationId}`);
+  }
+
   //fetches message history and returns it also sets cache
   private static async fetchMessageHistoryNoCache(
     id: string
@@ -386,6 +422,12 @@ export class ConversationCache {
         return [];
       }
 
+      // Get cached conversations for comparison
+      const cachedConversations = await DB.getConversations();
+      const cachedConversationsMap = new Map(
+        cachedConversations.map(conv => [conv.id, conv])
+      );
+
       const response = await authFetch(
         `${HOST}/api/v1/chats/users/${user.uid}/conversations`
       );
@@ -406,6 +448,31 @@ export class ConversationCache {
               new Date(b.created_at).getTime() -
               new Date(a.created_at).getTime()
           );
+
+        // Compare timestamps and invalidate cached messages for updated conversations
+        const conversationsToInvalidate: string[] = [];
+        
+        for (const serverConv of sortedConversations) {
+          const cachedConv = cachedConversationsMap.get(serverConv.id);
+          if (cachedConv) {
+            const serverTimestamp = new Date(serverConv.updated_at).getTime();
+            const cachedTimestamp = new Date(cachedConv.updated_at).getTime();
+            
+            if (serverTimestamp > cachedTimestamp) {
+              conversationsToInvalidate.push(serverConv.id);
+              console.log(`Conversation ${serverConv.id} needs sync - server: ${serverConv.updated_at}, cached: ${cachedConv.updated_at}`);
+            }
+          }
+        }
+
+        // Invalidate cached messages for conversations that have been updated
+        if (conversationsToInvalidate.length > 0) {
+          console.log(`Invalidating cached messages for ${conversationsToInvalidate.length} conversations`);
+          
+          for (const conversationId of conversationsToInvalidate) {
+            MessageCache.invalidate(conversationId);
+          }
+        }
 
         // Update the state with fresh data
         if (response.status === 200) {
