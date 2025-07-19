@@ -148,7 +148,7 @@ const ChatInput: Component<ChatInputProps> = (props) => {
         }
         
         const data = await response.json();
-        const serverFileUrl = `https://open-upload.api.gabrielmalek.com/files/${data.id}`;
+        const serverFileUrl = data.url; // Use the CDN URL directly from Digital Ocean Spaces
 
         // Update the content item with the server URL
         setContent(prev =>
