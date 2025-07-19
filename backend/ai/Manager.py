@@ -43,7 +43,7 @@ http_client = cached_async_http_client(timeout=300, connect=5)
 # Define available models
 models = {
     "gemini": GeminiModel(
-        "gemini-2.5-flash-preview-04-17",
+        "gemini-2.5-flash",
         provider=GoogleGLAProvider(
             api_key=os.getenv("GEMINI_API_KEY"), http_client=http_client
         ),
