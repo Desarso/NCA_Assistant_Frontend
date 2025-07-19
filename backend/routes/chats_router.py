@@ -172,7 +172,15 @@ async def chat(
                 request.state.user, memory
             )
 
-    agent = await create_agent(current_user, memory)
+    # In the chat endpoint, before creating the agent:
+    has_pdfs = any(
+        isinstance(item.content, DocumentUrlContent) 
+        for item in chat_request.content 
+        if hasattr(item, 'content') and hasattr(item.content, 'kind')
+    )
+
+    # Create agent with PDF detection
+    agent = await create_agent(current_user, memory, has_pdfs=has_pdfs)
 
     user_content = chat_request.to_user_content()
 

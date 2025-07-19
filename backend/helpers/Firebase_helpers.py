@@ -11,7 +11,7 @@ from sqlalchemy import select
 
 security = HTTPBearer()
 
-DEFAULT_MODEL = "gemini"
+DEFAULT_MODEL = "4.1"
 
 
 class FirebaseUser:

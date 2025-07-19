@@ -90,7 +90,7 @@ models = {
 }
 
 # Set default model
-model: GroqModel = models["kimi"]
+model: GroqModel = models["4.1"]
 
 
 logging.basicConfig(
@@ -310,7 +310,7 @@ class MyDeps:
     user_rejection_flags: Dict[str, bool] = field(default_factory=dict)
 
 
-async def create_agent(user_object: FirebaseUser, memory: str) -> Agent:
+async def create_agent(user_object: FirebaseUser, memory: str, has_pdfs: bool = False) -> Agent:
     # Initialize MCP servers list
     mcp_servers = []
 
@@ -328,13 +328,29 @@ async def create_agent(user_object: FirebaseUser, memory: str) -> Agent:
         )
         mcp_servers.append(github_server)
 
-    # Get user's preferred model
-    selected_model = models.get(
-        user_object.prefered_model, model
-    )  # Fallback to default if model not found
+    # Smart model selection
+    if has_pdfs:
+        # Force Gemini when PDFs are present (OpenAI doesn't support PDFs)
+        selected_model = models["gemini"]
+        model_name = "gemini-2.5-flash"
+        print(f"🤖 MODEL SELECTION: Using {model_name} due to PDF content")
+        logging.info(f"Using Gemini model due to PDF content: {model_name}")
+    else:
+        # Use user's preferred model
+        preferred_model_key = user_object.prefered_model or "4.1"
+        selected_model = models.get(preferred_model_key, models["4.1"])
+        
+        # Get the actual model name for logging
+        if hasattr(selected_model, 'model_name'):
+            model_name = selected_model.model_name
+        else:
+            model_name = preferred_model_key
+            
+        print(f"🤖 MODEL SELECTION: Using {model_name} (user preference: {user_object.prefered_model or 'default'})")
+        logging.info(f"Using {preferred_model_key} model: {model_name}")
 
     return Agent(
-        model=models["gemini"],
+        model=selected_model,  # Use the selected model instead of hardcoded
         system_prompt=get_system_prompt(user_object, memory),
         deps_type=MyDeps,
         # mcp_servers=mcp_servers,
