@@ -73,6 +73,7 @@ app.add_middleware(
         "http://localhost:4173",
         "https://nca-assistant.gabrielmalek.com",
         "https://nca-assistant.development.gabrielmalek.com",
+        "https://nca-assistant.whagons.com",
         ],  # Get frontend URL from env
     allow_credentials=True,
     allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
