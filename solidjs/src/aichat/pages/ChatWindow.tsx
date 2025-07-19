@@ -414,7 +414,6 @@ function ChatWindow() {
           setGettingResponse(false);
         }
       }
-      queueMicrotask(scrollToBottom); // Scroll after completion/error
     }
   };
 
@@ -581,7 +580,7 @@ function ChatWindow() {
                             }
                           />
                           <Show when={index() === memoizedMessages().length - 1 && message.role === "user" && gettingResponse()}>
-                            <div class="p-4 pl-5">
+                            <div class="pl-5">
                               <span class="loading-dots">
                                 <span></span>
                                 <span></span>
