@@ -16,20 +16,27 @@ logger = logging.getLogger(__name__)
 def verify_qdrant_connection(url: str, api_key: str) -> bool:
     try:
         headers = {"api-key": api_key}
-        response = requests.get(f"{url}/healthz", headers=headers, timeout=5)
+        response = requests.get(url, headers=headers, timeout=5)
         logger.debug(f"Qdrant health check response: {response.status_code}")
         return response.status_code == 200
     except RequestException as e:
         logger.error(f"Qdrant connection error: {str(e)}")
         return False
 
+qdrant_api_key = os.getenv("QDRANT_API_KEY")
+
+# Debug: Check OpenAI API key
+openai_api_key = os.getenv("OPENAI_API_KEY")
+print(f"DEBUG: OpenAI API Key present: {bool(openai_api_key)}")
+print(f"DEBUG: OpenAI API Key suffix: {openai_api_key[-10:] if openai_api_key else 'None'}")
+
 config = {
     "vector_store": {
         "provider": "qdrant",
         "config": {
-            "host": "qdrant.gabrielmalek.com",
+            "host": "qdrant.whagons.com",
             "port": 443,
-            "api_key": os.getenv("QDRANT_API_KEY")
+            "api_key": qdrant_api_key
         }
     },
     "llm": {
@@ -61,11 +68,8 @@ config = {
 
 
 try:
-    qdrant_url = f"https://{config['vector_store']['config']['host']}"
-    qdrant_api_key = config["vector_store"]["config"]["api_key"]
-    
-    logger.debug(f"Attempting to connect to Qdrant at {qdrant_url}")
-    if not verify_qdrant_connection(qdrant_url, qdrant_api_key):
+    logger.debug(f"Attempting to connect to Qdrant at https://qdrant.whagons.com")
+    if not verify_qdrant_connection("https://qdrant.whagons.com", qdrant_api_key):
         raise ConnectionError("Could not connect to Qdrant server")
     
     logger.debug("Initializing Memory client...")

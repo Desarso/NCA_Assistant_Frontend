@@ -74,6 +74,11 @@ def get_memory(ctx: RunContext[str], query: str) -> Tuple[str, str]:
     Returns:
         A tuple containing the search results and any associated metadata
     """
+    # Validate query is not empty
+    if not query or not query.strip():
+        logger.warning("Empty query provided to get_memory")
+        return "No query provided.", "Please provide a search query to retrieve memories."
+    
     if not m:
         logger.error("Memory client not initialized")
         error_params = {
@@ -121,6 +126,11 @@ def get_memory_no_context(user_id: str, query: str) -> Tuple[str, str]:
     Returns:
         A tuple containing the search results and any associated metadata
     """
+    # Validate query is not empty
+    if not query or not query.strip():
+        logger.warning("Empty query provided to get_memory_no_context")
+        return "No query provided.", "Please provide a search query to retrieve memories."
+    
     if not m:
         logger.error("Memory client not initialized")
         error_params = {
