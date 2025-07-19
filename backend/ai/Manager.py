@@ -57,7 +57,7 @@ models = {
         provider=GroqProvider(api_key=os.getenv("GROQ_API_KEY")),
     ),
     "claude": OpenAIModel(
-        "anthropic/claude-3.7-sonnet",
+        "anthropic/claude-sonnet-4",
         provider=OpenAIProvider(
             base_url="https://openrouter.ai/api/v1",
             api_key=os.getenv("OPENROUTER_API_KEY"),
@@ -73,10 +73,24 @@ models = {
     "gpt-4o-mini": OpenAIModel(
         "gpt-4o-mini", provider=OpenAIProvider(api_key=os.getenv("OPENAI_API_KEY"))
     ),
+    "kimi": OpenAIModel(
+        "moonshotai/kimi-k2",
+        provider=OpenAIProvider(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+        ),
+    ),
+    "4.1": OpenAIModel(
+        "openai/gpt-4.1",
+        provider=OpenAIProvider(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+        ),
+    ),
 }
 
 # Set default model
-model: GroqModel = models["gemini"]
+model: GroqModel = models["kimi"]
 
 
 logging.basicConfig(
@@ -320,7 +334,7 @@ async def create_agent(user_object: FirebaseUser, memory: str) -> Agent:
     )  # Fallback to default if model not found
 
     return Agent(
-        model=models["gemini"],
+        model=models["4.1"],
         system_prompt=get_system_prompt(user_object, memory),
         deps_type=MyDeps,
         # mcp_servers=mcp_servers,
