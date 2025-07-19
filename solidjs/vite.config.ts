@@ -102,6 +102,10 @@ export default defineConfig({
   },
   preview: {
     host: process.env.VITE_CHAT_HOST_DEV,
-    allowedHosts: ['nca-assistant.gabrielmalek.com', 'nca-assistant.development.gabrielmalek.com']
+    allowedHosts: [
+      'nca-assistant.gabrielmalek.com', 
+      'nca-assistant.development.gabrielmalek.com',
+      'nca-assistant.whagons.com',
+    ]
   }
 });
