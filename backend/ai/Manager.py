@@ -334,7 +334,7 @@ async def create_agent(user_object: FirebaseUser, memory: str) -> Agent:
     )  # Fallback to default if model not found
 
     return Agent(
-        model=models["4.1"],
+        model=models["gemini"],
         system_prompt=get_system_prompt(user_object, memory),
         deps_type=MyDeps,
         # mcp_servers=mcp_servers,
