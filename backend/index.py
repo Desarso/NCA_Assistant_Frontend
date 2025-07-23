@@ -14,13 +14,16 @@ from firebase_admin import credentials
 from routes.chats_router import chats_router
 from routes.user_routes import user_router
 from routes.files_router import files_router
+from routes.workflows_router import router as workflows_router
 from contextlib import asynccontextmanager
 import os
+import asyncio
 
 from helpers.Firebase_helpers import FirebaseUser, get_current_user, role_based_access
 from ai.models import (
     create_db_and_tables,
 )
+from ai.workflow_scheduler import run_scheduler_background
 from dotenv import load_dotenv
 
 
@@ -51,8 +54,17 @@ async def lifespan(app: fastapi.FastAPI):
             'storageBucket': os.getenv('FIREBASE_STORAGE_BUCKET')
         })
 
+    # Start the workflow scheduler in the background
+    scheduler_task = asyncio.create_task(run_scheduler_background())
+
     yield
-    # Clean up resources if needed
+    
+    # Clean up resources
+    scheduler_task.cancel()
+    try:
+        await scheduler_task
+    except asyncio.CancelledError:
+        pass
 
 
 app = fastapi.FastAPI(
@@ -117,6 +129,17 @@ files_routes.include_router(files_router)
 user_routes = APIRouter(prefix="/api/v1", tags=["user"])
 user_routes.dependencies.append(Depends(role_based_access(["whitelisted"])))
 user_routes.include_router(user_router)
+
+#####################################################
+
+
+#####################################################
+# Workflows Router Configuration
+#####################################################
+workflow_routes = APIRouter(prefix="/api/v1", tags=["workflows"])
+# Add Firebase authentication dependency to base router, needs base role
+workflow_routes.dependencies.append(Depends(role_based_access(["whitelisted"])))
+workflow_routes.include_router(workflows_router)
 
 #####################################################
 
@@ -195,6 +218,7 @@ async def custom_swagger_ui_html():
 app.include_router(chat_routes)
 app.include_router(user_routes)
 app.include_router(files_routes)
+app.include_router(workflow_routes)
 if __name__ == "__main__":
     import uvicorn
 

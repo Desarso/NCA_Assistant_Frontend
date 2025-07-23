@@ -9,7 +9,7 @@ import Prism from "prismjs";
 const components = componentsJson as any;
 
 // Current database version - increment when schema changes
-const CURRENT_DB_VERSION = "1.0.3";
+const CURRENT_DB_VERSION = "1.0.4";
 const DB_VERSION_KEY = "indexeddb_version";
 
 //static class to access the message cache
@@ -19,12 +19,17 @@ export class DB {
   static inited = false;
 
   static async init() {
+    console.log("DB.init called, inited:", DB.inited);
     if (DB.inited) return;
 
     const user = auth.currentUser;
-    if (!user) return;
+    if (!user) {
+      console.error("DB.init: No authenticated user");
+      return;
+    }
 
     const userID = user.uid;
+    console.log("DB.init: Initializing for user", userID);
 
     // Check stored version against current version
     const storedVersion = localStorage.getItem(DB_VERSION_KEY);
@@ -32,7 +37,7 @@ export class DB {
 
     if (shouldResetDatabase && storedVersion) {
       console.log(
-        `DB version changed from ${storedVersion} to ${CURRENT_DB_VERSION}, resetting database`,
+        `DB.init: Version changed from ${storedVersion} to ${CURRENT_DB_VERSION}, resetting database`,
         userID
       );
       await DB.deleteDatabase(userID);
@@ -46,6 +51,7 @@ export class DB {
     // Wrap in a Promise to await db setup
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+        console.log("DB.init: Upgrade needed, creating stores");
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains("conversations")) {
           db.createObjectStore("conversations", { keyPath: "id" });
@@ -56,17 +62,24 @@ export class DB {
         if (!db.objectStoreNames.contains("prism")) {
           db.createObjectStore("prism", { keyPath: "name" });
         }
+        if (!db.objectStoreNames.contains("workflows")) {
+          db.createObjectStore("workflows", { keyPath: "id" });
+        }
       };
 
-      request.onerror = () => reject(request.error);
+      request.onerror = () => {
+        console.error("DB.init: Error opening database:", request.error);
+        reject(request.error);
+      };
       request.onsuccess = () => {
+        console.log("DB.init: Database opened successfully");
         resolve(request.result);
       };
     });
 
     DB.db = db;
     DB.inited = true;
-
+    console.log("DB.init: Initialization complete");
   }
 
   private static async deleteDatabase(userID: string): Promise<void> {
@@ -122,7 +135,7 @@ export class DB {
   }
 
   public static getStoreRead(
-    name: "conversations" | "messages" | "prism",
+    name: "conversations" | "messages" | "prism" | "workflows",
     mode: IDBTransactionMode = "readonly"
   ) {
     if (!DB.inited) throw new Error("DB not initialized");
@@ -131,7 +144,7 @@ export class DB {
   }
 
   public static getStoreWrite(
-    name: "conversations" | "messages" | "prism",
+    name: "conversations" | "messages" | "prism" | "workflows",
     mode: IDBTransactionMode = "readwrite"
   ) {
     if (!DB.inited) throw new Error("DB not initialized");
@@ -268,6 +281,53 @@ export class DB {
         reject(err); // Reject on exception
       }
     });
+  }
+
+  public static async getWorkflows(): Promise<any[]> {
+    if (!DB.inited) await DB.init();
+
+    const store = DB.getStoreRead("workflows");
+    const request = store.get("workflows");
+
+    const workflows = await new Promise<any[]>((resolve, reject) => {
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        if (request.result) {
+          resolve(request.result.workflows);
+        } else {
+          resolve([]);
+        }
+      };
+    });
+
+    return workflows;
+  }
+
+  public static async setWorkflows(workflows: any[]) {
+    if (!DB.inited) await DB.init();
+
+    const store = DB.getStoreWrite("workflows");
+    store.put({ id: "workflows", workflows });
+  }
+
+  public static async deleteWorkflow(id: string): Promise<void> {
+    if (!DB.inited) await DB.init();
+
+    try {
+      // Get current workflows
+      const currentWorkflows = await DB.getWorkflows();
+      
+      // Filter out the workflow to delete
+      const updatedWorkflows = currentWorkflows.filter(wf => wf.id !== id);
+      
+      // Update the store
+      await DB.setWorkflows(updatedWorkflows);
+      
+      console.log(`Deleted workflow ${id} from IndexedDB`);
+    } catch (error) {
+      console.error(`Error deleting workflow ${id} from IndexedDB:`, error);
+      throw error;
+    }
   }
 }
 
@@ -496,17 +556,36 @@ export class ConversationCache {
   }
 
   public static async get(): Promise<Conversation[]> {
-    const conversations = sessionStorage.getItem(`conversations`);
-    if (conversations) {
-      ConversationCache.set(JSON.parse(conversations));
-      return JSON.parse(conversations);
+    try {
+      const { auth } = await import("@/lib/firebase");
+      const user = auth.currentUser;
+      if (!user) {
+        console.error("User not authenticated");
+        return [];
+      }
+
+      console.log("Checking session storage for conversations");
+      const conversations = sessionStorage.getItem(`conversations`);
+      if (conversations) {
+        console.log("Found conversations in session storage");
+        ConversationCache.set(JSON.parse(conversations));
+        return JSON.parse(conversations);
+      }
+
+      console.log("Checking IndexedDB for conversations");
+      const dbConversations = await DB.getConversations();
+      if (dbConversations) {
+        console.log("Found conversations in IndexedDB");
+        ConversationCache.set(dbConversations);
+        return dbConversations;
+      }
+
+      console.log("No cached conversations found, fetching from server");
+      return await ConversationCache.fetchConversationsNoCache();
+    } catch (error) {
+      console.error("Error in ConversationCache.get:", error);
+      return [];
     }
-    const dbConversations = await DB.getConversations();
-    if (dbConversations) {
-      ConversationCache.set(dbConversations);
-      return dbConversations;
-    }
-    return await ConversationCache.fetchConversationsNoCache();
   }
 
   public static set(conversations: Conversation[]) {

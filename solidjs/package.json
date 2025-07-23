@@ -27,6 +27,7 @@
     "@types/prismjs": "^1.26.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cmdk-solid": "^1.1.2",
     "debug": "^4.3.7",
     "extend": "^3.0.2",
     "firebase": "^11.6.0",

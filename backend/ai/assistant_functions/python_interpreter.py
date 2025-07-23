@@ -59,6 +59,22 @@ def python_interpreter(
                 'graph_api_request': graph_api_request_no_ctx,  # Alias for convenience
                 'default_api': DefaultApi(),  # Create instance of DefaultApi
             }
+            
+            # Add common data science libraries
+            try:
+                import pandas as pd
+                import numpy as np
+                import xlsxwriter
+                exec_context.update({
+                    'pd': pd,
+                    'pandas': pd,
+                    'np': np,
+                    'numpy': np,
+                    'xlsxwriter': xlsxwriter,
+                })
+            except ImportError:
+                # If pandas/numpy/xlsxwriter not available, continue without them
+                pass
 
             # Execute the code with the pre-imported context
             exec(code, exec_context)

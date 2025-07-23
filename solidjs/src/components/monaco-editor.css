@@ -1,0 +1,103 @@
+/* Monaco Editor CSS overrides */
+
+/* Hide minimap and overview ruler completely */
+.monaco-editor .minimap,
+.monaco-editor .overview-ruler,
+.monaco-editor .decorationsOverviewRuler {
+  display: none !important;
+}
+
+/* Allow and style code folding controls */
+.monaco-editor .folding {
+  display: block !important;
+}
+
+.monaco-editor .margin-view-overlays {
+  display: block !important;
+}
+
+.monaco-editor .glyph-margin {
+  display: block !important;
+  background: transparent !important;
+}
+
+.monaco-editor .glyph-margin-widgets {
+  display: block !important;
+}
+
+/* Replace codicon fonts with CSS arrows */
+.monaco-editor .folding .codicon,
+.monaco-editor .glyph-margin .codicon {
+  display: inline-block !important;
+  width: 16px !important;
+  height: 16px !important;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  position: relative;
+  font-family: inherit !important;
+}
+
+/* Hide the original codicon content and create CSS arrows */
+.monaco-editor .folding .codicon::before,
+.monaco-editor .glyph-margin .codicon::before {
+  content: '' !important;
+  display: none !important;
+}
+
+/* Create right-pointing arrow for collapsed state */
+.monaco-editor .folding .codicon-chevron-right::after,
+.monaco-editor .glyph-margin .codicon-chevron-right::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  width: 0;
+  height: 0;
+  border-left: 4px solid currentColor;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+}
+
+/* Create down-pointing arrow for expanded state */
+.monaco-editor .folding .codicon-chevron-down::after,
+.monaco-editor .glyph-margin .codicon-chevron-down::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  width: 0;
+  height: 0;
+  border-top: 4px solid currentColor;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+}
+
+/* Hover effects */
+.monaco-editor .folding .codicon:hover,
+.monaco-editor .glyph-margin .codicon:hover {
+  opacity: 1;
+}
+
+/* Hide all other codicons */
+.monaco-editor .codicon:not([class*="chevron"]) {
+  display: none !important;
+}
+
+/* Clean up any minimize/maximize icons that aren't folding related */
+.monaco-editor [class*="minimize"]:not([class*="fold"]),
+.monaco-editor [class*="maximize"]:not([class*="fold"]),
+.monaco-editor [class*="restore"]:not([class*="fold"]) {
+  display: none !important;
+}
+
+/* Ensure proper folding icon positioning */
+.monaco-editor .folding-decoration {
+  display: inline-block !important;
+}
+
+/* Style the folded region indicator */
+.monaco-editor .folded-background {
+  background-color: rgba(100, 100, 100, 0.1) !important;
+}

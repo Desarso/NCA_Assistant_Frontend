@@ -192,53 +192,42 @@ const ChatInput: Component<ChatInputProps> = (props) => {
   };
 
   const handleSubmit = (e?: Event) => {
-    // console.log("[ChatInput] handleSubmit called"); // Removed log
     e?.preventDefault();
 
-    // Check if any uploads (image or PDF) are still in progress
     const hasUploadingItems = content().some(
       item => (isImageData(item.content) || isPdfData(item.content)) && item.content.isUploading === true
     );
-    const uploadingSignal = isUploading(); // Get signal value
-
-    // console.log(`[ChatInput] States - hasUploadingItems: ${hasUploadingItems}, isUploading(): ${uploadingSignal}, props.gettingResponse: ${props.gettingResponse}`); // Removed log
+    const uploadingSignal = isUploading();
 
     if (hasUploadingItems || uploadingSignal) {
-      // console.warn("[ChatInput] Exiting handleSubmit: Files still uploading."); // Removed log
-      return; // Exit if uploads are pending
+      return;
     }
     if (props.gettingResponse) {
-      // console.warn("[ChatInput] Exiting handleSubmit: Already getting response."); // Removed log
-       return; // Exit if already waiting for response (redundant check based on button logic, but safe)
+      return;
     }
 
     const currentText = textInput().trim();
     const currentContent = content();
 
     if (currentText || currentContent.length > 0) {
-      // If only text, send as string
       if (currentText && currentContent.length === 0) {
         const submissionData: string = currentText;
-        // console.log("[ChatInput] Calling props.onSubmit with (text only):", submissionData); // Removed log
         props.onSubmit(submissionData);
-        setContent([]); // Clear content state (though it should be empty)
-        setTextInput(""); // Clear text input
-      }
-      // If files are present (with or without text)
-      else if (currentContent.length > 0) {
-        // Filter out incomplete uploads
+        setContent([]);
+        setTextInput("");
+        // Reset textarea height
+        if (textInputRef) {
+          textInputRef.style.height = '40px';
+        }
+      } else if (currentContent.length > 0) {
         const validContent = currentContent.filter(item => {
-            // Keep text items (though they shouldn't be in content() array based on current logic)
-            // if (typeof item.content === 'string') return true;
-            // Keep fully uploaded items (images or PDFs) with server URLs
-            if ((isImageData(item.content) || isPdfData(item.content)) && item.content.serverUrl && !item.content.isUploading) {
-              return true;
-            }
-            console.warn("Filtering out incomplete/invalid item:", item);
-            return false;
-          }); // End of filter
+          if ((isImageData(item.content) || isPdfData(item.content)) && item.content.serverUrl && !item.content.isUploading) {
+            return true;
+          }
+          console.warn("Filtering out incomplete/invalid item:", item);
+          return false;
+        });
 
-        // Add the text input as a ContentItem if present
         if (currentText) {
           validContent.push({
             content: currentText,
@@ -247,28 +236,20 @@ const ChatInput: Component<ChatInputProps> = (props) => {
           });
         }
 
-        // Ensure we have something valid to send
         if (validContent.length === 0) {
-           console.error("No valid content (text or files) to send.");
-           return;
+          console.error("No valid content (text or files) to send.");
+          return;
         }
 
-        // Pass the filtered internal ContentItem array to the parent
         const submissionData: ContentItem[] = validContent;
-
-        // Call onSubmit with the internal ContentItem structure
-        // console.log("[ChatInput] Calling props.onSubmit with (mixed/file content):", submissionData); // Removed log
         props.onSubmit(submissionData);
-        setContent([]); // Clear file content state
-        setTextInput(""); // Clear text input
+        setContent([]);
+        setTextInput("");
+        // Reset textarea height
+        if (textInputRef) {
+          textInputRef.style.height = '40px';
+        }
       }
-      // This else branch should technically not be reachable if the outer condition is true
-      // but added for completeness. It implies currentText is empty and currentContent is empty.
-      else {
-        // console.log("[ChatInput] Exiting handleSubmit: Logic error or empty state detected unexpectedly."); // Removed log
-      }
-    } else {
-      // console.log("[ChatInput] Exiting handleSubmit: No text or content to send."); // Removed log
     }
   };
 

@@ -290,7 +290,6 @@ export function AppSidebar() {
                 <SidebarMenuItem class="group/menu-item relative">
                   <A
                     href={`/chat/${chat.id}`}
-                    onClick={() => setOpenMobile(false)}
                     onMouseEnter={() => handleChatMouseEnter(chat.id)}
                     class="group/link relative flex items-center gap-2 pl-3 pr-10 py-2 text-base md:text-[13px] font-medium text-[#696a6a] dark:text-gray-200 rounded-md group-hover/menu-item:bg-white dark:group-hover/menu-item:bg-gray-700 w-full overflow-hidden" 
                     classList={{
@@ -356,7 +355,6 @@ export function AppSidebar() {
             />
             <A
               href="/chat/"
-              onClick={() => setOpenMobile(false)}
               class="rounded-md px-3 py-2 mt-5 text-sm font-medium w-full text-white gradient-button transition-colors block text-center"
             >
               + New Chat
@@ -452,7 +450,6 @@ export function AppSidebar() {
             />
             <A
               href="/chat/"
-              onClick={() => setOpenMobile(false)}
               class="rounded-md px-3 py-2 mt-5 text-sm font-medium w-full text-white gradient-button transition-colors block text-center"
             >
               + New Chat

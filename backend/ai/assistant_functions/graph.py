@@ -440,9 +440,13 @@ def graph_api_request_no_ctx(
             
             # Return the complete error response with the original error body and response text
             return error_data
-        else:
-            logging.debug(f"graph_api_request: make_request successful for {method} {path}.")
-            return response_data if response_data is not None else {}
+        
+        # If make_request returned None for both data and error (e.g. on 404)
+        if response_data is None:
+            return {}
+
+        logging.debug(f"graph_api_request: make_request successful for {method} {path}.")
+        return response_data
     except Exception as e:
         error_params = {
             "endpoint_version": endpoint_version,

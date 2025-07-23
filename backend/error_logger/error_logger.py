@@ -1,10 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List, Union
 import json
 import logging
 from pydantic import BaseModel
 import sqlite3
 import os
+import threading
 
 class ErrorLog(BaseModel):
     timestamp: datetime
@@ -14,29 +15,52 @@ class ErrorLog(BaseModel):
     stack_trace: Optional[str] = None
 
 class ErrorLogger:
+    _instance = None
+    _lock = threading.Lock()
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            with cls._lock:
+                if not cls._instance:
+                    cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
-        self.db_path = os.path.join(os.path.dirname(__file__), 'error_logs.db')
-        self._init_db()
+        if hasattr(self, '_initialized') and self._initialized:
+            return
+            
+        with self._lock:
+            if hasattr(self, '_initialized') and self._initialized:
+                return
+                
+            self.logger = logging.getLogger(__name__)
+            self.db_path = os.path.join(os.path.dirname(__file__), 'error_logs.db')
+            self._init_db()  # Run once to ensure DB file and table exist
+            self._initialized = True
+
+    def _create_connection(self):
+        """Creates a new database connection."""
+        conn = sqlite3.connect(self.db_path, timeout=10) # Add timeout
+        conn.row_factory = sqlite3.Row
+        return conn
 
     def _init_db(self):
         """Initialize the database and create tables if they don't exist."""
-        self.conn = sqlite3.connect(self.db_path)
-        self.conn.row_factory = sqlite3.Row  # Enable row name access
-        
-        # Create errors table if it doesn't exist
-        self.conn.execute('''
-            CREATE TABLE IF NOT EXISTS error_logs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                timestamp TEXT NOT NULL,
-                function_name TEXT NOT NULL,
-                error_text TEXT NOT NULL,
-                parameters TEXT NOT NULL,
-                stack_trace TEXT,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        self.conn.commit()
+        try:
+            with self._create_connection() as conn:
+                conn.execute('''
+                    CREATE TABLE IF NOT EXISTS error_logs (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        timestamp TEXT NOT NULL,
+                        function_name TEXT NOT NULL,
+                        error_text TEXT NOT NULL,
+                        parameters TEXT NOT NULL,
+                        stack_trace TEXT,
+                        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                    )
+                ''')
+        except Exception as e:
+            self.logger.error(f"Failed to initialize database: {str(e)}")
 
     def log_error(
         self,
@@ -58,7 +82,7 @@ class ErrorLogger:
             Dict containing error information and a user-friendly message
         """
         error_log = ErrorLog(
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             function_name=function_name,
             error_text=error_text,
             parameters=parameters,
@@ -72,21 +96,20 @@ class ErrorLogger:
 
         # Save to database
         try:
-            self.conn.execute('''
-                INSERT INTO error_logs 
-                (timestamp, function_name, error_text, parameters, stack_trace)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (
-                error_log.timestamp.isoformat(),
-                error_log.function_name,
-                error_log.error_text,
-                json.dumps(error_log.parameters),
-                error_log.stack_trace
-            ))
-            self.conn.commit()
+            with self._create_connection() as conn:
+                conn.execute('''
+                    INSERT INTO error_logs 
+                    (timestamp, function_name, error_text, parameters, stack_trace)
+                    VALUES (?, ?, ?, ?, ?)
+                ''', (
+                    error_log.timestamp.isoformat(),
+                    error_log.function_name,
+                    error_log.error_text,
+                    json.dumps(error_log.parameters),
+                    error_log.stack_trace
+                ))
         except Exception as e:
             self.logger.error(f"Failed to save error to database: {str(e)}")
-            # Don't raise the exception, just log it and continue
 
         # TODO: Send SMS notification
         # self.send_sms_notification(error_log)
@@ -120,25 +143,26 @@ class ErrorLogger:
             List of error logs as dictionaries
         """
         try:
-            cursor = self.conn.execute('''
-                SELECT * FROM error_logs 
-                ORDER BY timestamp DESC 
-                LIMIT ?
-            ''', (limit,))
-            
-            errors = []
-            for row in cursor.fetchall():
-                error = {
-                    'id': row['id'],
-                    'timestamp': row['timestamp'],
-                    'function_name': row['function_name'],
-                    'error_text': row['error_text'],
-                    'parameters': json.loads(row['parameters']),
-                    'stack_trace': row['stack_trace'],
-                    'created_at': row['created_at']
-                }
-                errors.append(error)
-            return errors
+            with self._create_connection() as conn:
+                cursor = conn.execute('''
+                    SELECT * FROM error_logs 
+                    ORDER BY timestamp DESC 
+                    LIMIT ?
+                ''', (limit,))
+                
+                errors = []
+                for row in cursor.fetchall():
+                    error = {
+                        'id': row['id'],
+                        'timestamp': row['timestamp'],
+                        'function_name': row['function_name'],
+                        'error_text': row['error_text'],
+                        'parameters': json.loads(row['parameters']),
+                        'stack_trace': row['stack_trace'],
+                        'created_at': row['created_at']
+                    }
+                    errors.append(error)
+                return errors
         except Exception as e:
             self.logger.error(f"Failed to retrieve errors from database: {str(e)}")
             return []
@@ -165,48 +189,49 @@ class ErrorLogger:
             List of error logs as dictionaries
         """
         try:
-            query = "SELECT * FROM error_logs WHERE 1=1"
-            params = []
+            with self._create_connection() as conn:
+                query = "SELECT * FROM error_logs WHERE 1=1"
+                params = []
 
-            if search_text:
-                query += " AND (error_text LIKE ? OR stack_trace LIKE ?)"
-                search_pattern = f"%{search_text}%"
-                params.extend([search_pattern, search_pattern])
+                if search_text:
+                    query += " AND (error_text LIKE ? OR stack_trace LIKE ?)"
+                    search_pattern = f"%{search_text}%"
+                    params.extend([search_pattern, search_pattern])
 
-            if function_name:
-                query += " AND function_name = ?"
-                params.append(function_name)
+                if function_name:
+                    query += " AND function_name = ?"
+                    params.append(function_name)
 
-            if start_date:
-                if isinstance(start_date, datetime):
-                    start_date = start_date.isoformat()
-                query += " AND timestamp >= ?"
-                params.append(start_date)
+                if start_date:
+                    if isinstance(start_date, datetime):
+                        start_date = start_date.isoformat()
+                    query += " AND timestamp >= ?"
+                    params.append(start_date)
 
-            if end_date:
-                if isinstance(end_date, datetime):
-                    end_date = end_date.isoformat()
-                query += " AND timestamp <= ?"
-                params.append(end_date)
+                if end_date:
+                    if isinstance(end_date, datetime):
+                        end_date = end_date.isoformat()
+                    query += " AND timestamp <= ?"
+                    params.append(end_date)
 
-            query += " ORDER BY timestamp DESC LIMIT ?"
-            params.append(limit)
+                query += " ORDER BY timestamp DESC LIMIT ?"
+                params.append(limit)
 
-            cursor = self.conn.execute(query, params)
-            
-            errors = []
-            for row in cursor.fetchall():
-                error = {
-                    'id': row['id'],
-                    'timestamp': row['timestamp'],
-                    'function_name': row['function_name'],
-                    'error_text': row['error_text'],
-                    'parameters': json.loads(row['parameters']),
-                    'stack_trace': row['stack_trace'],
-                    'created_at': row['created_at']
-                }
-                errors.append(error)
-            return errors
+                cursor = conn.execute(query, params)
+                
+                errors = []
+                for row in cursor.fetchall():
+                    error = {
+                        'id': row['id'],
+                        'timestamp': row['timestamp'],
+                        'function_name': row['function_name'],
+                        'error_text': row['error_text'],
+                        'parameters': json.loads(row['parameters']),
+                        'stack_trace': row['stack_trace'],
+                        'created_at': row['created_at']
+                    }
+                    errors.append(error)
+                return errors
         except Exception as e:
             self.logger.error(f"Failed to search errors: {str(e)}")
             return []
@@ -264,7 +289,6 @@ class ErrorLogger:
         """
         return self.search_errors(search_text=search_text, limit=limit)
 
-    def __del__(self):
-        """Close database connection when the object is destroyed."""
-        if hasattr(self, 'conn'):
-            self.conn.close()
+
+# Instantiate a single logger instance
+error_logger = ErrorLogger()

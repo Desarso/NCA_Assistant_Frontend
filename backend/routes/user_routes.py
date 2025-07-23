@@ -6,6 +6,10 @@ from fastapi.security import (
 )
 import uuid
 from models.general import UserCredentials
+from typing import List
+from pydantic import BaseModel
+from firebase_admin import auth
+from helpers.Firebase_helpers import FirebaseUser, get_current_user
 
 user_router = APIRouter(prefix="/users")
 
@@ -159,5 +163,64 @@ async def upload_profile_picture(
             status_code=500,
             detail=f"Failed to upload profile picture: {str(e)}"
         )
+
+
+class UserResponse(BaseModel):
+    id: str
+    email: str
+    displayName: str | None = None
+
+@user_router.get("/search", response_model=List[UserResponse])
+async def search_users(
+    q: str = "",
+    current_user: FirebaseUser = Depends(get_current_user)
+):
+    """Search for users by email or display name. Returns all users (up to 10) if no search term provided."""
+    try:
+        # List all users (in production, you'd want to paginate this)
+        # For now, we'll limit to first 100 users
+        users = auth.list_users().users
+
+        # If no search query, return all users (up to 10)
+        if not q.strip():
+            all_users = [
+                UserResponse(
+                    id=user.uid,
+                    email=user.email,
+                    displayName=user.display_name
+                )
+                for user in users
+            ]
+            # Sort alphabetically by email and limit to 10
+            return sorted(all_users, key=lambda u: u.email.lower())[:10]
+
+        # Filter users based on search query
+        query = q.lower()
+        filtered_users = [
+            UserResponse(
+                id=user.uid,
+                email=user.email,
+                displayName=user.display_name
+            )
+            for user in users
+            if query in user.email.lower() or 
+               (user.display_name and query in user.display_name.lower())
+        ]
+
+        # Sort by relevance (exact matches first, then partial matches)
+        # and limit to first 10 results
+        sorted_users = sorted(
+            filtered_users,
+            key=lambda u: (
+                not u.email.lower().startswith(query),  # Exact start matches first
+                not query in u.email.lower(),           # Contains matches second
+                u.email.lower()                         # Alphabetical within each group
+            )
+        )[:10]
+
+        return sorted_users
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 

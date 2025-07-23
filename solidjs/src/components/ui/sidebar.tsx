@@ -84,9 +84,24 @@ const SidebarProvider: Component<SidebarProviderProps> = (props) => {
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = createSignal(false)
 
+  // Read the saved state from cookie, fallback to defaultOpen prop or false
+  const getSavedState = () => {
+    try {
+      const cookies = document.cookie.split(';');
+      const sidebarCookie = cookies.find(cookie => cookie.trim().startsWith(`${SIDEBAR_COOKIE_NAME}=`));
+      if (sidebarCookie) {
+        const value = sidebarCookie.split('=')[1];
+        return value === 'true';
+      }
+    } catch (error) {
+      console.warn('Failed to read sidebar state from cookie:', error);
+    }
+    return props.defaultOpen ?? false; // Default to closed instead of open
+  };
+
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
-  const [_open, _setOpen] = createSignal(props.defaultOpen ?? true)
+  const [_open, _setOpen] = createSignal(getSavedState())
   const open = () => props.open ?? _open()
   const setOpen = (value: boolean | ((value: boolean) => boolean)) => {
     const openState = typeof value === "function" ? value(open()) : value

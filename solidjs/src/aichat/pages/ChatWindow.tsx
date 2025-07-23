@@ -83,10 +83,14 @@ function ChatWindow() {
   // Scroll to bottom with smooth animation (for new messages)
   function scrollToBottom() {
     const lastMessage = document.getElementById("last-message");
-    if (lastMessage) {
-      lastMessage.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
+    if (lastMessage && chatContainerRef) {
+      const containerRect = chatContainerRef.getBoundingClientRect();
+      const elementRect = lastMessage.getBoundingClientRect();
+      const offset = elementRect.top - containerRect.top;
+      
+      chatContainerRef.scrollTo({
+        top: chatContainerRef.scrollTop + offset,
+        behavior: "smooth"
       });
     }
   }
@@ -94,11 +98,12 @@ function ChatWindow() {
   // Instant scroll to bottom without animation (for chat switching)
   function instantScrollToBottom() {
     const lastMessage = document.getElementById("last-message");
-    if (lastMessage) {
-      lastMessage.scrollIntoView({
-        behavior: "auto",
-        block: "end",
-      });
+    if (lastMessage && chatContainerRef) {
+      const containerRect = chatContainerRef.getBoundingClientRect();
+      const elementRect = lastMessage.getBoundingClientRect();
+      const offset = elementRect.top - containerRect.top;
+      
+      chatContainerRef.scrollTop = chatContainerRef.scrollTop + offset;
     }
   }
 
@@ -554,7 +559,7 @@ function ChatWindow() {
                   onScroll={() => saveScrollPosition()}
                 >
                   {/* Inner div for message content centering and padding - REMOVED PADDING */}
-                  <div class="md:max-w-[900px] mx-auto">
+                  <div class="md:max-w-[900px] mx-auto pt-20">
                     <For each={memoizedMessages()}>
                       {(message, index) => (
                         <Show

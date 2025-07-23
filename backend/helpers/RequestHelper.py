@@ -14,123 +14,74 @@ load_dotenv()
 # Initialize error logger
 error_logger = ErrorLogger()
 
-tenant_id = os.getenv("TENANT_ID")
-client_id = os.getenv("APP_ID")
-client_secret = os.getenv("SECRET")
+class TokenManager:
+    _instance = None
+    _lock = threading.Lock()
 
-
-_token = None
-_headers = {}
-_token_expiry = None
-_token_lock = threading.Lock()
-
-
-def refresh_token() -> Tuple[Optional[str], Optional[Dict[str, Any]]]:
-    # print credentials
-    print("tenant_id", tenant_id)
-    print("client_id", client_id)
-    print("client_secret", client_secret)
-    """Refreshes the access token for Microsoft Graph API"""
-    global _token, _headers, _token_expiry
-
-    token_url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
-    token_data = {
-        "grant_type": "client_credentials",
-        "client_id": client_id,
-        "client_secret": client_secret,
-        "scope": "https://graph.microsoft.com/.default",
-    }
-
-    try:
-        response = requests.post(token_url, data=token_data)
-        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
-        data = response.json()
-        token = data.get("access_token")
-        expires_in = data.get("expires_in")  # Get token lifetime
-
-        if not token:
-            print(response.text)
-            logging.error("Failed to get token: " + response.text)
-            return None, {"error": "Failed to get token", "details": response.text}
-
-        # Update the global token variables
-        _token = token
-        _headers = {
-            "Authorization": f"Bearer {_token}",
-            "Content-Type": "application/json",
-        }
-        _token_expiry = time.time() + int(expires_in)
-        logging.info("Token refreshed successfully.")
-
-        return _token, None
-
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Request failed: {e}")
-        return None, {"error": "Failed to refresh token", "details": str(e)}
-    except Exception as e:
-        logging.exception("An unexpected error occurred during token refresh.")
-        return None, {
-            "error": "Unexpected error during token refresh",
-            "details": str(e),
-        }
-
-
-def _check_and_refresh_token() -> Optional[Dict[str, Any]]:
-    """Checks if the token is expired and refreshes it if needed."""
-    global _token, _headers, _token_expiry
-
-    if _token_expiry is None or time.time() >= _token_expiry:
-        logging.info("Token expired or about to expire. Refreshing...")
-        with _token_lock:
-            token, error = refresh_token()
-            if error:
-                return error  # Return the error encountered during refresh
-
-            # Update global token variables if refresh was successful
-            if token:
-                _token = token
-                _headers["Authorization"] = f"Bearer {_token}"
-                schedule_token_refresh()
-
-    return None  # No error
-
-
-def schedule_token_refresh():
-    """Schedules the token refresh to occur before it expires."""
-    global _token_expiry
-
-    if _token_expiry:
-        # Refresh token 5 minutes before expiry
-        refresh_time = _token_expiry - time.time() - 300
-        if refresh_time > 0:
-            logging.info(f"Scheduling token refresh in {refresh_time} seconds.")
-            threading.Timer(refresh_time, _refresh_token_and_reschedule).start()
-        else:
-            logging.warning(
-                "Token is already expired or about to expire. Refreshing now."
-            )
-            _refresh_token_and_reschedule()
-    else:
-        logging.warning("Token expiry not set. Refreshing immediately.")
-        _refresh_token_and_reschedule()
-
-
-def _refresh_token_and_reschedule():
-    """Refreshes the token and reschedules the next refresh."""
-    global _token, _headers
-
-    with _token_lock:  # Ensure thread safety
-        token, error = refresh_token()
-        if error:
-            logging.error(f"Failed to refresh token: {error}")
-            # Handle the error (e.g., stop the application or retry later)
+    def __init__(self):
+        if hasattr(self, '_initialized'):
             return
+        
+        self.tenant_id = os.getenv("TENANT_ID")
+        self.client_id = os.getenv("APP_ID")
+        self.client_secret = os.getenv("SECRET")
+        self._token: Optional[str] = None
+        self._token_expiry: Optional[float] = None
+        self._token_lock = threading.Lock()
+        self._initialized = True
 
-        if token:
-            _token = token
-            _headers["Authorization"] = f"Bearer {_token}"
-            schedule_token_refresh()
+    def __new__(cls):
+        with cls._lock:
+            if not cls._instance:
+                cls._instance = super().__new__(cls)
+        return cls._instance
 
+    def get_token(self) -> Tuple[Optional[str], Optional[Dict[str, Any]]]:
+        """Gets a valid access token, refreshing if necessary."""
+        with self._token_lock:
+            # Refresh if token is missing, or expired (with a 5-min buffer)
+            if self._token is None or self._token_expiry is None or time.time() >= self._token_expiry:
+                logging.info("Token is expired or missing. Refreshing...")
+                return self._refresh_token()
+            
+            logging.debug("Returning cached token.")
+            return self._token, None
+
+    def _refresh_token(self) -> Tuple[Optional[str], Optional[Dict[str, Any]]]:
+        """Internal method to refresh the token. Must be called within a lock."""
+        token_url = f"https://login.microsoftonline.com/{self.tenant_id}/oauth2/v2.0/token"
+        token_data = {
+            "grant_type": "client_credentials",
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "scope": "https://graph.microsoft.com/.default",
+        }
+        
+        try:
+            response = requests.post(token_url, data=token_data)
+            response.raise_for_status()
+            data = response.json()
+            
+            self._token = data.get("access_token")
+            expires_in = data.get("expires_in", 3600)
+            
+            if not self._token:
+                logging.error(f"Failed to get token from response: {response.text}")
+                return None, {"error": "Failed to get token", "details": response.text}
+
+            self._token_expiry = time.time() + int(expires_in) - 300  # 5-minute buffer
+            logging.info("Token refreshed successfully.")
+            return self._token, None
+
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Request failed during token refresh: {e}")
+            # Invalidate token on failure
+            self._token = None
+            self._token_expiry = None
+            return None, {"error": "Failed to refresh token", "details": str(e)}
+
+# Instantiate the single, thread-safe token manager
+token_manager = TokenManager()
 
 def make_request(
     method: str,
@@ -154,17 +105,17 @@ def make_request(
         - response_data is the parsed JSON response (if successful)
         - error is the error information (if request failed)
     """
-    global _headers
     response: Optional[requests.Response] = None
     req_id = f"{method} {url}"
 
     # --- Token Check and Header Prep ---
-    logging.debug(f"[{req_id}] Checking token...")
-    token_error = _check_and_refresh_token()
+    logging.debug(f"[{req_id}] Getting auth token...")
+    token, token_error = token_manager.get_token()
+    
     if token_error:
-        logging.error(f"[{req_id}] Token refresh failed: {token_error}")
+        logging.error(f"[{req_id}] Token acquisition failed: {token_error}")
         err_payload = token_error if isinstance(token_error, dict) else {"details": str(token_error)}
-        err_payload.setdefault("error", "Token refresh failed")
+        err_payload.setdefault("error", "Token acquisition failed")
         error_params = {
             "method": method,
             "url": url,
@@ -173,34 +124,23 @@ def make_request(
         }
         return None, error_logger.log_error(
             function_name="make_request",
-            error_text=f"Token refresh failed: {err_payload.get('error')}",
+            error_text=f"Token acquisition failed: {err_payload.get('error')}",
             parameters=error_params,
             stack_trace=traceback.format_exc()
         )
-    logging.debug(f"[{req_id}] Token check OK.")
+    logging.debug(f"[{req_id}] Token acquired successfully.")
 
-    # Start with the default headers (which include auth token)
-    request_headers = _headers.copy() if _headers else {}
+    # Start with fresh headers for every request
+    request_headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+    }
     
     # Merge with any custom headers provided by the caller
     if headers:
         request_headers.update(headers)
         logging.debug(f"[{req_id}] Custom headers merged with default headers.")
     
-    if not request_headers:
-        logging.error(f"[{req_id}] Missing request headers.")
-        error_params = {
-            "method": method,
-            "url": url,
-            "headers": headers,
-            "json_data": json_data
-        }
-        return None, error_logger.log_error(
-            function_name="make_request",
-            error_text="Missing request headers",
-            parameters=error_params,
-            stack_trace=traceback.format_exc()
-        )
     logging.debug(f"[{req_id}] Headers prepared: {', '.join(request_headers.keys())}")
     # --- End Token/Header Prep ---
 
@@ -243,7 +183,37 @@ def make_request(
 
     # --- Exception Handling ---
     except requests.exceptions.HTTPError as e:
-        # Handles 4xx/5xx errors raised by raise_for_status()
+        # Gracefully handle 404 Not Found by returning an error response
+        if e.response.status_code == 404:
+            logging.warning(f"[{req_id}] Resource not found (404).")
+            error_params = {
+                "method": method,
+                "url": url,
+                "headers": headers,
+                "json_data": json_data,
+                "status_code": 404,
+                "response_headers": dict(e.response.headers),
+                "response_text": e.response.text
+            }
+            
+            error_response = error_logger.log_error(
+                function_name="make_request",
+                error_text="Resource not found (404)",
+                parameters=error_params,
+                stack_trace=traceback.format_exc()
+            )
+            
+            # Try to parse error body if it exists
+            try:
+                error_body = json.loads(e.response.text)
+                error_response["error_body"] = error_body
+            except json.JSONDecodeError:
+                error_response["error_body"] = {"raw_response": e.response.text}
+            
+            error_response["full_response_text"] = e.response.text
+            return None, error_response
+            
+        # Handles other 4xx/5xx errors raised by raise_for_status()
         # response is guaranteed available via e.response
         err_status = e.response.status_code
         err_headers = dict(e.response.headers)
