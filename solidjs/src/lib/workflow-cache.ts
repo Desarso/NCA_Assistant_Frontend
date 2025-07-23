@@ -175,4 +175,42 @@ export class WorkflowCache {
       return null;
     }
   }
+
+  // Method to delete a workflow from both cache and server
+  public static async deleteFromServer(id: string): Promise<boolean> {
+    try {
+      const { authFetch } = await import("@/lib/utils");
+      
+      const response = await authFetch(`${HOST}/api/v1/workflows/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete workflow: ${response.status} ${response.statusText}`);
+      }
+
+      // If server deletion was successful, remove from cache
+      await WorkflowCache.delete(id);
+      
+      // Notify listeners that cache has been invalidated
+      WorkflowCache.notifyInvalidation();
+      
+      console.log(`Successfully deleted workflow ${id} from server and cache`);
+      return true;
+    } catch (error) {
+      console.error(`Failed to delete workflow ${id} from server:`, error);
+      return false;
+    }
+  }
+
+  // Method to clear all workflows from cache (useful for logout/refresh)
+  public static clear(): void {
+    sessionStorage.removeItem("workflows");
+    sessionStorage.removeItem("workflows_timestamp");
+    WorkflowCache.notifyInvalidation();
+    console.log("Cleared workflow cache");
+  }
 } 

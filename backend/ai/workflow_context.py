@@ -10,10 +10,11 @@ from pydantic_ai import RunContext
 
 class WorkflowRunContext:
     """Mock RunContext for workflow functions"""
-    def __init__(self, session: Session = None, user_id: str = None):
+    def __init__(self, session: Session = None, user_id: str = None, conversation_id: str = None):
         self.deps = type('deps', (), {})()
         self.deps.session = session
         self.deps.user_id = user_id
+        self.deps.conversation_id = conversation_id
 
 def get_workflow_context(workflow_id: str = None, session: Session = None) -> Dict[str, Any]:
     """
@@ -191,7 +192,9 @@ def get_assistant_workflow_context(workflow_id: str = None, session: Session = N
             list_directory,
             write_file_content,
             execute_shell_command,
-            create_shareable_file_link
+            create_shareable_file_link,
+            get_local_file_url,
+            get_local_file_view_url
         )
         
         # Create wrapper functions that automatically provide RunContext
@@ -243,6 +246,14 @@ def get_assistant_workflow_context(workflow_id: str = None, session: Session = N
             ctx = WorkflowRunContext(session)
             return create_shareable_file_link(ctx, content, filename, content_type)
         
+        def get_local_file_url_wrapper(file_path: str):
+            ctx = WorkflowRunContext(session)
+            return get_local_file_url(ctx, file_path)
+        
+        def get_local_file_view_url_wrapper(file_path: str):
+            ctx = WorkflowRunContext(session)
+            return get_local_file_view_url(ctx, file_path)
+        
 
 
         # Add wrapped functions to context
@@ -261,6 +272,8 @@ def get_assistant_workflow_context(workflow_id: str = None, session: Session = N
             'list_dir': list_dir_wrapper,
             'write_file': write_file_wrapper,
             'create_shareable_file_link': create_shareable_file_link_wrapper,
+            'get_local_file_url': get_local_file_url_wrapper,
+            'get_local_file_view_url': get_local_file_view_url_wrapper,
             
             # System operations
             'shell_command': shell_command_wrapper,

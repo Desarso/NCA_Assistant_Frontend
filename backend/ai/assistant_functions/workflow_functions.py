@@ -542,8 +542,8 @@ def read_file_content(
         Dict containing file content or error details
     """
     try:
-        # Security check - only allow reading from certain directories
-        allowed_dirs = ['/tmp', './uploads', './data', './scripts', './']
+        # Security check - only allow reading from agent files directory or legacy directories for backward compatibility
+        allowed_dirs = ['./agent_files/', '/tmp', './uploads', './data', './scripts', './']
         if not any(file_path.startswith(allowed_dir) for allowed_dir in allowed_dirs):
             # Allow relative paths within project
             if not (file_path.startswith('./') or file_path.startswith('../')):
@@ -665,9 +665,10 @@ def list_directory(
 ) -> Dict[str, Any]:
     """
     List contents of a directory with optional filtering.
+    Automatically scopes to the current conversation's files when using relative paths.
     
     Args:
-        directory_path: Path to the directory to list
+        directory_path: Path to the directory to list (can be relative or full path)
         show_hidden: Whether to include hidden files/directories
         file_extensions: Optional list of file extensions to filter by (e.g., ['.py', '.js'])
         
@@ -675,6 +676,26 @@ def list_directory(
         Dict containing directory contents or error details
     """
     try:
+        # If directory_path doesn't specify agent_files, auto-scope to current conversation
+        if not directory_path.startswith('./agent_files/') and not directory_path.startswith('agent_files/'):
+            # Auto-extract chat_id from context
+            chat_id = None
+            
+            # Try to get the conversation ID from context
+            if hasattr(ctx, 'deps') and ctx.deps:
+                # Primary: Get conversation_id from MyDeps
+                chat_id = getattr(ctx.deps, 'conversation_id', None)
+            
+            # Fallback to 'default' if no conversation context is available
+            if not chat_id:
+                chat_id = 'default'
+                
+            # Construct the full path within the conversation's directory
+            if directory_path and directory_path != ".":
+                directory_path = f"./agent_files/{chat_id}/{directory_path}"
+            else:
+                directory_path = f"./agent_files/{chat_id}"
+        
         if not os.path.exists(directory_path):
             return {
                 "success": False,
@@ -736,10 +757,11 @@ def write_file_content(
     mode: str = 'w'
 ) -> Dict[str, Any]:
     """
-    Write content to a file.
+    Write content to a file in the agent files directory structure.
+    Files are automatically organized by the conversation they were created in.
     
     Args:
-        file_path: Path to the file to write
+        file_path: Path to the file to write (can be relative filename or full path)
         content: Content to write to the file
         mode: Write mode ('w' for overwrite, 'a' for append)
         
@@ -747,12 +769,30 @@ def write_file_content(
         Dict containing success status or error details
     """
     try:
-        # Security check - only allow writing to safe directories
-        allowed_dirs = ['/tmp', './uploads', './data', './scripts', './output']
+        # If file_path doesn't start with agent_files, auto-organize it by conversation
+        if not file_path.startswith('./agent_files/') and not file_path.startswith('agent_files/'):
+            # Auto-extract chat_id from context
+            chat_id = None
+            
+            # Try to get the conversation ID from context
+            if hasattr(ctx, 'deps') and ctx.deps:
+                # Primary: Get conversation_id from MyDeps
+                chat_id = getattr(ctx.deps, 'conversation_id', None)
+            
+            # Fallback to 'default' if no conversation context is available
+            if not chat_id:
+                chat_id = 'default'
+            
+            # Clean the file_path (remove any leading paths) 
+            filename = os.path.basename(file_path) if '/' in file_path else file_path
+            file_path = f"./agent_files/{chat_id}/{filename}"
+        
+        # Security check - ensure we're writing to agent files directory
+        allowed_dirs = ['./agent_files/', '/tmp', './uploads', './data', './scripts', './output']
         if not any(file_path.startswith(allowed_dir) for allowed_dir in allowed_dirs):
             return {
                 "success": False,
-                "error": f"File write not allowed for path: {file_path}"
+                "error": f"File write not allowed for path: {file_path}. Files should be in agent_files directory."
             }
         
         # Create directory if it doesn't exist
@@ -767,7 +807,8 @@ def write_file_content(
             "success": True,
             "file_path": file_path,
             "bytes_written": len(content.encode('utf-8')),
-            "mode": mode
+            "mode": mode,
+            "conversation_id": chat_id
         }
         
     except Exception as e:
@@ -1063,6 +1104,191 @@ def run_workflow(
             "success": False,
             "error": error_msg
         } 
+
+
+def get_local_file_url(
+    ctx: RunContext,
+    file_path: str
+) -> Dict[str, Any]:
+    """
+    Get the local file URLs for a file created by the agent.
+    This provides both download and view URLs for web access.
+    
+    Args:
+        file_path: Path to the local file
+        
+    Returns:
+        Dict containing the local file URLs and information
+    """
+    try:
+        # Security check - prioritize agent files directory, allow legacy directories for backward compatibility
+        allowed_dirs = ['./agent_files/', '/tmp', './uploads', './data', './scripts', './output']
+        if not any(file_path.startswith(allowed_dir) for allowed_dir in allowed_dirs):
+            return {
+                "success": False,
+                "error": f"File access not allowed for path: {file_path}. Use agent_files directory for new files."
+            }
+        
+        if not os.path.exists(file_path):
+            return {
+                "success": False,
+                "error": f"File not found: {file_path}"
+            }
+        
+        # Get the base URL from environment (fallback to localhost for development)
+        backend_url = os.getenv("BACKEND_URL", "http://localhost:8000")
+        
+        # Create the local file URLs
+        download_url = f"{backend_url}/api/v1/local-files/serve/{file_path}"
+        view_url = f"{backend_url}/api/v1/local-files/view/{file_path}"
+        
+        # Get file information
+        stat_info = os.stat(file_path)
+        
+        # Determine content type and if it's viewable in browser
+        from pathlib import Path
+        import mimetypes
+        
+        content_type, _ = mimetypes.guess_type(file_path)
+        if not content_type:
+            extension = Path(file_path).suffix.lower()
+            content_type_map = {
+                '.html': 'text/html',
+                '.htm': 'text/html',
+                '.css': 'text/css',
+                '.js': 'application/javascript',
+                '.json': 'application/json',
+                '.txt': 'text/plain',
+                '.md': 'text/markdown',
+                '.csv': 'text/csv',
+                '.png': 'image/png',
+                '.jpg': 'image/jpeg',
+                '.jpeg': 'image/jpeg',
+                '.gif': 'image/gif',
+                '.svg': 'image/svg+xml',
+                '.webp': 'image/webp',
+                '.pdf': 'application/pdf',
+            }
+            content_type = content_type_map.get(extension, 'application/octet-stream')
+        
+        # Determine if viewable in browser
+        viewable_types = {
+            'text/html', 'text/css', 'application/javascript', 'text/javascript',
+            'image/png', 'image/jpeg', 'image/gif', 'image/svg+xml', 'image/webp',
+            'text/plain', 'text/markdown', 'application/json', 'text/csv',
+            'application/pdf'
+        }
+        is_viewable = content_type in viewable_types
+        
+        # Check if it's an agent file to provide additional context
+        is_agent_file = file_path.startswith('./agent_files/') or file_path.startswith('agent_files/')
+        chat_id = None
+        if is_agent_file:
+            path_parts = file_path.replace('./agent_files/', '').replace('agent_files/', '').split('/')
+            if len(path_parts) > 1:
+                chat_id = path_parts[0]
+        
+        result = {
+            "success": True,
+            "file_path": file_path,
+            "download_url": download_url,
+            "filename": os.path.basename(file_path),
+            "size": stat_info.st_size,
+            "modified": datetime.fromtimestamp(stat_info.st_mtime).isoformat(),
+            "content_type": content_type,
+            "accessible_via": "local-files endpoint (no auth required)",
+            "is_agent_file": is_agent_file,
+            "chat_id": chat_id
+        }
+        
+        # Add view URL only if the file is viewable in browser
+        if is_viewable:
+            result["view_url"] = view_url
+            result["viewable_in_browser"] = True
+            if content_type == 'text/html':
+                result["recommended_url"] = view_url  # For HTML, recommend view URL
+            else:
+                result["recommended_url"] = view_url  # For images, PDFs, etc., also recommend view URL
+        else:
+            result["viewable_in_browser"] = False
+            result["recommended_url"] = download_url  # For binary files, recommend download URL
+        
+        return result
+        
+    except Exception as e:
+        error_msg = f"Error getting local file URL: {str(e)}"
+        import traceback
+        error_params = {
+            "file_path": file_path
+        }
+        error_logger.log_error(
+            function_name="get_local_file_url",
+            error_text=error_msg,
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
+        return {
+            "success": False,
+            "error": error_msg
+        }
+
+
+def get_local_file_view_url(
+    ctx: RunContext,
+    file_path: str
+) -> Dict[str, Any]:
+    """
+    Get the view URL for a file created by the agent to display in browser.
+    This is specifically for HTML files, images, and other web-viewable content.
+    
+    Args:
+        file_path: Path to the local file
+        
+    Returns:
+        Dict containing the view URL and information
+    """
+    try:
+        # Use the main get_local_file_url function to get all info
+        file_info = get_local_file_url(ctx, file_path)
+        
+        if not file_info["success"]:
+            return file_info
+        
+        # Check if the file is viewable in browser
+        if not file_info.get("viewable_in_browser", False):
+            return {
+                "success": False,
+                "error": f"File type '{file_info.get('content_type', 'unknown')}' is not viewable in browser. Use get_local_file_url() for download URL."
+            }
+        
+        return {
+            "success": True,
+            "file_path": file_info["file_path"],
+            "view_url": file_info["view_url"],
+            "filename": file_info["filename"],
+            "content_type": file_info["content_type"],
+            "viewable_in_browser": True,
+            "accessible_via": "local-files view endpoint (opens in browser)",
+            "is_agent_file": file_info["is_agent_file"],
+            "chat_id": file_info.get("chat_id")
+        }
+        
+    except Exception as e:
+        error_msg = f"Error getting local file view URL: {str(e)}"
+        import traceback
+        error_params = {
+            "file_path": file_path
+        }
+        error_logger.log_error(
+            function_name="get_local_file_view_url",
+            error_text=error_msg,
+            parameters=error_params,
+            stack_trace=traceback.format_exc()
+        )
+        return {
+            "success": False,
+            "error": error_msg
+        }
 
 
 def create_shareable_file_link(

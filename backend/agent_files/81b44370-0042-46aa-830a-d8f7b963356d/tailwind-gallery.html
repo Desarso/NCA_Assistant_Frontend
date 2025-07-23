@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailwind Photo Gallery with Unsplash</title>
+  <!-- Use official Tailwind Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+  <header class="bg-blue-700 text-white py-6 shadow">
+    <h1 class="text-3xl font-bold text-center">Stunning Gallery 🌄</h1>
+    <p class="text-center mt-2 text-blue-100">Powered by Unsplash and Tailwind CSS</p>
+  </header>
+  <main class="flex-1 max-w-5xl mx-auto py-8 px-4">
+    <div id="gallery" class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <!-- Images will appear here -->
+    </div>
+    <div class="flex justify-center mt-8">
+      <button id="loadMore" class="bg-blue-600 hover:bg-blue-800 text-white px-6 py-2 rounded shadow font-bold">Load More</button>
+    </div>
+  </main>
+  <footer class="bg-blue-950 text-blue-100 text-center py-4">
+    &copy; 2025 Gabriel's Tailwind Gallery. Photos: Unsplash | Made with ❤️
+  </footer>
+  <script>
+    const gallery = document.getElementById('gallery');
+    const loadMoreBtn = document.getElementById('loadMore');
+    let page = 1;
+    const imagesPerPage = 8;
+
+    // Unsplash featured collection + cache buster
+    function getUnsplashUrl() {
+      return `https://source.unsplash.com/collection/190727/400x300?sig=${Math.random()}`;
+    }
+
+    function addImageEl(src, idx) {
+      const card = document.createElement('div');
+      card.className = "rounded-lg overflow-hidden bg-white shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col items-center";
+      
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = `Unsplash photo ${idx}`;
+      img.className = "w-full h-60 object-cover";
+
+      const caption = document.createElement('span');
+      caption.className = "text-gray-700 text-sm py-2 text-center";
+      caption.textContent = 'Unsplash photo';
+
+      card.appendChild(img);
+      card.appendChild(caption);
+      gallery.appendChild(card);
+    }
+
+    function loadImages() {
+      for (let i = 0; i < imagesPerPage; i++) {
+        const url = getUnsplashUrl();
+        addImageEl(url, i+imagesPerPage*page);
+      }
+      page++;
+    }
+
+    loadMoreBtn.addEventListener('click', loadImages);
+    loadImages();
+  </script>
+</body>
+</html>

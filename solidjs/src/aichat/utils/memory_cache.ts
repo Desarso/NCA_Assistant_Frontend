@@ -6,6 +6,12 @@ import { Conversation } from "@/components/app-sidebar";
 import componentsJson from "./components.json";
 import Prism from "prismjs";
 
+// TODO: For better security and performance, consider importing Prism languages statically:
+// import 'prismjs/components/prism-javascript';
+// import 'prismjs/components/prism-typescript';
+// import 'prismjs/components/prism-python';
+// etc. This eliminates the need for dynamic code execution entirely.
+
 const components = componentsJson as any;
 
 // Current database version - increment when schema changes
@@ -728,9 +734,14 @@ export class PrismaCache {
       const script = await PrismaCache.get(language);
       if (script) {
         // console.log(`Loading language "${language}"`);
-        eval(script);
-        PrismaCache.loadedLanguages[language] = true;
-        Prism.highlightAll();
+        // Use Function constructor instead of eval for better security
+        try {
+          new Function('Prism', script)(Prism);
+          PrismaCache.loadedLanguages[language] = true;
+          Prism.highlightAll();
+        } catch (error) {
+          console.error(`Error executing script for language "${language}":`, error);
+        }
       }
     } catch (error) {
       console.error(`Error loading language "${language}":`, error);

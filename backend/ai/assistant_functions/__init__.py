@@ -15,7 +15,9 @@ from .workflow_functions import (
     list_directory,
     write_file_content,
     execute_shell_command,
-    create_shareable_file_link
+    create_shareable_file_link,
+    get_local_file_url,
+    get_local_file_view_url
 )
 
 # Export graph functions
@@ -35,6 +37,8 @@ __all__ = [
     'write_file_content',
     'execute_shell_command',
     'create_shareable_file_link',
+    'get_local_file_url',
+    'get_local_file_view_url',
     
     # Graph API
     'graph_api_request',

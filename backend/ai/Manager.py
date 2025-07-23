@@ -16,7 +16,9 @@ from ai.assistant_functions.workflow_functions import (
     list_directory,
     write_file_content,
     execute_shell_command,
-    create_shareable_file_link
+    create_shareable_file_link,
+    get_local_file_url,
+    get_local_file_view_url
 )
 from pydantic_ai.models.groq import GroqModel
 from pydantic_ai.providers.groq import GroqProvider
@@ -34,7 +36,7 @@ from pydantic_ai.models import cached_async_http_client
 from pydantic_ai.models.gemini import GeminiModel
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.google_gla import GoogleGLAProvider
-from typing import Dict
+from typing import Dict, Optional
 from dataclasses import field
 
 load_dotenv()
@@ -350,6 +352,7 @@ def get_system_prompt(user_object: FirebaseUser, memory: str) -> str:
 class MyDeps:
     user_object: FirebaseUser
     user_rejection_flags: Dict[str, bool] = field(default_factory=dict)
+    conversation_id: Optional[str] = None  # Add conversation ID for file organization
 
 
 async def create_agent(user_object: FirebaseUser, memory: str, has_pdfs: bool = False) -> Agent:
@@ -415,6 +418,8 @@ async def create_agent(user_object: FirebaseUser, memory: str, has_pdfs: bool = 
             list_directory,
             write_file_content,
             create_shareable_file_link,
+            get_local_file_url,
+            get_local_file_view_url,
             execute_shell_command,
         ],
     )

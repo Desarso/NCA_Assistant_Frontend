@@ -184,8 +184,12 @@ async def chat(
 
     user_content = chat_request.to_user_content()
 
-    # Instantiate MyDeps to hold shared state like rejection flags
-    deps_instance = MyDeps(user_object=current_user, user_rejection_flags={}) # Add the flags dict
+    # Instantiate MyDeps to hold shared state like rejection flags and conversation context
+    deps_instance = MyDeps(
+        user_object=current_user, 
+        user_rejection_flags={}, 
+        conversation_id=conversation_id
+    ) # Add the flags dict
 
     async def generate_chunks() -> AsyncGenerator[str, None]:
         async with agent.run_mcp_servers():

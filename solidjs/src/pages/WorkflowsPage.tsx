@@ -1,7 +1,15 @@
-import { Component, createSignal, For, onMount } from 'solid-js';
+import { Component, createSignal, For, onMount, Show } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { Button } from '@/components/ui/button';
-import { Play, Plus, Code2, Calendar, Loader2 } from 'lucide-solid';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogFooter, 
+  DialogTitle, 
+  DialogDescription 
+} from '@/components/ui/dialog';
+import { Play, Plus, Code2, Calendar, Loader2, Trash2 } from 'lucide-solid';
 import { authFetch } from '@/lib/utils';
 import { WorkflowCache, type Workflow } from '@/lib/workflow-cache';
 
@@ -38,6 +46,13 @@ const WorkflowsPage: Component = () => {
   };
 
   const [runningWorkflows, setRunningWorkflows] = createSignal<Set<string>>(new Set());
+  const [deletingWorkflows, setDeletingWorkflows] = createSignal<Set<string>>(new Set());
+  
+  // Dialog states
+  const [showDeleteDialog, setShowDeleteDialog] = createSignal(false);
+  const [workflowToDelete, setWorkflowToDelete] = createSignal<Workflow | null>(null);
+  const [showErrorDialog, setShowErrorDialog] = createSignal(false);
+  const [errorMessage, setErrorMessage] = createSignal('');
 
   const handleRunWorkflow = async (workflowId: string) => {
     try {
@@ -65,6 +80,51 @@ const WorkflowsPage: Component = () => {
         return next;
       });
     }
+  };
+
+  const handleDeleteWorkflow = (workflow: Workflow) => {
+    setWorkflowToDelete(workflow);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDeleteWorkflow = async () => {
+    const workflow = workflowToDelete();
+    if (!workflow) return;
+
+    try {
+      setDeletingWorkflows(prev => {
+        const next = new Set(prev);
+        next.add(workflow.id);
+        return next;
+      });
+
+      const success = await WorkflowCache.deleteFromServer(workflow.id);
+      
+      if (success) {
+        // Update local state by removing the deleted workflow
+        setWorkflows(prev => prev.filter(wf => wf.id !== workflow.id));
+        setShowDeleteDialog(false);
+        setWorkflowToDelete(null);
+      } else {
+        setErrorMessage('Failed to delete workflow. Please try again.');
+        setShowErrorDialog(true);
+      }
+    } catch (error) {
+      console.error('Error deleting workflow:', error);
+      setErrorMessage('An error occurred while deleting the workflow.');
+      setShowErrorDialog(true);
+    } finally {
+      setDeletingWorkflows(prev => {
+        const next = new Set(prev);
+        next.delete(workflow.id);
+        return next;
+      });
+    }
+  };
+
+  const cancelDeleteWorkflow = () => {
+    setShowDeleteDialog(false);
+    setWorkflowToDelete(null);
   };
 
   const formatDate = (dateString?: string) => {
@@ -115,23 +175,46 @@ const WorkflowsPage: Component = () => {
               <For each={workflows()}>
                 {(workflow) => (
                   <div class="group flex items-center gap-4 p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors cursor-pointer">
-                    {/* Run Button */}
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRunWorkflow(workflow.id);
-                      }}
-                      disabled={runningWorkflows().has(workflow.id)}
-                      class="flex items-center justify-center size-8 rounded-full hover:bg-primary hover:text-primary-foreground"
-                    >
-                      {runningWorkflows().has(workflow.id) ? (
-                        <Loader2 class="size-4 animate-spin" />
-                      ) : (
-                        <Play class="size-4" />
-                      )}
-                    </Button>
+                    {/* Action Buttons */}
+                    <div class="flex items-center gap-2">
+                      {/* Run Button */}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRunWorkflow(workflow.id);
+                        }}
+                        disabled={runningWorkflows().has(workflow.id) || deletingWorkflows().has(workflow.id)}
+                        class="flex items-center justify-center size-8 rounded-full hover:bg-primary hover:text-primary-foreground"
+                        title="Run workflow"
+                      >
+                        {runningWorkflows().has(workflow.id) ? (
+                          <Loader2 class="size-4 animate-spin" />
+                        ) : (
+                          <Play class="size-4" />
+                        )}
+                      </Button>
+
+                      {/* Delete Button */}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteWorkflow(workflow);
+                        }}
+                        disabled={runningWorkflows().has(workflow.id) || deletingWorkflows().has(workflow.id)}
+                        class="flex items-center justify-center size-8 rounded-full hover:bg-red-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Delete workflow"
+                      >
+                        {deletingWorkflows().has(workflow.id) ? (
+                          <Loader2 class="size-4 animate-spin" />
+                        ) : (
+                          <Trash2 class="size-4" />
+                        )}
+                      </Button>
+                    </div>
 
                     {/* Workflow Info */}
                     <div class="flex-1 min-w-0" onClick={() => handleWorkflowClick(workflow.id)}>
@@ -184,6 +267,56 @@ const WorkflowsPage: Component = () => {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog()} onOpenChange={setShowDeleteDialog}>
+        <DialogContent class="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Workflow</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete <strong>"{workflowToDelete()?.title}"</strong>? 
+              This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={cancelDeleteWorkflow}
+              disabled={deletingWorkflows().has(workflowToDelete()?.id || '')}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDeleteWorkflow}
+              disabled={deletingWorkflows().has(workflowToDelete()?.id || '')}
+              class="flex items-center gap-2"
+            >
+              <Show when={deletingWorkflows().has(workflowToDelete()?.id || '')}>
+                <Loader2 class="size-4 animate-spin" />
+              </Show>
+              Delete Workflow
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Error Dialog */}
+      <Dialog open={showErrorDialog()} onOpenChange={setShowErrorDialog}>
+        <DialogContent class="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Error</DialogTitle>
+            <DialogDescription>
+              {errorMessage()}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setShowErrorDialog(false)}>
+              OK
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

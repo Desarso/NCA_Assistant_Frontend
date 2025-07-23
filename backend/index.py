@@ -14,6 +14,7 @@ from firebase_admin import credentials
 from routes.chats_router import chats_router
 from routes.user_routes import user_router
 from routes.files_router import files_router
+from routes.local_files_router import local_files_router
 from routes.workflows_router import router as workflows_router
 from contextlib import asynccontextmanager
 import os
@@ -144,6 +145,16 @@ workflow_routes.include_router(workflows_router)
 #####################################################
 
 
+#####################################################
+# Local Files Router Configuration
+#####################################################
+local_files_routes = APIRouter(prefix="/api/v1/local-files", tags=["local-files"])  
+# No authentication needed for agent-created local files
+local_files_routes.include_router(local_files_router)
+
+#####################################################
+
+
 
 
 
@@ -218,6 +229,7 @@ async def custom_swagger_ui_html():
 app.include_router(chat_routes)
 app.include_router(user_routes)
 app.include_router(files_routes)
+app.include_router(local_files_routes)
 app.include_router(workflow_routes)
 if __name__ == "__main__":
     import uvicorn
