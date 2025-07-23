@@ -354,12 +354,7 @@ const WorkflowEditPage: Component = () => {
     }
   });
 
-  // Track changes - only after workflow is loaded
-  createEffect(() => {
-    if (isLoaded()) {
-      setHasUnsavedChanges(true);
-    }
-  });
+
 
 
 
@@ -530,7 +525,10 @@ const WorkflowEditPage: Component = () => {
                   <Input
                     id="title"
                     value={workflowTitle()}
-                    onInput={(e) => setWorkflowTitle(e.currentTarget.value)}
+                    onInput={(e) => {
+                      setWorkflowTitle(e.currentTarget.value);
+                      setHasUnsavedChanges(true);
+                    }}
                     placeholder="Workflow title"
                   />
                 </div>
@@ -541,7 +539,10 @@ const WorkflowEditPage: Component = () => {
                       type="checkbox"
                       id="status"
                       checked={workflowStatus() === 'active'}
-                      onChange={(e) => setWorkflowStatus(e.currentTarget.checked ? 'active' : 'inactive')}
+                      onChange={(e) => {
+                        setWorkflowStatus(e.currentTarget.checked ? 'active' : 'inactive');
+                        setHasUnsavedChanges(true);
+                      }}
                       class="rounded border-gray-300"
                     />
                     <label for="status" class="text-sm">{workflowStatus() === 'active' ? 'Active' : 'Inactive'}</label>
@@ -553,7 +554,10 @@ const WorkflowEditPage: Component = () => {
                 <textarea
                   id="description"
                   value={workflowDescription()}
-                  onInput={(e) => setWorkflowDescription(e.currentTarget.value)}
+                  onInput={(e) => {
+                    setWorkflowDescription(e.currentTarget.value);
+                    setHasUnsavedChanges(true);
+                  }}
                   placeholder="Workflow description"
                   class="w-full p-3 border border-border rounded-md bg-background resize-none"
                   rows={2}
@@ -575,7 +579,10 @@ const WorkflowEditPage: Component = () => {
                 <div class="border border-border rounded-md">
                   <CodeEditor
                     value={workflowCode()}
-                    onInput={(value) => setWorkflowCode(value)}
+                    onInput={(value) => {
+                      setWorkflowCode(value);
+                      setHasUnsavedChanges(true);
+                    }}
                   />
                 </div>
               </div>
