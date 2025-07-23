@@ -1,4 +1,4 @@
-"use client"
+
 
 import type { ValidComponent } from "solid-js"
 import { splitProps } from "solid-js"
