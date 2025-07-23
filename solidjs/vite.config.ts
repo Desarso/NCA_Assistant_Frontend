@@ -17,6 +17,7 @@ export default defineConfig({
         // globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         // navigateFallback: null,
         // navigateFallbackDenylist: [/^\/(api|admin)/],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MB limit
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

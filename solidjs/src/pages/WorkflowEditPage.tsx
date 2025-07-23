@@ -1,29 +1,15 @@
-import { Component, createSignal, createEffect, onMount, onCleanup, Show, For } from 'solid-js';
+import { Component, createSignal, createEffect, onMount, onCleanup, Show } from 'solid-js';
 import { useNavigate, useParams } from '@solidjs/router';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { TextField } from '@/components/ui/text-field';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { ArrowLeft, Play, Save, Clock, Calendar, Trash2, Settings, Terminal, Square, Share2, UserPlus, Check, ChevronsUpDown } from 'lucide-solid';
+import { ArrowLeft, Play, Terminal, Square } from 'lucide-solid';
 import { authFetch } from '@/lib/utils';
 import CodeEditor from '@/components/CodeEditor';
 import { WorkflowCache } from '@/lib/workflow-cache';
+import WorkflowConsole from '@/components/WorkflowConsole';
+import WorkflowSchedules from '@/components/WorkflowSchedules';
+import WorkflowSharing from '@/components/WorkflowSharing';
 
 const HOST = import.meta.env.VITE_API_HOST || 'http://localhost:8000';
 
@@ -63,6 +49,18 @@ interface User {
 }
 
 const WorkflowEditPage: Component = () => {
+  // Force scrolling by overriding Layout constraints only for workflow edit page
+  const style = document.createElement('style');
+  style.textContent = `
+    .workflow-edit-page body { overflow-y: auto !important; }
+    .workflow-edit-page main { overflow-y: auto !important; height: auto !important; }
+    .workflow-edit-page main > div { overflow-y: auto !important; height: auto !important; }
+  `;
+  document.head.appendChild(style);
+  
+  // Add the class to body when this component mounts
+  document.body.classList.add('workflow-edit-page');
+  
   const navigate = useNavigate();
   const params = useParams();
   const [actualWorkflowId, setActualWorkflowId] = createSignal<string | null>(null);
@@ -76,9 +74,6 @@ const WorkflowEditPage: Component = () => {
   const [isNew, setIsNew] = createSignal(false);
   
   const [schedules, setSchedules] = createSignal<WorkflowSchedule[]>([]);
-  const [showSchedules, setShowSchedules] = createSignal(false);
-  const [newCronExpression, setNewCronExpression] = createSignal('');
-  const [newTimezone, setNewTimezone] = createSignal('UTC');
   
   const [showOutput, setShowOutput] = createSignal(false);
   const [runOutput, setRunOutput] = createSignal('');
@@ -87,17 +82,9 @@ const WorkflowEditPage: Component = () => {
   const [isRunning, setIsRunning] = createSignal(false);
   const [currentRunId, setCurrentRunId] = createSignal<number | null>(null);
   const [runStartTime, setRunStartTime] = createSignal<Date | null>(null);
-  const [consoleRef, setConsoleRef] = createSignal<HTMLDivElement>();
   
   const [activeTab, setActiveTab] = createSignal('details');
   const [sharedUsers, setSharedUsers] = createSignal<SharedUser[]>([]);
-  const [userToShare, setUserToShare] = createSignal('');
-  const [sharingError, setSharingError] = createSignal('');
-  const [searchTerm, setSearchTerm] = createSignal('');
-  const [users, setUsers] = createSignal<User[]>([]);
-  const [selectedUser, setSelectedUser] = createSignal<User | null>(null);
-  const [isSearchOpen, setIsSearchOpen] = createSignal(false);
-  const [isSearching, setIsSearching] = createSignal(false);
 
   // SSE connection for real-time logs
   let pollCleanup: (() => void) | null = null;
@@ -132,69 +119,9 @@ const WorkflowEditPage: Component = () => {
     }
   };
 
-  const createSchedule = async () => {
-    if (!newCronExpression()) return;
-    
-    try {
-      const response = await authFetch(`${HOST}/api/v1/workflows/${getWorkflowId()}/schedule`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          cron_expression: newCronExpression(),
-          timezone: newTimezone(),
-          is_active: true
-        })
-      });
 
-      if (response.ok) {
-        setNewCronExpression('');
-        setNewTimezone('UTC');
-        loadSchedules();
-      } else {
-        console.error('Failed to create schedule');
-      }
-    } catch (error) {
-      console.error('Error creating schedule:', error);
-    }
-  };
 
-  const deleteSchedule = async (scheduleId: number) => {
-    try {
-      const response = await authFetch(`${HOST}/api/v1/workflows/${getWorkflowId()}/schedules/${scheduleId}`, {
-        method: 'DELETE'
-      });
 
-      if (response.ok) {
-        loadSchedules();
-      } else {
-        console.error('Failed to delete schedule');
-      }
-    } catch (error) {
-      console.error('Error deleting schedule:', error);
-    }
-  };
-
-  const formatCronExpression = (cron: string) => {
-    // Simple cron to human readable conversion
-    const parts = cron.split(' ');
-    if (parts.length !== 5) return cron;
-    
-    const [minute, hour, day, month, weekday] = parts;
-    
-    if (minute === '0' && hour === '9' && weekday === '1-5') {
-      return 'Weekdays at 9:00 AM';
-    }
-    if (minute === '0' && hour === '0') {
-      return 'Daily at midnight';
-    }
-    if (minute === '0' && hour === '12') {
-      return 'Daily at noon';
-    }
-    
-    return cron;
-  };
 
   const loadWorkflow = async (workflowId: string) => {
     try {
@@ -473,22 +400,15 @@ const WorkflowEditPage: Component = () => {
     }
   });
 
-  // Auto-scroll console to bottom
-  createEffect(() => {
-    if (consoleRef() && runOutput()) {
-      setTimeout(() => {
-        if (consoleRef()) {
-          consoleRef()!.scrollTop = consoleRef()!.scrollHeight;
-        }
-      }, 100);
-    }
-  });
+
 
   // Cleanup polling on unmount
   onCleanup(() => {
     if (pollCleanup) {
       pollCleanup();
     }
+    // Remove the workflow edit class when leaving the page
+    document.body.classList.remove('workflow-edit-page');
   });
 
   // Add function to load shared users
@@ -504,84 +424,64 @@ const WorkflowEditPage: Component = () => {
     }
   };
 
-  // Add function to search users
-  const searchUsers = async (query: string) => {
-    try {
-      setIsSearching(true);
-      const response = await authFetch(`${HOST}/api/v1/users/search?q=${encodeURIComponent(query)}`);
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data);
-      }
-    } catch (error) {
-      console.error('Error searching users:', error);
-    } finally {
-      setIsSearching(false);
-    }
-  };
 
-  // Debounce search
-  let searchTimeout: number;
-  const handleSearch = (value: string) => {
-    setSearchTerm(value);
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      searchUsers(value);
-    }, 300) as unknown as number;
-  };
-
-  // Modify shareWorkflow to use selected user
-  const shareWorkflow = async () => {
-    try {
-      setSharingError('');
-      const user = selectedUser();
-      if (!user) return;
-
-      const response = await authFetch(`${HOST}/api/v1/workflows/${getWorkflowId()}/share`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: user.email })
-      });
-
-      if (response.ok) {
-        setSelectedUser(null);
-        setSearchTerm('');
-        setUsers([]);
-        setIsSearchOpen(false);
-        await loadSharedUsers();
-      } else {
-        const error = await response.json();
-        setSharingError(error.detail || 'Failed to share workflow');
-      }
-    } catch (error) {
-      console.error('Error sharing workflow:', error);
-      setSharingError('Failed to share workflow');
-    }
-  };
-
-  // Add function to remove shared access
-  const removeSharedAccess = async (userId: string) => {
-    try {
-      const response = await authFetch(`${HOST}/api/v1/workflows/${getWorkflowId()}/share/${userId}`, {
-        method: 'DELETE'
-      });
-
-      if (response.ok) {
-        await loadSharedUsers();
-      }
-    } catch (error) {
-      console.error('Error removing shared access:', error);
-    }
-  };
 
   onMount(() => {
     if (params.id === 'new') {
       setIsNew(true);
       setIsLoaded(true); // New workflows are immediately "loaded"
       setWorkflowTitle('New Workflow');
-      setWorkflowCode('# Your workflow code here\nprint("Hello, World!")');
+      setWorkflowCode(`# Your workflow code here
+print("Hello, World!")
+
+# Sample workflow demonstrating assistant capabilities
+workflow_log("Starting workflow execution...")
+
+# List existing workflows
+workflows_result = list_workflows(limit=10)
+workflow_log(f"Found {workflows_result.get('count', 0)} existing workflows")
+
+# Read a file (if it exists)
+file_content = read_file("example.txt")
+if file_content:
+    workflow_log("File content read successfully")
+else:
+    workflow_log("File not found or empty")
+
+# Process some data
+data = [1, 2, 3, 4, 5]
+total = sum(data)
+workflow_log(f"Processed data, total: {total}")
+
+# Make an API call
+response = make_api_call("https://api.example.com/data")
+if response.get('success'):
+    workflow_log("API call successful")
+else:
+    workflow_log("API call failed")
+
+# Save results
+save_result("output.json", {"total": total, "api_response": response})
+
+# Cleanup
+workflow_log("Workflow completed successfully")
+
+# Additional lines to ensure scrolling works
+for i in range(20):
+    workflow_log(f"Processing item {i}")
+    # Simulate some work
+    time.sleep(0.1)
+
+workflow_log("All items processed")
+
+# Final summary
+summary = {
+    "items_processed": 20,
+    "total_calculated": total,
+    "api_success": response.get('success', False)
+}
+
+workflow_log(f"Final summary: {summary}")`);
     } else {
       const loadWorkflow = async () => {
         try {
@@ -642,8 +542,7 @@ const WorkflowEditPage: Component = () => {
   });
 
   return (
-    <div class="h-full w-full p-6">
-      <div class="bg-background rounded-lg border border-border flex flex-col h-[calc(200vh)]">
+    <div class="w-full bg-background dark:bg-background mt-3.5 rounded-lg p-6" style="min-height: 90vh; height: auto; overflow-y: visible !important;">
         {/* Header */}
         <div class="p-6 border-b border-border">
           <div class="flex items-center justify-between">
@@ -704,8 +603,8 @@ const WorkflowEditPage: Component = () => {
           </div>
         </div>
 
-        <Tabs value={activeTab()} onChange={setActiveTab}>
-          <div class="px-6 border-b border-border">
+        <Tabs value={activeTab()} onChange={setActiveTab} class="flex flex-col">
+          <div class="px-6 border-b border-border flex-shrink-0">
             <TabsList>
               <TabsTrigger value="details" class="data-[selected]:bg-white dark:data-[selected]:bg-gray-800">
                 Details
@@ -716,9 +615,9 @@ const WorkflowEditPage: Component = () => {
             </TabsList>
           </div>
 
-          <TabsContent value="details">
+          <TabsContent value="details" class="flex flex-col">
             {/* Metadata Section */}
-            <div class="p-6 border-b border-border">
+            <div class="p-6 border-b border-border flex-shrink-0">
               {/* Workflow Info Inputs */}
               <div class="grid grid-cols-2 gap-4">
                 <div>
@@ -757,104 +656,20 @@ const WorkflowEditPage: Component = () => {
               </div>
 
               <Show when={!isNew()}>
-                {/* Schedules */}
-                <div class="mt-6">
-                  <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold flex items-center gap-2">
-                      <Clock class="size-5" />
-                      Schedules
-                    </h3>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setShowSchedules(!showSchedules())}
-                    >
-                      <Settings class="size-4" />
-                      {showSchedules() ? 'Hide' : 'Show'}
-                    </Button>
-                  </div>
-
-                  <Show when={showSchedules()}>
-                    <div class="space-y-4">
-                      {/* Add new schedule */}
-                      <div class="border border-border rounded-lg p-4">
-                        <div class="mb-4">
-                          <h4 class="text-base font-semibold">Add Schedule</h4>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                          <div>
-                            <label for="cron" class="text-sm font-medium">Cron Expression</label>
-                            <Input
-                              id="cron"
-                              value={newCronExpression()}
-                              onInput={(e) => setNewCronExpression(e.currentTarget.value)}
-                              placeholder="0 9 * * 1-5"
-                            />
-                            <p class="text-xs text-muted-foreground mt-1">
-                              Format: minute hour day month weekday
-                            </p>
-                          </div>
-                          <div>
-                            <label for="timezone" class="text-sm font-medium">Timezone</label>
-                            <Input
-                              id="timezone"
-                              value={newTimezone()}
-                              onInput={(e) => setNewTimezone(e.currentTarget.value)}
-                              placeholder="UTC"
-                            />
-                          </div>
-                        </div>
-                        <Button onClick={createSchedule} class="mt-4" disabled={!newCronExpression()}>
-                          Add Schedule
-                        </Button>
-                      </div>
-
-                      {/* Existing schedules */}
-                      <For each={schedules()}>
-                        {(schedule) => (
-                          <Card>
-                            <CardContent class="pt-6">
-                              <div class="flex items-center justify-between">
-                                <div>
-                                  <div class="font-medium">{formatCronExpression(schedule.cron_expression)}</div>
-                                  <div class="text-sm text-muted-foreground">
-                                    {schedule.cron_expression} • {schedule.timezone}
-                                  </div>
-                                  <Show when={schedule.next_run}>
-                                    <div class="text-xs text-muted-foreground mt-1">
-                                      Next run: {formatLastRun(schedule.next_run)}
-                                    </div>
-                                  </Show>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                  <Badge variant={schedule.is_active ? 'default' : 'secondary'}>
-                                    {schedule.is_active ? 'Active' : 'Inactive'}
-                                  </Badge>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm"
-                                    onClick={() => deleteSchedule(schedule.id)}
-                                  >
-                                    <Trash2 class="size-4" />
-                                  </Button>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        )}
-                      </For>
-                    </div>
-                  </Show>
-                </div>
+                <WorkflowSchedules 
+                  workflowId={getWorkflowId()!}
+                  schedules={schedules()}
+                  onSchedulesChange={setSchedules}
+                />
               </Show>
             </div>
 
             {/* Main Content Area (Editor + Console) */}
-            <div class="flex flex-col md:flex-row flex-1">
+            <div class="flex flex-col md:flex-row">
               {/* Code Editor Panel */}
-              <div class={`${showOutput() ? 'w-full md:w-1/2' : 'w-full'} p-6 flex flex-col h-[calc(80vh)]`}>
-                <label for="code" class="text-sm font-medium">Code</label>
-                <div class="flex-1 border border-border rounded-md overflow-hidden mt-2">
+              <div class={`${showOutput() ? 'w-full md:w-1/2' : 'w-full'} p-6 flex flex-col`}>
+                <label for="code" class="text-sm font-medium mb-2">Code</label>
+                <div class="border border-border rounded-md">
                   <CodeEditor
                     value={workflowCode()}
                     onInput={(value) => setWorkflowCode(value)}
@@ -863,205 +678,33 @@ const WorkflowEditPage: Component = () => {
               </div>
 
               {/* Console Panel */}
-              <Show when={showOutput()}>
-                <div class="w-full md:w-1/2 flex flex-col border-l border-border h-[calc(80vh)]">
-                  {/* Console Header */}
-                  <div class="p-4 border-b border-border bg-muted/30">
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center gap-2">
-                        <div class="size-3 rounded-full bg-green-500"></div>
-                        <span class="text-sm font-medium">Console Output</span>
-                        <Show when={runStatus()}>
-                          <span class={`text-xs px-2 py-1 rounded-full ${
-                            runStatus() === 'success' || runStatus() === 'completed' 
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                              : runStatus() === 'error'
-                              ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-                              : runStatus() === 'running'
-                              ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
-                              : runStatus() === 'stopped'
-                              ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-                              : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
-                          }`}>
-                            {runStatus()}
-                          </span>
-                        </Show>
-                        <Show when={isRunning()}>
-                          <div class="flex items-center gap-2 text-yellow-400">
-                            <div class="size-2 rounded-full bg-yellow-400 animate-pulse"></div>
-                            <span class="text-xs">Executing...</span>
-                          </div>
-                        </Show>
-                      </div>
-                      <div class="flex items-center gap-2">
-                        <Button 
-                          size="sm" 
-                          variant="ghost"
-                          onClick={() => {
-                            setRunOutput('');
-                            setRunError('');
-                            setRunStatus('');
-                          }}
-                          class="text-xs px-2 py-1 h-6"
-                        >
-                          Clear
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="ghost"
-                          onClick={() => setShowOutput(false)}
-                          class="size-6 p-0"
-                        >
-                          ×
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Console Content */}
-                  <div ref={setConsoleRef} class="flex-1 overflow-auto bg-black font-mono text-sm">
-                    <pre class="p-4 whitespace-pre-wrap">
-                      <span class="text-green-400">{runOutput()}</span>
-                      <Show when={runError()}>
-                        <span class="text-red-400">{runError()}</span>
-                      </Show>
-                    </pre>
-                  </div>
-                </div>
-              </Show>
+              <WorkflowConsole 
+                isVisible={showOutput()}
+                onClose={() => setShowOutput(false)}
+                runOutput={runOutput()}
+                runError={runError()}
+                runStatus={runStatus()}
+                isRunning={isRunning()}
+                onStop={stopWorkflow}
+                onClear={() => {
+                  setRunOutput('');
+                  setRunError('');
+                  setRunStatus('');
+                }}
+              />
             </div>
           </TabsContent>
 
           <TabsContent value="sharing">
-            <div class="p-6">
-              <div class="max-w-2xl">
-                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Share2 class="size-5" />
-                  Share Workflow
-                </h3>
-
-                <div class="flex gap-2 mb-6">
-                  <Popover 
-                    open={isSearchOpen()} 
-                    onOpenChange={(open) => {
-                      setIsSearchOpen(open);
-                      if (open) {
-                        // Load all users when popover opens
-                        searchUsers("");
-                      }
-                    }}
-                  >
-                    <PopoverTrigger>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={isSearchOpen()}
-                        class="w-full justify-between"
-                      >
-                        {selectedUser()?.email ?? "Search for a user..."}
-                        <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent class="w-[400px] p-0">
-                      <Command>
-                        <CommandInput
-                          placeholder="Search users..."
-                          value={searchTerm()}
-                          onInput={(e) => handleSearch(e.currentTarget.value)}
-                        />
-                        <CommandEmpty>
-                          {isSearching() ? (
-                            <div class="flex items-center justify-center py-6">
-                              <div class="size-5 animate-spin rounded-full border-b-2 border-primary"></div>
-                            </div>
-                          ) : (
-                            "No users found."
-                          )}
-                        </CommandEmpty>
-                        <CommandGroup>
-                          <For each={users()}>
-                            {(user) => (
-                              <CommandItem
-                                value={user.email}
-                                onSelect={() => {
-                                  setSelectedUser(user);
-                                  setIsSearchOpen(false);
-                                }}
-                              >
-                                <Check
-                                  class={`mr-2 h-4 w-4 ${
-                                    selectedUser()?.id === user.id ? "opacity-100" : "opacity-0"
-                                  }`}
-                                />
-                                <div class="flex flex-col">
-                                  <span>{user.email}</span>
-                                  <Show when={user.displayName}>
-                                    <span class="text-sm text-muted-foreground">
-                                      {user.displayName}
-                                    </span>
-                                  </Show>
-                                </div>
-                              </CommandItem>
-                            )}
-                          </For>
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-
-                  <Button 
-                    onClick={shareWorkflow} 
-                    disabled={!selectedUser()}
-                    class="flex items-center gap-2"
-                  >
-                    <UserPlus class="size-4" />
-                    Share
-                  </Button>
-                </div>
-
-                <Show when={sharingError()}>
-                  <p class="text-red-500 mb-4">{sharingError()}</p>
-                </Show>
-
-                <div class="space-y-4">
-                  <h4 class="font-medium">Shared With</h4>
-                  <Show 
-                    when={sharedUsers().length > 0} 
-                    fallback={
-                      <p class="text-muted-foreground">This workflow hasn't been shared with anyone yet.</p>
-                    }
-                  >
-                    <For each={sharedUsers()}>
-                      {(user) => (
-                        <Card>
-                          <CardContent class="p-4">
-                            <div class="flex items-center justify-between">
-                              <div>
-                                <p class="font-medium">{user.email}</p>
-                                <p class="text-sm text-muted-foreground">
-                                  Shared {new Date(user.shared_at).toLocaleDateString()}
-                                </p>
-                              </div>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => removeSharedAccess(user.id)}
-                                class="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
-                              >
-                                Remove
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      )}
-                    </For>
-                  </Show>
-                </div>
-              </div>
-            </div>
+            <Show when={!isNew()}>
+              <WorkflowSharing 
+                workflowId={getWorkflowId()!}
+                sharedUsers={sharedUsers()}
+                onSharedUsersChange={setSharedUsers}
+              />
+            </Show>
           </TabsContent>
         </Tabs>
-      </div>
     </div>
   );
 };
