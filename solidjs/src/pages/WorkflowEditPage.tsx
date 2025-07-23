@@ -108,6 +108,9 @@ const WorkflowEditPage: Component = () => {
   };
 
   const loadSchedules = async () => {
+    // Don't load for new workflows
+    if (isNew() || !getWorkflowId() || getWorkflowId() === 'new') return;
+    
     try {
       const response = await authFetch(`${HOST}/api/v1/workflows/${getWorkflowId()}/schedules`);
       if (response.ok) {
@@ -169,8 +172,6 @@ const WorkflowEditPage: Component = () => {
   };
 
   const autoSave = async () => {
-    if (isNew()) return;
-    
     try {
       setSyncStatus('saving');
       
@@ -203,42 +204,7 @@ const WorkflowEditPage: Component = () => {
     return () => clearTimeout(timeoutId);
   };
 
-  const handleSaveNew = async () => {
-    if (!isNew()) return;
-    
-    try {
-      setSyncStatus('saving');
-      
-      const workflowData = {
-        title: workflowTitle(),
-        description: workflowDescription(),
-        code: workflowCode()
-      };
 
-      const response = await authFetch(`${HOST}/api/v1/workflows`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(workflowData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create workflow');
-      }
-
-      const newWorkflow = await response.json();
-      // Store the actual workflow ID and navigate to edit mode
-      setActualWorkflowId(newWorkflow.id);
-      navigate(`/workflows/${newWorkflow.id}/edit`, { replace: true });
-      setIsNew(false);
-      setSyncStatus('saved');
-      setHasUnsavedChanges(false);
-    } catch (error) {
-      console.error('Error creating workflow:', error);
-      setSyncStatus('error');
-    }
-  };
 
   const loadLatestRun = async () => {
     try {
@@ -330,17 +296,12 @@ const WorkflowEditPage: Component = () => {
     setShowOutput(newShowOutput);
     
     // If opening console and not currently running, load latest run
-    if (newShowOutput && !isRunning() && !isNew()) {
+    if (newShowOutput && !isRunning()) {
       loadLatestRun();
     }
   };
 
   const handleRun = async () => {
-    if (isNew()) {
-      // Save first if it's a new workflow
-      await handleSaveNew();
-      return;
-    }
 
     // Clear any existing polling interval before starting a new one
     if (pollCleanup) {
@@ -387,7 +348,7 @@ const WorkflowEditPage: Component = () => {
 
   // Auto-save effect - only after workflow is loaded
   createEffect(() => {
-    if (!isNew() && hasUnsavedChanges() && isLoaded()) {
+    if (hasUnsavedChanges() && isLoaded()) {
       const cleanup = debouncedAutoSave();
       return cleanup;
     }
@@ -395,7 +356,7 @@ const WorkflowEditPage: Component = () => {
 
   // Track changes - only after workflow is loaded
   createEffect(() => {
-    if (!isNew() && isLoaded()) {
+    if (isLoaded()) {
       setHasUnsavedChanges(true);
     }
   });
@@ -427,118 +388,62 @@ const WorkflowEditPage: Component = () => {
 
 
   onMount(() => {
-    if (params.id === 'new') {
-      setIsNew(true);
-      setIsLoaded(true); // New workflows are immediately "loaded"
-      setWorkflowTitle('New Workflow');
-      setWorkflowCode(`# Your workflow code here
-print("Hello, World!")
+    const loadWorkflow = async () => {
+      try {
+        setIsLoaded(false);
+        // Try to get from cache first
+        const workflow = await WorkflowCache.getWorkflow(params.id);
+        if (workflow) {
+          setWorkflowTitle(workflow.title);
+          setWorkflowDescription(workflow.description || '');
+          setWorkflowCode(workflow.code);
+          setWorkflowStatus(workflow.status);
+          setHasUnsavedChanges(false);
+          setIsLoaded(true);
+          loadSchedules();
+          loadSharedUsers();
+        }
 
-# Sample workflow demonstrating assistant capabilities
-workflow_log("Starting workflow execution...")
+        // Then fetch fresh data from server
+        const response = await authFetch(`${HOST}/api/v1/workflows/${params.id}`);
+        if (response.ok) {
+          const freshWorkflow = await response.json();
+          setWorkflowTitle(freshWorkflow.title);
+          setWorkflowDescription(freshWorkflow.description || '');
+          setWorkflowCode(freshWorkflow.code);
+          setWorkflowStatus(freshWorkflow.status);
+          setHasUnsavedChanges(false);
+          setIsLoaded(true);
+          loadSchedules();
+          loadSharedUsers();
 
-# List existing workflows
-workflows_result = list_workflows(limit=10)
-workflow_log(f"Found {workflows_result.get('count', 0)} existing workflows")
+          // After loading, check the latest run
+          const runsResponse = await authFetch(`${HOST}/api/v1/workflows/${params.id}/runs?limit=1`);
+          if (runsResponse.ok) {
+            const runs = await runsResponse.json();
+            if (runs.length > 0) {
+              const latestRun = runs[0];
+              setCurrentRunId(latestRun.id);
+              setRunStatus(latestRun.status);
+              setRunOutput(latestRun.output || '');
+              setRunError(latestRun.error || '');
 
-# Read a file (if it exists)
-file_content = read_file("example.txt")
-if file_content:
-    workflow_log("File content read successfully")
-else:
-    workflow_log("File not found or empty")
-
-# Process some data
-data = [1, 2, 3, 4, 5]
-total = sum(data)
-workflow_log(f"Processed data, total: {total}")
-
-# Make an API call
-response = make_api_call("https://api.example.com/data")
-if response.get('success'):
-    workflow_log("API call successful")
-else:
-    workflow_log("API call failed")
-
-# Save results
-save_result("output.json", {"total": total, "api_response": response})
-
-# Cleanup
-workflow_log("Workflow completed successfully")
-
-# Additional lines to ensure scrolling works
-for i in range(20):
-    workflow_log(f"Processing item {i}")
-    # Simulate some work
-    time.sleep(0.1)
-
-workflow_log("All items processed")
-
-# Final summary
-summary = {
-    "items_processed": 20,
-    "total_calculated": total,
-    "api_success": response.get('success', False)
-}
-
-workflow_log(f"Final summary: {summary}")`);
-    } else {
-      const loadWorkflow = async () => {
-        try {
-          setIsLoaded(false);
-          // Try to get from cache first
-          const workflow = await WorkflowCache.getWorkflow(params.id);
-          if (workflow) {
-            setWorkflowTitle(workflow.title);
-            setWorkflowDescription(workflow.description || '');
-            setWorkflowCode(workflow.code);
-            setWorkflowStatus(workflow.status);
-            setHasUnsavedChanges(false);
-            setIsLoaded(true);
-            loadSchedules();
-            loadSharedUsers(); // Add this line
-          }
-
-          // Then fetch fresh data from server
-          const response = await authFetch(`${HOST}/api/v1/workflows/${params.id}`);
-          if (response.ok) {
-            const freshWorkflow = await response.json();
-            setWorkflowTitle(freshWorkflow.title);
-            setWorkflowDescription(freshWorkflow.description || '');
-            setWorkflowCode(freshWorkflow.code);
-            setWorkflowStatus(freshWorkflow.status);
-            setHasUnsavedChanges(false);
-            setIsLoaded(true);
-            loadSchedules();
-
-            // After loading, check the latest run
-            const runsResponse = await authFetch(`${HOST}/api/v1/workflows/${params.id}/runs?limit=1`);
-            if (runsResponse.ok) {
-              const runs = await runsResponse.json();
-              if (runs.length > 0) {
-                const latestRun = runs[0];
-                setCurrentRunId(latestRun.id);
-                setRunStatus(latestRun.status);
-                setRunOutput(latestRun.output || '');
-                setRunError(latestRun.error || '');
-
-                if (latestRun.status === 'running' || latestRun.status === 'pending') {
-                  setIsRunning(true);
-                  setShowOutput(true);
-                  setRunStartTime(new Date(latestRun.started_at));
-                  pollCleanup = startPollingLogs(latestRun.id);
-                }
+              if (latestRun.status === 'running' || latestRun.status === 'pending') {
+                setIsRunning(true);
+                setShowOutput(true);
+                setRunStartTime(new Date(latestRun.started_at));
+                pollCleanup = startPollingLogs(latestRun.id);
               }
             }
           }
-        } catch (error) {
-          console.error('Error loading workflow:', error);
-          setIsLoaded(true);
         }
-      };
+      } catch (error) {
+        console.error('Error loading workflow:', error);
+        setIsLoaded(true);
+      }
+    };
 
-      loadWorkflow();
-    }
+    loadWorkflow();
   });
 
   return (
@@ -655,13 +560,11 @@ workflow_log(f"Final summary: {summary}")`);
                 />
               </div>
 
-              <Show when={!isNew()}>
-                <WorkflowSchedules 
-                  workflowId={getWorkflowId()!}
-                  schedules={schedules()}
-                  onSchedulesChange={setSchedules}
-                />
-              </Show>
+              <WorkflowSchedules 
+                workflowId={getWorkflowId()!}
+                schedules={schedules()}
+                onSchedulesChange={setSchedules}
+              />
             </div>
 
             {/* Main Content Area (Editor + Console) */}
@@ -696,13 +599,11 @@ workflow_log(f"Final summary: {summary}")`);
           </TabsContent>
 
           <TabsContent value="sharing">
-            <Show when={!isNew()}>
-              <WorkflowSharing 
-                workflowId={getWorkflowId()!}
-                sharedUsers={sharedUsers()}
-                onSharedUsersChange={setSharedUsers}
-              />
-            </Show>
+            <WorkflowSharing 
+              workflowId={getWorkflowId()!}
+              sharedUsers={sharedUsers()}
+              onSharedUsersChange={setSharedUsers}
+            />
           </TabsContent>
         </Tabs>
     </div>

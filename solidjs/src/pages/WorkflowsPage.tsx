@@ -41,8 +41,68 @@ const WorkflowsPage: Component = () => {
     navigate(`/workflows/${workflowId}/edit`);
   };
 
-  const handleNewWorkflow = () => {
-    navigate('/workflows/new');
+  const handleNewWorkflow = async () => {
+    try {
+      // Show loading state by adding to running workflows temporarily
+      setRunningWorkflows(prev => {
+        const next = new Set(prev);
+        next.add('creating');
+        return next;
+      });
+
+      const defaultWorkflowData = {
+        title: 'New Workflow',
+        description: 'A new Python workflow',
+        code: `# Hello World Workflow
+print("Hello, World!")
+
+# Sample workflow demonstrating assistant capabilities
+workflow_log("Starting workflow execution...")
+
+# List existing workflows
+workflows_result = list_workflows(limit=10)
+workflow_log(f"Found {workflows_result.get('count', 0)} existing workflows")
+
+# Process some data
+data = [1, 2, 3, 4, 5]
+total = sum(data)
+workflow_log(f"Processed data, total: {total}")
+
+# Final summary
+workflow_log("Workflow completed successfully")`
+      };
+
+      const response = await authFetch(`${HOST}/api/v1/workflows/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(defaultWorkflowData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create workflow');
+      }
+
+      const newWorkflow = await response.json();
+      
+      // Update the workflows list immediately
+      setWorkflows(prev => [newWorkflow, ...prev]);
+      
+      // Navigate to the new workflow's edit page
+      navigate(`/workflows/${newWorkflow.id}/edit`);
+      
+    } catch (error) {
+      console.error('Error creating workflow:', error);
+      setErrorMessage('Failed to create new workflow. Please try again.');
+      setShowErrorDialog(true);
+    } finally {
+      setRunningWorkflows(prev => {
+        const next = new Set(prev);
+        next.delete('creating');
+        return next;
+      });
+    }
   };
 
   const [runningWorkflows, setRunningWorkflows] = createSignal<Set<string>>(new Set());
@@ -157,9 +217,17 @@ const WorkflowsPage: Component = () => {
             <h1 class="text-2xl font-bold text-foreground">Workflows</h1>
             <p class="text-muted-foreground mt-1">Manage your Python automation scripts</p>
           </div>
-          <Button onClick={handleNewWorkflow} class="flex items-center gap-2">
-            <Plus class="size-4" />
-            New Workflow
+          <Button 
+            onClick={handleNewWorkflow} 
+            disabled={runningWorkflows().has('creating')}
+            class="flex items-center gap-2"
+          >
+            {runningWorkflows().has('creating') ? (
+              <Loader2 class="size-4 animate-spin" />
+            ) : (
+              <Plus class="size-4" />
+            )}
+            {runningWorkflows().has('creating') ? 'Creating...' : 'New Workflow'}
           </Button>
         </div>
 

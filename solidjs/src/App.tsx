@@ -43,16 +43,6 @@ function AppRoutes() {
         )}
       />
       <Route
-        path="/workflows/new"
-        component={() => (
-          <PrivateRoute>
-            <Layout>
-              <WorkflowEditPage />
-            </Layout>
-          </PrivateRoute>
-        )}
-      />
-      <Route
         path="/workflows/:id/edit"
         component={() => (
           <PrivateRoute>
