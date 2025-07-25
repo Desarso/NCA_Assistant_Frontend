@@ -11,6 +11,7 @@ interface WorkflowConsoleProps {
   isRunning: boolean;
   onStop: () => void;
   onClear: () => void;
+  fullScreen?: boolean;
 }
 
 const WorkflowConsole: Component<WorkflowConsoleProps> = (props) => {
@@ -29,7 +30,7 @@ const WorkflowConsole: Component<WorkflowConsoleProps> = (props) => {
 
   return (
     <Show when={props.isVisible}>
-      <div class="w-full md:w-1/2 flex flex-col border-l border-border" style="max-height: 70vh;">
+      <div class={`${props.fullScreen ? 'w-full h-full' : 'w-full md:w-1/2'} flex flex-col ${props.fullScreen ? '' : 'border-l border-border'}`} style={props.fullScreen ? "height: calc(100vh - 200px);" : "max-height: 70vh;"}>
         {/* Console Header */}
         <div class="p-4 border-b border-border bg-muted/30 flex-shrink-0">
           <div class="flex items-center justify-between">
@@ -78,14 +79,16 @@ const WorkflowConsole: Component<WorkflowConsoleProps> = (props) => {
               >
                 Clear
               </Button>
-              <Button 
-                size="sm" 
-                variant="ghost"
-                onClick={props.onClose}
-                class="size-6 p-0"
-              >
-                ×
-              </Button>
+              <Show when={props.fullScreen}>
+                <Button 
+                  size="sm" 
+                  variant="ghost"
+                  onClick={props.onClose}
+                  class="size-6 p-0"
+                >
+                  ×
+                </Button>
+              </Show>
             </div>
           </div>
         </div>

@@ -75,7 +75,6 @@ const WorkflowEditPage: Component = () => {
   
   const [schedules, setSchedules] = createSignal<WorkflowSchedule[]>([]);
   
-  const [showOutput, setShowOutput] = createSignal(false);
   const [runOutput, setRunOutput] = createSignal('');
   const [runError, setRunError] = createSignal('');
   const [runStatus, setRunStatus] = createSignal('');
@@ -83,13 +82,54 @@ const WorkflowEditPage: Component = () => {
   const [currentRunId, setCurrentRunId] = createSignal<number | null>(null);
   const [runStartTime, setRunStartTime] = createSignal<Date | null>(null);
   
-  const [activeTab, setActiveTab] = createSignal('details');
+  const [activeTab, setActiveTab] = createSignal('code');
   const [sharedUsers, setSharedUsers] = createSignal<SharedUser[]>([]);
+
+  // Add state for inline title editing
+  const [isEditingTitle, setIsEditingTitle] = createSignal(false);
+  const [tempTitle, setTempTitle] = createSignal('');
 
   // SSE connection for real-time logs
   let pollCleanup: (() => void) | null = null;
 
   const getWorkflowId = () => actualWorkflowId() || params.id;
+
+  // Functions for inline title editing
+  const startEditingTitle = () => {
+    setTempTitle(workflowTitle());
+    setIsEditingTitle(true);
+    // Focus the input after it's rendered
+    setTimeout(() => {
+      const input = document.getElementById('title-input') as HTMLInputElement;
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    }, 0);
+  };
+
+  const saveTitle = async () => {
+    if (tempTitle().trim() && tempTitle() !== workflowTitle()) {
+      setWorkflowTitle(tempTitle().trim());
+      setHasUnsavedChanges(true);
+    }
+    setIsEditingTitle(false);
+  };
+
+  const cancelTitleEdit = () => {
+    setTempTitle(workflowTitle());
+    setIsEditingTitle(false);
+  };
+
+  const handleTitleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      saveTitle();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      cancelTitleEdit();
+    }
+  };
 
   const formatLastRun = (dateString?: string) => {
     if (!dateString) return 'Never';
@@ -155,7 +195,7 @@ const WorkflowEditPage: Component = () => {
             // If the latest run is active, put the UI into a running state and start polling.
             if (latestRun.status === 'running' || latestRun.status === 'pending') {
               setIsRunning(true);
-              setShowOutput(true); // Automatically open the console to show the live log
+              setActiveTab('console'); // Automatically open the console to show the live log
               setRunStartTime(new Date(latestRun.started_at));
               pollCleanup = startPollingLogs(latestRun.id);
             }
@@ -291,16 +331,6 @@ const WorkflowEditPage: Component = () => {
     }
   };
 
-  const handleToggleConsole = () => {
-    const newShowOutput = !showOutput();
-    setShowOutput(newShowOutput);
-    
-    // If opening console and not currently running, load latest run
-    if (newShowOutput && !isRunning()) {
-      loadLatestRun();
-    }
-  };
-
   const handleRun = async () => {
 
     // Clear any existing polling interval before starting a new one
@@ -311,7 +341,7 @@ const WorkflowEditPage: Component = () => {
 
     try {
       setIsRunning(true);
-      setShowOutput(true); // Auto-open console when running
+      setActiveTab('console'); // Auto-switch to console tab when running
       const startTime = new Date();
       setRunStartTime(startTime);
       const timestamp = startTime.toLocaleTimeString();
@@ -425,7 +455,7 @@ const WorkflowEditPage: Component = () => {
 
               if (latestRun.status === 'running' || latestRun.status === 'pending') {
                 setIsRunning(true);
-                setShowOutput(true);
+                setActiveTab('console');
                 setRunStartTime(new Date(latestRun.started_at));
                 pollCleanup = startPollingLogs(latestRun.id);
               }
@@ -444,40 +474,65 @@ const WorkflowEditPage: Component = () => {
   return (
     <div class="w-full bg-background dark:bg-background mt-3.5 rounded-lg p-6" style="min-height: 90vh; height: auto; overflow-y: visible !important;">
         {/* Header */}
-        <div class="p-6 border-b border-border">
+        <div class="p-6">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
               <Button variant="ghost" size="sm" onClick={handleBack}>
                 <ArrowLeft class="size-4" />
               </Button>
-              <div>
-                <h1 class="text-2xl font-bold">{workflowTitle()}</h1>
-                                 <div class="flex items-center gap-2 mt-1">
-                   <span class={`text-xs px-2 py-1 rounded-full ${
-                     syncStatus() === 'saved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                     : syncStatus() === 'saving' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
-                     : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-                   }`}>
-                     {syncStatus() === 'saved' ? 'Saved' : syncStatus() === 'saving' ? 'Saving...' : 'Error'}
-                   </span>
-                   <Show when={hasUnsavedChanges()}>
-                     <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400 border">
-                       Unsaved changes
-                     </span>
-                   </Show>
-                 </div>
+              <div class="flex items-center gap-3">
+                <Show when={isEditingTitle()} fallback={
+                  <h1 
+                    class="text-2xl font-bold cursor-pointer hover:border hover:border-dashed hover:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 px-2 py-1 rounded transition-all"
+                    onClick={startEditingTitle}
+                  >
+                    {workflowTitle()}
+                  </h1>
+                }>
+                  <input
+                    id="title-input"
+                    type="text"
+                    value={tempTitle()}
+                    onInput={(e) => setTempTitle(e.currentTarget.value)}
+                    onKeyDown={handleTitleKeyDown}
+                    onBlur={saveTitle}
+                    class="text-2xl font-bold bg-transparent border border-blue-500 rounded px-2 py-1 outline-none"
+                  />
+                </Show>
+                
+                <div class="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="status-toggle"
+                    checked={workflowStatus() === 'active'}
+                    onChange={(e) => {
+                      setWorkflowStatus(e.currentTarget.checked ? 'active' : 'inactive');
+                      setHasUnsavedChanges(true);
+                    }}
+                    class="rounded border-gray-300"
+                  />
+                  <label for="status-toggle" class="text-sm font-medium">
+                    {workflowStatus() === 'active' ? 'Active' : 'Inactive'}
+                  </label>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                  <span class={`text-xs px-2 py-1 rounded-full ${
+                    syncStatus() === 'saved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                    : syncStatus() === 'saving' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+                    : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                  }`}>
+                    {syncStatus() === 'saved' ? 'Saved' : syncStatus() === 'saving' ? 'Saving...' : 'Error'}
+                  </span>
+                  <Show when={hasUnsavedChanges()}>
+                    <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400 border">
+                      Unsaved changes
+                    </span>
+                  </Show>
+                </div>
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleToggleConsole}
-                class="flex items-center gap-2"
-              >
-                <Terminal class="size-4" />
-                Console
-              </Button>
               <Button 
                 onClick={handleRun} 
                 disabled={isRunning()}
@@ -488,129 +543,90 @@ const WorkflowEditPage: Component = () => {
                 </Show>
                 {isRunning() ? 'Running...' : 'Run'}
               </Button>
-                             <Show when={isRunning()}>
-                 <Button 
-                   variant="destructive" 
-                   size="sm"
-                   onClick={stopWorkflow}
-                   class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white border-red-600"
-                 >
-                   <Square class="size-4 fill-current" />
-                   Stop
-                 </Button>
-               </Show>
+              <Show when={isRunning()}>
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  onClick={stopWorkflow}
+                  class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white border-red-600"
+                >
+                  <Square class="size-4 fill-current" />
+                  Stop
+                </Button>
+              </Show>
             </div>
           </div>
         </div>
 
         <Tabs value={activeTab()} onChange={setActiveTab} class="flex flex-col">
-          <div class="px-6 border-b border-border flex-shrink-0">
+          <div class="px-6 flex-shrink-0">
             <TabsList>
-              <TabsTrigger value="details" class="data-[selected]:bg-white dark:data-[selected]:bg-gray-800">
-                Details
+              <TabsTrigger value="code" class="data-[selected]:bg-white dark:data-[selected]:bg-gray-800">
+                Code
+              </TabsTrigger>
+              <TabsTrigger value="console" class="data-[selected]:bg-white dark:data-[selected]:bg-gray-800">
+                Console
               </TabsTrigger>
               <TabsTrigger value="sharing" class="data-[selected]:bg-white dark:data-[selected]:bg-gray-800">
                 Sharing
               </TabsTrigger>
+              <TabsTrigger value="schedules" class="data-[selected]:bg-white dark:data-[selected]:bg-gray-800">
+                Schedules
+              </TabsTrigger>
             </TabsList>
           </div>
 
-          <TabsContent value="details" class="flex flex-col">
-            {/* Metadata Section */}
-            <div class="p-6 border-b border-border flex-shrink-0">
-              {/* Workflow Info Inputs */}
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label for="title" class="text-sm font-medium">Title</label>
-                  <Input
-                    id="title"
-                    value={workflowTitle()}
-                    onInput={(e) => {
-                      setWorkflowTitle(e.currentTarget.value);
-                      setHasUnsavedChanges(true);
-                    }}
-                    placeholder="Workflow title"
-                  />
-                </div>
-                <div>
-                  <label for="status" class="text-sm font-medium">Status</label>
-                  <div class="flex items-center gap-2 mt-2">
-                    <input
-                      type="checkbox"
-                      id="status"
-                      checked={workflowStatus() === 'active'}
-                      onChange={(e) => {
-                        setWorkflowStatus(e.currentTarget.checked ? 'active' : 'inactive');
-                        setHasUnsavedChanges(true);
-                      }}
-                      class="rounded border-gray-300"
-                    />
-                    <label for="status" class="text-sm">{workflowStatus() === 'active' ? 'Active' : 'Inactive'}</label>
-                  </div>
-                </div>
-              </div>
-              <div class="mt-4">
-                <label for="description" class="text-sm font-medium">Description</label>
-                <textarea
-                  id="description"
-                  value={workflowDescription()}
-                  onInput={(e) => {
-                    setWorkflowDescription(e.currentTarget.value);
+          <TabsContent value="code" class="flex flex-col flex-1">
+            <div class="p-6 flex flex-col flex-1">
+              <label for="code" class="text-sm font-medium mb-2">Code</label>
+              <div class="border border-border rounded-md flex-1">
+                <CodeEditor
+                  value={workflowCode()}
+                  onInput={(value) => {
+                    setWorkflowCode(value);
                     setHasUnsavedChanges(true);
                   }}
-                  placeholder="Workflow description"
-                  class="w-full p-3 border border-border rounded-md bg-background resize-none"
-                  rows={2}
                 />
               </div>
+            </div>
+          </TabsContent>
 
+          <TabsContent value="console" class="flex flex-col flex-1">
+            <WorkflowConsole 
+              isVisible={true}
+              fullScreen={true}
+              onClose={() => setActiveTab('code')}
+              runOutput={runOutput()}
+              runError={runError()}
+              runStatus={runStatus()}
+              isRunning={isRunning()}
+              onStop={stopWorkflow}
+              onClear={() => {
+                setRunOutput('');
+                setRunError('');
+                setRunStatus('');
+              }}
+            />
+          </TabsContent>
+
+          <TabsContent value="sharing">
+            <div class="p-6">
+              <WorkflowSharing 
+                workflowId={getWorkflowId()!}
+                sharedUsers={sharedUsers()}
+                onSharedUsersChange={setSharedUsers}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="schedules">
+            <div class="p-6">
               <WorkflowSchedules 
                 workflowId={getWorkflowId()!}
                 schedules={schedules()}
                 onSchedulesChange={setSchedules}
               />
             </div>
-
-            {/* Main Content Area (Editor + Console) */}
-            <div class="flex flex-col md:flex-row">
-              {/* Code Editor Panel */}
-              <div class={`${showOutput() ? 'w-full md:w-1/2' : 'w-full'} p-6 flex flex-col`}>
-                <label for="code" class="text-sm font-medium mb-2">Code</label>
-                <div class="border border-border rounded-md">
-                  <CodeEditor
-                    value={workflowCode()}
-                    onInput={(value) => {
-                      setWorkflowCode(value);
-                      setHasUnsavedChanges(true);
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Console Panel */}
-              <WorkflowConsole 
-                isVisible={showOutput()}
-                onClose={() => setShowOutput(false)}
-                runOutput={runOutput()}
-                runError={runError()}
-                runStatus={runStatus()}
-                isRunning={isRunning()}
-                onStop={stopWorkflow}
-                onClear={() => {
-                  setRunOutput('');
-                  setRunError('');
-                  setRunStatus('');
-                }}
-              />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="sharing">
-            <WorkflowSharing 
-              workflowId={getWorkflowId()!}
-              sharedUsers={sharedUsers()}
-              onSharedUsersChange={setSharedUsers}
-            />
           </TabsContent>
         </Tabs>
     </div>
