@@ -34,6 +34,15 @@ def main():
         user_id = u["id"]
         display_name = u.get("displayName")
         email = u.get("mail") or u.get("userPrincipalName")
+        
+        # Only check MFA for Novastone organizational email addresses
+        if not email:
+            continue
+        email_lower = email.lower()
+        organizational_domains = ["@novastone-ca.com", "@novastonepartners.com", "@novastonecapital.com"]
+        if not any(domain in email_lower for domain in organizational_domains):
+            continue
+            
         status = get_mfa_status(user_id)
         if status != "enforced":
             not_enforced.append({
@@ -46,7 +55,7 @@ def main():
     for row in not_enforced:
         html += f'<tr><td style="padding:8px;border:1px solid #b3d4fc;">{row["displayName"]}</td><td style="padding:8px;border:1px solid #b3d4fc;">{row["email"]}</td><td style="padding:8px;border:1px solid #b3d4fc;">{row["mfaStatus"]}</td></tr>'
     html += '</table>'
-    html += '<p style="color:#222;font-size:16px;line-height:1.5;margin-top:18px;"><b>Recommendation:</b><br>To reduce risk, we recommend that MFA is enforced for these accounts as soon as possible. If you require further details, please let us know.</p><p style="color:#222;font-size:16px;line-height:1.5;">Thank you for your attention to this matter!</p><p style="color:#336699;margin-top:22px;font-size:17px;">Best regards,<br>Security Automation Bot 🤖</p></div></body></html>'
+    html += '<p style="color:#222;font-size:16px;line-height:1.5;margin-top:18px;"><b>Recommendation:</b><br>To reduce risk, we recommend that MFA is enforced for these accounts as soon as possible. If you require further details, please let us know.</p><p style="color:#222;font-size:16px;line-height:1.5;">Thank you for your attention to this matter!</p><p style="color:#336699;margin-top:22px;font-size:17px;">Best regards,<br>NCA Assistant 🤖</p></div></body></html>'
     email_body = {
         "message": {
             "subject": "Users Without MFA Enforced – Security Review",
