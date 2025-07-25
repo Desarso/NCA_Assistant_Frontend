@@ -11,7 +11,7 @@ from sqlalchemy import select
 
 security = HTTPBearer()
 
-DEFAULT_MODEL = "4.1"
+DEFAULT_MODEL = "kimi"
 
 
 class FirebaseUser:

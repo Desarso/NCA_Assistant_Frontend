@@ -84,13 +84,16 @@ app.add_middleware(
         os.getenv("FRONTEND_URL"),
         "http://localhost:3000",
         "http://localhost:4173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:4173",
         "https://nca-assistant.gabrielmalek.com",
         "https://nca-assistant.development.gabrielmalek.com",
         "https://nca-assistant.whagons.com",
         ],  # Get frontend URL from env
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],  # Allow all methods
     allow_headers=["*"],  # Allow all headers
+    expose_headers=["*"],  # Expose all headers
 )
 
 # Firebase auth bearer for API endpoints

@@ -66,6 +66,12 @@ models = {
             api_key=os.getenv("GEMINI_API_KEY"), http_client=http_client
         ),
     ),
+    "flash-lite": GeminiModel(
+        "gemini-2.5-flash-lite",
+        provider=GoogleGLAProvider(
+            api_key=os.getenv("GEMINI_API_KEY"), http_client=http_client
+        ),
+    ),
     "deepseek": GroqModel(
         "deepseek-r1-distill-llama-70b",
         provider=GroqProvider(api_key=os.getenv("GROQ_API_KEY")),
@@ -105,10 +111,17 @@ models = {
             api_key=os.getenv("OPENROUTER_API_KEY"),
         ),
     ),
+    "qwen3": OpenAIModel(
+        "qwen/qwen3-235b-a22b-07-25",
+        provider=OpenAIProvider(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+        ),
+    ),
 }
 
 # Set default model
-model: GroqModel = models["4.1"]
+model: GroqModel = models["kimi"]
 
 
 logging.basicConfig(
@@ -382,8 +395,9 @@ async def create_agent(user_object: FirebaseUser, memory: str, has_pdfs: bool = 
         logging.info(f"Using Gemini model due to PDF content: {model_name}")
     else:
         # Use user's preferred model
-        preferred_model_key = user_object.prefered_model or "4.1"
-        selected_model = models.get(preferred_model_key, models["4.1"])
+        preferred_model_key = user_object.prefered_model or "kimi"
+        # preferred_model_key = "qwen3"
+        selected_model = models.get(preferred_model_key, models["kimi"])
         
         # Get the actual model name for logging
         if hasattr(selected_model, 'model_name'):
