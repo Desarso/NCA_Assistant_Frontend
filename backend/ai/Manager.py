@@ -118,10 +118,14 @@ models = {
             api_key=os.getenv("OPENROUTER_API_KEY"),
         ),
     ),
+    "openai-opensource": GroqModel(
+        "openai/gpt-oss-120b",
+         provider=GroqProvider(api_key=os.getenv("GROQ_API_KEY")),
+    )
 }
 
 # Set default model
-model: GroqModel = models["kimi"]
+model = "openai-opensource"
 
 
 logging.basicConfig(
@@ -395,9 +399,8 @@ async def create_agent(user_object: FirebaseUser, memory: str, has_pdfs: bool = 
         logging.info(f"Using Gemini model due to PDF content: {model_name}")
     else:
         # Use user's preferred model
-        preferred_model_key = user_object.prefered_model or "kimi"
-        # preferred_model_key = "qwen3"
-        selected_model = models.get(preferred_model_key, models["kimi"])
+        preferred_model_key = user_object.prefered_model or model
+        selected_model = models.get(preferred_model_key, model)
         
         # Get the actual model name for logging
         if hasattr(selected_model, 'model_name'):
