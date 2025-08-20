@@ -118,14 +118,22 @@ models = {
             api_key=os.getenv("OPENROUTER_API_KEY"),
         ),
     ),
-    "openai-opensource": GroqModel(
+    "gpt-oss-120b-groq": GroqModel(
         "openai/gpt-oss-120b",
          provider=GroqProvider(api_key=os.getenv("GROQ_API_KEY")),
-    )
+    ),
+    "gpt-oss-120b-openrouter": OpenAIModel(
+        "openai/gpt-oss-120b",
+        provider=OpenAIProvider(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+        ),
+    ),
+
 }
 
 # Set default model
-model = "openai-opensource"
+model = "gpt-oss-120b-openrouter"
 
 
 logging.basicConfig(
