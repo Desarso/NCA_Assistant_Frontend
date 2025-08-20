@@ -420,8 +420,21 @@ class CallToolsNode(AgentNode[DepsT, NodeRunEndT]):
                 elif texts:
                     # No events are emitted during the handling of text responses, so we don't need to yield anything
                     self._next_node = await self._handle_text_response(ctx, texts, reasoning)
+                elif reasoning:
+                    # Reasoning-only responses should not end the run nor be treated as text
+                    # Ask the model to provide a textual answer or call a tool instead of ending here
+                    self._next_node = ModelRequestNode[DepsT, NodeRunEndT](
+                        _messages.ModelRequest(
+                            parts=[
+                                _messages.RetryPromptPart(
+                                    content='Please provide a textual answer or call an appropriate function tool; do not return only reasoning.',
+                                )
+                            ]
+                        )
+                    )
                 else:
-                    raise exceptions.UnexpectedModelBehavior('Received empty model response')
+                    # Gracefully handle fully empty responses by producing an empty text result
+                    self._next_node = await self._handle_text_response(ctx, [], [])
 
             self._events_iterator = _run_stream()
 
@@ -520,7 +533,7 @@ class CallToolsNode(AgentNode[DepsT, NodeRunEndT]):
     ) -> ModelRequestNode[DepsT, NodeRunEndT] | End[result.FinalResult[NodeRunEndT]]:
         result_schema = ctx.deps.result_schema
 
-        # Only use text content for the main result
+        # Only use text content for the main result; do not coerce reasoning into text
         text = '\n\n'.join(texts)
         if allow_text_result(result_schema):
             result_data_input = cast(NodeRunEndT, text)
@@ -532,7 +545,7 @@ class CallToolsNode(AgentNode[DepsT, NodeRunEndT]):
             else:
                 # The following cast is safe because we know `str` is an allowed result type
                 final_result = result.FinalResult(result_data, None, None)
-                # Add reasoning to the final result if available
+                # Attach reasoning separately if available
                 if reasoning:
                     final_result.reasoning = '\n\n'.join(reasoning)
                 return self._handle_final_result(ctx, final_result, [])

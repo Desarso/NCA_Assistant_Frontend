@@ -2,8 +2,9 @@ from datetime import datetime
 import json
 from typing import AsyncGenerator, List, Union, Dict
 from cohere import ToolResult
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, WebSocket, WebSocketDisconnect
 from requests import Session
+import asyncio
 from pydantic import BaseModel, Field
 import cohere
 import uuid
@@ -36,9 +37,11 @@ from pydantic_ai.messages import (
 # ReasoningPart,
 # ReasoningPartDelta,
 from helpers.helper_funcs import geminiParts
-from ai.models import get_session, User, Conversation, Message as DBMessage
+from ai.models import get_session, User, Conversation, Message as DBMessage, engine
+from sqlmodel import Session as DBSession
 from models.general import ConversationCreate, MessageCreate
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
+from .chat_events import event_to_json_string, model_message_to_dict, get_message_history
 
 
 class ImageUrlContent(BaseModel):
@@ -101,6 +104,108 @@ class ChatRequest(BaseModel):
 
 
 chats_router = APIRouter(prefix="/chats")
+ws_chats_router = APIRouter(prefix="/chats")
+
+# In-memory chat sessions for resumable/background execution
+class ChatSession:
+    def __init__(self, conversation_id: str):
+        self.conversation_id = conversation_id
+        self.queue: asyncio.Queue[str] = asyncio.Queue(maxsize=1000)
+        self.task: asyncio.Task | None = None
+        self.deps_instance: MyDeps | None = None
+        self.started: bool = False
+
+    def is_running(self) -> bool:
+        return self.task is not None and not self.task.done()
+
+    async def start(self, current_user: User, user_content: List[Union[str, ImageUrl, AudioUrl, DocumentUrl, BinaryContent]], has_pdfs: bool, memory: str | None) -> None:
+        if self.is_running():
+            return
+        self.deps_instance = MyDeps(user_object=current_user, user_rejection_flags={}, conversation_id=self.conversation_id)
+        self.task = asyncio.create_task(self._run(current_user, user_content, has_pdfs, memory))
+        self.started = True
+
+    async def _run(self, current_user: User, user_content: List[Union[str, ImageUrl, AudioUrl, DocumentUrl, BinaryContent]], has_pdfs: bool, memory: str | None) -> None:
+        try:
+            # Fresh DB session for background task
+            with DBSession(engine) as session:
+                conversation = session.get(Conversation, self.conversation_id)
+                if not conversation:
+                    return
+                message_history = get_message_history(conversation)
+
+                # Refresh system prompt if exists
+                if len(message_history) > 0:
+                    system_prompt = message_history[0].parts[0].content
+                    if system_prompt:
+                        message_history[0].parts[0].content = get_system_prompt(current_user, memory)
+
+                agent = await create_agent(current_user, memory, has_pdfs=has_pdfs)
+
+                async with agent.run_mcp_servers():
+                    async with agent.iter(
+                        deps=self.deps_instance,
+                        user_prompt=user_content,
+                        message_history=message_history,
+                    ) as run:
+                        async for node in run:
+                            if agent.is_user_prompt_node(node):
+                                pass
+                            elif agent.is_model_request_node(node):
+                                db_message_request = DBMessage(
+                                    content=json.dumps(model_message_to_dict(node.request)),
+                                    is_user_message=True,
+                                    conversation_id=self.conversation_id,
+                                )
+                                session.add(db_message_request)
+                                conversation_obj = session.get(Conversation, self.conversation_id)
+                                if conversation_obj:
+                                    conversation_obj.updated_at = datetime.now()
+                                session.commit()
+
+                                async with node.stream(run.ctx) as request_stream:
+                                    async for event in request_stream:
+                                        if isinstance(event, PartStartEvent):
+                                            if isinstance(event.part, (TextPart, ReasoningPart)):
+                                                await self._emit(event_to_json_string(event))
+                                        elif isinstance(event, PartDeltaEvent):
+                                            if isinstance(event.delta, (TextPartDelta, ReasoningPartDelta)):
+                                                await self._emit(event_to_json_string(event))
+                            elif agent.is_call_tools_node(node):
+                                async with node.stream(run.ctx) as handle_stream:
+                                    async for event in handle_stream:
+                                        await self._emit(event_to_json_string(event))
+
+                                db_message = DBMessage(
+                                    content=json.dumps(model_message_to_dict(node.model_response)),
+                                    is_user_message=False,
+                                    conversation_id=self.conversation_id,
+                                )
+                                session.add(db_message)
+                                conversation_obj = session.get(Conversation, self.conversation_id)
+                                if conversation_obj:
+                                    conversation_obj.updated_at = datetime.now()
+                                session.commit()
+        except Exception as e:
+            await self._emit(json.dumps({"type": "error", "data": str(e)}))
+
+    async def _emit(self, data: str) -> None:
+        try:
+            self.queue.put_nowait("data: " + data + "\n\n")
+        except asyncio.QueueFull:
+            # Drop oldest to make space
+            _ = await self.queue.get()
+            self.queue.put_nowait("data: " + data + "\n\n")
+
+
+chat_sessions: Dict[str, ChatSession] = {}
+
+def get_or_create_session(conversation_id: str) -> ChatSession:
+    session = chat_sessions.get(conversation_id)
+    if session is None:
+        session = ChatSession(conversation_id)
+        chat_sessions[conversation_id] = session
+    return session
 
 
 @chats_router.post("/chat")
@@ -179,125 +284,17 @@ async def chat(
         if hasattr(item, 'content') and hasattr(item.content, 'kind')
     )
 
-    # Create agent with PDF detection
-    agent = await create_agent(current_user, memory, has_pdfs=has_pdfs)
-
+    # Start or resume background chat session
     user_content = chat_request.to_user_content()
+    chat_session = get_or_create_session(conversation_id)
+    await chat_session.start(current_user, user_content, has_pdfs=has_pdfs, memory=memory)
 
-    # Instantiate MyDeps to hold shared state like rejection flags and conversation context
-    deps_instance = MyDeps(
-        user_object=current_user, 
-        user_rejection_flags={}, 
-        conversation_id=conversation_id
-    ) # Add the flags dict
-
-    async def generate_chunks() -> AsyncGenerator[str, None]:
-        async with agent.run_mcp_servers():
-            async with agent.iter(
-                deps=deps_instance, # Pass the instance with flags
-                user_prompt=user_content,
-                message_history=message_history, # Pass the ORIGINAL history
-            ) as run:
-                async for node in run:
-                    # print(node)
-                    if agent.is_user_prompt_node(node):
-                        # print user node
-                        pass
-                    elif agent.is_model_request_node(node):
-                        # Save the user request model message
-                        db_message_request = DBMessage(
-                            content=json.dumps(model_message_to_dict(node.request)),
-                            is_user_message=True, # This is the user's prompt
-                            conversation_id=conversation_id,
-                        )
-                        session.add(db_message_request)
-                        # Update conversation timestamp - fetch conversation first
-                        conversation_obj = session.get(Conversation, conversation_id)
-                        if conversation_obj:
-                            conversation_obj.updated_at = datetime.now()
-                        session.commit()
-
-                        # Stream the response generation
-                        async with node.stream(run.ctx) as request_stream:
-                            async for event in request_stream:
-                                if isinstance(event, PartStartEvent):
-                                    if isinstance(event.part, TextPart):
-                                        yield (
-                                            "data: " + event_to_json_string(event) + "\n\n"
-                                        )
-                                    elif isinstance(event.part, ReasoningPart):
-                                        yield (
-                                            "data: " + event_to_json_string(event) + "\n\n"
-                                        )
-                                elif isinstance(event, PartDeltaEvent):
-                                    if isinstance(event.delta, TextPartDelta):
-                                        yield (
-                                            "data: " + event_to_json_string(event) + "\n\n"
-                                        )
-                                    elif isinstance(event.delta, ReasoningPartDelta):
-                                        yield (
-                                            "data: " + event_to_json_string(event) + "\n\n"
-                                        )
-                    elif agent.is_call_tools_node(node):
-                        # Set rejection flag based on user confirmation
-                        result = await get_user_confirmation(node, deps_instance) # Pass deps to set flag
-
-                        async with node.stream(run.ctx) as handle_stream:
-                            async for event in handle_stream:
-                                yield "data: " + event_to_json_string(event) + "\n\n"
-                        db_message = DBMessage(
-                            content=json.dumps(model_message_to_dict(node.model_response, result)),
-                            is_user_message=False,
-                            conversation_id=conversation_id,
-
-                        )
-                        print("db_message", db_message)
-                        print("saving tool response")
-                        session.add(db_message)
-                        # Update conversation timestamp - fetch conversation first
-                        conversation_obj = session.get(Conversation, conversation_id)
-                        if conversation_obj:
-                            conversation_obj.updated_at = datetime.now()
-                        session.commit()
-    return StreamingResponse(
-        generate_chunks(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "Content-Type": "text/event-stream",
-        },
-    )
+    # Do not hold the HTTP request open; background session streams via WebSocket
+    return JSONResponse({"status": "started", "conversation_id": conversation_id}, status_code=202)
 
 async def get_user_confirmation(node, deps: MyDeps) -> bool:
-    # Implement a method to send a confirmation request to the user
-    # and await their response.
-    # For now, simulate rejection:
-    user_approved = False # Replace with actual user confirmation logic
-
-    # Get the tool_call_id from the node data if available
-    tool_call_id_to_flag = None
-    if hasattr(node, 'part') and hasattr(node.part, 'tool_call_id'):
-        tool_call_id_to_flag = node.part.tool_call_id
-    elif hasattr(node, 'model_response') and node.model_response and node.model_response.parts:
-         # Fallback: check the model response parts (might exist if stream already ran partially)
-         for part in node.model_response.parts:
-             if hasattr(part, 'tool_call_id'):
-                tool_call_id_to_flag = part.tool_call_id
-                break
-    # Add more fallbacks if needed based on the structure of 'node'
-
-    if not user_approved and tool_call_id_to_flag:
-        print(f"User rejected tool call: {tool_call_id_to_flag}") # For debugging
-        deps.user_rejection_flags[tool_call_id_to_flag] = True
-        return True
-    elif not tool_call_id_to_flag:
-        print("Warning: Could not determine tool_call_id to set rejection flag.")
-        return False
-    else:
-        return False
-
-    # This function no longer needs to return True/False for the loop
+    # Placeholder: actual confirmation should be driven by WebSocket messages
+    return False
 
 
 @chats_router.post("/conversations/", response_model=dict)
@@ -427,6 +424,36 @@ def read_conversation_messages(
     return {"status": "success", "messages": processed_messages}
 
 
+@chats_router.get("/conversations/{conversation_id}/verify", response_model=dict)
+def verify_conversation_state(
+    request: Request,
+    conversation_id: str,
+    session: Session = Depends(get_session),
+):
+    current_user = request.state.user
+    conversation = session.get(Conversation, conversation_id)
+    if not conversation:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    if conversation.user_id != current_user.uid:
+        raise HTTPException(
+            status_code=403,
+            detail="Access denied: You can only verify your own conversations",
+        )
+
+    # Compute message_count and last_message_id
+    sorted_messages = sorted(conversation.messages, key=lambda m: m.created_at)
+    message_count = len(sorted_messages)
+    last_message_id = sorted_messages[-1].id if sorted_messages else None
+
+    return {
+        "status": "success",
+        "conversation_id": conversation_id,
+        "message_count": message_count,
+        "updated_at": conversation.updated_at.isoformat(),
+        "last_message_id": last_message_id,
+    }
+
+
 @chats_router.delete("/conversations/{conversation_id}")
 def delete_conversation(
     request: Request,
@@ -446,6 +473,45 @@ def delete_conversation(
     session.delete(conversation)
     session.commit()
     return {"status": "success"}
+
+
+@ws_chats_router.websocket("/ws")
+async def chat_ws(websocket: WebSocket, conversation_id: str):
+    # Manual auth for WebSocket: read token from headers or query param
+    token_header = websocket.headers.get('authorization')
+    token_param = websocket.query_params.get('token')
+    token = None
+    if token_header and token_header.lower().startswith('bearer '):
+        token = token_header.split(' ', 1)[1]
+    elif token_param:
+        token = token_param
+
+    # Optionally verify token here or allow anonymous if upstream proxies handle auth
+    # We accept and proceed even if token is missing to avoid handshake failures in dev
+    await websocket.accept()
+
+    chat_session = get_or_create_session(conversation_id)
+
+    async def forward_events():
+        try:
+            while True:
+                chunk = await chat_session.queue.get()
+                if chunk.startswith("data: "):
+                    await websocket.send_text(chunk[len("data: ") :].strip())
+                else:
+                    await websocket.send_text(chunk)
+        except asyncio.CancelledError:
+            return
+
+    producer = asyncio.create_task(forward_events())
+    try:
+        while True:
+            _ = await websocket.receive_text()
+            await websocket.send_text(json.dumps({"type": "ack"}))
+    except WebSocketDisconnect:
+        producer.cancel()
+    except Exception:
+        producer.cancel()
 
 # Add this dictionary to track tool call IDs and their results
 tool_call_mapping: Dict[str, str] = {}

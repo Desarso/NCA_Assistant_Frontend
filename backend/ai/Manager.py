@@ -407,7 +407,8 @@ async def create_agent(user_object: FirebaseUser, memory: str, has_pdfs: bool = 
         logging.info(f"Using Gemini model due to PDF content: {model_name}")
     else:
         # Use user's preferred model
-        preferred_model_key = user_object.prefered_model or model
+        # preferred_model_key = user_object.prefered_model or model
+        preferred_model_key = "gpt-oss-120b-openrouter"
         selected_model = models.get(preferred_model_key, model)
         
         # Get the actual model name for logging
