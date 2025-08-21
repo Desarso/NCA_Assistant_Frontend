@@ -118,6 +118,21 @@ class ChatSession:
     def is_running(self) -> bool:
         return self.task is not None and not self.task.done()
 
+    async def stop(self) -> None:
+        """Cancel the running task, if any, and signal stop to listeners."""
+        if self.task and not self.task.done():
+            self.task.cancel()
+            try:
+                await self.task
+            except asyncio.CancelledError:
+                # Inform clients the run was stopped
+                try:
+                    await self._emit(json.dumps({"type": "stopped"}))
+                except Exception:
+                    pass
+        self.task = None
+        self.started = False
+
     async def start(self, current_user: User, user_content: List[Union[str, ImageUrl, AudioUrl, DocumentUrl, BinaryContent]], has_pdfs: bool, memory: str | None) -> None:
         if self.is_running():
             return
@@ -186,6 +201,11 @@ class ChatSession:
                                 if conversation_obj:
                                     conversation_obj.updated_at = datetime.now()
                                 session.commit()
+            # Signal completion when the agent finishes streaming
+            await self._emit(json.dumps({"type": "done"}))
+        except asyncio.CancelledError:
+            # Cancellation handled by stop(); re-raise to exit cleanly
+            raise
         except Exception as e:
             await self._emit(json.dumps({"type": "error", "data": str(e)}))
 
@@ -291,6 +311,20 @@ async def chat(
 
     # Do not hold the HTTP request open; background session streams via WebSocket
     return JSONResponse({"status": "started", "conversation_id": conversation_id}, status_code=202)
+
+
+@chats_router.post("/chat/stop")
+async def stop_chat(
+    request: Request,
+    conversation_id: str,
+):
+    """Stop a running chat session for the given conversation."""
+    _ = request.state.user  # Reserved for future authorization checks per conversation
+    chat_session = get_or_create_session(conversation_id)
+    if not chat_session.is_running():
+        return JSONResponse({"status": "not_running", "conversation_id": conversation_id})
+    await chat_session.stop()
+    return JSONResponse({"status": "stopped", "conversation_id": conversation_id})
 
 async def get_user_confirmation(node, deps: MyDeps) -> bool:
     # Placeholder: actual confirmation should be driven by WebSocket messages

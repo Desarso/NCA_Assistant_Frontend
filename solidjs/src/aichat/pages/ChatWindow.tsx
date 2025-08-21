@@ -372,6 +372,12 @@ function ChatWindow() {
         };
         ws.onmessage = (evt) => {
           handleEventJsonString(evt.data);
+          try {
+            const parsed = JSON.parse(evt.data);
+            if (parsed?.type === "done" || parsed?.type === "stopped") {
+              setGettingResponse(false);
+            }
+          } catch {}
         };
         ws.onclose = () => {
           if (shouldReconnect) {
@@ -422,17 +428,7 @@ function ChatWindow() {
             alert(`Error sending message: ${error instanceof Error ? error.message : String(error)}`);
        }
     } finally {
-      if (!abortControllerRef.current) {
-        if (seenPartStart && !seenPartDelta) {
-          let currentMessageState = [...messages()];
-          const lastMessage = currentMessageState[currentMessageState.length - 1];
-          lastMessage.content += " ";
-          setMessages([...currentMessageState]);
-          setTimeout(() => setGettingResponse(false), 200);
-        } else {
-          setGettingResponse(false);
-        }
-      }
+      // Keep gettingResponse true; it will flip false on WS 'done'/'stopped' events
     }
   };
 
@@ -501,9 +497,18 @@ function ChatWindow() {
     setIsMuted(!isMuted());
   };
 
-  const handleStopRequest = () => {
+  const handleStopRequest = async () => {
     abortControllerRef.current = true;
-    setGettingResponse(false);
+    try {
+      const { authFetch } = await import("@/lib/utils");
+      const url = new URL(`${HOST}/api/v1/chats/chat/stop`);
+      url.searchParams.append("conversation_id", conversationId());
+      await authFetch(url.toString(), { method: "POST" });
+    } catch (e) {
+      console.error("Failed to stop chat:", e);
+    } finally {
+      setGettingResponse(false);
+    }
   };
 
   return (

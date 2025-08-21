@@ -369,7 +369,9 @@ const ChatInput: Component<ChatInputProps> = (props) => {
           <textarea
             ref={textInputRef}
             rows="1"
-            class="flex-1 bg-transparent px-2 py-2 text-sm md:text-base focus:outline-none resize-none overflow-y-auto dark:text-gray-200 placeholder-gray-200 dark:placeholder-gray-400 leading-relaxed min-h-[40px] w-full"
+            class={`flex-1 bg-transparent px-2 py-2 text-sm md:text-base focus:outline-none resize-none dark:text-gray-200 placeholder-gray-200 dark:placeholder-gray-400 leading-relaxed min-h-[40px] w-full ${
+              (props.gettingResponse || isUploading()) ? 'overflow-y-hidden' : 'overflow-y-auto'
+            }`}
             style={{ "max-height": "120px" }}
             value={textInput()}
             onInput={(e) => {
