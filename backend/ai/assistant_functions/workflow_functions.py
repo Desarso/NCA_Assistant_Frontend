@@ -32,6 +32,11 @@ def create_workflow(
     """
     Create a new workflow for a user.
     
+    The code you pass runs in the assistant workflow context, which already
+    injects helpers like `workflow_log`, `list_workflows`, `graph_api_request`,
+    etc. Prefer `workflow_log("message")` over bare prints for structured,
+    timestamped lines in the run console.
+    
     Args:
         title: The title of the workflow
         code: Python code for the workflow

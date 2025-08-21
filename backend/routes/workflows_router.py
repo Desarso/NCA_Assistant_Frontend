@@ -1,13 +1,10 @@
 from typing import List, Optional
 from datetime import datetime, timedelta, timezone
 import uuid
-import subprocess
-import asyncio
-import tempfile
-import os
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request
+import sys
 from fastapi.responses import StreamingResponse
-from sqlmodel import Session, select, SQLModel, Field, Relationship, exists
+from sqlmodel import Session, select, exists
 from pydantic import BaseModel
 import threading
 import queue
@@ -15,7 +12,7 @@ import json
 import traceback
 import logging
 
-from ai.models import Workflow, WorkflowSchedule, WorkflowRun, WorkflowShare, User, get_session, engine
+from ai.models import Workflow, WorkflowSchedule, WorkflowRun, WorkflowShare, get_session, engine
 from croniter import croniter
 import pytz
 from helpers.Firebase_helpers import FirebaseUser, get_current_user
@@ -159,6 +156,12 @@ def run_workflow_in_thread(workflow_id: str, code: str, run_id: int, stop_event:
             root_logger.handlers = [log_handler]
             root_logger.setLevel(logging.INFO)
 
+            # Redirect stdout/stderr BEFORE building context so context bootstrap logs are captured
+            original_stdout = sys.stdout
+            original_stderr = sys.stderr
+            sys.stdout = stdout_capture
+            sys.stderr = stderr_capture
+
             # Mark as running in the DB and write initial message
             db_run = session.get(WorkflowRun, run_id)
             if db_run:
@@ -171,13 +174,9 @@ def run_workflow_in_thread(workflow_id: str, code: str, run_id: int, stop_event:
             
             # Get workflow context
             workflow_context = get_assistant_workflow_context(workflow_id, session)
+            # Ensure scripts guarded by if __name__ == '__main__' run under this executor
+            workflow_context['__name__'] = '__main__'
             
-            # Redirect stdout and stderr
-            original_stdout = sys.stdout
-            original_stderr = sys.stderr
-            sys.stdout = stdout_capture
-            sys.stderr = stderr_capture
-
             def check_for_stop():
                 if stop_event.is_set():
                     raise InterruptedError("Workflow stopped by user.")
@@ -233,7 +232,7 @@ def run_workflow_in_thread(workflow_id: str, code: str, run_id: int, stop_event:
 # Workflow execution helper with real-time output streaming (for SSE)
 async def execute_workflow_code_streaming(workflow_id: str, code: str, session: Session, run_id: int, output_queue: queue.Queue, stop_event: threading.Event) -> tuple[str, str, str]:
     """Execute Python code with injected context and stream output in real-time"""
-    import sys
+    from io import StringIO
     from io import StringIO
     import threading
     import queue
@@ -373,8 +372,6 @@ async def execute_workflow_code_streaming(workflow_id: str, code: str, session: 
 # Original synchronous execution helper (kept for compatibility)
 async def execute_workflow_code(workflow_id: str, code: str, session: Session) -> tuple[str, str, str]:
     """Execute Python code with injected context similar to python_interpreter"""
-    import sys
-    from io import StringIO
     import threading
     import queue
     
@@ -390,8 +387,9 @@ async def execute_workflow_code(workflow_id: str, code: str, session: Session) -
             # Capture stdout and stderr
             old_stdout = sys.stdout
             old_stderr = sys.stderr
-            stdout_capture = StringIO()
-            stderr_capture = StringIO()
+            from io import StringIO as _StringIO
+            stdout_capture = _StringIO()
+            stderr_capture = _StringIO()
             sys.stdout = stdout_capture
             sys.stderr = stderr_capture
 
@@ -588,45 +586,17 @@ async def run_workflow(
     # Extract workflow code before background task to avoid detached instance error
     workflow_code = workflow.code
     
-    # Execute the workflow in background
+    # Execute the workflow in background (threaded with DB log capture)
     async def execute_in_background():
-        # Create a new session for the background task
-        with Session(engine) as bg_session:
-            run_start = datetime.now(timezone.utc)
-            
-            # Get fresh instances from the new session
-            bg_workflow_run = bg_session.get(WorkflowRun, workflow_run.id)
-            bg_workflow = bg_session.get(Workflow, workflow_id)
-            
-            if not bg_workflow_run or not bg_workflow:
-                return
-            
-            # Update run status to running
-            bg_workflow_run.status = "running"
-            bg_workflow_run.started_at = run_start
-            bg_session.add(bg_workflow_run)
-            bg_session.commit()
-            
-            # Execute the code
-            status, output, error = await execute_workflow_code(workflow_id, workflow_code, bg_session)
-            
-            # Update run with results
-            run_end = datetime.now(timezone.utc)
-            bg_workflow_run.status = status
-            bg_workflow_run.completed_at = run_end
-            bg_workflow_run.output = output
-            bg_workflow_run.error = error
-            bg_workflow_run.duration_seconds = (run_end - run_start).total_seconds()
-            
-            # Update workflow last run info
-            bg_workflow.last_run = run_end
-            bg_workflow.last_run_status = status
-            bg_workflow.last_run_output = output
-            bg_workflow.last_run_error = error
-            
-            bg_session.add(bg_workflow_run)
-            bg_session.add(bg_workflow)
-            bg_session.commit()
+        # We delegate execution to the same threaded runner used by streaming
+        # so stdout/stderr and logging are captured to DB instead of server console.
+        stop_event = threading.Event()
+        thread = threading.Thread(
+            target=run_workflow_in_thread,
+            args=(workflow_id, workflow_code, workflow_run.id, stop_event)
+        )
+        thread.daemon = True
+        thread.start()
     
     background_tasks.add_task(execute_in_background)
     

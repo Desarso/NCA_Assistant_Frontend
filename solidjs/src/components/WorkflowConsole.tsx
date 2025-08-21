@@ -1,6 +1,7 @@
-import { Component, createSignal, createEffect, Show } from 'solid-js';
+import { Component, createSignal, createEffect, Show, onCleanup } from 'solid-js';
 import { Button } from '@/components/ui/button';
 import { Square } from 'lucide-solid';
+import { HOST } from '@/aichat/utils/utils';
 
 interface WorkflowConsoleProps {
   isVisible: boolean;
@@ -12,14 +13,25 @@ interface WorkflowConsoleProps {
   onStop: () => void;
   onClear: () => void;
   fullScreen?: boolean;
+  workflowId?: string; // if provided, enables run history + live view
 }
 
 const WorkflowConsole: Component<WorkflowConsoleProps> = (props) => {
   const [consoleRef, setConsoleRef] = createSignal<HTMLDivElement>();
+  // Run history + live
+  const [runs, setRuns] = createSignal<Array<any>>([]);
+  const [selectedRunId, setSelectedRunId] = createSignal<number | null>(null);
+  const [internalOutput, setInternalOutput] = createSignal<string>('');
+  const [internalError, setInternalError] = createSignal<string>('');
+  const [internalStatus, setInternalStatus] = createSignal<string>('');
+  const [isLive, setIsLive] = createSignal<boolean>(false);
+  let pollTimer: number | null = null;
+  let eventSource: EventSource | null = null;
 
   // Auto-scroll console to bottom
   createEffect(() => {
-    if (consoleRef() && props.runOutput) {
+    const out = internalOutput() || props.runOutput;
+    if (consoleRef() && out) {
       setTimeout(() => {
         if (consoleRef()) {
           consoleRef()!.scrollTop = consoleRef()!.scrollHeight;
@@ -27,6 +39,92 @@ const WorkflowConsole: Component<WorkflowConsoleProps> = (props) => {
       }, 100);
     }
   });
+
+  onCleanup(() => {
+    if (pollTimer !== null) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+    if (eventSource) {
+      eventSource.close();
+      eventSource = null;
+    }
+  });
+
+  const fetchRuns = async () => {
+    if (!props.workflowId) return;
+    try {
+      const { authFetch } = await import('@/lib/utils');
+      const res = await authFetch(`${HOST}/api/v1/workflows/${props.workflowId}/runs?limit=50`);
+      if (res.ok) {
+        const data = await res.json();
+        setRuns(data);
+        if (data && data.length > 0 && selectedRunId() == null) setSelectedRunId(data[0].id);
+      }
+    } catch {}
+  };
+
+  const fetchRunDetails = async (runId: number) => {
+    if (!props.workflowId) return;
+    try {
+      const { authFetch } = await import('@/lib/utils');
+      const res = await authFetch(`${HOST}/api/v1/workflows/${props.workflowId}/runs/${runId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setInternalOutput(data.output || '');
+        setInternalError(data.error || '');
+        setInternalStatus(data.status || '');
+      }
+    } catch {}
+  };
+
+  const startPolling = (runId: number) => {
+    if (pollTimer !== null) clearInterval(pollTimer);
+    pollTimer = window.setInterval(() => fetchRunDetails(runId), 1000);
+  };
+
+  const stopPolling = () => {
+    if (pollTimer !== null) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+  };
+
+  const startLiveSSE = async (runId: number) => {
+    stopPolling();
+    if (!props.workflowId) return;
+    try {
+      const { authFetch } = await import('@/lib/utils');
+      const urlRes = await authFetch(`${HOST}/api/v1/workflows/${props.workflowId}/runs/${runId}/stream-url`);
+      if (!urlRes.ok) return;
+      const { stream_url } = await urlRes.json();
+      if (eventSource) eventSource.close();
+      const sseUrl = `${HOST}/api/v1${stream_url.startsWith('/') ? '' : '/'}${stream_url}`;
+      eventSource = new EventSource(sseUrl);
+      setInternalOutput('');
+      setInternalError('');
+      setInternalStatus('running');
+      eventSource.onmessage = (evt) => {
+        try {
+          const msg = JSON.parse(evt.data);
+          if (msg.type === 'output') setInternalOutput((p) => p + (msg.data || ''));
+          else if (msg.type === 'error') setInternalError((p) => p + (msg.data || ''));
+          else if (msg.type === 'status') {
+            setInternalStatus(msg.data || '');
+            if (msg.data === 'completed') {
+              eventSource?.close();
+              eventSource = null;
+            }
+          }
+        } catch {}
+      };
+      eventSource.onerror = () => { eventSource?.close(); eventSource = null; };
+    } catch {}
+  };
+
+  const stopLiveSSE = () => { if (eventSource) { eventSource.close(); eventSource = null; } };
+
+  createEffect(() => { if (props.isVisible && props.workflowId) fetchRuns(); });
 
   return (
     <Show when={props.isVisible}>
@@ -37,6 +135,45 @@ const WorkflowConsole: Component<WorkflowConsoleProps> = (props) => {
             <div class="flex items-center gap-2">
               <div class="size-3 rounded-full bg-green-500"></div>
               <span class="text-sm font-medium">Console Output</span>
+              <Show when={props.workflowId}>
+                <div class="flex items-center gap-2 ml-3">
+                  <select
+                    class="text-xs bg-background border rounded px-2 py-1"
+                    value={selectedRunId() ?? ''}
+                    onChange={(e) => {
+                      const id = Number((e.target as HTMLSelectElement).value);
+                      setSelectedRunId(Number.isFinite(id) ? id : null);
+                      if (Number.isFinite(id)) {
+                        setIsLive(false);
+                        stopLiveSSE();
+                        startPolling(id);
+                        fetchRunDetails(id);
+                      }
+                    }}
+                  >
+                    <option value="">Select run…</option>
+                    {runs().map((r) => (
+                      <option value={r.id}>{`#${r.id} • ${r.status} • ${new Date(r.started_at).toLocaleString()}`}</option>
+                    ))}
+                  </select>
+                  <Button size="sm" variant="ghost" class="text-xs px-2 py-1 h-6" onClick={fetchRuns}>Refresh</Button>
+                  <label class="flex items-center gap-1 text-xs">
+                    <input
+                      type="checkbox"
+                      checked={isLive()}
+                      onChange={async (e) => {
+                        const checked = (e.target as HTMLInputElement).checked;
+                        setIsLive(checked);
+                        const id = selectedRunId();
+                        if (!id) return;
+                        if (checked) { stopPolling(); await startLiveSSE(id); }
+                        else { stopLiveSSE(); startPolling(id); }
+                      }}
+                    />
+                    Live
+                  </label>
+                </div>
+              </Show>
               <Show when={props.runStatus}>
                 <span class={`text-xs px-2 py-1 rounded-full ${
                   props.runStatus === 'success' || props.runStatus === 'completed' 
@@ -96,9 +233,9 @@ const WorkflowConsole: Component<WorkflowConsoleProps> = (props) => {
         {/* Console Content */}
         <div ref={setConsoleRef} class="flex-1 overflow-auto bg-black font-mono text-sm min-h-0">
           <pre class="p-4 whitespace-pre-wrap">
-            <span class="text-green-400">{props.runOutput}</span>
+            <span class="text-green-400">{internalOutput() || props.runOutput}</span>
             <Show when={props.runError}>
-              <span class="text-red-400">{props.runError}</span>
+              <span class="text-red-400">{internalError() || props.runError}</span>
             </Show>
           </pre>
         </div>
