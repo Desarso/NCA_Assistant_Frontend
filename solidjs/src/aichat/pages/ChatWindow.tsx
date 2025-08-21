@@ -45,6 +45,10 @@ function ChatWindow() {
   );
   const [isMuted, setIsMuted] = createSignal<boolean>(false);
   const abortControllerRef = { current: false };
+  // WebSocket management for bidirectional, resumable sessions
+  let ws: WebSocket | null = null;
+  let shouldReconnect = true;
+  let reconnectTimeout: number | undefined;
   const { chats, setChats } = useChatContext();
   const navigate = useNavigate();
   // Track scroll positions for each conversation
@@ -145,11 +149,24 @@ function ChatWindow() {
       setLoading(false);
       instantScrollToBottom();
       Prism.highlightAll();
+      // Verify and sync with server state after initial load
+      import("../utils/memory_cache").then(({ DB }) => DB.verifyAndSync(id()!));
     } else {
       console.log("onMount: On new chat route (/chat)");
       setMessages([]);
       setConversationId(crypto.randomUUID().toString());
     }
+  });
+
+  onCleanup(() => {
+    shouldReconnect = false;
+    if (reconnectTimeout !== undefined) {
+      clearTimeout(reconnectTimeout);
+    }
+    try {
+      ws?.close();
+    } catch {}
+    ws = null;
   });
 
   createEffect(() => {
@@ -181,6 +198,8 @@ function ChatWindow() {
 
         instantScrollToBottom();
         Prism.highlightAll();
+        // Verify and sync on navigation
+        import("../utils/memory_cache").then(({ DB }) => DB.verifyAndSync(currentId));
     }
   });
 
@@ -291,6 +310,83 @@ function ChatWindow() {
     let seenPartStart = false;
     let seenPartDelta = false;
 
+    // Shared handler for incoming event JSON strings (WS)
+    const handleEventJsonString = (jsonString: string) => {
+      try {
+        const data = JSON.parse(jsonString);
+        let messagesChanged = false;
+        let currentMessageState = [...messages()];
+        let assistantMessageCreated =
+          currentMessageState.length > 0 && currentMessageState[currentMessageState.length - 1]?.role === "assistant";
+
+        if (!assistantMessageCreated && (data.type === "part_start" || data.type === "part_delta")) {
+          const newAssistantMessage: Message = { role: "assistant", content: "", reasoning: "" };
+          currentMessageState = [...currentMessageState, newAssistantMessage];
+          assistantMessageCreated = true;
+          messagesChanged = true;
+        }
+
+        const lastMessage = currentMessageState[currentMessageState.length - 1];
+
+        if (data.type === "part_start" || data.type === "part_delta") {
+          if (data.type === "part_start") seenPartStart = true;
+          if (data.type === "part_delta") seenPartDelta = true;
+          const part = data.data?.part || data.data?.delta;
+          if (part && lastMessage?.role === "assistant") {
+            if (part.part_kind === "text" && typeof lastMessage.content === "string") {
+              lastMessage.content += part.content || "";
+              messagesChanged = true;
+            } else if (part.part_kind === "reasoning" && typeof lastMessage.reasoning === "string") {
+              lastMessage.reasoning += part.reasoning || "";
+              messagesChanged = true;
+            }
+          }
+        } else if (data.type === "tool_call" && data.data?.tool_call) {
+          const newToolCallMessage: Message = { role: "tool_call", content: data.data.tool_call };
+          currentMessageState.push(newToolCallMessage);
+          messagesChanged = true;
+        } else if (data.type === "tool_result" && data.data?.tool_result) {
+          const newToolResultMessage: Message = { role: "tool_result", content: data.data.tool_result };
+          currentMessageState.push(newToolResultMessage);
+          messagesChanged = true;
+        }
+
+        if (messagesChanged) {
+          setMessages([...currentMessageState]);
+          MessageCache.set(currentConversationId, [...currentMessageState]);
+        }
+      } catch (e) {
+        console.error("Error parsing WS JSON:", e, jsonString);
+      }
+    };
+
+    // Ensure WebSocket connection for this conversation
+    const ensureWebSocket = () => {
+      if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
+      try {
+        const wsUrlBase = HOST.startsWith("https") ? HOST.replace("https", "wss") : HOST.replace("http", "ws");
+        const wsUrl = `${wsUrlBase}/api/v1/chats/ws?conversation_id=${currentConversationId}`;
+        ws = new WebSocket(wsUrl);
+        ws.onopen = () => {
+          // connected
+        };
+        ws.onmessage = (evt) => {
+          handleEventJsonString(evt.data);
+        };
+        ws.onclose = () => {
+          if (shouldReconnect) {
+            // attempt reconnect after short delay
+            reconnectTimeout = window.setTimeout(() => ensureWebSocket(), 1500);
+          }
+        };
+        ws.onerror = () => {
+          try { ws?.close(); } catch {}
+        };
+      } catch (e) {
+        console.error("WS connect error", e);
+      }
+    };
+
     try {
       abortControllerRef.current = false;
       const { authFetch } = await import("@/lib/utils");
@@ -298,103 +394,21 @@ function ChatWindow() {
       const response = await authFetch(url.toString(), {
         method: "POST",
         headers: {
-          Accept: "text/event-stream",
+          Accept: "application/json",
           "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
-        setMessages(messages().slice(0, -1)); // Revert optimistic user message
+        setMessages(messages().slice(0, -1));
         const errorText = await response.text();
         alert(`Error sending message: ${response.statusText} - ${errorText}`);
         throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
 
-      if (!response.body) {
-        throw new Error("Response body is null");
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-      let assistantMessageCreated = false;
-
-      while (true) {
-        console.log("one loop");
-        if (abortControllerRef.current) {
-          reader.cancel();
-          break;
-        }
-
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n\n");
-        buffer = lines.pop() || "";
-
-        let currentMessageState = [...messages()];
-
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-
-          try {
-            const jsonString = line.slice(6);
-            const data = JSON.parse(jsonString);
-            let messagesChanged = false;
-
-            if (!assistantMessageCreated && (data.type === "part_start" || data.type === "part_delta")) {
-              const newAssistantMessage: Message = { role: "assistant", content: "", reasoning: "" };
-              currentMessageState = [...currentMessageState, newAssistantMessage];
-              assistantMessageCreated = true;
-              messagesChanged = true;
-            }
-
-            const lastMessage = currentMessageState[currentMessageState.length - 1];
-
-            if (data.type === "part_start" || data.type === "part_delta") {
-              if (data.type === "part_start") seenPartStart = true;
-              if (data.type === "part_delta") seenPartDelta = true;
-              console.log("here");
-              const part = data.data?.part || data.data?.delta;
-              console.log("part", part);
-              console.log("lastMessage role", lastMessage?.role);
-              if (part && lastMessage?.role === "assistant") {
-                 if (part.part_kind === "text" && typeof lastMessage.content === "string") {
-                     lastMessage.content += part.content || "";
-                     messagesChanged = true;
-                 } else if (part.part_kind === "reasoning" && typeof lastMessage.reasoning === "string") {
-                     lastMessage.reasoning += part.reasoning || "";
-                     messagesChanged = true;
-                 }
-              }
-            } else if (data.type === "tool_call" && data.data?.tool_call) {
-               const newToolCallMessage: Message = { role: "tool_call", content: data.data.tool_call };
-               currentMessageState.push(newToolCallMessage);
-               assistantMessageCreated = false;
-               messagesChanged = true;
-            } else if (data.type === "tool_result" && data.data?.tool_result) {
-              const newToolResultMessage: Message = { role: "tool_result", content: data.data.tool_result };
-              currentMessageState.push(newToolResultMessage);
-              messagesChanged = true;
-            }
-
-
-            //update message state
-            if (messagesChanged) {
-              console.log("setting messages", currentMessageState);
-               setMessages([...currentMessageState]);
-               MessageCache.set(currentConversationId, [...currentMessageState]);
-            }
-
-          } catch (e) {
-            console.error("Error parsing JSON:", e, "Raw line:", line);
-          }
-        }
-      }
-
-      
+      // Start or resume WS stream without holding the HTTP stream open
+      ensureWebSocket();
     } catch (error) {
       console.error("Error sending message:", error);
       // Revert optimistic user message if it's still the last one

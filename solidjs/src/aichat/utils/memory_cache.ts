@@ -178,6 +178,59 @@ export class DB {
     return messages;
   }
 
+  public static async verifyAndSync(conversationId: string) {
+    try {
+      const { authFetch } = await import("@/lib/utils");
+      const url = new URL(`${HOST}/api/v1/chats/conversations/${conversationId}/verify`);
+      const response = await authFetch(url.toString(), { method: "GET" });
+      if (!response.ok) return;
+      const data = await response.json();
+
+      // Fetch cached messages for comparison
+      const cached = await DB.getMessageHistory(conversationId);
+      const cachedCount = Array.isArray(cached) ? cached.length : 0;
+
+      // If counts differ or timestamps differ, refresh from server and update caches
+      const shouldRefresh = cachedCount !== data.message_count;
+
+      if (shouldRefresh) {
+        await MessageCache.refreshFromServer(conversationId);
+      }
+
+      // Sync conversation updated_at in caches if changed
+      const serverUpdatedAt = data.updated_at as string | undefined;
+      if (serverUpdatedAt) {
+        try {
+          // Update sessionStorage conversations entry if present
+          const stored = sessionStorage.getItem("conversations");
+          if (stored) {
+            const list = JSON.parse(stored) as any[];
+            let changed = false;
+            const updated = list.map((c) => {
+              if (c.id === conversationId && c.updated_at !== serverUpdatedAt) {
+                changed = true;
+                return { ...c, updated_at: serverUpdatedAt };
+              }
+              return c;
+            });
+            if (changed) {
+              sessionStorage.setItem("conversations", JSON.stringify(updated));
+              sessionStorage.setItem("conversations_timestamp", Date.now().toString());
+              // Also update IndexedDB copy
+              const dbConvs = await DB.getConversations();
+              const dbUpdated = dbConvs.map((c) => (c.id === conversationId ? { ...c, updated_at: serverUpdatedAt } : c));
+              await DB.setConversations(dbUpdated);
+            }
+          }
+        } catch (e) {
+          console.warn("verifyAndSync conversation list update failed", e);
+        }
+      }
+    } catch (e) {
+      console.warn("verifyAndSync failed", e);
+    }
+  }
+
   public static async setMessageHistory(id: string, messages: Message[]) {
     if (!DB.inited) await DB.init();
 
@@ -405,6 +458,13 @@ export class MessageCache {
       console.error("Failed to fetch chat history:", error);
       return [];
     }
+  }
+
+  // Public helper to force-refresh from server and update caches
+  public static async refreshFromServer(id: string): Promise<Message[]> {
+    const messages = await MessageCache.fetchMessageHistoryNoCache(id);
+    await MessageCache.set(id, messages);
+    return messages;
   }
 
   public static async prefetchMessageHistory(id: string) {
