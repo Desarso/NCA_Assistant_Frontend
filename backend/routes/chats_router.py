@@ -226,6 +226,25 @@ def get_or_create_session(conversation_id: str) -> ChatSession:
         session = ChatSession(conversation_id)
         chat_sessions[conversation_id] = session
     return session
+@chats_router.get("/running", response_model=dict)
+def list_running_conversations(
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    """Return conversation_ids currently running for this user."""
+    current_user = request.state.user
+    running: list[str] = []
+    for conv_id, chat_session in chat_sessions.items():
+        try:
+            if not chat_session.is_running():
+                continue
+            convo = session.get(Conversation, conv_id)
+            if convo and convo.user_id == current_user.uid:
+                running.append(conv_id)
+        except Exception:
+            continue
+    return {"status": "success", "running": running}
+
 
 
 @chats_router.post("/chat")
@@ -546,6 +565,56 @@ async def chat_ws(websocket: WebSocket, conversation_id: str):
         producer.cancel()
     except Exception:
         producer.cancel()
+
+
+@ws_chats_router.websocket("/ws-all")
+async def chat_ws_all(websocket: WebSocket, conversation_ids: str | None = None):
+    """Multiplexed websocket: forwards events for multiple conversation IDs.
+    Query param conversation_ids is a comma-separated list. If omitted, no subscriptions are created.
+    """
+    await websocket.accept()
+
+    ids: list[str] = []
+    if conversation_ids:
+        ids = [c.strip() for c in conversation_ids.split(",") if c.strip()]
+
+    forwarders: list[asyncio.Task] = []
+
+    async def make_forwarder(conv_id: str):
+        session_obj = get_or_create_session(conv_id)
+
+        async def forward_events():
+            try:
+                while True:
+                    chunk = await session_obj.queue.get()
+                    payload = chunk
+                    if chunk.startswith("data: "):
+                        payload = chunk[len("data: ") :].strip()
+                    # Attempt to merge conversation_id into JSON events
+                    try:
+                        d = json.loads(payload)
+                        d["conversation_id"] = conv_id
+                        await websocket.send_text(json.dumps(d))
+                    except Exception:
+                        await websocket.send_text(json.dumps({"conversation_id": conv_id, "raw": payload}))
+            except asyncio.CancelledError:
+                return
+
+        return asyncio.create_task(forward_events())
+
+    for cid in ids:
+        forwarders.append(await make_forwarder(cid))
+
+    try:
+        while True:
+            _ = await websocket.receive_text()
+            await websocket.send_text(json.dumps({"type": "ack"}))
+    except WebSocketDisconnect:
+        for t in forwarders:
+            t.cancel()
+    except Exception:
+        for t in forwarders:
+            t.cancel()
 
 # Add this dictionary to track tool call IDs and their results
 tool_call_mapping: Dict[str, str] = {}

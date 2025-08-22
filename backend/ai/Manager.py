@@ -1,6 +1,6 @@
 from attr import dataclass
-from sqlmodel import Session
-from ai.models import engine
+# from sqlmodel import Session
+# from ai.models import engine
 from ai.assistant_functions.graph import graph_api_request
 from ai.assistant_functions.python_interpreter import python_interpreter
 from ai.assistant_functions.memory_functions import add_memory, get_memory
@@ -129,11 +129,25 @@ models = {
             api_key=os.getenv("OPENROUTER_API_KEY"),
         ),
     ),
+    "gpt-5-mini": OpenAIModel(
+        "openai/gpt-5-mini",
+        provider=OpenAIProvider(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+        ),
+    ),
+    "gpt-5": OpenAIModel(
+        "openai/gpt-5",
+        provider=OpenAIProvider(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+        ),
+    ),
 
 }
 
 # Set default model
-model = "gpt-oss-120b-openrouter"
+model = "gpt-5-mini"
 
 
 logging.basicConfig(
@@ -406,19 +420,17 @@ async def create_agent(user_object: FirebaseUser, memory: str, has_pdfs: bool = 
         print(f"🤖 MODEL SELECTION: Using {model_name} due to PDF content")
         logging.info(f"Using Gemini model due to PDF content: {model_name}")
     else:
-        # Use user's preferred model
-        # preferred_model_key = user_object.prefered_model or model
-        preferred_model_key = "gpt-oss-120b-openrouter"
-        selected_model = models.get(preferred_model_key, model)
-        
-        # Get the actual model name for logging
-        if hasattr(selected_model, 'model_name'):
-            model_name = selected_model.model_name
-        else:
-            model_name = preferred_model_key
-            
-        print(f"🤖 MODEL SELECTION: Using {model_name} (user preference: {user_object.prefered_model or 'default'})")
-        logging.info(f"Using {preferred_model_key} model: {model_name}")
+        # Use user's preferred model (fallback to global default if missing)
+        preferred_model_key = model
+        selected_model = models.get(preferred_model_key, models[model])
+
+        # Resolve a friendly model name for logs before logging
+        model_name = getattr(selected_model, 'model_name', preferred_model_key)
+
+        print(
+            f"🤖 MODEL SELECTION: Using {model_name} (user preference: {getattr(user_object, 'prefered_model', None) or 'default'})"
+        )
+        logging.info(f"Using model '{model_name}' (key: {preferred_model_key})")
 
     return Agent(
         model=selected_model,  # Use the selected model instead of hardcoded

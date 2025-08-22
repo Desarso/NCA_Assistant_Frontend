@@ -141,6 +141,34 @@ function ChatWindow() {
     });
 
 
+    // Subscribe to any running conversations via multiplexed WS so the stop button restores after reload
+    try {
+      const { authFetch } = await import("@/lib/utils");
+      const runningResp = await authFetch(`${HOST}/api/v1/chats/running`);
+      if (runningResp.ok) {
+        const { running } = await runningResp.json();
+        if (Array.isArray(running) && running.length > 0) {
+          const wsUrlBase = HOST.startsWith("https") ? HOST.replace("https", "wss") : HOST.replace("http", "ws");
+          const wsUrl = `${wsUrlBase}/api/v1/chats/ws-all?conversation_ids=${encodeURIComponent(running.join(","))}`;
+          const mux = new WebSocket(wsUrl);
+          mux.onmessage = (evt) => {
+            try {
+              const data = JSON.parse(evt.data);
+              // Only toggle UI state for the active conversation view
+              if (data?.conversation_id === conversationId()) {
+                if (data?.type === "part_start" || data?.type === "part_delta") {
+                  setGettingResponse(true);
+                } else if (data?.type === "done" || data?.type === "stopped") {
+                  setGettingResponse(false);
+                }
+              }
+            } catch {}
+          };
+          // Best-effort, don't persist this connection reference
+        }
+      }
+    } catch {}
+
     // Original onMount logic (as inferred from initial attempts)
     if (id()) {
       setConversationId(id());
@@ -309,6 +337,8 @@ function ChatWindow() {
 
     let seenPartStart = false;
     let seenPartDelta = false;
+
+    // Revert: apply deltas immediately without rAF batching
 
     // Shared handler for incoming event JSON strings (WS)
     const handleEventJsonString = (jsonString: string) => {
