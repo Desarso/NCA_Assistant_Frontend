@@ -32,7 +32,7 @@ const MOBILE_BREAKPOINT = 768
 const SIDEBAR_COOKIE_NAME = "sidebar:state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
-const SIDEBAR_WIDTH_MOBILE = "18rem"
+const SIDEBAR_WIDTH_MOBILE = "17rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
@@ -278,7 +278,7 @@ const Sidebar: Component<SidebarProps> = (props) => {
               // Adjust the padding for floating and inset variants.
               props.variant === "floating" || props.variant === "inset"
                 ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
-                : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
+                : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l border-sidebar-border",
               // Make the sidebar container shrink to zero width when collapsed in offcanvas mode
               "group-data-[state=collapsed]:group-data-[collapsible=offcanvas]:!w-0",
               // Remove the border when collapsed in offcanvas mode  
@@ -292,7 +292,7 @@ const Sidebar: Component<SidebarProps> = (props) => {
             <div
               data-sidebar="sidebar"
               class={cn(
-                "bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm",
+                "bg-sidebar sidebar-surface group-data-[variant=floating]:border-sidebar-border flex h-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm",
                 // Add transform animation to move content left when collapsed with fixed width
                 "transition-transform duration-200 ease-in-out",
                 "w-(--sidebar-width) min-w-(--sidebar-width)",

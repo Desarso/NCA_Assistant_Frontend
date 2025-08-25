@@ -345,7 +345,7 @@ export function AppSidebar() {
 
     return (
       <Sidebar collapsible="offcanvas" side="left" variant="sidebar">
-        <SidebarContent class="bg-[#e9ecef] dark:bg-[#15202b] flex flex-col h-screen">
+        <SidebarContent class="bg-sidebar flex flex-col h-screen">
           <div class="p-3 flex flex-col items-center">
             <NCALogo
               fill="#535353"
@@ -440,7 +440,7 @@ export function AppSidebar() {
 
     return (
       <Sidebar collapsible="offcanvas" side="left" variant="sidebar">
-        <SidebarContent class="bg-[#ebebeb] dark:bg-[#15202b] flex flex-col h-screen">
+        <SidebarContent class="bg-sidebar flex flex-col h-screen">
           <div class="p-3 flex flex-col items-center">
             <NCALogo
               fill="#535353"

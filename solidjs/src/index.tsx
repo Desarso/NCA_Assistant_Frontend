@@ -1,5 +1,6 @@
 // import { StrictMode } from 'react'
 import { render } from "solid-js/web";
+import type { JSX } from "solid-js";
 import App from "./App";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { registerServiceWorker } from "./lib/pwa.js";

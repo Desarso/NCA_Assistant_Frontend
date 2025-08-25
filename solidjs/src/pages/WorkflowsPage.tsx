@@ -209,7 +209,7 @@ workflow_log("Workflow completed successfully")`
   };
 
   return (
-    <div class="h-full w-full p-6">
+    <div class="h-full w-full">
       <div class="bg-background rounded-lg border border-border h-full">
         {/* Header */}
         <div class="p-6 border-b border-border flex items-center justify-between">

@@ -472,7 +472,7 @@ const WorkflowEditPage: Component = () => {
   });
 
   return (
-    <div class="w-full bg-background dark:bg-background mt-3.5 rounded-lg p-6" style="min-height: 90vh; height: auto; overflow-y: visible !important;">
+    <div class="w-full bg-background dark:bg-background mt-3.5 rounded-lg" style="min-height: 90vh; height: auto; overflow-y: visible !important;">
         {/* Header */}
         <div class="p-6">
           <div class="flex items-center justify-between">

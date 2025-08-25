@@ -329,8 +329,14 @@ body.dark {
     transform: translateY(0);
   }
 }
+/* Controlled spacer for scroll anchoring without excessive empty space */
 #last-message {
-  padding-bottom: calc(100vh - 200px);
+  height: 56px; /* small spacer so bottom content isn't flush */
+}
+
+/* Ensure last user message scrolls to near-top with some offset */
+#last-user-message {
+  scroll-margin-top: 220px; /* more space so message lands nearer top */
 }
 
 /* styles.css or index.css */

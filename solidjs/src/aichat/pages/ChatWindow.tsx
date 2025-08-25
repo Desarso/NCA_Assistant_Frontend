@@ -21,7 +21,6 @@ import MicrophoneVisualizer from "../../components/MicrophoneVisualizer";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useChatContext } from "@/layout";
 import { useNavigate, useParams } from "@solidjs/router";
-import AssistantMessageRenderer from "../components/AssitantMessageRenderer";
 import ChatInput from "../components/ChatInput";
 import MessageItem from "../components/ChatMessageItem";
 import { MessageCache } from "../utils/memory_cache";
@@ -33,6 +32,15 @@ import NewChat from "../components/NewChat";
 // Component to render user message content
 
 function ChatWindow() {
+  // Lightweight streaming debug logger. Enable with: localStorage.setItem('debug_stream','1')
+  const DEBUG_STREAM = typeof window !== 'undefined' && localStorage.getItem('debug_stream') === '1'
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const debug = (...args: any[]) => {
+    if (DEBUG_STREAM) {
+      // eslint-disable-next-line no-console
+      console.log('[chat-stream]', ...args)
+    }
+  }
   const { open, openMobile, isMobile } = useSidebar();
   const [gettingResponse, setGettingResponse] = createSignal<boolean>(false);
   const [messages, setMessages] = createSignal<Message[]>([]);
@@ -45,6 +53,8 @@ function ChatWindow() {
   );
   const [isMuted, setIsMuted] = createSignal<boolean>(false);
   const abortControllerRef = { current: false };
+  const [showScrollToBottom, setShowScrollToBottom] = createSignal<boolean>(false);
+  const [scrollBtnLeft, setScrollBtnLeft] = createSignal<number | undefined>(undefined);
   // WebSocket management for bidirectional, resumable sessions
   let ws: WebSocket | null = null;
   let shouldReconnect = true;
@@ -58,9 +68,19 @@ function ChatWindow() {
 
   // Reference to the chat container
   let chatContainerRef: HTMLDivElement | undefined;
+  // Reference to input container to position the floating button above it
+  let inputContainerRef: HTMLDivElement | undefined;
 
   // Memoize the messages to prevent unnecessary re-renders
   const memoizedMessages = createMemo(() => messages());
+  // Track the index of the last user message for scrolling
+  const lastUserIndex = createMemo(() => {
+    const arr = memoizedMessages();
+    for (let i = arr.length - 1; i >= 0; i--) {
+      if (arr[i]?.role === "user") return i;
+    }
+    return -1;
+  });
   
   // Create a memoized map of tool_call_id to the tool_call message
   const toolCallMap = createMemo<ToolCallMap>(() => {
@@ -86,29 +106,30 @@ function ChatWindow() {
 
   // Scroll to bottom with smooth animation (for new messages)
   function scrollToBottom() {
-    const lastMessage = document.getElementById("last-message");
-    if (lastMessage && chatContainerRef) {
-      const containerRect = chatContainerRef.getBoundingClientRect();
-      const elementRect = lastMessage.getBoundingClientRect();
-      const offset = elementRect.top - containerRect.top;
-      
-      chatContainerRef.scrollTo({
-        top: chatContainerRef.scrollTop + offset,
-        behavior: "smooth"
-      });
+    // Prefer last user message if present; else fall back to last message sentinel
+    const lastUser = document.getElementById("last-user-message");
+    const target = lastUser || document.getElementById("last-message");
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
 
   // Instant scroll to bottom without animation (for chat switching)
   function instantScrollToBottom() {
-    const lastMessage = document.getElementById("last-message");
-    if (lastMessage && chatContainerRef) {
-      const containerRect = chatContainerRef.getBoundingClientRect();
-      const elementRect = lastMessage.getBoundingClientRect();
-      const offset = elementRect.top - containerRect.top;
-      
-      chatContainerRef.scrollTop = chatContainerRef.scrollTop + offset;
+    const lastUser = document.getElementById("last-user-message");
+    const target = lastUser || document.getElementById("last-message");
+    if (target) {
+      target.scrollIntoView({ behavior: "auto", block: "start" });
     }
+  }
+
+  // Scroll chat container to absolute bottom
+  function scrollContainerToBottom() {
+    if (!chatContainerRef) return;
+    // Instant jump to bottom
+    chatContainerRef.scrollTop = chatContainerRef.scrollHeight;
+    // Hide button immediately
+    setShowScrollToBottom(false);
   }
 
   // Save the current scroll position
@@ -120,7 +141,31 @@ function ChatWindow() {
     }
   }
 
+  // Update visibility of the "Scroll to bottom" button based on position
+  function updateScrollBottomVisibility() {
+    if (!chatContainerRef) return;
+    const distanceFromBottom =
+      chatContainerRef.scrollHeight - chatContainerRef.scrollTop - chatContainerRef.clientHeight;
+    setShowScrollToBottom(distanceFromBottom > 120);
+    // Also keep the button horizontally centered to the chat body
+    updateScrollButtonPosition();
+  }
+
+  function updateScrollButtonPosition() {
+    try {
+      const rect = inputContainerRef?.getBoundingClientRect();
+      if (rect) {
+        setScrollBtnLeft(rect.left + rect.width / 2);
+      }
+    } catch {}
+  }
+
   onMount(async () => {
+    // initialize scroll button visibility on mount
+    queueMicrotask(() => updateScrollBottomVisibility());
+    // Recompute on window resize
+    const onResize = () => updateScrollButtonPosition();
+    window.addEventListener('resize', onResize);
 
      // Set up cache invalidation listenerAdd commentMore actions
      const cleanup = MessageCache.addInvalidationListener((invalidatedConversationId) => {
@@ -138,6 +183,7 @@ function ChatWindow() {
     // Clean up listener when component unmounts
     onCleanup(() => {
       cleanupRef.cleanup();
+      try { window.removeEventListener('resize', onResize); } catch {}
     });
 
 
@@ -201,6 +247,8 @@ function ChatWindow() {
     if (messages().length > 0) {
       Prism.highlightAll();
     }
+    // update scroll button visibility when content changes
+    queueMicrotask(() => updateScrollBottomVisibility());
   });
 
   //if ID changes normally from navigating to old conversation
@@ -271,6 +319,11 @@ function ChatWindow() {
     const updatedMessages = [...currentMessages, newMessage];
 
     setMessages(updatedMessages);
+    // Optimistic assistant placeholder so typing dots appear immediately
+    const assistantPlaceholder: Message = { role: "assistant", content: "", reasoning: "" };
+    const withAssistantPlaceholder = [...updatedMessages, assistantPlaceholder];
+    setMessages(withAssistantPlaceholder);
+    MessageCache.set(currentConversationId, withAssistantPlaceholder);
     // Delay scroll slightly to ensure DOM update
     queueMicrotask(scrollToBottom);
 
@@ -342,8 +395,10 @@ function ChatWindow() {
 
     // Shared handler for incoming event JSON strings (WS)
     const handleEventJsonString = (jsonString: string) => {
+      debug('ws:message', jsonString.slice(0, 180))
       try {
         const data = JSON.parse(jsonString);
+        debug('event', data?.type, { cid: data?.conversation_id })
         let messagesChanged = false;
         let currentMessageState = [...messages()];
         let assistantMessageCreated =
@@ -363,19 +418,30 @@ function ChatWindow() {
           if (data.type === "part_delta") seenPartDelta = true;
           const part = data.data?.part || data.data?.delta;
           if (part && lastMessage?.role === "assistant") {
+            const updated = { ...lastMessage } as Message;
             if (part.part_kind === "text" && typeof lastMessage.content === "string") {
-              lastMessage.content += part.content || "";
+              const newContent = (lastMessage.content as string) + (part.content || "");
+              updated.content = newContent;
+              debug('text_delta', { addLen: (part.content || '').length, totalLen: newContent.length })
               messagesChanged = true;
-            } else if (part.part_kind === "reasoning" && typeof lastMessage.reasoning === "string") {
-              lastMessage.reasoning += part.reasoning || "";
+            }
+            if (part.part_kind === "reasoning") {
+              const prevReasoning = typeof lastMessage.reasoning === "string" ? lastMessage.reasoning : "";
+              updated.reasoning = prevReasoning + (part.reasoning || "");
+              debug('reasoning_delta', { addLen: (part.reasoning || '').length, totalLen: updated.reasoning.length })
               messagesChanged = true;
+            }
+            if (messagesChanged) {
+              currentMessageState[currentMessageState.length - 1] = updated;
             }
           }
         } else if (data.type === "tool_call" && data.data?.tool_call) {
+          debug('tool_call', Object.keys(data.data.tool_call ?? {}))
           const newToolCallMessage: Message = { role: "tool_call", content: data.data.tool_call };
           currentMessageState.push(newToolCallMessage);
           messagesChanged = true;
         } else if (data.type === "tool_result" && data.data?.tool_result) {
+          debug('tool_result', typeof data.data.tool_result)
           const newToolResultMessage: Message = { role: "tool_result", content: data.data.tool_result };
           currentMessageState.push(newToolResultMessage);
           messagesChanged = true;
@@ -396,8 +462,10 @@ function ChatWindow() {
       try {
         const wsUrlBase = HOST.startsWith("https") ? HOST.replace("https", "wss") : HOST.replace("http", "ws");
         const wsUrl = `${wsUrlBase}/api/v1/chats/ws?conversation_id=${currentConversationId}`;
+        debug('ws:connect', wsUrl)
         ws = new WebSocket(wsUrl);
         ws.onopen = () => {
+          debug('ws:open')
           // connected
         };
         ws.onmessage = (evt) => {
@@ -406,16 +474,19 @@ function ChatWindow() {
             const parsed = JSON.parse(evt.data);
             if (parsed?.type === "done" || parsed?.type === "stopped") {
               setGettingResponse(false);
+              debug('ws:done')
             }
           } catch {}
         };
-        ws.onclose = () => {
+        ws.onclose = (ev) => {
+          debug('ws:close', { code: ev.code, reason: ev.reason })
           if (shouldReconnect) {
             // attempt reconnect after short delay
             reconnectTimeout = window.setTimeout(() => ensureWebSocket(), 1500);
           }
         };
-        ws.onerror = () => {
+        ws.onerror = (err) => {
+          debug('ws:error', err)
           try { ws?.close(); } catch {}
         };
       } catch (e) {
@@ -427,6 +498,7 @@ function ChatWindow() {
       abortControllerRef.current = false;
       const { authFetch } = await import("@/lib/utils");
 
+      debug('http:chat', url.toString(), requestBody)
       const response = await authFetch(url.toString(), {
         method: "POST",
         headers: {
@@ -447,10 +519,19 @@ function ChatWindow() {
       ensureWebSocket();
     } catch (error) {
       console.error("Error sending message:", error);
-      // Revert optimistic user message if it's still the last one
+      // Revert optimistic messages (user + assistant placeholder) if present
       setMessages(prev => {
+          if (
+            prev.length >= 2 &&
+            prev[prev.length - 2] === newMessage &&
+            prev[prev.length - 1]?.role === "assistant" &&
+            typeof prev[prev.length - 1]?.content === "string" &&
+            (prev[prev.length - 1]?.content as string) === ""
+          ) {
+            return prev.slice(0, -2);
+          }
           if (prev.length > 0 && prev[prev.length - 1] === newMessage) {
-              return prev.slice(0, -1);
+            return prev.slice(0, -1);
           }
           return prev;
       });
@@ -542,7 +623,7 @@ function ChatWindow() {
   };
 
   return (
-    <div class="flex w-full h-full flex-col justify-between z-5 bg-background dark:bg-background mt-3.5 rounded-lg ">
+    <div class="flex w-full h-full flex-col justify-between z-5 bg-background rounded-lg">
       {/* Main Content Area: Takes full width, allows vertical flex. NO CENTERING HERE. */}
       <div class="flex-1 w-full overflow-hidden flex flex-col">
         {/* Show existing chat content OR NewChat component in fallback */}
@@ -604,11 +685,12 @@ function ChatWindow() {
                 {/* Chat messages container: Full width scrollable area, content centered with max-width */}
                 <div
                   ref={chatContainerRef}
-                  class={`flex-1 overflow-y-auto Chat-Container scrollbar rounded-t-lg w-full`}
-                  onScroll={() => saveScrollPosition()}
+                  class={`flex-1 overflow-y-auto overscroll-contain Chat-Container scrollbar rounded-t-lg w-full`}
+                  onScroll={() => { saveScrollPosition(); updateScrollBottomVisibility(); }}
                 >
-                  {/* Inner div for message content centering and padding - REMOVED PADDING */}
-                  <div class="md:max-w-[900px] mx-auto pt-20">
+
+                  {/* Inner div for message content centering and padding - REMOVED PADDING  md:max-w-[900px] mx-auto pt-20*/}
+                  <div class="mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pb-10 pt-safe-offset-10 ">
                     <For each={memoizedMessages()}>
                       {(message, index) => (
                         <Show
@@ -632,22 +714,47 @@ function ChatWindow() {
                               gettingResponse() &&
                               index() === memoizedMessages().length - 1
                             }
+                            isLastUser={index() === lastUserIndex()}
                           />
-                          <Show when={index() === memoizedMessages().length - 1 && message.role === "user" && gettingResponse()}>
-                            <div class="pl-5">
-                              <span class="loading-dots">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                              </span>
-                            </div>
-                          </Show>
                         </Show>
                       )}
                     </For>
+                    <Show
+                      when={
+                        gettingResponse() &&
+                        memoizedMessages().length > 0 &&
+                        memoizedMessages()[memoizedMessages().length - 1].role === "user"
+                      }
+                    >
+                      <div class="pl-5 pt-2">
+                        <span class="loading-dots">
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                        </span>
+                      </div>
+                    </Show>
                     <div id="last-message" class="h-1"></div> 
                   </div>
                 </div>
+                {/* Floating Scroll to bottom button (positioned above input bar, centered to chat body) */}
+                <Show when={showScrollToBottom()}>
+                  <div
+                    class="fixed z-[1050]"
+                    style={{ bottom: `${((inputContainerRef?.offsetHeight ?? 84) + 12)}px`, left: `${scrollBtnLeft() ?? window.innerWidth / 2}px`, transform: 'translateX(-50%)' }}
+                  >
+                    <button
+                      type="button"
+                      class="px-3 py-1.5 rounded-full bg-card/70 backdrop-blur border border-border/60 shadow-sm text-xs text-foreground hover:bg-card/90 transition-colors flex items-center gap-1.5"
+                      onClick={() => scrollContainerToBottom()}
+                    >
+                      <span>Scroll to bottom</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="opacity-80">
+                        <path d="M12 16a1 1 0 0 1-.707-.293l-6-6a1 1 0 1 1 1.414-1.414L12 13.586l5.293-5.293a1 1 0 0 1 1.414 1.414l-6 6A1 1 0 0 1 12 16z"/>
+                      </svg>
+                    </button>
+                  </div>
+                </Show>
               </Show>
             </Show>
           </div>
@@ -655,16 +762,15 @@ function ChatWindow() {
       </div>
 
       {/* Chat Input Area: Rendered below the main content area */}
-      {/* Remove the relative container */}
       <Show when={!isListening()}>
-          <div class="border-t md:border md:rounded-lg md:shadow-md border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 w-full md:max-w-[900px] mx-auto mb-3.5">
-              <ChatInput
-                  onSubmit={handleSubmit}
-                  gettingResponse={gettingResponse()}
-                  setIsListening={setIsListening}
-                  handleStopRequest={handleStopRequest}
-              />
-          </div>
+        <div class="w-full md:max-w-[760px] mx-auto" ref={inputContainerRef}>
+          <ChatInput
+            onSubmit={handleSubmit}
+            gettingResponse={gettingResponse()}
+            setIsListening={setIsListening}
+            handleStopRequest={handleStopRequest}
+          />
+        </div>
       </Show>
     </div>
   );

@@ -336,19 +336,20 @@ function ToolMessageRenderer({
                   data-state={isOpen() ? "open" : "closed"}
                 >
                   <div class="flex items-center space-x-2">
-                    <div class="w-6 h-6 rounded-full bg-primary-foreground  flex items-center justify-center text-white shadow-sm ring-2 dark:ring-white/20  ring-black/20">
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center shadow-sm ring-2 ring-black/10 dark:ring-white/15"
+                         style={{ background: theme() === "dark" ? "linear-gradient(180deg, #2a2f3a, #1e2230)" : "linear-gradient(180deg, #f7f7fb, #eaeaf3)" }}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="14"
                         height="14"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke={`${theme() === "dark" ? "white" : "black"}`}
-                        stroke-width="2.5"
+                        stroke={theme() === "dark" ? "#e5e7eb" : "#111827"}
+                        stroke-width="2.2"
                         stroke-linecap="round"
                         stroke-linejoin="round"
                       >
-                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.2-3.2c.2 1.8-.5 3.8-2 5.3-1.5 1.5-3.5 2.2-5.3 2l-6.4 6.4a2 2 0 0 1-2.8-2.8l6.4-6.4c-.2-1.8.5-3.8 2-5.3 1.5-1.5 3.5-2.2 5.3-2l-3.2 3.2z" />
                       </svg>
                     </div>
                     <span class="text-primary font-medium">
@@ -357,8 +358,10 @@ function ToolMessageRenderer({
                   </div>
                   <div class="flex items-center">
                     <div
-                      class={`px-2 py-0.5 text-xs rounded-full bg-accent text-primary font-medium ${
-                        hasError() ? "bg-red-500" : "bg-green-500"
+                      class={`px-2.5 py-0.5 text-xs rounded-full font-semibold tracking-wide ring-1 shadow-sm ${
+                        hasError()
+                          ? "bg-red-600 text-white ring-black/10 dark:bg-red-500 dark:text-white dark:ring-white/15"
+                          : "bg-emerald-600 text-white ring-black/10 dark:bg-emerald-500 dark:text-white dark:ring-white/15"
                       }`}
                     >
                       {hasError() ? "Error" : "Completed"}

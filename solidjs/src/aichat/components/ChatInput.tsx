@@ -30,6 +30,13 @@ const ChatInput: Component<ChatInputProps> = (props) => {
   const [textInput, setTextInput] = createSignal("");
   const [isDragging, setIsDragging] = createSignal(false);
   const [pendingUploads, setPendingUploads] = createSignal(0);
+  const [selectedModel, setSelectedModel] = createSignal<string>("Gemini 2.0 Flash");
+  const [isModelMenuOpen, setIsModelMenuOpen] = createSignal<boolean>(false);
+  const availableModels = [
+    "Gemini 2.0 Flash",
+    "GPT-4o mini",
+    "Claude 3.5 Sonnet",
+  ];
   let fileInputRef: HTMLInputElement | undefined;
   let textInputRef: HTMLTextAreaElement | undefined;
 
@@ -217,7 +224,7 @@ const ChatInput: Component<ChatInputProps> = (props) => {
         setTextInput("");
         // Reset textarea height
         if (textInputRef) {
-          textInputRef.style.height = '40px';
+          textInputRef.style.height = '56px';
         }
       } else if (currentContent.length > 0) {
         const validContent = currentContent.filter(item => {
@@ -247,7 +254,7 @@ const ChatInput: Component<ChatInputProps> = (props) => {
         setTextInput("");
         // Reset textarea height
         if (textInputRef) {
-          textInputRef.style.height = '40px';
+          textInputRef.style.height = '56px';
         }
       }
     }
@@ -355,93 +362,147 @@ const ChatInput: Component<ChatInputProps> = (props) => {
           </div>
         </Show>
 
-        {/* Corrected input section - removed duplicate input tag */}
-        <div class="flex items-end gap-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus-within:ring-2 focus-within:ring-blue-500/30">
-           <input
-            ref={fileInputRef}
-            type="file"
-            multiple
-            accept="image/*,application/pdf" // Added PDF to accept
-            onChange={handleFileSelect}
-            class="hidden"
-          />
+        {/* Single bordered container (no separate outer wrapper), flat bottom */}
+        <div class="flex items-end gap-3 border-x border-t border-b-0 border-[0.5px] border-border/80 rounded-t-2xl rounded-b-none bg-secondary/10 px-3 pt-3 pb-0">
+          <div class="flex flex-col gap-2 px-2 py-1 rounded-t-2xl rounded-b-none bg-transparent w-full">
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept="image/*,application/pdf"
+              onChange={handleFileSelect}
+              class="hidden"
+            />
 
-          <textarea
-            ref={textInputRef}
-            rows="1"
-            class={`flex-1 bg-transparent px-2 py-2 text-sm md:text-base focus:outline-none resize-none dark:text-gray-200 placeholder-gray-200 dark:placeholder-gray-400 leading-relaxed min-h-[40px] w-full ${
-              (props.gettingResponse || isUploading()) ? 'overflow-y-hidden' : 'overflow-y-auto'
-            }`}
-            style={{ "max-height": "120px" }}
-            value={textInput()}
-            onInput={(e) => {
-                setTextInput(e.currentTarget.value);
-                e.currentTarget.style.height = 'auto';
-                e.currentTarget.style.height = `${Math.max(40, e.currentTarget.scrollHeight)}px`;
-            }}
-            onKeyDown={handleKeyDown}
-            onPaste={handlePaste}
-            placeholder="Type, paste, or drop files..."
-            autocomplete="off"
-            spellcheck={false}
-            disabled={isUploading() || props.gettingResponse}
-          ></textarea>
-
-          <div class="flex items-center gap-1 self-end">
-             <button
-              type="button"
-              title="Attach file"
-              onClick={() => fileInputRef?.click()}
-              class="rounded-full p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+            <textarea
+              ref={textInputRef}
+              rows="1"
+              class={`flex-1 bg-transparent px-2 py-2 text-sm md:text-base focus:outline-none resize-none text-foreground placeholder-muted-foreground leading-relaxed min-h-[56px] w-full overflow-y-hidden`}
+              style={{ "max-height": "180px" }}
+              value={textInput()}
+              onInput={(e) => {
+                  setTextInput(e.currentTarget.value);
+                  e.currentTarget.style.height = 'auto';
+                  e.currentTarget.style.height = `${Math.max(52, e.currentTarget.scrollHeight)}px`;
+              }}
+              onKeyDown={handleKeyDown}
+              onPaste={handlePaste}
+              placeholder="Type your message here..."
+              autocomplete="off"
+              spellcheck={false}
               disabled={isUploading() || props.gettingResponse}
-            >
-              <i class="fas fa-paperclip"></i>
-            </button>
+            ></textarea>
 
-             <Show
-              when={props.gettingResponse}
-              fallback={
+            {/* Bottom toolbar flush with container bottom */}
+            <div class="flex items-center justify-between pt-1 pb-3">
+              <div class="flex items-center gap-2">
+                {/* Model dropdown */}
+                <div class="relative">
+                  <button
+                    type="button"
+                    class="h-9 px-3 rounded-full border border-border/50 bg-transparent text-foreground text-sm flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    onClick={() => setIsModelMenuOpen(!isModelMenuOpen())}
+                  >
+                    {selectedModel()}
+                    <i class={`fas ${isModelMenuOpen() ? 'fa-chevron-up' : 'fa-chevron-down'} text-xs`}></i>
+                  </button>
+                  <Show when={isModelMenuOpen()}>
+                    <div class="absolute left-0 bottom-full mb-2 w-56 rounded-lg border border-border/50 bg-card shadow-lg z-20 p-1">
+                      <For each={availableModels}>
+                        {(m) => (
+                          <button
+                            type="button"
+                            class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-sm"
+                            onClick={() => {
+                              setSelectedModel(m);
+                              setIsModelMenuOpen(false);
+                            }}
+                          >
+                            {m}
+                          </button>
+                        )}
+                      </For>
+                    </div>
+                  </Show>
+                </div>
+
+                <button
+                  type="button"
+                  title="Attach file"
+                  onClick={() => fileInputRef?.click()}
+                  class="rounded-full p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+                  disabled={isUploading() || props.gettingResponse}
+                >
+                  <i class="fas fa-paperclip"></i>
+                </button>
+                <button
+                  type="button"
+                  title="Search"
+                  class="rounded-full p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+                  disabled={isUploading() || props.gettingResponse}
+                >
+                  <i class="fas fa-globe"></i>
+                </button>
+                <button
+                  type="button"
+                  title="Extensions"
+                  class="rounded-full p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+                  disabled={isUploading() || props.gettingResponse}
+                >
+                  <i class="fas fa-plug"></i>
+                </button>
+              </div>
+              {/* Right side: action button, paper-plane with neutral colors */}
+              <div class="flex items-center">
                 <Show
-                  when={textInput().trim() === "" && content().length === 0}
+                  when={props.gettingResponse}
                   fallback={
-                    <button
-                      type="button"
-                      class="rounded-full p-2 text-gray-600 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors min-w-[40px] h-[40px] flex items-center justify-center"
-                      onClick={handleSubmit}
+                    <Show
+                      when={textInput().trim() === "" && content().length === 0}
+                      fallback={
+                        <button
+                          type="button"
+                          class="rounded-xl w-11 h-11 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 flex items-center justify-center transition-colors"
+                          onClick={handleSubmit}
+                          aria-label="Send message"
+                        >
+                          <i class="fas fa-paper-plane"></i>
+                        </button>
+                      }
                     >
-                      <i class="fas fa-paper-plane"></i>
-                    </button>
+                      <button
+                        type="button"
+                        title="Start listening"
+                        class="rounded-xl w-11 h-11 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 flex items-center justify-center transition-colors"
+                        onClick={() => props.setIsListening(true)}
+                        disabled={isUploading()}
+                        aria-label="Start voice input"
+                      >
+                        <WaveIcon />
+                      </button>
+                    </Show>
                   }
                 >
                   <button
                     type="button"
-                    title="Start listening"
-                    class="rounded-full p-2 text-gray-600 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors min-w-[36px] h-[36px] flex items-center justify-center"
-                    onClick={() => props.setIsListening(true)}
-                    disabled={isUploading()}
+                    title="Stop response"
+                    class="rounded-xl w-11 h-11 bg-red-600 hover:bg-red-700 text-white flex items-center justify-center transition-colors"
+                    onClick={props.handleStopRequest}
+                    aria-label="Stop response"
                   >
-                    <WaveIcon />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <rect x="6" y="6" width="12" height="12" />
+                    </svg>
                   </button>
                 </Show>
-              }
-            >
-              <button
-                type="button"
-                title="Stop response"
-                class="rounded-full p-2 text-red-600 bg-gray-100 hover:bg-red-200 dark:text-red-400 dark:bg-gray-700 dark:hover:bg-red-900/50 transition-colors min-w-[36px] h-[36px] flex items-center justify-center"
-                onClick={props.handleStopRequest}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <rect x="6" y="6" width="12" height="12" />
-                </svg>
-              </button>
-            </Show>
+              </div>
+            </div>
           </div>
         </div>
       </div>

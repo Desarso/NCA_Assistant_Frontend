@@ -1,4 +1,4 @@
-import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger, useSidebar } from "./components/ui/sidebar";
 import { AppSidebar } from "./components/app-sidebar";
 import { PWAInstallButton } from "./components/pwa-install-button";
 import {
@@ -121,8 +121,10 @@ const Layout: Component<LayoutProps> = (props) => {
   return (
     <ChatContext.Provider value={contextValue}>
       <SidebarProvider>
-        <div class="flex h-screen w-full overflow-x-hidden">
+        <div class="flex h-screen w-full overflow-x-hidden overscroll-none">
           <AppSidebar />
+          {/* Restore fixed sidebar toggle position */}
+          <SidebarTrigger class="fixed left-2 top-[12px] z-[1200] hover:bg-white/20 rounded-md p-2 transition-colors [&_svg:not([class*='size-'])]:size-4!" />
           {/* <svg
             class="fixed -right-15 top-13 h-9 origin-top-left skew-x-[30deg] overflow-visible z-[1100]"
             version="1.1"
@@ -155,32 +157,53 @@ const Layout: Component<LayoutProps> = (props) => {
               stroke="#e9ecef"
             />
           </svg> */}
-          {/* Top Bar Header */}
-          <div class="fixed top-0 right-0 left-0 z-[1000] h-5 bg-transparent dark:bg-transparent">
-            <div class="flex items-center justify-between h-full px-3">
-              <div class="flex items-center gap-2">
-                <SidebarTrigger class="mt-11 hover:bg-accent dark:hover:bg-gray-700 rounded-lg p-1.5 transition-colors [&_svg:not([class*='size-'])]:size-4!"></SidebarTrigger>
-                {/* Navigation tabs */}
-                <div class="mt-10 ml-60">
-                  <Tabs value={getCurrentTab()} onChange={handleTabChange}>
-                    <TabsList class="h-8 bg-white/10 dark:bg-black/10 border border-gray-300 dark:border-gray-600">
-                      <TabsTrigger value="chat" class="text-xs px-3 py-1 data-[selected]:bg-white dark:data-[selected]:bg-gray-800">
-                        Chat
-                      </TabsTrigger>
-                      <TabsTrigger value="workflows" class="text-xs px-3 py-1 data-[selected]:bg-white dark:data-[selected]:bg-gray-800">
-                        Workflows
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
+          {/* Top Bar Header with responsive left offset based on sidebar state */}
+          {(() => {
+            const TopHeader: Component = () => {
+              // useSidebar is safe here since we're inside SidebarProvider
+              const { state } = useSidebar();
+              const isExpanded = () => state() === "expanded";
+              const left = () => {
+                if (isMobile()) return "0";
+                // Flush with sidebar when expanded, flush with window when collapsed
+                return isExpanded() ? "var(--sidebar-width)" : "0";
+              };
+              const paddingLeft = () => {
+                // Always reserve space for the left toggle so tabs never slide underneath
+                // Small gutter when expanded; wider gutter when collapsed
+                return isExpanded() ? "12px" : "72px";
+              };
+              return (
+                <div class="fixed top-0 right-0 z-[1000] bg-sidebar" style={{ left: left(), height: "56px" }}>
+                  <div class="flex items-center justify-between h-full pl-[72px] pr-3 md:pl-[72px] md:pr-4"
+                       style={{ "padding-left": paddingLeft() }}>
+                    <div class="flex items-center gap-3">
+                      {/* Navigation tabs */}
+                      <div class="hidden md:block max-w-full">
+                        <Tabs value={getCurrentTab()} onChange={handleTabChange}>
+                          <TabsList class="h-11 rounded-full bg-sidebar/20 border border-sidebar-border/60 px-1 flex items-center gap-1 backdrop-blur shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] ml-0">
+                            <TabsTrigger value="chat" class="text-sm font-medium h-9 px-5 leading-none rounded-full text-foreground/85 hover:bg-sidebar-accent/60 transition-colors data-[selected]:bg-primary data-[selected]:text-primary-foreground data-[selected]:shadow-sm">
+                              Chat
+                            </TabsTrigger>
+                            <TabsTrigger value="workflows" class="text-sm font-medium h-9 px-5 leading-none rounded-full text-foreground/85 hover:bg-sidebar-accent/60 transition-colors data-[selected]:bg-primary data-[selected]:text-primary-foreground data-[selected]:shadow-sm">
+                              Workflows
+                            </TabsTrigger>
+                          </TabsList>
+                        </Tabs>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <ModeToggle class="h-10 flex items-center justify-center" />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          {/* Dark mode toggle positioned below navbar but above decorative elements */}
-          <ModeToggle class="fixed right-3 top-4 z-[1100]" />
+              );
+            };
+            return <TopHeader />;
+          })()}
           
-          <main class="flex flex-col flex-1 bg-[#e9ecef] dark:bg-[#15202b] pt-12 w-full h-screen overflow-hidden">
-            <div class="h-full overflow-hidden">{props.children}</div>
+          <main class="flex flex-col flex-1 bg-sidebar pt-14 w-full h-screen overflow-hidden overscroll-none">
+            <div class="h-full overflow-hidden pl-2">{props.children}</div>
           </main>
         </div>
       </SidebarProvider>
