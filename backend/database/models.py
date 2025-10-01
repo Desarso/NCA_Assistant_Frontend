@@ -39,7 +39,7 @@ class User(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(String))
     github_token: Optional[str] = None  # Store GitHub token securely
     github_username: Optional[str] = None  # Store GitHub username
-    preferred_model: str = Field(default="gpt-oss-120b")  # Store user's preferred model
+    preferred_model: str = Field(default="grok-4-fast")  # Store user's preferred model
     
     # Relationships
     conversations: List["Conversation"] = Relationship(back_populates="user")

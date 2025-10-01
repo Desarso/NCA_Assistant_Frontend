@@ -100,6 +100,14 @@ models = {
             api_key=os.getenv("OPENROUTER_API_KEY"),
         ),
     ),
+    "grok-4-fast": OpenAIModel(
+        "x-ai/grok-4-fast",
+        provider=OpenAIProvider(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+        ),
+    ),
+
     # "gpt-5": OpenAIModel(
     #     "openai/gpt-5",
     #     provider=OpenAIProvider(
@@ -110,7 +118,7 @@ models = {
 }
 
 # Set default model
-DEFAULT_MODEL = "gpt-oss-120b"
+DEFAULT_MODEL = "grok-4-fast"
 
 def get_model(model_key: str = None):
     """Get a model by key, fallback to default if not found."""
