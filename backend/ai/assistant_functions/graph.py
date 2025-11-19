@@ -27,6 +27,8 @@ def graph_api_request(
     delegating the actual request execution, header management, and auth handling
     to the make_request helper. The LLM MUST provide body, query params, and headers
     as VALID JSON formatted strings where applicable.
+    
+    Uses delegated permissions if configured in agent dependencies, otherwise falls back to application permissions.
 
     Args:
         endpoint_version (str): 'v1.0' or 'beta'.
@@ -212,17 +214,27 @@ def graph_api_request(
              query_string = urllib.parse.urlencode(filtered_params)
              full_url += f"?{query_string}"
 
-    # 4. Call the make_request helper
-    logging.debug(f"graph_api_request: Calling make_request for {method} {full_url}")
+    # 4. Get user and permission mode from context dependencies
+    user = None
+    use_delegated_permissions = False
+    if hasattr(ctx.deps, 'user_object'):
+        user = ctx.deps.user_object
+    if hasattr(ctx.deps, 'use_delegated_permissions'):
+        use_delegated_permissions = ctx.deps.use_delegated_permissions
+    
+    # 5. Call the make_request helper
+    logging.debug(f"graph_api_request: Calling make_request for {method} {full_url} (delegated={use_delegated_permissions})")
     try:
         response_data, error_data = make_request(
             method=method.upper(),
             url=full_url,
             headers=parsed_headers,  # Now passing optional headers
-            json_data=parsed_body
+            json_data=parsed_body,
+            user=user,
+            use_delegated_permissions=use_delegated_permissions
         )
 
-        # 5. Return the result from make_request
+        # 6. Return the result from make_request
         if error_data:
             # Log the error but also preserve all the original error information
             logging.error(f"graph_api_request: make_request failed: {error_data.get('error')}")
@@ -235,7 +247,8 @@ def graph_api_request(
                 "body_json": body_json,
                 "query_params_json": query_params_json,
                 "headers_json": headers_json,
-                "full_url": full_url
+                "full_url": full_url,
+                "use_delegated_permissions": use_delegated_permissions
             }
             
             # Add function name for context

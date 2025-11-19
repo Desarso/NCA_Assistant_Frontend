@@ -2,8 +2,8 @@ import os
 from typing import List, Optional
 from datetime import datetime, timezone
 from enum import Enum
-from sqlmodel import Field, Relationship, Session, SQLModel, create_engine
-from sqlalchemy import String, Column, Text
+from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, Column
+from sqlalchemy import String, Text
 
 # Load environment variables from .env file
 from dotenv import load_dotenv
@@ -31,6 +31,44 @@ class MessageType(str, Enum):
     ASSISTANT = "assistant"
     TOOL_CALL = "tool_call"
     TOOL_RESPONSE = "tool_response"
+
+
+# Link models for many-to-many relationships (SQLModel requires link models, not Tables)
+class UserRoleLink(SQLModel, table=True):
+    """Link model for User-Role many-to-many relationship"""
+    user_id: str = Field(foreign_key="user.id", primary_key=True)
+    role_id: str = Field(foreign_key="role.id", primary_key=True)
+
+
+class RolePermissionLink(SQLModel, table=True):
+    """Link model for Role-Permission many-to-many relationship"""
+    role_id: str = Field(foreign_key="role.id", primary_key=True)
+    permission_id: str = Field(foreign_key="permission.id", primary_key=True)
+
+
+class Permission(SQLModel, table=True):
+    """Permission model - represents a specific permission/action"""
+    id: str = Field(primary_key=True)  # e.g., "read:users", "write:workflows", "admin:all"
+    name: str = Field(unique=True, index=True)  # Human-readable name
+    description: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(String))
+    
+    # Relationships
+    roles: List["Role"] = Relationship(back_populates="permissions", link_model=RolePermissionLink)
+
+
+class Role(SQLModel, table=True):
+    """Role model - represents a role that can have multiple permissions"""
+    id: str = Field(primary_key=True)  # e.g., "super_admin", "user", "developer"
+    name: str = Field(unique=True, index=True)  # Human-readable name
+    description: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(String))
+    
+    # Relationships
+    permissions: List["Permission"] = Relationship(back_populates="roles", link_model=RolePermissionLink)
+    users: List["User"] = Relationship(back_populates="roles", link_model=UserRoleLink)
+
+
 class User(SQLModel, table=True):
     id: str = Field(primary_key=True)
     email: str = Field(unique=True)
@@ -40,10 +78,31 @@ class User(SQLModel, table=True):
     github_token: Optional[str] = None  # Store GitHub token securely
     github_username: Optional[str] = None  # Store GitHub username
     preferred_model: str = Field(default="grok-4-fast")  # Store user's preferred model
+    microsoft_access_token: Optional[str] = None  # Encrypted Microsoft access token
+    microsoft_refresh_token: Optional[str] = None  # Encrypted Microsoft refresh token
+    microsoft_token_expires_at: Optional[datetime] = None  # Token expiration time
+    microsoft_consent_given: bool = Field(default=False)  # Track if user consented to Microsoft permissions
     
     # Relationships
     conversations: List["Conversation"] = Relationship(back_populates="user")
     workflows: List["Workflow"] = Relationship(back_populates="user")
+    roles: List["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
+
+    @property
+    def roles_list(self) -> List[str]:
+        """Return list of role IDs"""
+        return [role.id for role in self.roles] if self.roles else []
+
+    @property
+    def permissions_list(self) -> List[str]:
+        """Return list of permission IDs from all roles"""
+        perms = set()
+        if self.roles:
+            for role in self.roles:
+                if role.permissions:
+                    for perm in role.permissions:
+                        perms.add(perm.id)
+        return list(perms)
 
 
 class Conversation(SQLModel, table=True):

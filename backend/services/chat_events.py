@@ -27,6 +27,9 @@ from pydantic_ai.messages import (
 )
 # Align to modern pydantic-ai naming (ThinkingPart). We assume latest package.
 
+# Marker used for placeholder chat messages inserted before the model runs
+CLIENT_PREVIEW_REASON = "__client_preview__"
+
 # Map between event.call_id and tool_call_id to normalize tools across providers
 tool_call_mapping: Dict[str, str] = {}
 
@@ -415,6 +418,8 @@ def get_message_history(conversation) -> List[ModelMessage]:
     message_history: List[ModelMessage] = []
     sorted_messages = sorted(conversation.messages, key=lambda m: m.created_at)
     for message in sorted_messages:
+        if getattr(message, "reasoning", None) == CLIENT_PREVIEW_REASON:
+            continue
         try:
             message_data = json.loads(message.content)
             model_message = dict_to_model_message(message_data)

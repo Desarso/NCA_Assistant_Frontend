@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import os
 import logging
@@ -8,11 +9,16 @@ import asyncio
 from ai.core.agent_factory import MyDeps
 from ai.core.prompts import get_system_prompt
 from ai.assistant_functions.memory_functions import get_memory_no_context
-from pydantic_ai.messages import ImageUrl  # noqa: F401
+from pydantic_ai.messages import (
+    ImageUrl,  # noqa: F401
+    ModelRequest,
+    SystemPromptPart,
+    UserPromptPart,
+)
 from helpers.helper_funcs import geminiParts
-from database.models import get_session, User, Conversation
+from database.models import get_session, User, Conversation, Message as DBMessage, MessageType
 from fastapi.responses import JSONResponse
-from services.chat_events import get_message_history
+from services.chat_events import get_message_history, model_message_to_dict, CLIENT_PREVIEW_REASON
 from services.chat_session import get_or_create_session, chat_sessions
 
 
@@ -121,12 +127,12 @@ async def chat(
         ##only get memory if text content is not empty
         memory = get_memory_no_context(request.state.user.uid, text_content) if text_content != "" else None
 
+        system_prompt_value = get_system_prompt(request.state.user, memory)
+
         if len(message_history) > 0:
             system_prompt = message_history[0].parts[0].content
             if system_prompt:
-                message_history[0].parts[0].content = get_system_prompt(
-                    request.state.user, memory
-                )
+                message_history[0].parts[0].content = system_prompt_value
 
         # In the chat endpoint, before creating the agent:
         has_pdfs = any(
@@ -135,8 +141,32 @@ async def chat(
             if hasattr(item, 'content') and hasattr(item.content, 'kind')
         )
 
-        # Start or resume background chat session
         user_content = chat_request.to_user_content()
+
+        preview_message_id: int | None = None
+        if user_content:
+            preview_request = ModelRequest(
+                parts=[
+                    SystemPromptPart(content=system_prompt_value),
+                    UserPromptPart(content=user_content),
+                ],
+                kind="request",
+            )
+            preview_payload = model_message_to_dict(preview_request)
+            preview_message = DBMessage(
+                content=json.dumps(preview_payload),
+                message_type=MessageType.USER,
+                conversation_id=conversation_id,
+                reasoning=CLIENT_PREVIEW_REASON,
+            )
+            session.add(preview_message)
+            conversation.updated_at = datetime.now()
+            session.add(conversation)
+            session.commit()
+            session.refresh(preview_message)
+            preview_message_id = preview_message.id
+
+        # Start or resume background chat session
         if STREAM_DEBUG():
             try:
                 # Brief content summary without heavy data
@@ -158,7 +188,13 @@ async def chat(
             except Exception:
                 pass
         chat_session = get_or_create_session(conversation_id)
-        await chat_session.start(current_user, user_content, has_pdfs=has_pdfs, memory=memory)
+        await chat_session.start(
+            current_user,
+            user_content,
+            has_pdfs=has_pdfs,
+            memory=memory,
+            pending_user_message_id=preview_message_id,
+        )
 
         # Do not hold the HTTP request open; background session streams via WebSocket
 

@@ -74,6 +74,14 @@ async def lifespan(app: fastapi.FastAPI):
     # Initialize database on startup
     create_db_and_tables()
 
+    # Seed default permissions and roles
+    try:
+        from database.seed_permissions import seed_permissions_and_roles
+        seed_permissions_and_roles()
+    except Exception as e:
+        logging.error(f"Failed to seed permissions and roles: {e}", exc_info=True)
+        # Don't fail startup, but log the error
+
     # Initialize Firebase Admin SDK if not already initialized
     if not firebase_admin._apps:
         from firebase.firebase_credentials import get_firebase_credentials
@@ -136,8 +144,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 # Chats Router Configuration
 #####################################################
 chat_routes = APIRouter(prefix="/api/v1", tags=["chat"])
-# Add Firebase authentication dependency to base router, needs base role
-chat_routes.dependencies.append(Depends(role_based_access(["whitelisted"])))
+# Add Firebase authentication dependency - all authenticated NCA users can access
+chat_routes.dependencies.append(Depends(get_current_user))
 chat_routes.include_router(chats_router)
 
 # WebSocket routes cannot use HTTP dependency injection; expose under same prefix without auth dependency
@@ -148,8 +156,8 @@ ws_chat_routes.include_router(ws_chats_router)
 # Conversations Router Configuration
 #####################################################
 conversations_routes = APIRouter(prefix="/api/v1", tags=["conversations"])
-# Add Firebase authentication dependency to base router, needs base role
-conversations_routes.dependencies.append(Depends(role_based_access(["whitelisted"])))
+# Add Firebase authentication dependency - all authenticated NCA users can access
+conversations_routes.dependencies.append(Depends(get_current_user))
 conversations_routes.include_router(conversations_router)
 
 #####################################################
@@ -159,8 +167,8 @@ conversations_routes.include_router(conversations_router)
 # Files Router Configuration
 #####################################################
 files_routes = APIRouter(prefix="/api/v1/files", tags=["files"])
-# Add Firebase authentication dependency to base router, needs base role
-files_routes.dependencies.append(Depends(role_based_access(["whitelisted"])))
+# Add Firebase authentication dependency - all authenticated NCA users can access
+files_routes.dependencies.append(Depends(get_current_user))
 files_routes.include_router(files_router)
 
 #####################################################
@@ -170,7 +178,8 @@ files_routes.include_router(files_router)
 # Users Router Configuration 
 #####################################################
 user_routes = APIRouter(prefix="/api/v1", tags=["user"])
-user_routes.dependencies.append(Depends(role_based_access(["whitelisted"])))
+# Add Firebase authentication dependency - all authenticated NCA users can access
+user_routes.dependencies.append(Depends(get_current_user))
 user_routes.include_router(user_router)
 
 #####################################################
@@ -180,8 +189,8 @@ user_routes.include_router(user_router)
 # Workflows Router Configuration
 #####################################################
 workflow_routes = APIRouter(prefix="/api/v1", tags=["workflows"])
-# Add Firebase authentication dependency to base router, needs base role
-workflow_routes.dependencies.append(Depends(role_based_access(["whitelisted"])))
+# Add Firebase authentication dependency - all authenticated NCA users can access
+workflow_routes.dependencies.append(Depends(get_current_user))
 workflow_routes.include_router(workflows_router)
 
 #####################################################

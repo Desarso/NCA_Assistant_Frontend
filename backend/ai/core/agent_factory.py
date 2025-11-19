@@ -46,9 +46,16 @@ class MyDeps:
     user_object: FirebaseUser
     user_rejection_flags: Dict[str, bool] = field(default_factory=dict)
     conversation_id: Optional[str] = None  # Add conversation ID for file organization
+    use_delegated_permissions: bool = True  # If True, use user's delegated Microsoft tokens; if False, use application permissions (super_admin only)
 
 
-async def create_agent(user_object: FirebaseUser, memory: str, has_pdfs: bool = False, model_key: Optional[str] = None) -> Agent:
+async def create_agent(
+    user_object: FirebaseUser, 
+    memory: str, 
+    has_pdfs: bool = False, 
+    model_key: Optional[str] = None,
+    use_delegated_permissions: Optional[bool] = None  # None = auto-detect based on role
+) -> Agent:
     """
     Create and configure an AI agent with appropriate model and tools.
 
@@ -56,6 +63,9 @@ async def create_agent(user_object: FirebaseUser, memory: str, has_pdfs: bool = 
         user_object: Firebase user object
         memory: User's memory context
         has_pdfs: Whether the conversation contains PDF content
+        model_key: Optional model key to use
+        use_delegated_permissions: If None, auto-detects based on role (delegated by default, 
+                                   application only for super_admin). If True/False, uses that value.
 
     Returns:
         Configured Agent instance
@@ -98,10 +108,31 @@ async def create_agent(user_object: FirebaseUser, memory: str, has_pdfs: bool = 
         )
         logging.info(f"Using model '{model_name}' (key: {preferred_model_key})")
 
+    # Determine permission mode: default to delegated, only use application for super_admin
+    if use_delegated_permissions is None:
+        # Auto-detect: use delegated by default, application only if user has super_admin role
+        user_roles = getattr(user_object, 'roles', []) or []
+        use_delegated_permissions = 'super_admin' not in user_roles
+        logging.info(f"Auto-detected permission mode for user {user_object.email}: {'delegated' if use_delegated_permissions else 'application'} (roles: {user_roles})")
+    else:
+        # Explicitly set - but warn if non-super_admin tries to use application permissions
+        if not use_delegated_permissions:
+            user_roles = getattr(user_object, 'roles', []) or []
+            if 'super_admin' not in user_roles:
+                logging.warning(f"User {user_object.email} attempted to use application permissions without super_admin role. Falling back to delegated.")
+                use_delegated_permissions = True
+
+    # Create dependencies with permission mode
+    # deps = MyDeps(
+    #     user_object=user_object,
+    #     use_delegated_permissions=use_delegated_permissions
+    # )
+    
     return Agent(
         model=selected_model,
         system_prompt=get_system_prompt(user_object, memory),
         deps_type=MyDeps,
+        # deps=deps,  # Pass the configured dependencies  <-- REMOVE THIS
         # mcp_servers=mcp_servers,
         tools=[
             tavily_search_tool(tavily_api_key),

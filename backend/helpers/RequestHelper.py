@@ -5,14 +5,43 @@ import json
 from typing import Tuple, Optional, Dict, Any
 import logging
 import os
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from error_logger.error_logger import ErrorLogger
 import traceback
+from cryptography.fernet import Fernet
+from helpers.Firebase_helpers import FirebaseUser
+from database.models import engine
 
 load_dotenv()
 
 # Initialize error logger
 error_logger = ErrorLogger()
+
+# Token encryption utilities
+ENCRYPTION_KEY = os.getenv("TOKEN_ENCRYPTION_KEY")
+_cipher = None
+
+def _get_cipher():
+    """Get or create Fernet cipher for token encryption"""
+    global _cipher
+    if _cipher is None:
+        if not ENCRYPTION_KEY:
+            raise ValueError("TOKEN_ENCRYPTION_KEY environment variable not set. Generate one with: python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'")
+        _cipher = Fernet(ENCRYPTION_KEY.encode())
+    return _cipher
+
+def encrypt_token(token: str) -> str:
+    """Encrypt token before storing"""
+    if not token:
+        return token
+    return _get_cipher().encrypt(token.encode()).decode()
+
+def decrypt_token(encrypted_token: str) -> str:
+    """Decrypt token after retrieving"""
+    if not encrypted_token:
+        return encrypted_token
+    return _get_cipher().decrypt(encrypted_token.encode()).decode()
 
 class TokenManager:
     _instance = None
@@ -83,11 +112,108 @@ class TokenManager:
 # Instantiate the single, thread-safe token manager
 token_manager = TokenManager()
 
+
+class UserTokenManager:
+    """Manages Microsoft tokens for individual users with delegated permissions"""
+    
+    def __init__(self):
+        self.tenant_id = os.getenv("TENANT_ID")
+        self.client_id = os.getenv("APP_ID")
+        self.client_secret = os.getenv("SECRET")
+    
+    def get_user_token(self, user: FirebaseUser) -> Tuple[Optional[str], Optional[Dict[str, Any]]]:
+        """
+        Get a valid Microsoft token for a user, refreshing if necessary.
+        Returns (token, error) tuple. Returns (None, None) if user hasn't provided consent.
+        """
+        from database.models import Session, User, engine
+        from sqlalchemy import select
+        
+        with Session(engine) as session:
+            db_user = session.exec(select(User).where(User.id == user.uid)).first()
+            
+            if not db_user or not db_user.microsoft_access_token:
+                # User hasn't provided Microsoft consent, return None
+                logging.debug(f"User {user.uid} has no Microsoft token stored")
+                return None, None
+            
+            # Check if token is expired (with 5-minute buffer)
+            if db_user.microsoft_token_expires_at:
+                time_until_expiry = (db_user.microsoft_token_expires_at - datetime.now()).total_seconds()
+                if time_until_expiry <= 300:  # 5 minutes buffer
+                    logging.info(f"User {user.uid} token expired or expiring soon. Refreshing...")
+                    return self._refresh_user_token(db_user, session)
+            
+            # Token is still valid
+            try:
+                token = decrypt_token(db_user.microsoft_access_token)
+                logging.debug(f"Using cached Microsoft token for user {user.uid}")
+                return token, None
+            except Exception as e:
+                logging.error(f"Failed to decrypt token for user {user.uid}: {e}")
+                return None, {"error": "Failed to decrypt token", "details": str(e)}
+    
+    def _refresh_user_token(self, db_user, session) -> Tuple[Optional[str], Optional[Dict[str, Any]]]:
+        """Refresh user's Microsoft token using refresh token or re-authentication"""
+        try:
+            # If we have a refresh token, use it
+            if db_user.microsoft_refresh_token:
+                refresh_token = decrypt_token(db_user.microsoft_refresh_token)
+                
+                token_url = f"https://login.microsoftonline.com/{self.tenant_id}/oauth2/v2.0/token"
+                token_data = {
+                    "grant_type": "refresh_token",
+                    "client_id": self.client_id,
+                    "client_secret": self.client_secret,
+                    "refresh_token": refresh_token,
+                    "scope": "https://graph.microsoft.com/.default"
+                }
+                
+                response = requests.post(token_url, data=token_data)
+                response.raise_for_status()
+                data = response.json()
+                
+                new_access_token = data.get("access_token")
+                new_refresh_token = data.get("refresh_token", refresh_token)  # Use new or keep old
+                expires_in = data.get("expires_in", 3600)
+                
+                if not new_access_token:
+                    logging.error(f"Failed to refresh token for user {db_user.id}: {response.text}")
+                    return None, {"error": "Failed to refresh token", "details": response.text}
+                
+                # Update stored tokens
+                db_user.microsoft_access_token = encrypt_token(new_access_token)
+                if new_refresh_token != refresh_token:
+                    db_user.microsoft_refresh_token = encrypt_token(new_refresh_token)
+                db_user.microsoft_token_expires_at = datetime.now() + timedelta(seconds=expires_in)
+                
+                session.add(db_user)
+                session.commit()
+                
+                logging.info(f"Successfully refreshed Microsoft token for user {db_user.id}")
+                return new_access_token, None
+            else:
+                # No refresh token available - user needs to re-authenticate
+                logging.warning(f"User {db_user.id} has no refresh token. Token refresh not possible.")
+                return None, {"error": "No refresh token available", "details": "User needs to re-authenticate"}
+            
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Failed to refresh token for user {db_user.id}: {e}")
+            return None, {"error": "Failed to refresh token", "details": str(e)}
+        except Exception as e:
+            logging.error(f"Unexpected error refreshing token for user {db_user.id}: {e}")
+            return None, {"error": "Unexpected error during token refresh", "details": str(e)}
+
+# Instantiate user token manager
+user_token_manager = UserTokenManager()
+
 def make_request(
     method: str,
     url: str,
     headers: Optional[Dict[str, str]] = None,
     json_data: Optional[Dict[str, Any]] = None,
+    user: Optional[FirebaseUser] = None,
+    use_delegated_permissions: bool = False,
 ) -> Tuple[Optional[Dict[str, Any]], Optional[Dict[str, Any]]]:
     """
     Makes an HTTP request, handling token refresh and returning structured errors.
@@ -99,6 +225,8 @@ def make_request(
         url: The URL to make the request to
         headers: Optional additional headers to include with the request
         json_data: Optional JSON data to include in the request body
+        user: Optional FirebaseUser object for delegated permissions
+        use_delegated_permissions: If True and user provided, use user's delegated token; otherwise use application token
         
     Returns:
         Tuple of (response_data, error) where:
@@ -109,10 +237,113 @@ def make_request(
     req_id = f"{method} {url}"
 
     # --- Token Check and Header Prep ---
-    logging.debug(f"[{req_id}] Getting auth token...")
-    token, token_error = token_manager.get_token()
+    logging.debug(f"[{req_id}] Getting auth token (delegated={use_delegated_permissions})...")
     
-    if token_error:
+    token: Optional[str] = None
+    token_error: Optional[Dict[str, Any]] = None
+    
+    # Get token based on permission mode
+    if use_delegated_permissions:
+        # Using delegated permissions - MUST use user token, no fallback to app token
+        if not user:
+            token_error = {
+                "error": "User required for delegated permissions",
+                "details": "use_delegated_permissions=True requires a user object"
+            }
+        else:
+            # Check if user has delegated permissions permission
+            from database.models import Session, User, Role, Permission, RolePermissionLink
+            from sqlalchemy import select
+            from sqlalchemy.orm import selectinload
+            from database.seed_permissions import MICROSOFT_ENTRA_DELEGATED_PERMISSIONS
+            
+            with Session(engine) as session:
+                db_user = session.exec(
+                    select(User)
+                    .where(User.id == user.uid)
+                    .options(selectinload(User.roles).selectinload(Role.permissions))
+                ).first()
+                
+                if not db_user:
+                    token_error = {
+                        "error": "User not found",
+                        "details": "User not found in database"
+                    }
+                else:
+                    # Get all permissions from user's roles
+                    user_permissions = set()
+                    if db_user.roles:
+                        for role in db_user.roles:
+                            if role.permissions:
+                                for perm in role.permissions:
+                                    user_permissions.add(perm.id)
+                    
+                    if MICROSOFT_ENTRA_DELEGATED_PERMISSIONS not in user_permissions:
+                        token_error = {
+                            "error": "Insufficient permissions",
+                            "details": f"User does not have '{MICROSOFT_ENTRA_DELEGATED_PERMISSIONS}' permission. User has permissions: {list(user_permissions)}"
+                        }
+                        logging.warning(f"[{req_id}] User {user.uid} ({user.email}) attempted to use delegated permissions without required permission. Permissions: {list(user_permissions)}")
+                    else:
+                        # User has permission - proceed with delegated token
+                        logging.debug(f"[{req_id}] User {user.uid} has delegated permissions - using user token")
+                        token, token_error = user_token_manager.get_user_token(user)
+                        if token_error:
+                            logging.error(f"[{req_id}] Failed to get user delegated token: {token_error}")
+                        elif not token:
+                            token_error = {
+                                "error": "No Microsoft token available",
+                                "details": "User has not provided Microsoft OAuth consent or token is missing. User needs to authenticate with Microsoft."
+                            }
+            # End of database session
+    else:
+        # Using application permissions - Check if user has app permissions permission
+        if not user:
+            token_error = {
+                "error": "User required for application permissions",
+                "details": "Application permissions require a user object for permission verification"
+            }
+        else:
+            # Check if user has application permissions permission
+            from database.models import Session, User, Role, Permission, RolePermissionLink
+            from sqlalchemy import select
+            from sqlalchemy.orm import selectinload
+            from database.seed_permissions import MICROSOFT_ENTRA_APP_PERMISSIONS
+            
+            with Session(engine) as session:
+                db_user = session.exec(
+                    select(User)
+                    .where(User.id == user.uid)
+                    .options(selectinload(User.roles).selectinload(Role.permissions))
+                ).first()
+                
+                if not db_user:
+                    token_error = {
+                        "error": "User not found",
+                        "details": "User not found in database"
+                    }
+                else:
+                    # Get all permissions from user's roles
+                    user_permissions = set()
+                    if db_user.roles:
+                        for role in db_user.roles:
+                            if role.permissions:
+                                for perm in role.permissions:
+                                    user_permissions.add(perm.id)
+                    
+                    if MICROSOFT_ENTRA_APP_PERMISSIONS not in user_permissions:
+                        token_error = {
+                            "error": "Insufficient permissions",
+                            "details": f"User does not have '{MICROSOFT_ENTRA_APP_PERMISSIONS}' permission. User has permissions: {list(user_permissions)}"
+                        }
+                        logging.warning(f"[{req_id}] User {user.uid} ({user.email}) attempted to use application permissions without required permission. Permissions: {list(user_permissions)}")
+                    else:
+                        # User has permission - proceed with application token
+                        logging.debug(f"[{req_id}] User {user.uid} has app permissions - using application token")
+                        token, token_error = token_manager.get_token()
+            # End of database session
+    
+    if token_error or not token:
         logging.error(f"[{req_id}] Token acquisition failed: {token_error}")
         err_payload = token_error if isinstance(token_error, dict) else {"details": str(token_error)}
         err_payload.setdefault("error", "Token acquisition failed")

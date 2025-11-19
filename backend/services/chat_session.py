@@ -24,7 +24,12 @@ from ai.core.prompts import get_system_prompt
 from database.models import Conversation, Message as DBMessage, MessageType, engine
 from sqlmodel import Session as DBSession
 
-from services.chat_events import event_to_json_string, model_message_to_dict, get_message_history
+from services.chat_events import (
+    event_to_json_string,
+    model_message_to_dict,
+    get_message_history,
+    CLIENT_PREVIEW_REASON,
+)
 
 
 class ChatSession:
@@ -34,6 +39,7 @@ class ChatSession:
         self.task: asyncio.Task | None = None
         self.deps_instance: MyDeps | None = None
         self.started: bool = False
+        self.pending_user_message_id: int | None = None
         # Streaming debug logger (enable with env STREAM_DEBUG=1)
         self._stream_debug = os.getenv("STREAM_DEBUG", "0") == "1"
         self._logger = logging.getLogger("chat.stream")
@@ -164,7 +170,14 @@ class ChatSession:
         self.task = None
         self.started = False
 
-    async def start(self, current_user, user_content: List[Union[str, ImageUrl, AudioUrl, DocumentUrl, BinaryContent]], has_pdfs: bool, memory: str | None) -> None:
+    async def start(
+        self,
+        current_user,
+        user_content: List[Union[str, ImageUrl, AudioUrl, DocumentUrl, BinaryContent]],
+        has_pdfs: bool,
+        memory: str | None,
+        pending_user_message_id: int | None = None,
+    ) -> None:
         if self.is_running():
             if self._stream_debug:
                 self._logger.info("conv=%s already_running user=%s", self.conversation_id, getattr(current_user, 'uid', None))
@@ -187,6 +200,7 @@ class ChatSession:
             except Exception:
                 pass
         self.deps_instance = MyDeps(user_object=current_user, user_rejection_flags={}, conversation_id=self.conversation_id)
+        self.pending_user_message_id = pending_user_message_id
         self.task = asyncio.create_task(self._run(current_user, user_content, has_pdfs, memory))
         self.started = True
 
@@ -214,7 +228,7 @@ class ChatSession:
                     self._logger.info("conv=%s agent_create done", self.conversation_id)
 
                 async with agent.iter(
-                    deps=self.deps_instance,
+                    # deps=self.deps_instance, # deps are passed at agent creation now
                     user_prompt=user_content,
                     message_history=message_history,
                 ) as run:
@@ -235,16 +249,29 @@ class ChatSession:
                             if isinstance(node, ModelRequestNode):
                                 if self._stream_debug:
                                     self._logger.info("conv=%s event=model_request", self.conversation_id)
-                                db_message_request = DBMessage(
-                                    content=json.dumps(model_message_to_dict(node.request)),
-                                    message_type=MessageType.USER,
-                                    conversation_id=self.conversation_id,
-                                )
-                                session.add(db_message_request)
-                                conversation_obj = session.get(Conversation, self.conversation_id)
-                                if conversation_obj:
-                                    conversation_obj.updated_at = datetime.now()
-                                session.commit()
+                                if self.pending_user_message_id:
+                                    existing_message = session.get(DBMessage, self.pending_user_message_id)
+                                    if existing_message and getattr(existing_message, "reasoning", None) == CLIENT_PREVIEW_REASON:
+                                        existing_message.content = json.dumps(model_message_to_dict(node.request))
+                                        existing_message.reasoning = "" # Postgres cannot accept null in reasoning column
+                                        existing_message.message_type = MessageType.USER
+                                        session.add(existing_message)
+                                        conversation_obj = session.get(Conversation, self.conversation_id)
+                                        if conversation_obj:
+                                            conversation_obj.updated_at = datetime.now()
+                                        session.commit()
+                                    self.pending_user_message_id = None
+                                else:
+                                    db_message_request = DBMessage(
+                                        content=json.dumps(model_message_to_dict(node.request)),
+                                        message_type=MessageType.USER,
+                                        conversation_id=self.conversation_id,
+                                    )
+                                    session.add(db_message_request)
+                                    conversation_obj = session.get(Conversation, self.conversation_id)
+                                    if conversation_obj:
+                                        conversation_obj.updated_at = datetime.now()
+                                    session.commit()
 
                                 async with node.stream(run.ctx) as request_stream:
                                     content_accumulator = ""
@@ -361,6 +388,7 @@ class ChatSession:
                 self._logger.info("conv=%s event=done", self.conversation_id)
             # Mark session no longer started so callers can create a new one if needed
             self.started = False
+            self.pending_user_message_id = None
 
         except asyncio.CancelledError:
             raise
@@ -379,6 +407,7 @@ class ChatSession:
                 pass
             # Mark session no longer started so callers can create a new one if needed
             self.started = False
+            self.pending_user_message_id = None
 
     async def _emit(self, data: str) -> None:
         try:

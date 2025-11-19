@@ -70,6 +70,28 @@ def add_new_columns():
             conn.execute(text('ALTER TABLE "user" ADD COLUMN github_username TEXT'))
         if 'preferred_model' not in columns:
             conn.execute(text("ALTER TABLE \"user\" ADD COLUMN preferred_model TEXT DEFAULT 'gemini'"))
+        # Add Microsoft OAuth token columns
+        if 'microsoft_access_token' not in columns:
+            conn.execute(text('ALTER TABLE "user" ADD COLUMN microsoft_access_token TEXT'))
+        if 'microsoft_refresh_token' not in columns:
+            conn.execute(text('ALTER TABLE "user" ADD COLUMN microsoft_refresh_token TEXT'))
+        if 'microsoft_token_expires_at' not in columns:
+            conn.execute(text('ALTER TABLE "user" ADD COLUMN microsoft_token_expires_at TIMESTAMP'))
+        if 'microsoft_consent_given' not in columns:
+            conn.execute(text('ALTER TABLE "user" ADD COLUMN microsoft_consent_given BOOLEAN DEFAULT FALSE'))
+        # Add roles column (stored as JSON)
+        if 'roles' not in columns:
+            # Check database type to use appropriate JSON column type
+            try:
+                # Try PostgreSQL JSONB first
+                conn.execute(text('ALTER TABLE "user" ADD COLUMN roles JSONB'))
+            except Exception:
+                try:
+                    # Fall back to JSON
+                    conn.execute(text('ALTER TABLE "user" ADD COLUMN roles JSON'))
+                except Exception:
+                    # Fall back to TEXT for SQLite
+                    conn.execute(text('ALTER TABLE "user" ADD COLUMN roles TEXT'))
         conn.commit()
 
 if __name__ == "__main__":
