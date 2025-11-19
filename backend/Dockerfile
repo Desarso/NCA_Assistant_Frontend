@@ -11,10 +11,11 @@ FROM ghcr.io/astral-sh/uv:debian-slim
 # Set working directory
 WORKDIR /app
 
-# Copy requirements file
+# Copy backend files
 COPY . .
 
 EXPOSE 8000
 
-# Run the application
-CMD ["sh", "-c", "uv run migrate.py && uv run index.py"]
+# Run migrations, then start the application
+# Migrations are idempotent (check before adding), so safe to run multiple times
+CMD ["sh", "-c", "uv run migrations/versions/migrate.py; uv run migrations/versions/add_microsoft_columns.py; uv run migrations/versions/migrate_roles.py; uv run migrations/versions/seed_default_permissions.py; uv run index.py"]
