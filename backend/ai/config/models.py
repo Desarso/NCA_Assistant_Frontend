@@ -13,29 +13,37 @@ from pydantic_ai.models import cached_async_http_client
 import os
 import logging
 
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
+
 # Create a custom HTTP client with 5-minute timeout
 http_client = cached_async_http_client(timeout=300, connect=5)
 
+# Get GEMINI_API_KEY and validate it's not empty
+gemini_api_key = os.getenv("GEMINI_API_KEY")
+if not gemini_api_key or gemini_api_key.strip() == "":
+    logging.warning("GEMINI_API_KEY is not set or is empty. Gemini models will not be available.")
+    gemini_api_key = None
+
+# Helper function to create Gemini models only if API key is available
+def _create_gemini_models():
+    gemini_models = {}
+    if gemini_api_key:
+        try:
+            gemini_provider = GoogleGLAProvider(api_key=gemini_api_key, http_client=http_client)
+            gemini_models = {
+                "gemini-2.5-flash": GeminiModel("gemini-2.5-flash", provider=gemini_provider),
+                "gemini-2.0-flash": GeminiModel("gemini-2.0-flash", provider=gemini_provider),
+                "gemini-2.5-flash-lite": GeminiModel("gemini-2.5-flash-lite", provider=gemini_provider),
+            }
+        except Exception as e:
+            logging.error(f"Failed to initialize Gemini models: {e}")
+    return gemini_models
+
 # Define available models
 models = {
-    "gemini-2.5-flash": GeminiModel(
-        "gemini-2.5-flash",
-        provider=GoogleGLAProvider(
-            api_key=os.getenv("GEMINI_API_KEY"), http_client=http_client
-        ),
-    ),
-    "gemini-2.0-flash": GeminiModel(
-        "gemini-2.0-flash",
-        provider=GoogleGLAProvider(
-            api_key=os.getenv("GEMINI_API_KEY"), http_client=http_client
-        ),
-    ),
-    "gemini-2.5-flash-lite": GeminiModel(
-        "gemini-2.5-flash-lite",
-        provider=GoogleGLAProvider(
-            api_key=os.getenv("GEMINI_API_KEY"), http_client=http_client
-        ),
-    ),
+    **_create_gemini_models(),
     # "deepseek-r1-distill-llama-70b": GroqModel(
     #     "deepseek-r1-distill-llama-70b",
     #     provider=GroqProvider(api_key=os.getenv("GROQ_API_KEY")),

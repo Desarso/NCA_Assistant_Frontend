@@ -53,17 +53,24 @@ config = {
             "model": "text-embedding-3-small"
         }
     },
-    "graph_store": {
-        "provider": "neo4j",
-        "config": {
-            "url": os.getenv("NEO4J_URL"),
-            "username": os.getenv("NEO4J_USERNAME"),
-            "password": os.getenv("NEO4J_PASSWORD")
-        }
-    },
     "history_db_path": "db/history.db",
     "version": "v1.1",
 }
+
+# Only add graph_store if Neo4j credentials are provided
+neo4j_url = os.getenv("NEO4J_URL")
+neo4j_username = os.getenv("NEO4J_USERNAME")
+neo4j_password = os.getenv("NEO4J_PASSWORD")
+
+if neo4j_url and neo4j_username and neo4j_password:
+    config["graph_store"] = {
+        "provider": "neo4j",
+        "config": {
+            "url": neo4j_url,
+            "username": neo4j_username,
+            "password": neo4j_password
+        }
+    }
 # m = Memory.from_config(config)
 
 

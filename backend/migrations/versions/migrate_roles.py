@@ -78,30 +78,53 @@ def create_default_roles_and_permissions():
     }
     
     with Session(engine) as session:
+        # Import RolePermissionLink for direct link creation
+        from database.models import RolePermissionLink
+        
         # Create permissions
         for perm_data in default_permissions:
-            existing = session.exec(select(Permission).where(Permission.id == perm_data["id"])).first()
+            # Use session.get() for primary key lookups (more reliable)
+            existing = session.get(Permission, perm_data["id"])
             if not existing:
                 permission = Permission(**perm_data)
                 session.add(permission)
                 print(f"  Created permission: {perm_data['id']}")
         
+        session.commit()  # Commit permissions first
+        
         # Create roles
         for role_data in default_roles:
-            existing = session.exec(select(Role).where(Role.id == role_data["id"])).first()
+            # Use session.get() for primary key lookups
+            existing = session.get(Role, role_data["id"])
             if not existing:
                 role = Role(**role_data)
                 session.add(role)
                 session.flush()  # Flush to get role ID
-                
-                # Assign permissions to role
-                if role_data["id"] in role_permissions:
-                    for perm_id in role_permissions[role_data["id"]]:
-                        perm = session.exec(select(Permission).where(Permission.id == perm_id)).first()
-                        if perm:
-                            role.permissions.append(perm)
-                
                 print(f"  Created role: {role_data['id']}")
+            else:
+                role = existing
+            
+            # Assign permissions to role using direct link creation
+            if role_data["id"] in role_permissions:
+                for perm_id in role_permissions[role_data["id"]]:
+                    # Use session.get() for primary key lookup
+                    perm = session.get(Permission, perm_id)
+                    if perm:
+                        # Check if link already exists
+                        existing_link = session.exec(
+                            select(RolePermissionLink).where(
+                                RolePermissionLink.role_id == role.id,
+                                RolePermissionLink.permission_id == perm_id
+                            )
+                        ).first()
+                        
+                        if not existing_link:
+                            link = RolePermissionLink(
+                                role_id=role.id,
+                                permission_id=perm_id
+                            )
+                            session.add(link)
+                            print(f"  Assigned permission {perm_id} to role {role_data['id']}")
         
         session.commit()
         print("Default roles and permissions created successfully!")
