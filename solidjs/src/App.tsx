@@ -14,6 +14,7 @@ const Animation = lazy(() => import("./pages/Animation"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const WorkflowsPage = lazy(() => import("./pages/WorkflowsPage"));
 const WorkflowEditPage = lazy(() => import("./pages/WorkflowEditPage"));
+const UsersPage = lazy(() => import("./pages/UsersPage"));
 
 function AppRoutes() {
     // const { setBiometricVerified } = useAuth();
@@ -48,6 +49,16 @@ function AppRoutes() {
           <PrivateRoute>
             <Layout>
               <WorkflowEditPage />
+            </Layout>
+          </PrivateRoute>
+        )}
+      />
+      <Route
+        path="/users"
+        component={() => (
+          <PrivateRoute>
+            <Layout>
+              <UsersPage />
             </Layout>
           </PrivateRoute>
         )}

@@ -71,6 +71,7 @@ const Layout: Component<LayoutProps> = (props) => {
     const path = location.pathname;
     if (path.startsWith('/chat')) return 'chat';
     if (path.startsWith('/workflows')) return 'workflows';
+    if (path.startsWith('/users')) return 'users';
     return 'chat'; // default
   };
 
@@ -80,6 +81,8 @@ const Layout: Component<LayoutProps> = (props) => {
       navigate('/chat/');
     } else if (value === 'workflows') {
       navigate('/workflows');
+    } else if (value === 'users') {
+      navigate('/users');
     }
   };
 
@@ -188,6 +191,9 @@ const Layout: Component<LayoutProps> = (props) => {
                             <TabsTrigger value="workflows" class="text-sm font-medium h-9 px-5 leading-none rounded-full text-foreground/85 hover:bg-sidebar-accent/60 transition-colors data-[selected]:bg-primary data-[selected]:text-primary-foreground data-[selected]:shadow-sm">
                               Workflows
                             </TabsTrigger>
+                            <TabsTrigger value="users" class="text-sm font-medium h-9 px-5 leading-none rounded-full text-foreground/85 hover:bg-sidebar-accent/60 transition-colors data-[selected]:bg-primary data-[selected]:text-primary-foreground data-[selected]:shadow-sm">
+                              Users
+                            </TabsTrigger>
                           </TabsList>
                         </Tabs>
                       </div>
@@ -202,7 +208,7 @@ const Layout: Component<LayoutProps> = (props) => {
             return <TopHeader />;
           })()}
           
-          <main class="flex flex-col flex-1 bg-sidebar pt-14 w-full h-screen overflow-hidden overscroll-none">
+          <main class="flex flex-col flex-1 bg-background pt-14 w-full h-screen overflow-hidden overscroll-none">
             <div class="h-full overflow-hidden pl-2">{props.children}</div>
           </main>
         </div>
