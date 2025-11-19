@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Migration script to add Microsoft OAuth token columns to the user table.
 Run this script to update existing databases.

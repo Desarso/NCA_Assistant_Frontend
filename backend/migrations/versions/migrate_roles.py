@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Migration script to create Role and Permission tables and migrate existing roles.
 This script:
