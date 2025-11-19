@@ -38,10 +38,18 @@ from database.models import (
     create_db_and_tables,
 )
 from ai.workflows.workflow_scheduler import run_scheduler_background
-from dotenv import load_dotenv
 
+# Load .env file only in development (not in production where Coolify exports env vars)
+is_production = (
+    os.getenv("ENVIRONMENT", "").lower() == "production" or
+    os.getenv("ENV", "").lower() == "production" or
+    os.getenv("PRODUCTION", "").lower() == "true" or
+    os.getenv("NODE_ENV", "").lower() == "production"
+)
 
-load_dotenv()
+if not is_production:
+    from dotenv import load_dotenv
+    load_dotenv()
 
 # Configure streaming logger when STREAM_DEBUG=1
 import logging

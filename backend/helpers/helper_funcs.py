@@ -3,6 +3,7 @@ from pydantic_ai.providers.google_gla import GoogleGLAProvider
 from pydantic_ai import Agent
 from pydantic_ai.messages import UserContent
 import os
+import logging
 
 async def gemini(prompt: str) -> str:
     """
@@ -14,9 +15,13 @@ async def gemini(prompt: str) -> str:
     Returns:
         The text response from Gemini
     """
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
+    if not gemini_api_key or gemini_api_key.strip() == "":
+        raise ValueError("GEMINI_API_KEY is not set or is empty. Cannot use Gemini model.")
+    
     model = GeminiModel(
         "gemini-2.0-flash-lite",
-        provider=GoogleGLAProvider(api_key=os.getenv("GEMINI_API_KEY")),
+        provider=GoogleGLAProvider(api_key=gemini_api_key),
     )
 
     agent = Agent(
@@ -38,9 +43,13 @@ async def geminiParts(content: list[UserContent]) -> str:
     Returns:
         The text response from Gemini
     """
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
+    if not gemini_api_key or gemini_api_key.strip() == "":
+        raise ValueError("GEMINI_API_KEY is not set or is empty. Cannot use Gemini model.")
+    
     model = GeminiModel(
         "gemini-2.0-flash",
-        provider=GoogleGLAProvider(api_key=os.getenv("GEMINI_API_KEY")),
+        provider=GoogleGLAProvider(api_key=gemini_api_key),
     )
 
     agent = Agent(

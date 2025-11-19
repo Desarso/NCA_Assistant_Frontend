@@ -1,9 +1,17 @@
 import os
 import json
-from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
+# Load .env file only in development (not in production where Coolify exports env vars)
+is_production = (
+    os.getenv("ENVIRONMENT", "").lower() == "production" or
+    os.getenv("ENV", "").lower() == "production" or
+    os.getenv("PRODUCTION", "").lower() == "true" or
+    os.getenv("NODE_ENV", "").lower() == "production"
+)
+
+if not is_production:
+    from dotenv import load_dotenv
+    load_dotenv()
 
 
 def get_firebase_credentials():

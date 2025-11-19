@@ -1,11 +1,20 @@
 import os
-from dotenv import load_dotenv
 from mem0 import Memory
 import requests
 from requests.exceptions import RequestException
 import logging
 
-load_dotenv()
+# Load .env file only in development (not in production where Coolify exports env vars)
+is_production = (
+    os.getenv("ENVIRONMENT", "").lower() == "production" or
+    os.getenv("ENV", "").lower() == "production" or
+    os.getenv("PRODUCTION", "").lower() == "true" or
+    os.getenv("NODE_ENV", "").lower() == "production"
+)
+
+if not is_production:
+    from dotenv import load_dotenv
+    load_dotenv()
 
 #Set up logging
 # logging.basicConfig(level=logging.DEBUG)

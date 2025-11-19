@@ -1,18 +1,28 @@
 from ai.core.utils import extract_and_format_memory_data
 from pydantic_ai.tools import RunContext
 from typing import Tuple
-from dotenv import load_dotenv
 from ai.core.mem0_local import m
 import logging
 from error_logger.error_logger import ErrorLogger
 import traceback
+import os
 
 logger = logging.getLogger(__name__)
 
 # Initialize error logger
 error_logger = ErrorLogger()
 
-load_dotenv()
+# Load .env file only in development (not in production where Coolify exports env vars)
+is_production = (
+    os.getenv("ENVIRONMENT", "").lower() == "production" or
+    os.getenv("ENV", "").lower() == "production" or
+    os.getenv("PRODUCTION", "").lower() == "true" or
+    os.getenv("NODE_ENV", "").lower() == "production"
+)
+
+if not is_production:
+    from dotenv import load_dotenv
+    load_dotenv()
 
 
 

@@ -13,14 +13,24 @@ from pydantic_ai.models import cached_async_http_client
 import os
 import logging
 
-# Load environment variables
-from dotenv import load_dotenv
-load_dotenv()
+# Load .env file only in development (not in production where Coolify exports env vars)
+# Check if we're in production by looking for common production indicators
+is_production = (
+    os.getenv("ENVIRONMENT", "").lower() == "production" or
+    os.getenv("ENV", "").lower() == "production" or
+    os.getenv("PRODUCTION", "").lower() == "true" or
+    os.getenv("NODE_ENV", "").lower() == "production"
+)
+
+if not is_production:
+    from dotenv import load_dotenv
+    load_dotenv()
 
 # Create a custom HTTP client with 5-minute timeout
 http_client = cached_async_http_client(timeout=300, connect=5)
 
-# Get GEMINI_API_KEY and validate it's not empty
+# Get GEMINI_API_KEY from environment (from .env in dev, or exported by Coolify in prod)
+# Validate it's not empty - if empty/None, Gemini models won't be created
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 if not gemini_api_key or gemini_api_key.strip() == "":
     logging.warning("GEMINI_API_KEY is not set or is empty. Gemini models will not be available.")

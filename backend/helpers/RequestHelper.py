@@ -6,14 +6,23 @@ from typing import Tuple, Optional, Dict, Any
 import logging
 import os
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
 from error_logger.error_logger import ErrorLogger
 import traceback
 from cryptography.fernet import Fernet
 from helpers.Firebase_helpers import FirebaseUser
 from database.models import engine
 
-load_dotenv()
+# Load .env file only in development (not in production where Coolify exports env vars)
+is_production = (
+    os.getenv("ENVIRONMENT", "").lower() == "production" or
+    os.getenv("ENV", "").lower() == "production" or
+    os.getenv("PRODUCTION", "").lower() == "true" or
+    os.getenv("NODE_ENV", "").lower() == "production"
+)
+
+if not is_production:
+    from dotenv import load_dotenv
+    load_dotenv()
 
 # Initialize error logger
 error_logger = ErrorLogger()
