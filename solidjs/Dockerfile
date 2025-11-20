@@ -3,7 +3,8 @@ FROM oven/bun:1 AS builder
 WORKDIR /app
 
 # Install dependencies first (leverages Docker layer caching)
-COPY package.json bun.lockb* ./
+# No Bun lockfile tracked in repo; Bun will generate one during install
+COPY package.json ./
 RUN bun install
 
 # Copy rest of the frontend source and build
@@ -23,5 +24,5 @@ EXPOSE 3000
 
 # Use Bun's built-in serve command to serve static files from dist directory
 # Bun serve handles SPA routing automatically and reads PORT env var
-CMD ["bunx", "serve", "dist", "--hostname", "0.0.0.0"]
+CMD ["sh", "-c", "bunx serve -s dist -l tcp://0.0.0.0:${PORT:-3000}"]
 
