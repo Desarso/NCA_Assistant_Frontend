@@ -107,6 +107,13 @@ models = {
             api_key=os.getenv("OPENROUTER_API_KEY"),
         ),
     ),
+    "glm-4.7": OpenAIModel(
+        "z-ai/glm-4.7",
+        provider=OpenAIProvider(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+        ),
+    ),
 
     # "gpt-5": OpenAIModel(
     #     "openai/gpt-5",
