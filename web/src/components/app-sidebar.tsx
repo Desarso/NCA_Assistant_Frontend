@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import WhagonsLogo from "@/assets/WhagonsLogo";
+import NCALogo from "@/assets/NCALogo";
 import AvatarDropdown from "./avatar-dropdown";
 import { useChatContext } from "@/layout";
 import { MessageCache, ConversationCache } from "@/aichat/utils/memory_cache";
@@ -274,7 +274,7 @@ export function AppSidebar() {
       <Sidebar collapsible="offcanvas" side="left" variant="sidebar">
         <SidebarContent className="bg-sidebar flex flex-col h-screen">
           <div className="p-3 flex flex-col items-center">
-            <WhagonsLogo
+            <NCALogo
               fill="#535353"
               darkFill="#d1d5db"
               width={180}
