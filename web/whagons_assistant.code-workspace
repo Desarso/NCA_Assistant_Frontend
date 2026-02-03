@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../../NCA_Assistant_Backend"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"terminal.integrated.gpuAcceleration": "off"
+	}
+}

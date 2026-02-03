@@ -1,0 +1,435 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+:root {
+  --primary-color: #333;
+  --secondary-color: #666;
+  --code-highlight: #d4d4d4;
+  --background-color: #f5f5f5;
+  --text-color: #333;
+  --input-bg: #fff;
+  --message-user-bg: #e1e1e1;
+  --scrollbar-bg: #f1f1f1;
+  --scrollbar-thumb: #888;
+  --scrollbar-thumb-hover: #555;
+}
+
+:root {
+  --primary-color: #4e5d78; /* Soft blue */
+  --secondary-color: #6c757d; /* Gray */
+  --code-highlight: #d4e4f4; /* Light blue for code */
+  --background-color: #f8f9fa; /* Very light gray */
+  --text-color: #212529; /* Dark gray, almost black */
+  --input-bg: #fff; /* White */
+  --message-user-bg: #d1e7dd; /* Light green */
+  --scrollbar-bg: #f1f1f1; /* Light gray */
+  --scrollbar-thumb: #888; /* Medium gray */
+  --scrollbar-thumb-hover: #555; /* Dark gray */
+  --accent-color: #007bff; /* Bright blue */
+  --link-color: #0056b3; /* Darker blue for links */
+}
+
+body.dark {
+  --primary-color: #b5c1d8; /* Lighter blue */
+  --secondary-color: #9da5ab; /* Lighter gray */
+  --code-highlight: #3a4b5f; /* Dark blue for code */
+  --background-color: #1b2a3f; /* Dark blue-gray */
+  --text-color: #f0f0f0; /* Off-white */
+  --input-bg: #27384c; /* Darker blue-gray */
+  --message-user-bg: #2a3a2a; /* Dark muted green */
+  --scrollbar-bg: #2a2a2a; /* Dark gray */
+  --scrollbar-thumb: #555; /* Medium gray */
+  --scrollbar-thumb-hover: #777; /* Lighter gray */
+  --accent-color: #4d94ff; /* Lighter blue */
+  --link-color: #66a3ff;
+}
+
+.message.assistant {
+  color: var(--text-color);
+  width: 100% !important;
+}
+.message.assistant code:not(pre code) {
+  /* Your styles here */
+  background-color: var(--code-highlight);
+  border-radius: 5px;
+  padding: 0.2rem;
+}
+.message.assistant ol {
+  list-style-type: decimal;
+  margin-left: 1.5em;
+  padding-left: 1em;
+  padding: 1rem;
+}
+.message.assistant ol li {
+  padding: 0.5rem;
+}
+.message.assistant ol ol {
+  list-style-type: lower-alpha;
+}
+.message.assistant ol ol li {
+  padding: 0.5rem;
+}
+.message.assistant ol ol ol {
+  list-style-type: lower-roman;
+}
+.message.assistant ol ol ol li {
+  padding: 0.5rem;
+}
+.message.assistant ul {
+  list-style-type: disc;
+  margin-left: 1.5em;
+  padding-left: 1em;
+  padding: 1rem;
+}
+.message.assistant ul li {
+  padding: 0.5rem;
+}
+.message.assistant ul ul {
+  list-style-type: circle;
+}
+.message.assistant ul ul ul {
+  list-style-type: square;
+}
+.message.assistant code:not(pre code) {
+  /* Your styles here */
+  background-color: var(--code-highlight);
+  border-radius: 5px;
+  padding: 0.2rem;
+}
+.message.assistant h1 {
+  font-size: 2em;
+  font-weight: 600;
+  margin: 1.5rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--secondary-color);
+}
+.message.assistant h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 1.25rem 0 0.75rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--secondary-color);
+}
+.message.assistant h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+}
+.message.assistant a {
+  color: var(--link-color);
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+.message.assistant a:hover {
+  color: var(--accent-color);
+}
+.message.assistant a:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+.message.assistant a:active {
+  color: var(--primary-color);
+}
+.message.assistant blockquote {
+  margin: 1rem 0;
+  padding: 1rem 1.5rem;
+  border-left: 4px solid var(--accent-color);
+  background-color: var(--input-bg);
+  border-radius: 4px;
+  font-style: italic;
+  color: var(--secondary-color);
+}
+.message.assistant blockquote p {
+  margin: 0;
+}
+.message.assistant blockquote p:last-child {
+  margin-bottom: 0;
+}
+.message.assistant blockquote cite {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.9em;
+  font-style: normal;
+  color: var(--primary-color);
+}
+.message.assistant img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+  margin: 1rem 0;
+}
+.message.assistant table {
+  width: 100%;
+  margin: 1rem 0;
+  border-collapse: collapse;
+  border: 1px solid var(--secondary-color);
+  background-color: var(--input-bg);
+  border-radius: 4px;
+  overflow-x: auto;
+  /* Use table layout to allow columns to stretch evenly */
+  display: table;
+  table-layout: fixed;
+  max-width: 100%;
+}
+.message.assistant table th,
+.message.assistant table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border: 1px solid var(--secondary-color);
+}
+.message.assistant table th {
+  background-color: var(--message-user-bg);
+  font-weight: 600;
+  color: var(--primary-color);
+  border-right: none;
+  border-left: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.message.assistant table td {
+  border-color: color-mix(in oklch, var(--secondary-color) 40%, transparent);
+}
+
+.message.assistant table tr,
+table tr {
+  background-color: color-mix(in srgb, var(--background-color) 95%, black);
+}
+
+body.dark .message.assistant table tr,
+body.dark table tr {
+  background-color: color-mix(in srgb, var(--background-color) 100%, white);
+}
+
+/* Hover effects for table rows */
+.markdown-renderer table tr:hover {
+  background-color: color-mix(in srgb, var(--message-user-bg) 60%, transparent) !important;
+  transition: background-color 0.2s ease;
+}
+
+body.dark .markdown-renderer table tr:hover {
+  background-color: color-mix(in srgb, var(--message-user-bg) 40%, transparent) !important;
+}
+.message.assistant table caption {
+  padding: 0.5rem;
+  font-style: italic;
+  color: var(--secondary-color);
+}
+.message.assistant hr {
+  border: 1px solid var(--code-highlight) !important;
+  height: 1px;
+  border-color: var(--code-highlight) !important;
+  margin: 1rem 0;
+  opacity: 0.5;
+}
+.message.assistant p {
+  margin: 1rem 0;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+.message.assistant p:first-of-type {
+  margin-top: 0;
+}
+.message.assistant p:last-of-type {
+  margin-bottom: 0;
+}
+.message.assistant p code {
+  background-color: var(--code-highlight);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+@media (max-width: 768px) {
+  .message.assistant p {
+    margin: 0.75rem 0;
+    font-size: 0.95em;
+  }
+}
+@media (max-width: 768px) {
+  .message.assistant ol {
+    list-style-type: decimal;
+    margin-left: 0.5rem;
+    padding-left: 0.5rem;
+    padding: 0.5rem;
+  }
+  .message.assistant ol li {
+    padding: 0.5rem;
+  }
+  .message.assistant ol ol {
+    list-style-type: lower-alpha;
+  }
+  .message.assistant ol ol li {
+    padding: 0.5rem;
+  }
+  .message.assistant ol ol ol {
+    list-style-type: lower-roman;
+  }
+  .message.assistant ol ol ol li {
+    padding: 0.5rem;
+  }
+  .message.assistant ul {
+    list-style-type: disc;
+    margin-left: 0.5rem;
+    padding-left: 0.5rem;
+    padding: 0.5rem;
+  }
+  .message.assistant ul li {
+    padding: 0.5rem;
+  }
+  .message.assistant ul ul {
+    list-style-type: circle;
+  }
+  .message.assistant ul ul ul {
+    list-style-type: square;
+  }
+}
+
+/* Dark mode vari1ables */
+body.dark {
+  --primary-color: #e1e1e1;
+  --secondary-color: #919191;
+  --code-highlight: #3a4b5f;
+  --background-color: #1a222c;
+  --text-color: #ffffff; /* Make text color pure white for higher contrast */
+  --input-bg: #121212; /* Make input background very dark for higher contrast */
+  --message-user-bg: #3a3a3a;
+  --scrollbar-bg: #2a2a2a;
+  --scrollbar-thumb: #555;
+  --scrollbar-thumb-hover: #777;
+  --code-bg: #2d2d2d;
+  --border-color: #444;
+}
+
+@keyframes fadeInChunk {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fade-in-chunk {
+  display: inline;
+  animation: fadeInChunk 0.5s ease-out forwards;
+}
+
+@keyframes fadeInLatestChunk {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.streaming-word-fade-in {
+  animation: fadeInLatestChunk 0.55s ease-out forwards;
+}
+
+@keyframes continuous-wave-forward-smooth {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: -600% 50%;
+  }
+}
+.wave-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: gray;
+  background: linear-gradient(90deg, gray 0%, gray 40%, black 50%, gray 60%, gray 100%);
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: continuous-wave-forward-smooth 5s infinite linear;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Controlled spacer for scroll anchoring without excessive empty space */
+#last-message {
+  height: 56px; /* small spacer so bottom content isn't flush */
+}
+
+/* Ensure last user message scrolls to near-top with some offset */
+#last-user-message {
+  scroll-margin-top: 220px; /* more space so message lands nearer top */
+}
+
+/* styles.css or index.css */
+/* Keyframe for the fade-in animation */
+@keyframes fadeInWord {
+  from {
+    opacity: 0;
+    /* Optional: Add a slight slide-in from the left */
+    /* transform: translateX(-5px); */
+  }
+  to {
+    opacity: 1;
+    /* transform: translateX(0); */
+  }
+}
+.streaming-content .streaming-word-fade-in {
+  /* Use inline-block if you add transform, otherwise inline is fine */
+  display: inline-block; /* Or display: inline; if not using transform */
+  opacity: 0; /* Start invisible */
+  animation: fadeInWord 0.4s ease-out forwards; /* Adjust duration/timing as needed */
+  /* 'forwards' keeps the final state (opacity: 1) */
+}
+
+.loading-dots {
+  display: inline-block;
+  margin-left: 4px;
+}
+
+.loading-dots span {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: currentColor;
+  margin-right: 2px;
+  animation: loading-dots 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes loading-dots {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+.Chat-Container pre::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.Chat-Container pre::-webkit-scrollbar-track {
+  border-radius: 100vh;
+  background: transparent;
+}
+
+/* Hide textarea scrollbar when we apply overflow-y-hidden class */
+textarea.overflow-y-hidden::-webkit-scrollbar {
+  display: none;
+}
+textarea.overflow-y-hidden {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+/*# sourceMappingURL=index.css.map */

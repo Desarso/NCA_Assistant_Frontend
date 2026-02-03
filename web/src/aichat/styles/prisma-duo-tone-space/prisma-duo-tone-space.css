@@ -1,0 +1,91 @@
+body.dark .Chat-Container code[class*=language-], body.dark .Chat-Container pre[class*=language-] {
+  font-family: Consolas, Menlo, Monaco, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Courier New", Courier, monospace;
+  font-size: 14px;
+  line-height: 1.375;
+  direction: ltr;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+  background: #24242e;
+  color: #767693;
+}
+body.dark .Chat-Container pre > code[class*=language-] {
+  font-size: 1em;
+}
+body.dark .Chat-Container code[class*=language-] ::-moz-selection, body.dark .Chat-Container code[class*=language-]::-moz-selection, body.dark .Chat-Container pre[class*=language-] ::-moz-selection, body.dark .Chat-Container pre[class*=language-]::-moz-selection {
+  text-shadow: none;
+  background: #5151e6;
+}
+body.dark .Chat-Container code[class*=language-] ::selection, body.dark .Chat-Container code[class*=language-]::selection, body.dark .Chat-Container pre[class*=language-] ::selection, body.dark .Chat-Container pre[class*=language-]::selection {
+  text-shadow: none;
+  background: #5151e6;
+}
+body.dark .Chat-Container pre[class*=language-] {
+  padding: 1em;
+  margin: 0.5em 0;
+  overflow: auto;
+}
+body.dark .Chat-Container :not(pre) > code[class*=language-] {
+  padding: 0.1em;
+  border-radius: 0.3em;
+}
+body.dark .Chat-Container .token.cdata, body.dark .Chat-Container .token.comment, body.dark .Chat-Container .token.doctype, body.dark .Chat-Container .token.prolog, body.dark .Chat-Container .token.punctuation {
+  color: #5b5b76;
+}
+body.dark .Chat-Container .token.namespace {
+  opacity: 0.7;
+}
+body.dark .Chat-Container .token.number, body.dark .Chat-Container .token.operator, body.dark .Chat-Container .token.tag {
+  color: #dd672c;
+}
+body.dark .Chat-Container .token.function, body.dark .Chat-Container .token.property {
+  color: #767693;
+}
+body.dark .Chat-Container .token.atrule-id, body.dark .Chat-Container .token.selector, body.dark .Chat-Container .token.tag-id {
+  color: #ebebff;
+}
+body.dark .Chat-Container .token.attr-name, body.dark .Chat-Container .token.important, body.dark .Chat-Container code.language-javascript {
+  color: #aaaaca;
+}
+body.dark .Chat-Container .language-css .token.string, body.dark .Chat-Container .language-scss .token.string, body.dark .Chat-Container .style .token.string, body.dark .Chat-Container .token.atrule, body.dark .Chat-Container .token.attr-value, body.dark .Chat-Container .token.boolean, body.dark .Chat-Container .token.control, body.dark .Chat-Container .token.directive, body.dark .Chat-Container .token.entity, body.dark .Chat-Container .token.keyword, body.dark .Chat-Container .token.placeholder, body.dark .Chat-Container .token.regex, body.dark .Chat-Container .token.statement, body.dark .Chat-Container .token.string, body.dark .Chat-Container .token.unit, body.dark .Chat-Container .token.url, body.dark .Chat-Container .token.variable, body.dark .Chat-Container code.language-css, body.dark .Chat-Container code.language-scss {
+  color: #fe8c52;
+}
+body.dark .Chat-Container .token.deleted {
+  text-decoration: line-through;
+}
+body.dark .Chat-Container .token.inserted {
+  border-bottom: 1px dotted #ebebff;
+  text-decoration: none;
+}
+body.dark .Chat-Container .token.italic {
+  font-style: italic;
+}
+body.dark .Chat-Container .token.bold, body.dark .Chat-Container .token.important {
+  font-weight: 700;
+}
+body.dark .Chat-Container .token.entity {
+  cursor: help;
+}
+body.dark .Chat-Container pre > code.highlight {
+  outline: #7676f4 solid 0.4em;
+  outline-offset: 0.4em;
+}
+body.dark .Chat-Container .line-numbers.line-numbers .line-numbers-rows {
+  border-right-color: #262631;
+}
+body.dark .Chat-Container .line-numbers .line-numbers-rows > span:before {
+  color: #393949;
+}
+body.dark .Chat-Container .line-highlight.line-highlight {
+  background: rgba(221, 103, 44, 0.2);
+  background: -webkit-linear-gradient(left, rgba(221, 103, 44, 0.2) 70%, rgba(221, 103, 44, 0));
+  background: linear-gradient(to right, rgba(221, 103, 44, 0.2) 70%, rgba(221, 103, 44, 0));
+}/*# sourceMappingURL=prisma-duo-tone-space.css.map */
